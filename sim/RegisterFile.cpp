@@ -84,7 +84,7 @@ uint16_t RegisterFile::get(GPR regnum) const
     case BH:
         return registers[BX] >> 8;
     case 0 ... NUM_16BIT_REGS:
-        return registers[AX];
+        return registers[regnum];
     default:
         abort();
     }

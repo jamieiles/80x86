@@ -2,6 +2,7 @@
 #define __FIFO_H__
 
 #include <stdexcept>
+#include <vector>
 
 template <typename T>
 class Fifo {

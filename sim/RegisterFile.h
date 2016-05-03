@@ -44,11 +44,11 @@ enum FlagBitPos {
 class RegisterFile {
 public:
     RegisterFile();
-    void reset();
-    void set(GPR regnum, uint16_t value);
-    uint16_t get(GPR regnum) const;
-    uint16_t get_flags() const;
-    void set_flags(uint16_t val);
+    virtual void reset();
+    virtual void set(GPR regnum, uint16_t value);
+    virtual uint16_t get(GPR regnum) const;
+    virtual uint16_t get_flags() const;
+    virtual void set_flags(uint16_t val);
 private:
     uint16_t registers[NUM_16BIT_REGS];
     uint16_t flags;
