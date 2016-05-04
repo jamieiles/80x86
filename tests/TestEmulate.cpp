@@ -6,55 +6,6 @@
 #include "ModRM.h"
 #include "RegisterFile.h"
 
-class ModRMEncoder {
-public:
-    ModRMEncoder()
-        : val(0)
-    {}
-
-    void reg(Reg r)
-    {
-        val |= (r << 3);
-    }
-
-    void rm_reg(Reg r)
-    {
-        val |= (r << 0) | (3 << 6);
-    }
-
-    void mem_bx()
-    {
-        val |= (0x7 << 0);
-    }
-
-    uint8_t get() const
-    {
-        return val;
-    }
-private:
-    uint8_t val;
-};
-
-uint8_t mod_reg_rm(Reg r1, Reg r2)
-{
-    ModRMEncoder m;
-
-    m.reg(r1);
-    m.rm_reg(r2);
-
-    return m.get();
-}
-
-uint8_t mod_reg_rm_mem_bx(Reg r1)
-{
-    ModRMEncoder m;
-
-    m.reg(r1);
-    m.mem_bx();
-
-    return m.get();
-}
-
 class EmulateFixture : public ::testing::Test {
 public:
     EmulateFixture()
@@ -78,9 +29,10 @@ void EmulateFixture::set_instruction(const std::vector<uint8_t> &instr)
         instr_stream.push(b);
 }
 
-TEST_F(EmulateFixture, MovRegReg)
+TEST_F(EmulateFixture, MovRegReg8)
 {
-    set_instruction({ 0x88, mod_reg_rm(MODRM_REG_BX, MODRM_REG_AX) });
+    // mov al, bl
+    set_instruction({ 0x88, 0xd8 });
 
     registers.set(AL, 0x1);
     registers.set(BL, 0x2);
@@ -92,9 +44,10 @@ TEST_F(EmulateFixture, MovRegReg)
     ASSERT_EQ(0x2, registers.get(BL));
 }
 
-TEST_F(EmulateFixture, MovMemReg)
+TEST_F(EmulateFixture, MovMemReg8)
 {
-    set_instruction({ 0x88, mod_reg_rm_mem_bx(MODRM_REG_AL) });
+    // mov [bx], al
+    set_instruction({ 0x88, 0x07 });
 
     registers.set(AL, 0x12);
     registers.set(BX, 0x100);
