@@ -25,15 +25,16 @@ size_t Emulator::emulate()
     return instr_length;
 }
 
-// mov m/r, r (16-bit)
+// mov m/r, r (8-bit)
 void Emulator::mov88()
 {
+    modrm_decoder->set_width(OP_WIDTH_8);
     modrm_decoder->decode();
 
     auto source = modrm_decoder->reg();
     auto val = registers->get(source);
 
-    write_result<uint16_t>(val);
+    write_result<uint8_t>(val);
 }
 
 uint8_t Emulator::fetch_byte()
