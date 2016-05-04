@@ -43,7 +43,7 @@ protected:
     std::unique_ptr<ModRMDecoder> decoder;
 };
 
-TEST_F(ModRMTestFixture, Regreg6)
+TEST_F(ModRMTestFixture, Regreg16)
 {
     uint8_t modrm = (0x3 << 6) | (MODRM_REG_AX << 3) | (MODRM_REG_CX << 0);
     instr_stream.push(modrm);
