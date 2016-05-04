@@ -20,6 +20,7 @@ size_t Emulator::emulate()
     auto opcode = fetch_byte();
     switch (opcode) {
     case 0x88: mov88(); break;
+    case 0x89: mov89(); break;
     }
 
     return instr_length;
@@ -29,6 +30,18 @@ size_t Emulator::emulate()
 void Emulator::mov88()
 {
     modrm_decoder->set_width(OP_WIDTH_8);
+    modrm_decoder->decode();
+
+    auto source = modrm_decoder->reg();
+    auto val = registers->get(source);
+
+    write_result<uint8_t>(val);
+}
+
+// mov m/r, r (16-bit)
+void Emulator::mov89()
+{
+    modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
 
     auto source = modrm_decoder->reg();
