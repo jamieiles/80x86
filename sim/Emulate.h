@@ -32,6 +32,7 @@ private:
     void mov88();
     void mov89();
     void mov8a();
+    void mov8b();
     template <typename T>
         void write_result(T val);
 

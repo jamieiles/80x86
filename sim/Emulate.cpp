@@ -22,6 +22,7 @@ size_t Emulator::emulate()
     case 0x88: mov88(); break;
     case 0x89: mov89(); break;
     case 0x8a: mov8a(); break;
+    case 0x8b: mov8b(); break;
     }
 
     return instr_length;
@@ -60,6 +61,24 @@ void Emulator::mov8a()
     uint8_t val;
     if (modrm_decoder->rm_type() == OP_MEM) {
         val = mem->read<uint8_t>(modrm_decoder->effective_address());
+    } else {
+        auto source = modrm_decoder->rm_reg();
+        val = registers->get(source);
+    }
+
+    auto dest = modrm_decoder->reg();
+    registers->set(dest, val);
+}
+
+// mov r, m/r (16-bit)
+void Emulator::mov8b()
+{
+    modrm_decoder->set_width(OP_WIDTH_16);
+    modrm_decoder->decode();
+
+    uint16_t val;
+    if (modrm_decoder->rm_type() == OP_MEM) {
+        val = mem->read<uint16_t>(modrm_decoder->effective_address());
     } else {
         auto source = modrm_decoder->rm_reg();
         val = registers->get(source);
