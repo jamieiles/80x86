@@ -31,6 +31,7 @@ private:
     uint8_t fetch_byte();
     void mov88();
     void mov89();
+    void mov8a();
     template <typename T>
         void write_result(T val);
 
