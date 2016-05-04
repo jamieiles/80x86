@@ -85,6 +85,10 @@ TEST_F(ModRMTestFixture, RegReg8)
     ASSERT_EQ(CH, decoder->rm_reg());
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// mod=00
+////////////////////////////////////////////////////////////////////////////////
+
 TEST_F(ModRMTestFixture, Mod00RM000)
 {
     EXPECT_CALL(regs, get(BX)).WillOnce(Return(0x100));
@@ -168,4 +172,206 @@ TEST_F(ModRMTestFixture, Mod00RM111)
     decoder->decode();
 
     validate_effective_address(0x100);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// mod=01
+////////////////////////////////////////////////////////////////////////////////
+
+TEST_F(ModRMTestFixture, Mod01RM000)
+{
+    EXPECT_CALL(regs, get(BX)).WillOnce(Return(0x100));
+    EXPECT_CALL(regs, get(SI)).WillOnce(Return(0x4));
+
+    instr_stream.push(0x40);
+    instr_stream.push(0xff);
+    decoder->decode();
+
+    validate_effective_address(0x103);
+}
+
+TEST_F(ModRMTestFixture, Mod01RM001)
+{
+    EXPECT_CALL(regs, get(BX)).WillOnce(Return(0x100));
+    EXPECT_CALL(regs, get(DI)).WillOnce(Return(0x4));
+
+    instr_stream.push(0x41);
+    instr_stream.push(0xff);
+    decoder->decode();
+
+    validate_effective_address(0x103);
+}
+
+TEST_F(ModRMTestFixture, Mod01RM010)
+{
+    EXPECT_CALL(regs, get(BP)).WillOnce(Return(0x100));
+    EXPECT_CALL(regs, get(SI)).WillOnce(Return(0x4));
+
+    instr_stream.push(0x42);
+    instr_stream.push(0xff);
+    decoder->decode();
+
+    validate_effective_address(0x103);
+}
+
+TEST_F(ModRMTestFixture, Mod01RM011)
+{
+    EXPECT_CALL(regs, get(BP)).WillOnce(Return(0x100));
+    EXPECT_CALL(regs, get(DI)).WillOnce(Return(0x4));
+
+    instr_stream.push(0x43);
+    instr_stream.push(0xff);
+    decoder->decode();
+
+    validate_effective_address(0x103);
+}
+
+TEST_F(ModRMTestFixture, Mod01RM100)
+{
+    EXPECT_CALL(regs, get(SI)).WillOnce(Return(0x100));
+
+    instr_stream.push(0x44);
+    instr_stream.push(0xff);
+    decoder->decode();
+
+    validate_effective_address(0xff);
+}
+
+TEST_F(ModRMTestFixture, Mod01RM101)
+{
+    EXPECT_CALL(regs, get(DI)).WillOnce(Return(0x100));
+
+    instr_stream.push(0x45);
+    instr_stream.push(0xff);
+    decoder->decode();
+
+    validate_effective_address(0xff);
+}
+
+TEST_F(ModRMTestFixture, Mod01RM110)
+{
+    EXPECT_CALL(regs, get(BP)).WillOnce(Return(0x100));
+
+    instr_stream.push(0x46);
+    instr_stream.push(0xff);
+
+    decoder->decode();
+
+    validate_effective_address(0xff);
+}
+
+TEST_F(ModRMTestFixture, Mod01RM111)
+{
+    EXPECT_CALL(regs, get(BX)).WillOnce(Return(0x100));
+
+    instr_stream.push(0x47);
+    instr_stream.push(0xff);
+    decoder->decode();
+
+    validate_effective_address(0xff);
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// mod=10
+////////////////////////////////////////////////////////////////////////////////
+
+TEST_F(ModRMTestFixture, Mod10RM000)
+{
+    EXPECT_CALL(regs, get(BX)).WillOnce(Return(0x100));
+    EXPECT_CALL(regs, get(SI)).WillOnce(Return(0x4));
+
+    instr_stream.push(0x80);
+    instr_stream.push(0xff);
+    instr_stream.push(0xff);
+    decoder->decode();
+
+    validate_effective_address(0x103);
+}
+
+TEST_F(ModRMTestFixture, Mod10RM001)
+{
+    EXPECT_CALL(regs, get(BX)).WillOnce(Return(0x100));
+    EXPECT_CALL(regs, get(DI)).WillOnce(Return(0x4));
+
+    instr_stream.push(0x81);
+    instr_stream.push(0xff);
+    instr_stream.push(0xff);
+    decoder->decode();
+
+    validate_effective_address(0x103);
+}
+
+TEST_F(ModRMTestFixture, Mod10RM010)
+{
+    EXPECT_CALL(regs, get(BP)).WillOnce(Return(0x100));
+    EXPECT_CALL(regs, get(SI)).WillOnce(Return(0x4));
+
+    instr_stream.push(0x82);
+    instr_stream.push(0xff);
+    instr_stream.push(0xff);
+    decoder->decode();
+
+    validate_effective_address(0x103);
+}
+
+TEST_F(ModRMTestFixture, Mod10RM011)
+{
+    EXPECT_CALL(regs, get(BP)).WillOnce(Return(0x100));
+    EXPECT_CALL(regs, get(DI)).WillOnce(Return(0x4));
+
+    instr_stream.push(0x83);
+    instr_stream.push(0xff);
+    instr_stream.push(0xff);
+    decoder->decode();
+
+    validate_effective_address(0x103);
+}
+
+TEST_F(ModRMTestFixture, Mod10RM100)
+{
+    EXPECT_CALL(regs, get(SI)).WillOnce(Return(0x100));
+
+    instr_stream.push(0x84);
+    instr_stream.push(0xff);
+    instr_stream.push(0xff);
+    decoder->decode();
+
+    validate_effective_address(0xff);
+}
+
+TEST_F(ModRMTestFixture, Mod10RM101)
+{
+    EXPECT_CALL(regs, get(DI)).WillOnce(Return(0x100));
+
+    instr_stream.push(0x85);
+    instr_stream.push(0xff);
+    instr_stream.push(0xff);
+    decoder->decode();
+
+    validate_effective_address(0xff);
+}
+
+TEST_F(ModRMTestFixture, Mod10RM110)
+{
+    EXPECT_CALL(regs, get(BP)).WillOnce(Return(0x100));
+
+    instr_stream.push(0x86);
+    instr_stream.push(0xff);
+    instr_stream.push(0xff);
+
+    decoder->decode();
+
+    validate_effective_address(0xff);
+}
+
+TEST_F(ModRMTestFixture, Mod10RM111)
+{
+    EXPECT_CALL(regs, get(BX)).WillOnce(Return(0x100));
+
+    instr_stream.push(0x87);
+    instr_stream.push(0xff);
+    instr_stream.push(0xff);
+    decoder->decode();
+
+    validate_effective_address(0xff);
 }

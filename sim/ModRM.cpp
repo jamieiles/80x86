@@ -53,7 +53,7 @@ uint16_t ModRMDecoder::effective_address() const
     assert(rm_type() == OP_MEM);
 
     switch (modrm >> 6) {
-    case 0x00:
+    case 0x00: {
         switch (modrm & 0x7) {
         case 0x0: return registers->get(BX) + registers->get(SI);
         case 0x1: return registers->get(BX) + registers->get(DI);
@@ -64,7 +64,34 @@ uint16_t ModRMDecoder::effective_address() const
         case 0x6: return static_cast<uint16_t>(get_byte()) | (static_cast<uint16_t>(get_byte()) << 8);
         case 0x7: return registers->get(BX);
         }
+    }
+    case 0x01: {
+        auto displacement = static_cast<int8_t>(get_byte());
+        switch (modrm & 0x7) {
+        case 0x0: return registers->get(BX) + registers->get(SI) + displacement;
+        case 0x1: return registers->get(BX) + registers->get(DI) + displacement;
+        case 0x2: return registers->get(BP) + registers->get(SI) + displacement;
+        case 0x3: return registers->get(BP) + registers->get(DI) + displacement;
+        case 0x4: return registers->get(SI) + displacement;
+        case 0x5: return registers->get(DI) + displacement;
+        case 0x6: return registers->get(BP) + displacement;
+        case 0x7: return registers->get(BX) + displacement;
+        }
+    }
+    case 0x02: {
+        auto displacement = get_byte() | (static_cast<uint16_t>(get_byte()) << 8);
+        switch (modrm & 0x7) {
+        case 0x0: return registers->get(BX) + registers->get(SI) + displacement;
+        case 0x1: return registers->get(BX) + registers->get(DI) + displacement;
+        case 0x2: return registers->get(BP) + registers->get(SI) + displacement;
+        case 0x3: return registers->get(BP) + registers->get(DI) + displacement;
+        case 0x4: return registers->get(SI) + displacement;
+        case 0x5: return registers->get(DI) + displacement;
+        case 0x6: return registers->get(BP) + displacement;
+        case 0x7: return registers->get(BX) + displacement;
+        }
+    }
     default:
-        return 0;
+        abort();
     }
 }
