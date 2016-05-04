@@ -37,7 +37,7 @@ void Emulator::mov88()
     auto source = modrm_decoder->reg();
     auto val = registers->get(source);
 
-    write_result<uint8_t>(val);
+    write_data<uint8_t>(val);
 }
 
 // mov m/r, r (16-bit)
@@ -49,7 +49,7 @@ void Emulator::mov89()
     auto source = modrm_decoder->reg();
     auto val = registers->get(source);
 
-    write_result<uint8_t>(val);
+    write_data<uint8_t>(val);
 }
 
 // mov r, m/r (8-bit)
@@ -60,7 +60,7 @@ void Emulator::mov8a()
 
     uint8_t val;
     if (modrm_decoder->rm_type() == OP_MEM) {
-        val = mem->read<uint8_t>(modrm_decoder->effective_address());
+        val = read_data<uint8_t>(modrm_decoder->effective_address());
     } else {
         auto source = modrm_decoder->rm_reg();
         val = registers->get(source);
@@ -78,7 +78,7 @@ void Emulator::mov8b()
 
     uint16_t val;
     if (modrm_decoder->rm_type() == OP_MEM) {
-        val = mem->read<uint16_t>(modrm_decoder->effective_address());
+        val = read_data<uint16_t>(modrm_decoder->effective_address());
     } else {
         auto source = modrm_decoder->rm_reg();
         val = registers->get(source);
@@ -96,13 +96,19 @@ uint8_t Emulator::fetch_byte()
 }
 
 template <typename T>
-void Emulator::write_result(T val)
+void Emulator::write_data(T val)
 {
     if (modrm_decoder->rm_type() == OP_REG) {
         auto dest = modrm_decoder->rm_reg();
         registers->set(dest, val);
     } else {
         auto ea = modrm_decoder->effective_address();
-        mem->write<T>(ea, val);
+        mem->write<T>((registers->get(DS) << 4) + ea, val);
     }
+}
+
+template <typename T>
+T Emulator::read_data(uint16_t displacement)
+{
+    return mem->read<T>((registers->get(DS) << 4) + displacement);
 }

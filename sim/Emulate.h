@@ -34,7 +34,9 @@ private:
     void mov8a();
     void mov8b();
     template <typename T>
-        void write_result(T val);
+        void write_data(T val);
+    template <typename T>
+        T read_data(uint16_t offset);
 
     Fifo<uint8_t> *instr_stream;
     Memory *mem;
