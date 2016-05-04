@@ -9,6 +9,25 @@
 
 using ::testing::Return;
 
+enum Reg {
+    MODRM_REG_AL = 0,
+    MODRM_REG_AX = 0,
+    MODRM_REG_CL = 1,
+    MODRM_REG_CX = 1,
+    MODRM_REG_DL = 2,
+    MODRM_REG_DX = 2,
+    MODRM_REG_BL = 3,
+    MODRM_REG_BX = 3,
+    MODRM_REG_AH = 4,
+    MODRM_REG_SP = 4,
+    MODRM_REG_CH = 5,
+    MODRM_REG_BP = 5,
+    MODRM_REG_DH = 6,
+    MODRM_REG_SI = 6,
+    MODRM_REG_BH = 7,
+    MODRM_REG_DI = 7
+};
+
 class MockRegisterFile : public RegisterFile {
 public:
     MockRegisterFile()
