@@ -27,6 +27,8 @@ size_t Emulator::emulate()
     case 0xc7: movc7(); break;
     case 0xb0 ... 0xb7: movb0_b7(); break;
     case 0xb8 ... 0xbf: movb8_bf(); break;
+    case 0xa0: mova0(); break;
+    case 0xa1: mova1(); break;
     }
 
     return instr_length;
@@ -118,6 +120,22 @@ void Emulator::movb8_bf()
     registers->set(reg, immed);
 }
 
+// mov alm, m, 8-bit
+void Emulator::mova0()
+{
+    auto displacement = fetch_16bit();
+    auto val = mem->read<uint8_t>((registers->get(DS) << 4) + displacement);
+    registers->set(AL, val);
+}
+
+// mov alm, m, 16-bit
+void Emulator::mova1()
+{
+    auto displacement = fetch_16bit();
+    auto val = mem->read<uint16_t>((registers->get(DS) << 4) + displacement);
+    registers->set(AX, val);
+}
+
 uint8_t Emulator::fetch_byte()
 {
     ++instr_length;
@@ -127,9 +145,9 @@ uint8_t Emulator::fetch_byte()
 
 uint16_t Emulator::fetch_16bit()
 {
-        uint16_t immed = (static_cast<uint16_t>(fetch_byte()) |
-                          (static_cast<uint16_t>(fetch_byte()) << 8));
-        return immed;
+    uint16_t immed = (static_cast<uint16_t>(fetch_byte()) |
+                      (static_cast<uint16_t>(fetch_byte()) << 8));
+    return immed;
 }
 
 template <typename T>

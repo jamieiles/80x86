@@ -37,6 +37,8 @@ private:
     void movc7();
     void movb0_b7();
     void movb8_bf();
+    void mova0();
+    void mova1();
     template <typename T>
         void write_data(T val);
     template <typename T>
