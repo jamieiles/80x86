@@ -49,7 +49,7 @@ void Emulator::mov89()
     auto source = modrm_decoder->reg();
     auto val = registers->get(source);
 
-    write_data<uint8_t>(val);
+    write_data<uint16_t>(val);
 }
 
 // mov r, m/r (8-bit)
