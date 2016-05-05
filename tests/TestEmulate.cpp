@@ -148,3 +148,56 @@ TEST_F(EmulateFixture, MovRegMem16)
 
     ASSERT_EQ(0xaa55, registers.get(AX));
 }
+
+TEST_F(EmulateFixture, MovC6C7RegNot0IsNop)
+{
+    set_instruction({ 0xc6, 0xff });
+    auto instr_len = emulator.emulate();
+    ASSERT_EQ(2LU, instr_len);
+
+    set_instruction({ 0xc7, 0xff });
+    instr_len = emulator.emulate();
+    ASSERT_EQ(2LU, instr_len);
+}
+
+TEST_F(EmulateFixture, MovC6RegImmediate)
+{
+    // mov al, 0xaa
+    set_instruction({ 0xc6, 0xc0, 0xaa });
+    auto instr_len = emulator.emulate();
+    ASSERT_EQ(3LU, instr_len);
+
+    ASSERT_EQ(0xaa, registers.get(AL));
+}
+
+TEST_F(EmulateFixture, MovC6MemImmediate)
+{
+    // mov [bx], 0xaa
+    set_instruction({ 0xc6, 0x07, 0xaa });
+    registers.set(BX, 0x100);
+    auto instr_len = emulator.emulate();
+    ASSERT_EQ(3LU, instr_len);
+
+    ASSERT_EQ(0xaa, mem.read<uint8_t>(0x100));
+}
+
+TEST_F(EmulateFixture, MovC7RegImmediate)
+{
+    // mov ax, 0xaa55
+    set_instruction({ 0xc7, 0xc0, 0x55, 0xaa });
+    auto instr_len = emulator.emulate();
+    ASSERT_EQ(4LU, instr_len);
+
+    ASSERT_EQ(0xaa55, registers.get(AX));
+}
+
+TEST_F(EmulateFixture, MovC7MemImmediate)
+{
+    // mov [bx], 0xaa55
+    set_instruction({ 0xc7, 0x07, 0x55, 0xaa });
+    registers.set(BX, 0x100);
+    auto instr_len = emulator.emulate();
+    ASSERT_EQ(4LU, instr_len);
+
+    ASSERT_EQ(0xaa55, mem.read<uint16_t>(0x100));
+}

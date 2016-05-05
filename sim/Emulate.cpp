@@ -23,6 +23,8 @@ size_t Emulator::emulate()
     case 0x89: mov89(); break;
     case 0x8a: mov8a(); break;
     case 0x8b: mov8b(); break;
+    case 0xc6: movc6(); break;
+    case 0xc7: movc7(); break;
     }
 
     return instr_length;
@@ -74,6 +76,31 @@ void Emulator::mov8b()
 
     auto dest = modrm_decoder->reg();
     registers->set(dest, val);
+}
+
+// mov r/m, immediate (reg == 0), 8-bit
+void Emulator::movc6()
+{
+    modrm_decoder->set_width(OP_WIDTH_8);
+    modrm_decoder->decode();
+
+    if (modrm_decoder->raw_reg() == 0) {
+        uint8_t immed = fetch_byte();
+        write_data<uint8_t>(immed);
+    }
+}
+
+// mov r/m, immediate (reg == 0), 16-bit
+void Emulator::movc7()
+{
+    modrm_decoder->set_width(OP_WIDTH_16);
+    modrm_decoder->decode();
+
+    if (modrm_decoder->raw_reg() == 0) {
+        uint16_t immed = (static_cast<uint16_t>(fetch_byte()) |
+                          (static_cast<uint16_t>(fetch_byte()) << 8));
+        write_data<uint16_t>(immed);
+    }
 }
 
 uint8_t Emulator::fetch_byte()
