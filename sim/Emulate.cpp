@@ -29,6 +29,8 @@ size_t Emulator::emulate()
     case 0xb8 ... 0xbf: movb8_bf(); break;
     case 0xa0: mova0(); break;
     case 0xa1: mova1(); break;
+    case 0xa2: mova2(); break;
+    case 0xa3: mova3(); break;
     }
 
     return instr_length;
@@ -120,7 +122,7 @@ void Emulator::movb8_bf()
     registers->set(reg, immed);
 }
 
-// mov alm, m, 8-bit
+// mov al, m, 8-bit
 void Emulator::mova0()
 {
     auto displacement = fetch_16bit();
@@ -128,12 +130,28 @@ void Emulator::mova0()
     registers->set(AL, val);
 }
 
-// mov alm, m, 16-bit
+// mov ax, m, 16-bit
 void Emulator::mova1()
 {
     auto displacement = fetch_16bit();
     auto val = mem->read<uint16_t>((registers->get(DS) << 4) + displacement);
     registers->set(AX, val);
+}
+
+// mov m, al 8-bit
+void Emulator::mova2()
+{
+    auto displacement = fetch_16bit();
+    auto val = registers->get(AL);
+    mem->write<uint8_t>((registers->get(DS) << 4) + displacement, val);
+}
+
+// mov m, al 16-bit
+void Emulator::mova3()
+{
+    auto displacement = fetch_16bit();
+    auto val = registers->get(AX);
+    mem->write<uint16_t>((registers->get(DS) << 4) + displacement, val);
 }
 
 uint8_t Emulator::fetch_byte()
