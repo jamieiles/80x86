@@ -25,6 +25,7 @@ public:
     void set_width(OperandWidth width);
     void decode();
     GPR reg() const;
+    int raw_reg() const;
     GPR rm_reg() const;
     uint16_t effective_address() const;
     OperandType rm_type() const;

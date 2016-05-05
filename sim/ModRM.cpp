@@ -28,12 +28,17 @@ void ModRMDecoder::set_width(OperandWidth width)
 
 GPR ModRMDecoder::reg() const
 {
-    int reg = (modrm >> 3) & 0x7;
+    auto reg = raw_reg();
 
     if (width == OP_WIDTH_8)
         return static_cast<GPR>(static_cast<int>(AL) + reg);
 
     return static_cast<GPR>(static_cast<int>(AX) + reg);
+}
+
+int ModRMDecoder::raw_reg() const
+{
+    return (modrm >> 3) & 0x7;
 }
 
 GPR ModRMDecoder::rm_reg() const
