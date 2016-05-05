@@ -103,12 +103,15 @@ void Emulator::write_data(T val)
         registers->set(dest, val);
     } else {
         auto ea = modrm_decoder->effective_address();
-        mem->write<T>((registers->get(DS) << 4) + ea, val);
+        auto segment = modrm_decoder->uses_bp_as_base() ? SS : DS;
+        mem->write<T>((registers->get(segment) << 4) + ea, val);
     }
 }
 
 template <typename T>
 T Emulator::read_data(uint16_t displacement)
 {
-    return mem->read<T>((registers->get(DS) << 4) + displacement);
+    auto segment = modrm_decoder->uses_bp_as_base() ? SS : DS;
+
+    return mem->read<T>((registers->get(segment) << 4) + displacement);
 }

@@ -79,7 +79,7 @@ uint16_t ModRMDecoder::effective_address() const
         }
     }
     case 0x02: {
-        auto displacement = get_byte() | (static_cast<uint16_t>(get_byte()) << 8);
+        auto displacement = static_cast<int16_t>(get_byte()) | (static_cast<uint16_t>(get_byte()) << 8);
         switch (modrm & 0x7) {
         case 0x0: return registers->get(BX) + registers->get(SI) + displacement;
         case 0x1: return registers->get(BX) + registers->get(DI) + displacement;
@@ -94,4 +94,17 @@ uint16_t ModRMDecoder::effective_address() const
     default:
         abort();
     }
+}
+
+bool ModRMDecoder::uses_bp_as_base() const
+{
+    assert(rm_type() == OP_MEM);
+
+    auto mod = modrm >> 6;
+    auto rm = modrm & 0x7;
+
+    if (mod == 0)
+        return rm == 0x2 || rm == 0x3;
+
+    return rm == 0x2 || rm == 0x3 || rm == 0x6;
 }

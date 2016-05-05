@@ -28,6 +28,7 @@ public:
     GPR rm_reg() const;
     uint16_t effective_address() const;
     OperandType rm_type() const;
+    bool uses_bp_as_base() const;
 
 private:
     std::function<uint8_t()> get_byte;
