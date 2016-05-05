@@ -58,13 +58,7 @@ void Emulator::mov8a()
     modrm_decoder->set_width(OP_WIDTH_8);
     modrm_decoder->decode();
 
-    uint8_t val;
-    if (modrm_decoder->rm_type() == OP_MEM) {
-        val = read_data<uint8_t>(modrm_decoder->effective_address());
-    } else {
-        auto source = modrm_decoder->rm_reg();
-        val = registers->get(source);
-    }
+    uint8_t val = read_data<uint8_t>();
 
     auto dest = modrm_decoder->reg();
     registers->set(dest, val);
@@ -76,13 +70,7 @@ void Emulator::mov8b()
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
 
-    uint16_t val;
-    if (modrm_decoder->rm_type() == OP_MEM) {
-        val = read_data<uint16_t>(modrm_decoder->effective_address());
-    } else {
-        auto source = modrm_decoder->rm_reg();
-        val = registers->get(source);
-    }
+    uint16_t val = read_data<uint16_t>();
 
     auto dest = modrm_decoder->reg();
     registers->set(dest, val);
@@ -109,9 +97,15 @@ void Emulator::write_data(T val)
 }
 
 template <typename T>
-T Emulator::read_data(uint16_t displacement)
+T Emulator::read_data()
 {
-    auto segment = modrm_decoder->uses_bp_as_base() ? SS : DS;
+    if (modrm_decoder->rm_type() == OP_MEM) {
+        auto displacement = modrm_decoder->effective_address();
+        auto segment = modrm_decoder->uses_bp_as_base() ? SS : DS;
 
-    return mem->read<T>((registers->get(segment) << 4) + displacement);
+        return mem->read<T>((registers->get(segment) << 4) + displacement);
+    } else {
+        auto source = modrm_decoder->rm_reg();
+        return registers->get(source);
+    }
 }

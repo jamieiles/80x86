@@ -36,7 +36,7 @@ private:
     template <typename T>
         void write_data(T val);
     template <typename T>
-        T read_data(uint16_t offset);
+        T read_data();
 
     Fifo<uint8_t> *instr_stream;
     Memory *mem;
