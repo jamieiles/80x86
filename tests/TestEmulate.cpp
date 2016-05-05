@@ -201,3 +201,33 @@ TEST_F(EmulateFixture, MovC7MemImmediate)
 
     ASSERT_EQ(0xaa55, mem.read<uint16_t>(0x100));
 }
+
+TEST_F(EmulateFixture, MovRegImmediate8)
+{
+    // mov al, 0xaa
+    for (uint8_t i = 0; i < 8; ++i) {
+        auto reg = static_cast<GPR>(static_cast<int>(AL) + i);
+        registers.set(reg, 0);
+
+        set_instruction({ static_cast<uint8_t>(0xb0 + i), 0xaa });
+        auto instr_len = emulator.emulate();
+        ASSERT_EQ(2LU, instr_len);
+
+        ASSERT_EQ(0xaa, registers.get(reg));
+    }
+}
+
+TEST_F(EmulateFixture, MovRegImmediate16)
+{
+    // mov al, 0xaa55
+    for (uint8_t i = 0; i < 8; ++i) {
+        auto reg = static_cast<GPR>(static_cast<int>(AX) + i);
+        registers.set(reg, 0);
+
+        set_instruction({ static_cast<uint8_t>(0xb8 + i), 0x55, 0xaa });
+        auto instr_len = emulator.emulate();
+        ASSERT_EQ(3LU, instr_len);
+
+        ASSERT_EQ(0xaa55, registers.get(reg));
+    }
+}

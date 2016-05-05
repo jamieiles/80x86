@@ -17,7 +17,7 @@ size_t Emulator::emulate()
 {
     instr_length = 0;
 
-    auto opcode = fetch_byte();
+    opcode = fetch_byte();
     switch (opcode) {
     case 0x88: mov88(); break;
     case 0x89: mov89(); break;
@@ -25,6 +25,8 @@ size_t Emulator::emulate()
     case 0x8b: mov8b(); break;
     case 0xc6: movc6(); break;
     case 0xc7: movc7(); break;
+    case 0xb0 ... 0xb7: movb0_b7(); break;
+    case 0xb8 ... 0xbf: movb8_bf(); break;
     }
 
     return instr_length;
@@ -96,11 +98,24 @@ void Emulator::movc7()
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
 
-    if (modrm_decoder->raw_reg() == 0) {
-        uint16_t immed = (static_cast<uint16_t>(fetch_byte()) |
-                          (static_cast<uint16_t>(fetch_byte()) << 8));
-        write_data<uint16_t>(immed);
-    }
+    if (modrm_decoder->raw_reg() == 0)
+        write_data<uint16_t>(fetch_16bit());
+}
+
+// mov r, immediate, 8-bit
+void Emulator::movb0_b7()
+{
+    uint8_t immed = fetch_byte();
+    auto reg = static_cast<GPR>(static_cast<int>(AL) + (opcode & 0x7));
+    registers->set(reg, immed);
+}
+
+// mov r, immediate, 16-bit
+void Emulator::movb8_bf()
+{
+    uint16_t immed = fetch_16bit();
+    auto reg = static_cast<GPR>(static_cast<int>(AX) + (opcode & 0x7));
+    registers->set(reg, immed);
 }
 
 uint8_t Emulator::fetch_byte()
@@ -108,6 +123,13 @@ uint8_t Emulator::fetch_byte()
     ++instr_length;
 
     return instr_stream->pop();
+}
+
+uint16_t Emulator::fetch_16bit()
+{
+        uint16_t immed = (static_cast<uint16_t>(fetch_byte()) |
+                          (static_cast<uint16_t>(fetch_byte()) << 8));
+        return immed;
 }
 
 template <typename T>
