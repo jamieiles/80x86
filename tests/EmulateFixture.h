@@ -24,6 +24,28 @@ public:
         for (auto &b: instr)
             instr_stream.push(b);
     }
+
+    void write_reg(GPR regnum, uint16_t val)
+    {
+        registers.set(regnum, val);
+    }
+
+    uint16_t read_reg(GPR regnum)
+    {
+        return registers.get(regnum);
+    }
+
+    template <typename T>
+    void write_mem(uint16_t addr, T val)
+    {
+        mem.write<T>(addr, val);
+    }
+
+    template <typename T>
+    T read_mem(uint16_t addr)
+    {
+        return mem.read<T>(addr);
+    }
 protected:
     Fifo<uint8_t> instr_stream;
     Memory mem;
