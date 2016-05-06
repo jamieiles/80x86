@@ -10,7 +10,7 @@ RegisterFile::RegisterFile()
 
 void RegisterFile::reset()
 {
-    for (int i = 0; i < 8; ++i)
+    for (int i = 0; i < NUM_16BIT_REGS; ++i)
         registers[i] = 0;
 
     // Bit 15 is always 1 on 8086
@@ -54,7 +54,7 @@ void RegisterFile::set(GPR regnum, uint16_t value)
         registers[BX] &= 0x00ff;
         registers[BX] |= value << 8;
         break;
-    case 0 ... NUM_16BIT_REGS:
+    case 0 ... NUM_16BIT_REGS - 1:
         registers[regnum] = value;
         break;
     default:
@@ -83,7 +83,7 @@ uint16_t RegisterFile::get(GPR regnum) const
         return registers[DX] >> 8;
     case BH:
         return registers[BX] >> 8;
-    case 0 ... NUM_16BIT_REGS:
+    case 0 ... NUM_16BIT_REGS - 1:
         return registers[regnum];
     default:
         abort();
