@@ -298,3 +298,26 @@ TEST_F(EmulateFixture, MovSRMem)
 
     ASSERT_EQ(0x8000, registers.get(CS));
 }
+
+TEST_F(EmulateFixture, MovRegSR)
+{
+    // mov ax, cs
+    set_instruction({ 0x8c, 0xc8 });
+    registers.set(CS, 0x8000);
+    auto instr_len = emulator.emulate();
+    ASSERT_EQ(2LU, instr_len);
+
+    ASSERT_EQ(0x8000, registers.get(AX));
+}
+
+TEST_F(EmulateFixture, MovMemSR)
+{
+    // mov [bx], cs
+    set_instruction({ 0x8c, 0x0f });
+    registers.set(BX, 0x0100);
+    registers.set(CS, 0x8000);
+    auto instr_len = emulator.emulate();
+    ASSERT_EQ(2LU, instr_len);
+
+    ASSERT_EQ(0x8000, mem.read<uint16_t>(0x0100));
+}

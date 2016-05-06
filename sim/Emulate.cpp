@@ -32,6 +32,7 @@ size_t Emulator::emulate()
     case 0xa2: mova2(); break;
     case 0xa3: mova3(); break;
     case 0x8e: mov8e(); break;
+    case 0x8c: mov8c(); break;
     }
 
     return instr_length;
@@ -169,6 +170,22 @@ void Emulator::mov8e()
     auto reg = static_cast<GPR>(static_cast<int>(ES) + segnum);
 
     registers->set(reg, val);
+}
+
+// mov r/m, sr
+void Emulator::mov8c()
+{
+    if (modrm_decoder->raw_reg() & (1 << 4))
+        return;
+
+    modrm_decoder->set_width(OP_WIDTH_16);
+    modrm_decoder->decode();
+
+    auto segnum = modrm_decoder->raw_reg();
+    auto reg = static_cast<GPR>(static_cast<int>(ES) + segnum);
+    uint16_t val = registers->get(reg);
+
+    write_data<uint16_t>(val);
 }
 
 uint8_t Emulator::fetch_byte()
