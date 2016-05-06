@@ -8,7 +8,8 @@ add_executable(unittest
                TestRegisterFile.cpp
                TestMemory.cpp
                TestMov.cpp
-               TestModRM.cpp)
+               TestModRM.cpp
+               TestPush.cpp)
 target_link_libraries(unittest 8086sim gtest gmock)
 
 add_test(unittest ./unittest --gtest_color=yes)

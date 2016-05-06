@@ -29,6 +29,9 @@ public:
 
 private:
     uint8_t fetch_byte();
+    //
+    // mov
+    //
     void mov88();
     void mov89();
     void mov8a();
@@ -43,10 +46,16 @@ private:
     void mova3();
     void mov8e();
     void mov8c();
+    //
+    // push
+    //
+    void pushff();
+    void push50_57();
+    void pushsr();
     template <typename T>
-        void write_data(T val);
+        void write_data(T val, bool stack=false);
     template <typename T>
-        T read_data();
+        T read_data(bool stack=false);
     uint16_t fetch_16bit();
 
     Fifo<uint8_t> *instr_stream;

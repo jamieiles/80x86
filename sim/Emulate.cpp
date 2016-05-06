@@ -19,6 +19,7 @@ size_t Emulator::emulate()
 
     opcode = fetch_byte();
     switch (opcode) {
+    // mov
     case 0x88: mov88(); break;
     case 0x89: mov89(); break;
     case 0x8a: mov8a(); break;
@@ -33,6 +34,13 @@ size_t Emulator::emulate()
     case 0xa3: mova3(); break;
     case 0x8e: mov8e(); break;
     case 0x8c: mov8c(); break;
+    // push
+    case 0xff: pushff(); break;
+    case 0x50 ... 0x57: push50_57(); break;
+    case 0x06: // fallthrough
+    case 0x0e: // fallthrough
+    case 0x16: // fallthrough
+    case 0x1e: pushsr();
     }
 
     return instr_length;
@@ -159,11 +167,11 @@ void Emulator::mova3()
 // mov sr, r/m
 void Emulator::mov8e()
 {
-    if (modrm_decoder->raw_reg() & (1 << 4))
-        return;
-
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
+
+    if (modrm_decoder->raw_reg() & (1 << 4))
+        return;
 
     uint16_t val = read_data<uint16_t>();
     auto segnum = modrm_decoder->raw_reg();
@@ -175,17 +183,51 @@ void Emulator::mov8e()
 // mov r/m, sr
 void Emulator::mov8c()
 {
-    if (modrm_decoder->raw_reg() & (1 << 4))
-        return;
-
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
+
+    if (modrm_decoder->raw_reg() & (1 << 4))
+        return;
 
     auto segnum = modrm_decoder->raw_reg();
     auto reg = static_cast<GPR>(static_cast<int>(ES) + segnum);
     uint16_t val = registers->get(reg);
 
     write_data<uint16_t>(val);
+}
+
+// push r/m
+void Emulator::pushff()
+{
+    modrm_decoder->set_width(OP_WIDTH_16);
+    modrm_decoder->decode();
+
+    if (modrm_decoder->raw_reg() != 6)
+        return;
+
+    auto val = read_data<uint16_t>();
+    registers->set(SP, registers->get(SP) - 2);
+    mem->write<uint16_t>((registers->get(SS) << 4) + registers->get(SP), val);
+}
+
+// push r
+void Emulator::push50_57()
+{
+    auto reg = static_cast<GPR>(static_cast<int>(AX) + (opcode & 0x7));
+    auto val = registers->get(reg);
+
+    registers->set(SP, registers->get(SP) - 2);
+    mem->write<uint16_t>((registers->get(SS) << 4) + registers->get(SP), val);
+}
+
+// push sr
+void Emulator::pushsr()
+{
+    auto reg = static_cast<GPR>(static_cast<int>(ES) + ((opcode >> 3) & 0x3));
+    auto val = registers->get(reg);
+
+    registers->set(SP, registers->get(SP) - 2);
+    mem->write<uint16_t>((registers->get(SS) << 4) + registers->get(SP), val);
 }
 
 uint8_t Emulator::fetch_byte()
@@ -203,24 +245,24 @@ uint16_t Emulator::fetch_16bit()
 }
 
 template <typename T>
-void Emulator::write_data(T val)
+void Emulator::write_data(T val, bool stack)
 {
     if (modrm_decoder->rm_type() == OP_REG) {
         auto dest = modrm_decoder->rm_reg();
         registers->set(dest, val);
     } else {
         auto ea = modrm_decoder->effective_address();
-        auto segment = modrm_decoder->uses_bp_as_base() ? SS : DS;
+        auto segment = modrm_decoder->uses_bp_as_base() || stack ? SS : DS;
         mem->write<T>((registers->get(segment) << 4) + ea, val);
     }
 }
 
 template <typename T>
-T Emulator::read_data()
+T Emulator::read_data(bool stack)
 {
     if (modrm_decoder->rm_type() == OP_MEM) {
         auto displacement = modrm_decoder->effective_address();
-        auto segment = modrm_decoder->uses_bp_as_base() ? SS : DS;
+        auto segment = modrm_decoder->uses_bp_as_base() || stack ? SS : DS;
 
         return mem->read<T>((registers->get(segment) << 4) + displacement);
     } else {
