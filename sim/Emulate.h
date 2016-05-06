@@ -41,6 +41,7 @@ private:
     void mova1();
     void mova2();
     void mova3();
+    void mov8e();
     template <typename T>
         void write_data(T val);
     template <typename T>

@@ -31,6 +31,7 @@ size_t Emulator::emulate()
     case 0xa1: mova1(); break;
     case 0xa2: mova2(); break;
     case 0xa3: mova3(); break;
+    case 0x8e: mov8e(); break;
     }
 
     return instr_length;
@@ -152,6 +153,22 @@ void Emulator::mova3()
     auto displacement = fetch_16bit();
     auto val = registers->get(AX);
     mem->write<uint16_t>((registers->get(DS) << 4) + displacement, val);
+}
+
+// mov sr, r/m
+void Emulator::mov8e()
+{
+    if (modrm_decoder->raw_reg() & (1 << 4))
+        return;
+
+    modrm_decoder->set_width(OP_WIDTH_16);
+    modrm_decoder->decode();
+
+    uint16_t val = read_data<uint16_t>();
+    auto segnum = modrm_decoder->raw_reg();
+    auto reg = static_cast<GPR>(static_cast<int>(ES) + segnum);
+
+    registers->set(reg, val);
 }
 
 uint8_t Emulator::fetch_byte()
