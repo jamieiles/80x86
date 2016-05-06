@@ -7,7 +7,7 @@ add_executable(unittest
                TestFifo.cpp
                TestRegisterFile.cpp
                TestMemory.cpp
-               TestEmulate.cpp
+               TestMov.cpp
                TestModRM.cpp)
 target_link_libraries(unittest 8086sim gtest gmock)
 
