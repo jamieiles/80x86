@@ -40,7 +40,14 @@ size_t Emulator::emulate()
     case 0x06: // fallthrough
     case 0x0e: // fallthrough
     case 0x16: // fallthrough
-    case 0x1e: pushsr();
+    case 0x1e: pushsr(); break;
+    // pop
+    case 0xf8: popf8(); break;
+    case 0x58 ... 0x5f: pop58_5f(); break;
+    case 0x07: // fallthrough
+    case 0x0f: // fallthrough
+    case 0x17: // fallthrough
+    case 0x1f: popsr(); break;
     }
 
     return instr_length;
@@ -228,6 +235,41 @@ void Emulator::pushsr()
 
     registers->set(SP, registers->get(SP) - 2);
     mem->write<uint16_t>((registers->get(SS) << 4) + registers->get(SP), val);
+}
+
+// pop r/m
+void Emulator::popf8()
+{
+    modrm_decoder->set_width(OP_WIDTH_16);
+    modrm_decoder->decode();
+
+    if (modrm_decoder->raw_reg() != 0)
+        return;
+
+    auto val = mem->read<uint16_t>((registers->get(SS) << 4) + registers->get(SP));
+    registers->set(SP, registers->get(SP) + 2);
+
+    write_data<uint16_t>(val);
+}
+
+// pop r
+void Emulator::pop58_5f()
+{
+    auto reg = static_cast<GPR>(static_cast<int>(AX) + (opcode & 0x7));
+    auto val = mem->read<uint16_t>((registers->get(SS) << 4) + registers->get(SP));
+
+    registers->set(SP, registers->get(SP) + 2);
+    registers->set(reg, val);
+}
+
+// pop sr
+void Emulator::popsr()
+{
+    auto reg = static_cast<GPR>(static_cast<int>(ES) + ((opcode >> 3) & 0x3));
+    auto val = mem->read<uint16_t>((registers->get(SS) << 4) + registers->get(SP));
+
+    registers->set(reg, val);
+    registers->set(SP, registers->get(SP) + 2);
 }
 
 uint8_t Emulator::fetch_byte()

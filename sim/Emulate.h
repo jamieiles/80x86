@@ -52,6 +52,12 @@ private:
     void pushff();
     void push50_57();
     void pushsr();
+    //
+    // pop
+    //
+    void popf8();
+    void pop58_5f();
+    void popsr();
     template <typename T>
         void write_data(T val, bool stack=false);
     template <typename T>

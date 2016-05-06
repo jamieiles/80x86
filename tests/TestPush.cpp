@@ -72,3 +72,70 @@ TEST_F(EmulateFixture, PushSR)
             ASSERT_EQ(0x0100 + i, read_mem<uint16_t>(0x0fe));
     }
 }
+
+TEST_F(EmulateFixture, PopRegFF)
+{
+    // pop ax
+    set_instruction({ 0xf8, 0xc0 });
+
+    write_mem<uint16_t>(0x0fe, 0xaa55);
+    write_reg(SP, 0x0fe);
+
+    auto instr_len = emulator.emulate();
+    ASSERT_EQ(2LU, instr_len);
+
+    ASSERT_EQ(0x100, read_reg(SP));
+    ASSERT_EQ(0xaa55, read_reg(AX));
+}
+
+TEST_F(EmulateFixture, PopMemFF)
+{
+    // pop [1234]
+    set_instruction({ 0xf8, 0x06, 0x34, 0x12 });
+
+    write_mem<uint16_t>(0x0fe, 0xaa55);
+    write_reg(SP, 0x0fe);
+
+    auto instr_len = emulator.emulate();
+    ASSERT_EQ(4LU, instr_len);
+
+    ASSERT_EQ(0x100, read_reg(SP));
+    ASSERT_EQ(0xaa55, read_mem<uint16_t>(0x1234));
+}
+
+TEST_F(EmulateFixture, PopReg5X)
+{
+    // pop r
+    for (uint8_t i = 0; i < 8; ++i) {
+        auto reg = static_cast<GPR>(static_cast<int>(AX) + i);
+        write_mem<uint16_t>(0x0fe, 0x0100 + i);
+        write_reg(SP, 0x0fe);
+
+        set_instruction({ static_cast<uint8_t>(0x58 + i) });
+        auto instr_len = emulator.emulate();
+        ASSERT_EQ(1LU, instr_len);
+
+        if (reg != SP)
+            ASSERT_EQ(0x100, read_reg(SP));
+        ASSERT_EQ(0x0100 + i, read_reg(reg));
+    }
+}
+
+TEST_F(EmulateFixture, PopSR)
+{
+    // pop sr
+    for (uint8_t i = 0; i < 4; ++i) {
+        write_reg(SS, 0);
+
+        auto reg = static_cast<GPR>(static_cast<int>(ES) + i);
+        write_mem<uint16_t>(0x0fe, 0x0100 + i);
+        write_reg(SP, 0x0fe);
+
+        set_instruction({ static_cast<uint8_t>((i << 3) | 0x7) });
+        auto instr_len = emulator.emulate();
+        ASSERT_EQ(1LU, instr_len);
+
+        ASSERT_EQ(0x100, read_reg(SP));
+        ASSERT_EQ(0x0100 + i, read_reg(reg));
+    }
+}
