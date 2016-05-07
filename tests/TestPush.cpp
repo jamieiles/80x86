@@ -10,8 +10,7 @@ TEST_F(EmulateFixture, PushRegFF)
     write_reg(AX, 0xaa55);
     write_reg(SP, 0x100);
 
-    auto instr_len = emulator.emulate();
-    ASSERT_EQ(2LU, instr_len);
+    emulate();
 
     ASSERT_EQ(0x0fe, read_reg(SP));
     ASSERT_EQ(0xaa55, read_mem<uint16_t>(0x0fe));
@@ -25,8 +24,7 @@ TEST_F(EmulateFixture, PushMemFF)
     write_mem<uint16_t>(0x1234, 0xaa55);
     write_reg(SP, 0x100);
 
-    auto instr_len = emulator.emulate();
-    ASSERT_EQ(4LU, instr_len);
+    emulate();
 
     ASSERT_EQ(0x0fe, read_reg(SP));
     ASSERT_EQ(0xaa55, read_mem<uint16_t>(0x0fe));
@@ -41,8 +39,7 @@ TEST_F(EmulateFixture, PushReg5X)
         write_reg(SP, 0x0100);
 
         set_instruction({ static_cast<uint8_t>(0x50 + i) });
-        auto instr_len = emulator.emulate();
-        ASSERT_EQ(1LU, instr_len);
+        emulate();
 
         ASSERT_EQ(0x0fe, read_reg(SP));
         if (reg != SP)
@@ -62,8 +59,7 @@ TEST_F(EmulateFixture, PushSR)
         write_reg(SP, 0x0100);
 
         set_instruction({ static_cast<uint8_t>((i << 3) | 0x6) });
-        auto instr_len = emulator.emulate();
-        ASSERT_EQ(1LU, instr_len);
+        emulate();
 
         ASSERT_EQ(0x0fe, read_reg(SP));
         if (reg == SS)
@@ -81,8 +77,7 @@ TEST_F(EmulateFixture, PopRegFF)
     write_mem<uint16_t>(0x0fe, 0xaa55);
     write_reg(SP, 0x0fe);
 
-    auto instr_len = emulator.emulate();
-    ASSERT_EQ(2LU, instr_len);
+    emulate();
 
     ASSERT_EQ(0x100, read_reg(SP));
     ASSERT_EQ(0xaa55, read_reg(AX));
@@ -96,8 +91,7 @@ TEST_F(EmulateFixture, PopMemFF)
     write_mem<uint16_t>(0x0fe, 0xaa55);
     write_reg(SP, 0x0fe);
 
-    auto instr_len = emulator.emulate();
-    ASSERT_EQ(4LU, instr_len);
+    emulate();
 
     ASSERT_EQ(0x100, read_reg(SP));
     ASSERT_EQ(0xaa55, read_mem<uint16_t>(0x1234));
@@ -112,8 +106,7 @@ TEST_F(EmulateFixture, PopReg5X)
         write_reg(SP, 0x0fe);
 
         set_instruction({ static_cast<uint8_t>(0x58 + i) });
-        auto instr_len = emulator.emulate();
-        ASSERT_EQ(1LU, instr_len);
+        emulate();
 
         if (reg != SP)
             ASSERT_EQ(0x100, read_reg(SP));
@@ -132,8 +125,7 @@ TEST_F(EmulateFixture, PopSR)
         write_reg(SP, 0x0fe);
 
         set_instruction({ static_cast<uint8_t>((i << 3) | 0x7) });
-        auto instr_len = emulator.emulate();
-        ASSERT_EQ(1LU, instr_len);
+        emulate();
 
         ASSERT_EQ(0x100, read_reg(SP));
         ASSERT_EQ(0x0100 + i, read_reg(reg));

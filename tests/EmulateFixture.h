@@ -23,6 +23,7 @@ public:
     {
         for (auto &b: instr)
             instr_stream.push(b);
+        instr_len = instr.size();
     }
 
     void write_reg(GPR regnum, uint16_t val)
@@ -46,8 +47,15 @@ public:
     {
         return mem.read<T>(addr);
     }
+
+    void emulate()
+    {
+        auto len = emulator.emulate();
+        ASSERT_EQ(len, instr_len);
+    }
 protected:
     Fifo<uint8_t> instr_stream;
+    size_t instr_len;
     Memory mem;
     RegisterFile registers;
     Emulator emulator;
