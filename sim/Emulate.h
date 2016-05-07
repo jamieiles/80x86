@@ -94,6 +94,10 @@ private:
     // xlat
     //
     void xlatd7();
+    //
+    // lea
+    //
+    void lea8d();
     template <typename T>
         void write_data(T val, bool stack=false);
     template <typename T>

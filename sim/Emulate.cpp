@@ -64,6 +64,8 @@ size_t Emulator::emulate()
     case 0xef: outef(); break;
     // xlat
     case 0xd7: xlatd7(); break;
+    // lea
+    case 0x8d: lea8d(); break;
     }
 
     return instr_length;
@@ -400,6 +402,15 @@ void Emulator::xlatd7()
     auto xlated_val = mem->read<uint8_t>(get_phys_addr(registers->get(DS),
                                                        table_addr + v));
     registers->set(AL, xlated_val);
+}
+
+// lea r, r/m
+void Emulator::lea8d()
+{
+    modrm_decoder->set_width(OP_WIDTH_16);
+    modrm_decoder->decode();
+
+    registers->set(modrm_decoder->reg(), modrm_decoder->effective_address());
 }
 
 uint8_t Emulator::fetch_byte()
