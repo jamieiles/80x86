@@ -34,6 +34,11 @@ public:
         this->mem = mem;
     }
 
+    void set_io(Memory *io)
+    {
+        this->io = io;
+    }
+
 private:
     uint8_t fetch_byte();
     //
@@ -71,6 +76,20 @@ private:
     void xchg86();
     void xchg87();
     void xchg90_97();
+    //
+    // in
+    //
+    void ine4();
+    void ine5();
+    void inec();
+    void ined();
+    //
+    // out
+    //
+    void oute6();
+    void oute7();
+    void outee();
+    void outef();
     template <typename T>
         void write_data(T val, bool stack=false);
     template <typename T>
@@ -79,6 +98,7 @@ private:
 
     Fifo<uint8_t> *instr_stream;
     Memory *mem;
+    Memory *io;
     RegisterFile *registers;
     size_t instr_length = 0;
     std::unique_ptr<ModRMDecoder> modrm_decoder;

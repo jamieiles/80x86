@@ -17,6 +17,7 @@ public:
     {
         emulator.set_instruction_stream(&instr_stream);
         emulator.set_memory(&mem);
+        emulator.set_io(&io);
     }
 
     void set_instruction(const std::vector<uint8_t> &instr)
@@ -48,6 +49,18 @@ public:
         return mem.read<T>(addr);
     }
 
+    template <typename T>
+    void write_io(uint16_t addr, T val)
+    {
+        io.write<T>(addr, val);
+    }
+
+    template <typename T>
+    T read_io(uint16_t addr)
+    {
+        return io.read<T>(addr);
+    }
+
     void emulate()
     {
         auto len = emulator.emulate();
@@ -57,6 +70,7 @@ protected:
     Fifo<uint8_t> instr_stream;
     size_t instr_len;
     Memory mem;
+    Memory io;
     RegisterFile registers;
     Emulator emulator;
 };

@@ -52,6 +52,16 @@ size_t Emulator::emulate()
     case 0x86: xchg86(); break;
     case 0x87: xchg87(); break;
     case 0x90 ... 0x97: xchg90_97(); break;
+    // in
+    case 0xe4: ine4(); break;
+    case 0xe5: ine5(); break;
+    case 0xec: inec(); break;
+    case 0xed: ined(); break;
+    // out
+    case 0xe6: oute6(); break;
+    case 0xe7: oute7(); break;
+    case 0xee: outee(); break;
+    case 0xef: outef(); break;
     }
 
     return instr_length;
@@ -322,6 +332,62 @@ void Emulator::xchg90_97()
 
     registers->set(AX, v2);
     registers->set(reg, v1);
+}
+
+// in al, data8
+void Emulator::ine4()
+{
+    auto port_num = fetch_byte();
+
+    registers->set(AL, io->read<uint8_t>(port_num));
+}
+
+// in ax, data8
+void Emulator::ine5()
+{
+    auto port_num = fetch_byte();
+
+    registers->set(AX, io->read<uint16_t>(port_num));
+}
+
+// in al, dx
+void Emulator::inec()
+{
+    registers->set(AL, io->read<uint8_t>(registers->get(DX)));
+}
+
+// in ax, dx
+void Emulator::ined()
+{
+    registers->set(AX, io->read<uint16_t>(registers->get(DX)));
+}
+
+// out data8, al
+void Emulator::oute6()
+{
+    auto port_num = fetch_byte();
+
+    io->write<uint8_t>(port_num, registers->get(AL));
+}
+
+// out data8, ax
+void Emulator::oute7()
+{
+    auto port_num = fetch_byte();
+
+    io->write<uint16_t>(port_num, registers->get(AX));
+}
+
+// out dx, al
+void Emulator::outee()
+{
+    io->write<uint8_t>(registers->get(DX), registers->get(AL));
+}
+
+// out dx, ax
+void Emulator::outef()
+{
+    io->write<uint16_t>(registers->get(DX), registers->get(AX));
 }
 
 uint8_t Emulator::fetch_byte()
