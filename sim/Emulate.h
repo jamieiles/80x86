@@ -90,6 +90,10 @@ private:
     void oute7();
     void outee();
     void outef();
+    //
+    // xlat
+    //
+    void xlatd7();
     template <typename T>
         void write_data(T val, bool stack=false);
     template <typename T>

@@ -62,6 +62,8 @@ size_t Emulator::emulate()
     case 0xe7: oute7(); break;
     case 0xee: outee(); break;
     case 0xef: outef(); break;
+    // xlat
+    case 0xd7: xlatd7(); break;
     }
 
     return instr_length;
@@ -388,6 +390,16 @@ void Emulator::outee()
 void Emulator::outef()
 {
     io->write<uint16_t>(registers->get(DX), registers->get(AX));
+}
+
+// xlat
+void Emulator::xlatd7()
+{
+    auto v = registers->get(AL);
+    auto table_addr = registers->get(BX);
+    auto xlated_val = mem->read<uint8_t>(get_phys_addr(registers->get(DS),
+                                                       table_addr + v));
+    registers->set(AL, xlated_val);
 }
 
 uint8_t Emulator::fetch_byte()
