@@ -143,7 +143,8 @@ void Emulator::movb8_bf()
 void Emulator::mova0()
 {
     auto displacement = fetch_16bit();
-    auto val = mem->read<uint8_t>((registers->get(DS) << 4) + displacement);
+    auto addr = get_phys_addr(registers->get(DS), displacement);
+    auto val = mem->read<uint8_t>(addr);
     registers->set(AL, val);
 }
 
@@ -151,7 +152,8 @@ void Emulator::mova0()
 void Emulator::mova1()
 {
     auto displacement = fetch_16bit();
-    auto val = mem->read<uint16_t>((registers->get(DS) << 4) + displacement);
+    auto addr = get_phys_addr(registers->get(DS), displacement);
+    auto val = mem->read<uint16_t>(addr);
     registers->set(AX, val);
 }
 
@@ -160,7 +162,8 @@ void Emulator::mova2()
 {
     auto displacement = fetch_16bit();
     auto val = registers->get(AL);
-    mem->write<uint8_t>((registers->get(DS) << 4) + displacement, val);
+    auto addr = get_phys_addr(registers->get(DS), displacement);
+    mem->write<uint8_t>(addr, val);
 }
 
 // mov m, al 16-bit
@@ -168,7 +171,8 @@ void Emulator::mova3()
 {
     auto displacement = fetch_16bit();
     auto val = registers->get(AX);
-    mem->write<uint16_t>((registers->get(DS) << 4) + displacement, val);
+    auto addr = get_phys_addr(registers->get(DS), displacement);
+    mem->write<uint16_t>(addr, val);
 }
 
 // mov sr, r/m
@@ -214,7 +218,8 @@ void Emulator::pushff()
 
     auto val = read_data<uint16_t>();
     registers->set(SP, registers->get(SP) - 2);
-    mem->write<uint16_t>((registers->get(SS) << 4) + registers->get(SP), val);
+    auto addr = get_phys_addr(registers->get(SS), registers->get(SP));
+    mem->write<uint16_t>(addr, val);
 }
 
 // push r
@@ -224,7 +229,8 @@ void Emulator::push50_57()
     auto val = registers->get(reg);
 
     registers->set(SP, registers->get(SP) - 2);
-    mem->write<uint16_t>((registers->get(SS) << 4) + registers->get(SP), val);
+    auto addr = get_phys_addr(registers->get(SS), registers->get(SP));
+    mem->write<uint16_t>(addr, val);
 }
 
 // push sr
@@ -234,7 +240,8 @@ void Emulator::pushsr()
     auto val = registers->get(reg);
 
     registers->set(SP, registers->get(SP) - 2);
-    mem->write<uint16_t>((registers->get(SS) << 4) + registers->get(SP), val);
+    auto addr = get_phys_addr(registers->get(SS), registers->get(SP));
+    mem->write<uint16_t>(addr, val);
 }
 
 // pop r/m
@@ -246,7 +253,8 @@ void Emulator::popf8()
     if (modrm_decoder->raw_reg() != 0)
         return;
 
-    auto val = mem->read<uint16_t>((registers->get(SS) << 4) + registers->get(SP));
+    auto addr = get_phys_addr(registers->get(SS), registers->get(SP));
+    auto val = mem->read<uint16_t>(addr);
     registers->set(SP, registers->get(SP) + 2);
 
     write_data<uint16_t>(val);
@@ -256,7 +264,8 @@ void Emulator::popf8()
 void Emulator::pop58_5f()
 {
     auto reg = static_cast<GPR>(static_cast<int>(AX) + (opcode & 0x7));
-    auto val = mem->read<uint16_t>((registers->get(SS) << 4) + registers->get(SP));
+    auto addr = get_phys_addr(registers->get(SS), registers->get(SP));
+    auto val = mem->read<uint16_t>(addr);
 
     registers->set(SP, registers->get(SP) + 2);
     registers->set(reg, val);
@@ -266,7 +275,8 @@ void Emulator::pop58_5f()
 void Emulator::popsr()
 {
     auto reg = static_cast<GPR>(static_cast<int>(ES) + ((opcode >> 3) & 0x3));
-    auto val = mem->read<uint16_t>((registers->get(SS) << 4) + registers->get(SP));
+    auto addr = get_phys_addr(registers->get(SS), registers->get(SP));
+    auto val = mem->read<uint16_t>(addr);
 
     registers->set(reg, val);
     registers->set(SP, registers->get(SP) + 2);
@@ -295,7 +305,8 @@ void Emulator::write_data(T val, bool stack)
     } else {
         auto ea = modrm_decoder->effective_address();
         auto segment = modrm_decoder->uses_bp_as_base() || stack ? SS : DS;
-        mem->write<T>((registers->get(segment) << 4) + ea, val);
+        auto addr = get_phys_addr(registers->get(segment), ea);
+        mem->write<T>(addr, val);
     }
 }
 
@@ -305,8 +316,9 @@ T Emulator::read_data(bool stack)
     if (modrm_decoder->rm_type() == OP_MEM) {
         auto displacement = modrm_decoder->effective_address();
         auto segment = modrm_decoder->uses_bp_as_base() || stack ? SS : DS;
+        auto addr = get_phys_addr(registers->get(segment), displacement);
 
-        return mem->read<T>((registers->get(segment) << 4) + displacement);
+        return mem->read<T>(addr);
     } else {
         auto source = modrm_decoder->rm_reg();
         return registers->get(source);

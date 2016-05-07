@@ -5,7 +5,14 @@
 #include <stdint.h>
 #include <memory>
 
+#include "Memory.h"
 #include "ModRM.h"
+
+static inline phys_addr get_phys_addr(uint16_t segment,
+                                      uint16_t displacement)
+{
+    return (static_cast<uint32_t>(segment) << 4) + displacement;
+}
 
 template <typename T> class Fifo;
 class Memory;
