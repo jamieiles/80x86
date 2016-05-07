@@ -98,6 +98,10 @@ private:
     // lea
     //
     void lea8d();
+    //
+    // lds
+    //
+    void ldsc5();
     template <typename T>
         void write_data(T val, bool stack=false);
     template <typename T>
