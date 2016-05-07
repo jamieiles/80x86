@@ -48,6 +48,10 @@ size_t Emulator::emulate()
     case 0x0f: // fallthrough
     case 0x17: // fallthrough
     case 0x1f: popsr(); break;
+    // xchg
+    case 0x86: xchg86(); break;
+    case 0x87: xchg87(); break;
+    case 0x90 ... 0x97: xchg90_97(); break;
     }
 
     return instr_length;
@@ -280,6 +284,44 @@ void Emulator::popsr()
 
     registers->set(reg, val);
     registers->set(SP, registers->get(SP) + 2);
+}
+
+// xchg r, r/m, 8-bit
+void Emulator::xchg86()
+{
+    modrm_decoder->set_width(OP_WIDTH_8);
+    modrm_decoder->decode();
+
+    auto v1 = read_data<uint8_t>();
+    auto v2 = registers->get(modrm_decoder->reg());
+
+    write_data<uint8_t>(v2);
+    registers->set(modrm_decoder->reg(), v1);
+}
+
+// xchg r, r/m, 16-bit
+void Emulator::xchg87()
+{
+    modrm_decoder->set_width(OP_WIDTH_16);
+    modrm_decoder->decode();
+
+    auto v1 = read_data<uint16_t>();
+    auto v2 = registers->get(modrm_decoder->reg());
+
+    write_data<uint16_t>(v2);
+    registers->set(modrm_decoder->reg(), v1);
+}
+
+// xchg accumulator, r
+void Emulator::xchg90_97()
+{
+    auto reg = static_cast<GPR>(static_cast<int>(AX) + (opcode & 0x7));
+
+    auto v1 = registers->get(AX);
+    auto v2 = registers->get(reg);
+
+    registers->set(AX, v2);
+    registers->set(reg, v1);
 }
 
 uint8_t Emulator::fetch_byte()

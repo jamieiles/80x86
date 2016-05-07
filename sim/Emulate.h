@@ -65,6 +65,12 @@ private:
     void popf8();
     void pop58_5f();
     void popsr();
+    //
+    // xchg
+    //
+    void xchg86();
+    void xchg87();
+    void xchg90_97();
     template <typename T>
         void write_data(T val, bool stack=false);
     template <typename T>
