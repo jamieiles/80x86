@@ -68,6 +68,8 @@ size_t Emulator::emulate()
     case 0x8d: lea8d(); break;
     // lds
     case 0xc5: ldsc5(); break;
+    // les
+    case 0xc4: lesc4(); break;
     }
 
     return instr_length;
@@ -430,6 +432,23 @@ void Emulator::ldsc5()
 
     registers->set(modrm_decoder->reg(), displacement);
     registers->set(DS, seg);
+}
+
+// les r, m
+void Emulator::lesc4()
+{
+    modrm_decoder->set_width(OP_WIDTH_16);
+    modrm_decoder->decode();
+
+    if (modrm_decoder->rm_type() == OP_REG)
+        return;
+
+    auto p32 = get_phys_addr(registers->get(DS), modrm_decoder->effective_address());
+    auto displacement = mem->read<uint16_t>(p32);
+    auto seg = mem->read<uint16_t>(p32 + 2);
+
+    registers->set(modrm_decoder->reg(), displacement);
+    registers->set(ES, seg);
 }
 
 uint8_t Emulator::fetch_byte()
