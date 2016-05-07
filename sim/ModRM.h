@@ -27,15 +27,18 @@ public:
     GPR reg() const;
     int raw_reg() const;
     GPR rm_reg() const;
-    uint16_t effective_address() const;
+    uint16_t effective_address();
     OperandType rm_type() const;
     bool uses_bp_as_base() const;
 
 private:
+    uint16_t calculate_effective_address();
     std::function<uint8_t()> get_byte;
     const RegisterFile *registers;
     OperandWidth width;
     uint8_t modrm;
+    uint16_t cached_address;
+    bool addr_is_cached;
 };
 
 #endif /* __MODRM_H__ */

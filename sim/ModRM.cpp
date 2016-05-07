@@ -14,6 +14,7 @@ ModRMDecoder::ModRMDecoder(std::function<uint8_t()> get_byte,
 void ModRMDecoder::decode()
 {
     modrm = get_byte();
+    addr_is_cached = false;
 }
 
 OperandType ModRMDecoder::rm_type() const
@@ -53,7 +54,18 @@ GPR ModRMDecoder::rm_reg() const
     return static_cast<GPR>(static_cast<int>(AX) + reg);
 }
 
-uint16_t ModRMDecoder::effective_address() const
+uint16_t ModRMDecoder::effective_address()
+{
+    if (addr_is_cached)
+        return cached_address;
+
+    cached_address = calculate_effective_address();
+    addr_is_cached = true;
+
+    return cached_address;
+}
+
+uint16_t ModRMDecoder::calculate_effective_address()
 {
     assert(rm_type() == OP_MEM);
 
