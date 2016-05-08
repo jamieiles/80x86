@@ -23,3 +23,27 @@ TEST_F(EmulateFixture, Sahf)
 
     ASSERT_EQ(old_flags | 0xd5, read_flags());
 }
+
+TEST_F(EmulateFixture, Pushf)
+{
+    write_flags(0x80d5);
+    write_reg(SP, 0x0100);
+    set_instruction({ 0x9c });
+
+    emulate();
+
+    ASSERT_EQ(read_reg(SP), 0x00fe);
+    ASSERT_EQ(0x80d5, read_mem<uint16_t>(0x00fe));
+}
+
+TEST_F(EmulateFixture, Popf)
+{
+    write_reg(SP, 0x00fe);
+    write_mem<uint16_t>(0x00fe, 0x80d5);
+    set_instruction({ 0x9d });
+
+    emulate();
+
+    ASSERT_EQ(read_reg(SP), 0x0100);
+    ASSERT_EQ(0x80d5, read_flags());
+}

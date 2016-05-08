@@ -114,6 +114,14 @@ private:
     // sahf
     //
     void sahf9e();
+    //
+    // pushf
+    //
+    void pushf9c();
+    //
+    // popf
+    //
+    void popf9d();
     template <typename T>
         void write_data(T val, bool stack=false);
     template <typename T>

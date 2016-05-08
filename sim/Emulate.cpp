@@ -74,6 +74,10 @@ size_t Emulator::emulate()
     case 0x9f: lahf9f(); break;
     // sahf
     case 0x9e: sahf9e(); break;
+    // pushf
+    case 0x9c: pushf9c(); break;
+    // popf
+    case 0x9d: popf9d(); break;
     }
 
     return instr_length;
@@ -468,6 +472,25 @@ void Emulator::sahf9e()
     auto new_flags = registers->get(AH);
     auto old_flags = registers->get_flags();
     registers->set_flags((old_flags & 0xff00) | new_flags);
+}
+
+// pushf
+void Emulator::pushf9c()
+{
+    auto val = registers->get_flags();
+    registers->set(SP, registers->get(SP) - 2);
+    auto addr = get_phys_addr(registers->get(SS), registers->get(SP));
+    mem->write<uint16_t>(addr, val);
+}
+
+// popf
+void Emulator::popf9d()
+{
+    auto addr = get_phys_addr(registers->get(SS), registers->get(SP));
+    auto val = mem->read<uint16_t>(addr);
+    registers->set_flags(val);
+
+    registers->set(SP, registers->get(SP) + 2);
 }
 
 uint8_t Emulator::fetch_byte()
