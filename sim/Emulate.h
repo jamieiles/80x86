@@ -122,6 +122,15 @@ private:
     // popf
     //
     void popf9d();
+    //
+    // add
+    //
+    template <typename T>
+    T do_add(uint16_t v1, uint16_t v2);
+    void add00();
+    void add01();
+    void add02();
+    void add03();
     template <typename T>
         void write_data(T val, bool stack=false);
     template <typename T>

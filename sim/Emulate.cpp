@@ -78,6 +78,11 @@ size_t Emulator::emulate()
     case 0x9c: pushf9c(); break;
     // popf
     case 0x9d: popf9d(); break;
+    // add
+    case 0x00: add00(); break;
+    case 0x01: add01(); break;
+    case 0x02: add02(); break;
+    case 0x03: add03(); break;
     }
 
     return instr_length;
@@ -491,6 +496,95 @@ void Emulator::popf9d()
     registers->set_flags(val);
 
     registers->set(SP, registers->get(SP) + 2);
+}
+
+template <typename T>
+T Emulator::do_add(uint16_t v1, uint16_t v2)
+{
+    uint16_t flags = registers->get_flags();
+
+    flags &= ~(AF | CF | OF | PF | SF | ZF);
+
+    uint32_t result32 = static_cast<uint32_t>(v1) +
+        static_cast<uint32_t>(v2);
+    bool af = !!(((v1 & 0xf) + (v2 & 0xf)) & (1 << 4));
+
+    auto sign_bit = (8 * sizeof(T)) - 1;
+    auto carry_bit = (8 * sizeof(T));
+
+    if (af)
+        flags |= AF;
+    if (result32 & (1 << carry_bit))
+        flags |= CF;
+    if (result32 & (1 << sign_bit))
+        flags |= SF;
+    if ((result32 & static_cast<T>(-1)) == 0)
+        flags |= ZF;
+    if (!__builtin_parity(result32 & static_cast<T>(-1)))
+        flags |= PF;
+    if ((v1 & (1 << sign_bit)) == (v2 & (1 << sign_bit)) &&
+        (v1 & (1 << sign_bit)) != (result32 & (1 << sign_bit)))
+        flags |= OF;
+
+    registers->set_flags(flags);
+
+    return result32;
+}
+
+// add r, r/m, 8-bit
+void Emulator::add00()
+{
+    modrm_decoder->set_width(OP_WIDTH_8);
+    modrm_decoder->decode();
+
+    uint8_t v1 = read_data<uint8_t>();
+    uint8_t v2 = registers->get(modrm_decoder->reg());
+
+    auto result = do_add<uint8_t>(v1, v2);
+
+    write_data<uint8_t>(result & 0xff);
+}
+
+// add r, r/m, 16-bit
+void Emulator::add01()
+{
+    modrm_decoder->set_width(OP_WIDTH_16);
+    modrm_decoder->decode();
+
+    uint16_t v1 = read_data<uint16_t>();
+    uint16_t v2 = registers->get(modrm_decoder->reg());
+
+    auto result = do_add<uint16_t>(v1, v2);
+
+    write_data<uint16_t>(result & 0xffff);
+}
+
+// add r/m, r, 8-bit
+void Emulator::add02()
+{
+    modrm_decoder->set_width(OP_WIDTH_8);
+    modrm_decoder->decode();
+
+    uint8_t v1 = read_data<uint8_t>();
+    uint8_t v2 = registers->get(modrm_decoder->reg());
+
+    auto result = do_add<uint8_t>(v1, v2);
+
+    registers->set(modrm_decoder->reg(), result & 0xff);
+}
+
+// add r/m, r, 16-bit
+void Emulator::add03()
+{
+    modrm_decoder->set_width(OP_WIDTH_16);
+    modrm_decoder->decode();
+
+    uint16_t v1 = read_data<uint16_t>();
+    uint16_t v2 = registers->get(modrm_decoder->reg());
+
+    auto result = do_add<uint16_t>(v1, v2);
+
+    registers->set(modrm_decoder->reg(), result & 0xffff);
 }
 
 uint8_t Emulator::fetch_byte()

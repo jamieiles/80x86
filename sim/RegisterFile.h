@@ -30,15 +30,27 @@ enum GPR {
 };
 
 enum FlagBitPos {
-    CF = 0,
-    PF = 2,
-    AF = 4,
-    ZF = 6,
-    SF = 7,
-    TF = 8,
-    IF = 9,
-    DF = 10,
-    OF = 11
+    CF_OFFS = 0,
+    PF_OFFS = 2,
+    AF_OFFS = 4,
+    ZF_OFFS = 6,
+    SF_OFFS = 7,
+    TF_OFFS = 8,
+    IF_OFFS = 9,
+    DF_OFFS = 10,
+    OF_OFFS = 11
+};
+
+enum Flag {
+    CF = (1 << CF_OFFS),
+    PF = (1 << PF_OFFS),
+    AF = (1 << AF_OFFS),
+    ZF = (1 << ZF_OFFS),
+    SF = (1 << SF_OFFS),
+    TF = (1 << TF_OFFS),
+    IF = (1 << IF_OFFS),
+    DF = (1 << DF_OFFS),
+    OF = (1 << OF_OFFS),
 };
 
 class RegisterFile {
