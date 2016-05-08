@@ -83,6 +83,10 @@ size_t Emulator::emulate()
     case 0x01: add01(); break;
     case 0x02: add02(); break;
     case 0x03: add03(); break;
+    case 0x80: add80(); break;
+    case 0x81: add81(); break;
+    case 0x82: add82(); break;
+    case 0x83: add83(); break;
     }
 
     return instr_length;
@@ -585,6 +589,65 @@ void Emulator::add03()
     auto result = do_add<uint16_t>(v1, v2);
 
     registers->set(modrm_decoder->reg(), result & 0xffff);
+}
+
+// add r/m, immediate, 8-bit
+void Emulator::add80()
+{
+    modrm_decoder->set_width(OP_WIDTH_8);
+    modrm_decoder->decode();
+
+    if (modrm_decoder->raw_reg() != 0)
+        return;
+
+    uint8_t v1 = read_data<uint8_t>();
+    uint8_t v2 = fetch_byte();
+
+    auto result = do_add<uint8_t>(v1, v2);
+
+    write_data<uint8_t>(result & 0xff);
+}
+
+void Emulator::add82()
+{
+    // The 's' bit has no effect for 8-bit add immediate.
+    add80();
+}
+
+// add r/m, immediate, 16-bit
+void Emulator::add81()
+{
+    modrm_decoder->set_width(OP_WIDTH_16);
+    modrm_decoder->decode();
+
+    if (modrm_decoder->raw_reg() != 0)
+        return;
+
+    uint16_t v1 = read_data<uint16_t>();
+    uint16_t v2 = fetch_16bit();
+
+    auto result = do_add<uint16_t>(v1, v2);
+
+    write_data<uint16_t>(result & 0xffff);
+}
+
+// add r/m, immediate, 8-bit, sign-extended
+void Emulator::add83()
+{
+    modrm_decoder->set_width(OP_WIDTH_16);
+    modrm_decoder->decode();
+
+    if (modrm_decoder->raw_reg() != 0)
+        return;
+
+    uint16_t v1 = read_data<uint16_t>();
+    int16_t immed = fetch_byte();
+    immed <<= 8;
+    immed >>= 8;
+
+    auto result = do_add<uint16_t>(v1, immed);
+
+    write_data<uint16_t>(result & 0xffff);
 }
 
 uint8_t Emulator::fetch_byte()

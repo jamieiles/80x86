@@ -131,6 +131,10 @@ private:
     void add01();
     void add02();
     void add03();
+    void add80();
+    void add81();
+    void add82();
+    void add83();
     template <typename T>
         void write_data(T val, bool stack=false);
     template <typename T>

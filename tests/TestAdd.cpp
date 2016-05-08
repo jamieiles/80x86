@@ -229,3 +229,89 @@ TEST_F(EmulateFixture, AddMemReg16Reversed)
                             0x8000 | t.expected_flags);
     }
 }
+
+TEST_F(EmulateFixture, AddRegImmedInvalidReg)
+{
+    set_instruction({ 0x80, 0xff });
+
+    emulate();
+}
+
+TEST_F(EmulateFixture, AddRegImmed8)
+{
+    // add bl, 1
+    for (auto opc: std::vector<uint8_t>{ 0x80, 0x82 }) {
+        set_instruction({ opc, 0xc3, 0x01 });
+        write_reg(BL, 1);
+
+        emulate();
+
+        ASSERT_EQ(read_reg(BL), 2);
+        ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000);
+    }
+}
+
+TEST_F(EmulateFixture, AddMemImmed8)
+{
+    // add byte [bx], 1
+    for (auto opc: std::vector<uint8_t>{ 0x80, 0x82 }) {
+        set_instruction({ opc, 0x07, 0x01 });
+        write_mem<uint8_t>(0x0100, 0x1);
+        write_reg(BX, 0x0100);
+
+        emulate();
+
+        ASSERT_EQ(read_mem<uint8_t>(0x0100), 2);
+        ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000);
+    }
+}
+
+TEST_F(EmulateFixture, AddRegImmed16)
+{
+    // add bx, 1
+    set_instruction({ 0x81, 0xc3, 0x01, 0x00 });
+    write_reg(BX, 1);
+
+    emulate();
+
+    ASSERT_EQ(read_reg(BX), 2);
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000);
+}
+
+TEST_F(EmulateFixture, AddMemImmed16)
+{
+    // add word [bx], 1
+    set_instruction({ 0x81, 0x07, 0x01, 0x00 });
+    write_mem<uint16_t>(0x0100, 0x1);
+    write_reg(BX, 0x0100);
+
+    emulate();
+
+    ASSERT_EQ(read_mem<uint16_t>(0x0100), 2);
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000);
+}
+
+TEST_F(EmulateFixture, AddRegImmed16Extend)
+{
+    // add bx, -1
+    set_instruction({ 0x83, 0xc3, 0xff });
+    write_reg(BX, 2);
+
+    emulate();
+
+    ASSERT_EQ(read_reg(BX), 1);
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000 | CF | AF);
+}
+
+TEST_F(EmulateFixture, AddMemImmed16Extend)
+{
+    // add word [bx], 1
+    set_instruction({ 0x83, 0x07, 0xff });
+    write_mem<uint16_t>(0x0100, 0x2);
+    write_reg(BX, 0x0100);
+
+    emulate();
+
+    ASSERT_EQ(read_mem<uint16_t>(0x0100), 1);
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000 | CF | AF);
+}
