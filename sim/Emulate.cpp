@@ -70,6 +70,10 @@ size_t Emulator::emulate()
     case 0xc5: ldsc5(); break;
     // les
     case 0xc4: lesc4(); break;
+    // lahf
+    case 0x9f: lahf9f(); break;
+    // sahf
+    case 0x9e: sahf9e(); break;
     }
 
     return instr_length;
@@ -449,6 +453,21 @@ void Emulator::lesc4()
 
     registers->set(modrm_decoder->reg(), displacement);
     registers->set(ES, seg);
+}
+
+// lahf
+void Emulator::lahf9f()
+{
+    auto flags = registers->get_flags();
+    registers->set(AH, flags & 0xff);
+}
+
+// sahf
+void Emulator::sahf9e()
+{
+    auto new_flags = registers->get(AH);
+    auto old_flags = registers->get_flags();
+    registers->set_flags((old_flags & 0xff00) | new_flags);
 }
 
 uint8_t Emulator::fetch_byte()

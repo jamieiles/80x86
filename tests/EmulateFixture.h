@@ -66,6 +66,16 @@ public:
         auto len = emulator.emulate();
         ASSERT_EQ(len, instr_len);
     }
+
+    void write_flags(uint16_t val)
+    {
+        registers.set_flags(val);
+    }
+
+    uint16_t read_flags()
+    {
+        return registers.get_flags();
+    }
 protected:
     Fifo<uint8_t> instr_stream;
     size_t instr_len;

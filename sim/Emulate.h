@@ -106,6 +106,14 @@ private:
     // les
     //
     void lesc4();
+    //
+    // lahf
+    //
+    void lahf9f();
+    //
+    // sahf
+    //
+    void sahf9e();
     template <typename T>
         void write_data(T val, bool stack=false);
     template <typename T>
