@@ -315,3 +315,27 @@ TEST_F(EmulateFixture, AddMemImmed16Extend)
     ASSERT_EQ(read_mem<uint16_t>(0x0100), 1);
     ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000 | CF | AF);
 }
+
+TEST_F(EmulateFixture, AddAlImmed)
+{
+    // add al, 1
+    set_instruction({ 0x04, 0x01 });
+    write_reg(AL, 1);
+
+    emulate();
+
+    ASSERT_EQ(read_reg(AL), 2);
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000);
+}
+
+TEST_F(EmulateFixture, AddAxImmed)
+{
+    // add ax, 1
+    set_instruction({ 0x05, 0x01, 0x00 });
+    write_reg(AX, 1);
+
+    emulate();
+
+    ASSERT_EQ(read_reg(AX), 2);
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000);
+}

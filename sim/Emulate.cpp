@@ -87,6 +87,8 @@ size_t Emulator::emulate()
     case 0x81: add81(); break;
     case 0x82: add82(); break;
     case 0x83: add83(); break;
+    case 0x04: add04(); break;
+    case 0x05: add05(); break;
     }
 
     return instr_length;
@@ -648,6 +650,24 @@ void Emulator::add83()
     auto result = do_add<uint16_t>(v1, immed);
 
     write_data<uint16_t>(result & 0xffff);
+}
+
+void Emulator::add04()
+{
+    auto v1 = registers->get(AL);
+    auto v2 = fetch_byte();
+    auto result = do_add<uint8_t>(v1, v2);
+
+    registers->set(AL, result);
+}
+
+void Emulator::add05()
+{
+    auto v1 = registers->get(AX);
+    auto v2 = fetch_16bit();
+    auto result = do_add<uint16_t>(v1, v2);
+
+    registers->set(AX, result);
 }
 
 uint8_t Emulator::fetch_byte()
