@@ -59,8 +59,8 @@ TEST_P(ArithmeticRegReg8TestReversed, ResultAndFlags)
         write_flags(0);
         if (t.carry_set)
             write_flags(CF);
-        write_reg(AL, t.v2);
-        write_reg(BL, t.v1);
+        write_reg(AL, t.v1);
+        write_reg(BL, t.v2);
         // ARITH bl, al
         set_instruction(params.first);
 
@@ -155,8 +155,8 @@ TEST_P(ArithmeticRegReg16TestReversed, ResultAndFlags)
         write_flags(0);
         if (t.carry_set)
             write_flags(CF);
-        write_reg(AX, t.v2);
-        write_reg(BX, t.v1);
+        write_reg(AX, t.v1);
+        write_reg(BX, t.v2);
         // ARITH bx, ax
         set_instruction(params.first);
 
