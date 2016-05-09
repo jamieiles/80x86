@@ -126,10 +126,10 @@ private:
     //
     // add / adc
     //
-    void add_adc_80();
-    void add_adc_81();
-    void add_adc_82();
-    void add_adc_83();
+    void add_adc_sub_80();
+    void add_adc_sub_81();
+    void add_adc_sub_82();
+    void add_adc_sub_83();
     //
     // add
     //
@@ -150,6 +150,17 @@ private:
     void adc13();
     void adc14();
     void adc15();
+    //
+    // sub
+    //
+    template <typename T>
+    T do_sub(uint16_t v1, uint16_t v2, uint16_t carry_in=0);
+    void sub28();
+    void sub29();
+    void sub2a();
+    void sub2b();
+    void sub2c();
+    void sub2d();
     // Helpers
     template <typename T>
     T do_alu(uint16_t v1, uint16_t v2, uint16_t carry_in,
