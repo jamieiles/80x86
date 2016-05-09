@@ -123,6 +123,11 @@ INSTANTIATE_TEST_CASE_P(Adc, ArithmeticRegImmed16TestExtend,
         ArithImmed16Params(
             std::vector<uint8_t>{ 0x83, 0xd3, 0xff },
             { 2, 1, CF | AF }
+        ),
+        // adc bx, 1
+        ArithImmed16Params(
+            std::vector<uint8_t>{ 0x83, 0xd3, 0x01 },
+            { 2, 3, PF }
         )
     ));
 
@@ -132,6 +137,11 @@ INSTANTIATE_TEST_CASE_P(Adc, ArithmeticMemImmed16TestExtend,
         ArithImmed16Params(
             std::vector<uint8_t>{ 0x83, 0x17, 0xff },
             { 2, 1, CF | AF }
+        ),
+        // adc word [bx], 1
+        ArithImmed16Params(
+            std::vector<uint8_t>{ 0x83, 0x17, 0x01 },
+            { 2, 3, PF }
         )
     ));
 
