@@ -27,10 +27,9 @@ static std::string flags_to_string(uint16_t flags)
     return ss.str();
 }
 
-static ::testing::AssertionResult AssertFlagsEqual(const char *m_expr,
-                                                   const char *n_expr,
-                                                   uint16_t m,
-                                                   uint16_t n)
+static inline ::testing::AssertionResult
+AssertFlagsEqual(const char *m_expr, const char *n_expr, uint16_t m,
+                 uint16_t n)
 {
     if (m == n)
         return ::testing::AssertionSuccess();

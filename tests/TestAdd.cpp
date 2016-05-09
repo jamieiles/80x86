@@ -4,297 +4,125 @@
 
 #include "EmulateFixture.h"
 #include "Flags.h"
+#include "Arithmetic.h"
 
-template <typename T>
-struct AddTest {
-    T v1;
-    T v2;
-    T expected;
-    uint16_t expected_flags;
+static const std::vector<struct ArithmeticTest<uint8_t>> add8_tests = {
+    { 0, 0, 0, PF | ZF, false },
+    { 0xf, 1, 0x10, AF, false },
+    { 255, 1, 0, ZF | CF | PF | AF, false },
+    { 0xff, 0, 0xff, PF | SF, false },
+    { 127, 1, 128, OF | SF | AF, false },
 };
 
-static const std::vector<struct AddTest<uint8_t>> add8_tests = {
-    { 0, 0, 0, PF | ZF },
-    { 0xf, 1, 0x10, AF },
-    { 255, 1, 0, ZF | CF | PF | AF },
-    { 0xff, 0, 0xff, PF | SF },
-    { 127, 1, 128, OF | SF | AF },
+static const std::vector<struct ArithmeticTest<uint16_t>> add16_tests = {
+    { 0, 0, 0, PF | ZF, false },
+    { 0xf, 1, 0x10, AF, false },
+    { 0xffff, 1, 0, ZF | CF | PF | AF, false },
+    { 0xffff, 0, 0xffff, PF | SF, false },
+    { 32767, 1, 32768, OF | SF | AF, false },
 };
 
-TEST_F(EmulateFixture, AddRegReg8)
-{
-    for (auto &t: add8_tests) {
-        SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
-                     std::to_string(static_cast<int>(t.v2)));
-        write_reg(AL, t.v1);
-        write_reg(BL, t.v2);
-        write_flags(0);
+INSTANTIATE_TEST_CASE_P(Add, ArithmeticRegReg8Test,
+    ::testing::Values(
         // add al, bl
-        set_instruction({ 0x00, 0xd8 });
+        Arith8Params({ 0x00, 0xd8 }, add8_tests)
+    ));
 
-        emulate();
-
-        ASSERT_EQ(read_reg(AL), t.expected);
-        ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                            0x8000 | t.expected_flags);
-    }
-}
-
-TEST_F(EmulateFixture, AddMemReg8)
-{
-    for (auto &t: add8_tests) {
-        SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
-                     std::to_string(static_cast<int>(t.v2)));
-        write_reg(AL, t.v2);
-        write_reg(BX, 0x100);
-        write_mem<uint8_t>(0x100, t.v1);
-
-        write_flags(0);
+INSTANTIATE_TEST_CASE_P(Add, ArithmeticMemReg8Test,
+    ::testing::Values(
         // add [bx], al
-        set_instruction({ 0x00, 0x07 });
+        Arith8Params({ 0x00, 0x07 }, add8_tests)
+    ));
 
-        emulate();
-
-        ASSERT_EQ(read_mem<uint8_t>(0x100), t.expected);
-        ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                            0x8000 | t.expected_flags);
-    }
-}
-
-TEST_F(EmulateFixture, AddRegReg8Reversed)
-{
-    for (auto &t: add8_tests) {
-        SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
-                     std::to_string(static_cast<int>(t.v2)));
-        write_reg(AL, t.v2);
-        write_reg(BL, t.v1);
-        write_flags(0);
+INSTANTIATE_TEST_CASE_P(Add, ArithmeticRegReg8TestReversed,
+    ::testing::Values(
         // add bl, al
-        set_instruction({ 0x02, 0xd8 });
+        Arith8Params({ 0x02, 0xd8 }, add8_tests)
+    ));
 
-        emulate();
-
-        ASSERT_EQ(read_reg(BL), t.expected);
-        ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                            0x8000 | t.expected_flags);
-    }
-}
-
-TEST_F(EmulateFixture, AddMemReg8Reversed)
-{
-    for (auto &t: add8_tests) {
-        SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
-                     std::to_string(static_cast<int>(t.v2)));
-        write_reg(AL, t.v2);
-        write_reg(BX, 0x100);
-        write_mem<uint8_t>(0x100, t.v1);
-
-        write_flags(0);
+INSTANTIATE_TEST_CASE_P(Add, ArithmeticMemReg8TestReversed,
+    ::testing::Values(
         // add al, [bx]
-        set_instruction({ 0x02, 0x07 });
+        Arith8Params({ 0x02, 0x07 }, add8_tests)
+    ));
 
-        emulate();
-
-        ASSERT_EQ(read_reg(AL), t.expected);
-        ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                            0x8000 | t.expected_flags);
-    }
-}
-
-static const std::vector<struct AddTest<uint16_t>> add16_tests = {
-    { 0, 0, 0, PF | ZF },
-    { 0xf, 1, 0x10, AF },
-    { 0xffff, 1, 0, ZF | CF | PF | AF },
-    { 0xffff, 0, 0xffff, PF | SF },
-    { 32767, 1, 32768, OF | SF | AF },
-};
-
-TEST_F(EmulateFixture, AddRegReg16)
-{
-    for (auto &t: add16_tests) {
-        SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
-                     std::to_string(static_cast<int>(t.v2)));
-        write_reg(AX, t.v1);
-        write_reg(BX, t.v2);
-        write_flags(0);
+INSTANTIATE_TEST_CASE_P(Add, ArithmeticRegReg16Test,
+    ::testing::Values(
         // add ax, bx
-        set_instruction({ 0x01, 0xd8 });
+        Arith16Params({ 0x01, 0xd8 }, add16_tests)
+    ));
 
-        emulate();
+INSTANTIATE_TEST_CASE_P(Add, ArithmeticRegMem16Test,
+    ::testing::Values(
+        // adc [bx], ax
+        Arith16Params({ 0x01, 0x07 }, add16_tests)
+    ));
 
-        ASSERT_EQ(read_reg(AX), t.expected);
-        ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                            0x8000 | t.expected_flags);
-    }
-}
-
-TEST_F(EmulateFixture, AddMemReg16)
-{
-    for (auto &t: add16_tests) {
-        SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
-                     std::to_string(static_cast<int>(t.v2)));
-        write_reg(AX, t.v2);
-        write_reg(BX, 0x100);
-        write_mem<uint16_t>(0x100, t.v1);
-
-        write_flags(0);
-        // add [bx], ax
-        set_instruction({ 0x01, 0x07 });
-
-        emulate();
-
-        ASSERT_EQ(read_mem<uint16_t>(0x100), t.expected);
-        ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                            0x8000 | t.expected_flags);
-    }
-}
-
-TEST_F(EmulateFixture, AddRegReg16Reversed)
-{
-    for (auto &t: add16_tests) {
-        SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
-                     std::to_string(static_cast<int>(t.v2)));
-        write_reg(AX, t.v2);
-        write_reg(BX, t.v1);
-        write_flags(0);
+INSTANTIATE_TEST_CASE_P(Add, ArithmeticRegReg16TestReversed,
+    ::testing::Values(
         // add bx, ax
-        set_instruction({ 0x03, 0xd8 });
+        Arith16Params({ 0x03, 0xd8 }, add16_tests)
+    ));
 
-        emulate();
+INSTANTIATE_TEST_CASE_P(Add, ArithmeticMemReg16TestReversed,
+    ::testing::Values(
+        // add ax, bx
+        Arith16Params({ 0x03, 0x07 }, add16_tests)
+    ));
 
-        ASSERT_EQ(read_reg(BX), t.expected);
-        ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                            0x8000 | t.expected_flags);
-    }
-}
+INSTANTIATE_TEST_CASE_P(Add, ArithmeticRegImmed8Test,
+    ::testing::Values(
+        // add bl, 1
+        std::vector<uint8_t>{ 0x80, 0xc3, 0x01 },
+        std::vector<uint8_t>{ 0x82, 0xc3, 0x01 }
+    ));
 
-TEST_F(EmulateFixture, AddMemReg16Reversed)
-{
-    for (auto &t: add16_tests) {
-        SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
-                     std::to_string(static_cast<int>(t.v2)));
-        write_reg(AX, t.v2);
-        write_reg(BX, 0x100);
-        write_mem<uint16_t>(0x100, t.v1);
+INSTANTIATE_TEST_CASE_P(Add, ArithmeticMemImmed8Test,
+    ::testing::Values(
+        // add byte [bx], 1
+        std::vector<uint8_t>{ 0x80, 0x07, 0x01 },
+        std::vector<uint8_t>{ 0x82, 0x07, 0x01 }
+    ));
 
-        write_flags(0);
-        // add ax, [bx]
-        set_instruction({ 0x03, 0x07 });
+INSTANTIATE_TEST_CASE_P(Add, ArithmeticRegImmed16Test,
+    ::testing::Values(
+        // add bx, 1
+        std::vector<uint8_t>{ 0x81, 0xc3, 0x01, 0x00 }
+    ));
 
-        emulate();
+INSTANTIATE_TEST_CASE_P(Add, ArithmeticMemImmed16Test,
+    ::testing::Values(
+        // add word [bx], 1
+        std::vector<uint8_t>{ 0x81, 0x07, 0x01, 0x00 }
+    ));
 
-        ASSERT_EQ(read_reg(AX), t.expected);
-        ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                            0x8000 | t.expected_flags);
-    }
-}
+INSTANTIATE_TEST_CASE_P(Add, ArithmeticRegImmed16TestExtend,
+    ::testing::Values(
+        // add bx, -1
+        std::vector<uint8_t>{ 0x83, 0xc3, 0xff }
+    ));
+
+INSTANTIATE_TEST_CASE_P(Add, ArithmeticMemImmed16TestExtend,
+    ::testing::Values(
+        // add word [bx], 1
+        std::vector<uint8_t>{ 0x83, 0x07, 0xff }
+    ));
+
+INSTANTIATE_TEST_CASE_P(Add, ArithmeticAlImmedTest,
+    ::testing::Values(
+        // add al, 1
+        std::vector<uint8_t>{ 0x04, 0x01 }
+    ));
+
+INSTANTIATE_TEST_CASE_P(Add, ArithmeticAxImmedTest,
+    ::testing::Values(
+        // add ax, 1
+        std::vector<uint8_t>{ 0x05, 0x01, 0x00 }
+    ));
 
 TEST_F(EmulateFixture, AddRegImmedInvalidReg)
 {
     set_instruction({ 0x80, 0xff });
 
     emulate();
-}
-
-TEST_F(EmulateFixture, AddRegImmed8)
-{
-    // add bl, 1
-    for (auto opc: std::vector<uint8_t>{ 0x80, 0x82 }) {
-        set_instruction({ opc, 0xc3, 0x01 });
-        write_reg(BL, 1);
-
-        emulate();
-
-        ASSERT_EQ(read_reg(BL), 2);
-        ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000);
-    }
-}
-
-TEST_F(EmulateFixture, AddMemImmed8)
-{
-    // add byte [bx], 1
-    for (auto opc: std::vector<uint8_t>{ 0x80, 0x82 }) {
-        set_instruction({ opc, 0x07, 0x01 });
-        write_mem<uint8_t>(0x0100, 0x1);
-        write_reg(BX, 0x0100);
-
-        emulate();
-
-        ASSERT_EQ(read_mem<uint8_t>(0x0100), 2);
-        ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000);
-    }
-}
-
-TEST_F(EmulateFixture, AddRegImmed16)
-{
-    // add bx, 1
-    set_instruction({ 0x81, 0xc3, 0x01, 0x00 });
-    write_reg(BX, 1);
-
-    emulate();
-
-    ASSERT_EQ(read_reg(BX), 2);
-    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000);
-}
-
-TEST_F(EmulateFixture, AddMemImmed16)
-{
-    // add word [bx], 1
-    set_instruction({ 0x81, 0x07, 0x01, 0x00 });
-    write_mem<uint16_t>(0x0100, 0x1);
-    write_reg(BX, 0x0100);
-
-    emulate();
-
-    ASSERT_EQ(read_mem<uint16_t>(0x0100), 2);
-    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000);
-}
-
-TEST_F(EmulateFixture, AddRegImmed16Extend)
-{
-    // add bx, -1
-    set_instruction({ 0x83, 0xc3, 0xff });
-    write_reg(BX, 2);
-
-    emulate();
-
-    ASSERT_EQ(read_reg(BX), 1);
-    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000 | CF | AF);
-}
-
-TEST_F(EmulateFixture, AddMemImmed16Extend)
-{
-    // add word [bx], 1
-    set_instruction({ 0x83, 0x07, 0xff });
-    write_mem<uint16_t>(0x0100, 0x2);
-    write_reg(BX, 0x0100);
-
-    emulate();
-
-    ASSERT_EQ(read_mem<uint16_t>(0x0100), 1);
-    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000 | CF | AF);
-}
-
-TEST_F(EmulateFixture, AddAlImmed)
-{
-    // add al, 1
-    set_instruction({ 0x04, 0x01 });
-    write_reg(AL, 1);
-
-    emulate();
-
-    ASSERT_EQ(read_reg(AL), 2);
-    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000);
-}
-
-TEST_F(EmulateFixture, AddAxImmed)
-{
-    // add ax, 1
-    set_instruction({ 0x05, 0x01, 0x00 });
-    write_reg(AX, 1);
-
-    emulate();
-
-    ASSERT_EQ(read_reg(AX), 2);
-    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000);
 }

@@ -4,6 +4,7 @@ include_directories(../sim)
 
 add_executable(unittest
                main.cpp
+               Arithmetic.cpp
                TestFifo.cpp
                TestRegisterFile.cpp
                TestMemory.cpp
