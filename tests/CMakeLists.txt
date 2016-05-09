@@ -5,19 +5,19 @@ include_directories(../sim)
 add_executable(unittest
                main.cpp
                Arithmetic.cpp
-               TestFifo.cpp
-               TestRegisterFile.cpp
-               TestMemory.cpp
-               TestMov.cpp
-               TestModRM.cpp
-               TestPush.cpp
-               TestXchg.cpp
-               TestIO.cpp
-               TestXlat.cpp
-               TestPointer.cpp
-               TestFlags.cpp
+               TestAdc.cpp
                TestAdd.cpp
-               TestAdc.cpp)
+               TestFifo.cpp
+               TestFlags.cpp
+               TestIO.cpp
+               TestMemory.cpp
+               TestModRM.cpp
+               TestMov.cpp
+               TestPointer.cpp
+               TestPush.cpp
+               TestRegisterFile.cpp
+               TestXchg.cpp
+               TestXlat.cpp)
 target_link_libraries(unittest 8086sim gtest gmock)
 
 add_test(unittest ./unittest --gtest_color=yes)
