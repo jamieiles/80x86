@@ -1,5 +1,6 @@
 #include "Emulate.h"
 
+#include <functional>
 #include <stdint.h>
 #include "Fifo.h"
 #include "Memory.h"
@@ -513,14 +514,16 @@ void Emulator::popf9d()
 }
 
 template <typename T>
-T Emulator::do_add(uint16_t v1, uint16_t v2, uint16_t carry_in)
+T Emulator::do_alu(uint16_t v1, uint16_t v2, uint16_t carry_in,
+                   std::function<uint32_t(uint32_t, uint32_t, uint32_t)> alu_op)
 {
     uint16_t flags = registers->get_flags();
 
     flags &= ~(AF | CF | OF | PF | SF | ZF);
 
-    uint32_t result32 = static_cast<uint32_t>(v1) +
-        static_cast<uint32_t>(v2) + static_cast<uint32_t>(carry_in);
+    uint32_t result32 = alu_op(static_cast<uint32_t>(v1),
+                               static_cast<uint32_t>(v2),
+                               static_cast<uint32_t>(carry_in));
     bool af = !!(((v1 & 0xf) + (v2 & 0xf)) & (1 << 4));
 
     auto sign_bit = (8 * sizeof(T)) - 1;
@@ -543,6 +546,15 @@ T Emulator::do_add(uint16_t v1, uint16_t v2, uint16_t carry_in)
     registers->set_flags(flags);
 
     return result32;
+}
+
+template <typename T>
+T Emulator::do_add(uint16_t v1, uint16_t v2, uint16_t carry_in)
+{
+    return do_alu<T>(v1, v2, carry_in,
+        [](uint32_t a, uint32_t b, uint32_t c) -> uint32_t {
+            return a + b + c;
+        });
 }
 
 // add r, r/m, 8-bit

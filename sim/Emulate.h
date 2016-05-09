@@ -3,6 +3,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <functional>
 #include <memory>
 
 #include "Memory.h"
@@ -149,6 +150,10 @@ private:
     void adc13();
     void adc14();
     void adc15();
+    // Helpers
+    template <typename T>
+    T do_alu(uint16_t v1, uint16_t v2, uint16_t carry_in,
+             std::function<uint32_t(uint32_t, uint32_t, uint32_t)> alu_op);
     template <typename T>
         void write_data(T val, bool stack=false);
     template <typename T>
