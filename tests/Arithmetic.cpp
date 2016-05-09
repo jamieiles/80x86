@@ -195,97 +195,113 @@ TEST_P(ArithmeticMemReg16TestReversed, ResultAndFlags)
 
 TEST_P(ArithmeticRegImmed8Test, ResultAndFlags)
 {
-    set_instruction(GetParam());
-    write_reg(BL, 1);
+    auto params = GetParam();
+    set_instruction(params.first);
+    write_reg(BL, params.second.v1);
 
     emulate();
 
-    ASSERT_EQ(read_reg(BL), 2);
-    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000);
+    ASSERT_EQ(read_reg(BL), params.second.expected);
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        0x8000 | params.second.expected_flags);
 }
 
 TEST_P(ArithmeticMemImmed8Test, ResultAndFlags)
 {
-    set_instruction(GetParam());
-    write_mem<uint8_t>(0x0100, 0x1);
+    auto params = GetParam();
+    set_instruction(params.first);
+    write_mem<uint8_t>(0x0100, params.second.v1);
     write_reg(BX, 0x0100);
 
     emulate();
 
-    ASSERT_EQ(read_mem<uint8_t>(0x0100), 2);
-    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000);
+    ASSERT_EQ(read_mem<uint8_t>(0x0100), params.second.expected);
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        0x8000 | params.second.expected_flags);
 }
 
 TEST_P(ArithmeticRegImmed16Test, ResultAndFlags)
 {
+    auto params = GetParam();
     // ARITH bx, 1
-    set_instruction(GetParam());
-    write_reg(BX, 1);
+    set_instruction(params.first);
+    write_reg(BX, params.second.v1);
 
     emulate();
 
-    ASSERT_EQ(read_reg(BX), 2);
-    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000);
+    ASSERT_EQ(read_reg(BX), params.second.expected);
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        0x8000 | params.second.expected_flags);
 }
 
 TEST_P(ArithmeticMemImmed16Test, ResultAndFlags)
 {
+    auto params = GetParam();
     // ARITH word [bx], 1
-    set_instruction(GetParam());
-    write_mem<uint16_t>(0x0100, 0x1);
+    set_instruction(params.first);
+    write_mem<uint16_t>(0x0100, params.second.v1);
     write_reg(BX, 0x0100);
 
     emulate();
 
-    ASSERT_EQ(read_mem<uint16_t>(0x0100), 2);
-    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000);
+    ASSERT_EQ(read_mem<uint16_t>(0x0100), params.second.expected);
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        0x8000 | params.second.expected_flags);
 }
 
 TEST_P(ArithmeticRegImmed16TestExtend, ResultAndFlags)
 {
+    auto params = GetParam();
     // ARITH bx, -1
-    set_instruction(GetParam());
-    write_reg(BX, 2);
+    set_instruction(params.first);
+    write_reg(BX, params.second.v1);
 
     emulate();
 
-    ASSERT_EQ(read_reg(BX), 1);
-    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000 | CF | AF);
+    ASSERT_EQ(read_reg(BX), params.second.expected);
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        0x8000 | params.second.expected_flags);
 }
 
 TEST_P(ArithmeticMemImmed16TestExtend, ResultAndFlags)
 {
+    auto params = GetParam();
     // ARITH word [bx], 1
-    set_instruction(GetParam());
-    write_mem<uint16_t>(0x0100, 0x2);
+    set_instruction(params.first);
+    write_mem<uint16_t>(0x0100, params.second.v1);
     write_reg(BX, 0x0100);
 
     emulate();
 
-    ASSERT_EQ(read_mem<uint16_t>(0x0100), 1);
-    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000 | CF | AF);
+    ASSERT_EQ(read_mem<uint16_t>(0x0100), params.second.expected);
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        0x8000 | params.second.expected_flags);
 }
 
 TEST_P(ArithmeticAlImmedTest, ResultAndFlags)
 {
+    auto params = GetParam();
     // ARITH al, 1
-    set_instruction(GetParam());
-    write_reg(AL, 1);
+    set_instruction(params.first);
+    write_reg(AL, params.second.v1);
 
     emulate();
 
-    ASSERT_EQ(read_reg(AL), 2);
-    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000);
+    ASSERT_EQ(read_reg(AL), params.second.expected);
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        0x8000 | params.second.expected_flags);
 }
 
 TEST_P(ArithmeticAxImmedTest, ResultAndFlags)
 {
+    auto params = GetParam();
     // ARITH ax, 1
-    set_instruction(GetParam());
-    write_reg(AX, 1);
+    set_instruction(params.first);
+    write_reg(AX, params.second.v1);
 
     emulate();
 
-    ASSERT_EQ(read_reg(AX), 2);
-    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000);
+    ASSERT_EQ(read_reg(AX), params.second.expected);
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        0x8000 | params.second.expected_flags);
 }

@@ -73,51 +73,81 @@ INSTANTIATE_TEST_CASE_P(Add, ArithmeticMemReg16TestReversed,
 INSTANTIATE_TEST_CASE_P(Add, ArithmeticRegImmed8Test,
     ::testing::Values(
         // add bl, 1
-        std::vector<uint8_t>{ 0x80, 0xc3, 0x01 },
-        std::vector<uint8_t>{ 0x82, 0xc3, 0x01 }
+        ArithImmed8Params(
+            std::vector<uint8_t>{ 0x80, 0xc3, 0x01 },
+            { 1, 2, 0 }
+        ),
+        ArithImmed8Params(
+            std::vector<uint8_t>{ 0x82, 0xc3, 0x01 },
+            { 1, 2, 0 }
+        )
     ));
 
 INSTANTIATE_TEST_CASE_P(Add, ArithmeticMemImmed8Test,
     ::testing::Values(
         // add byte [bx], 1
-        std::vector<uint8_t>{ 0x80, 0x07, 0x01 },
-        std::vector<uint8_t>{ 0x82, 0x07, 0x01 }
+        ArithImmed8Params(
+            std::vector<uint8_t>{ 0x80, 0x07, 0x01 },
+            { 1, 2, 0 }
+        ),
+        ArithImmed8Params(
+            std::vector<uint8_t>{ 0x82, 0x07, 0x01 },
+            { 1, 2, 0 }
+        )
     ));
 
 INSTANTIATE_TEST_CASE_P(Add, ArithmeticRegImmed16Test,
     ::testing::Values(
         // add bx, 1
-        std::vector<uint8_t>{ 0x81, 0xc3, 0x01, 0x00 }
+        ArithImmed16Params(
+            std::vector<uint8_t>{ 0x81, 0xc3, 0x01, 0x0 },
+            { 1, 2, 0 }
+        )
     ));
 
 INSTANTIATE_TEST_CASE_P(Add, ArithmeticMemImmed16Test,
     ::testing::Values(
         // add word [bx], 1
-        std::vector<uint8_t>{ 0x81, 0x07, 0x01, 0x00 }
+        ArithImmed16Params(
+            std::vector<uint8_t>{ 0x81, 0x07, 0x01, 0x00 },
+            { 1, 2, 0 }
+        )
     ));
 
 INSTANTIATE_TEST_CASE_P(Add, ArithmeticRegImmed16TestExtend,
     ::testing::Values(
         // add bx, -1
-        std::vector<uint8_t>{ 0x83, 0xc3, 0xff }
+        ArithImmed16Params(
+            std::vector<uint8_t>{ 0x83, 0xc3, 0xff },
+            { 2, 1, CF | AF }
+        )
     ));
 
 INSTANTIATE_TEST_CASE_P(Add, ArithmeticMemImmed16TestExtend,
     ::testing::Values(
-        // add word [bx], 1
-        std::vector<uint8_t>{ 0x83, 0x07, 0xff }
+        // add word [bx], -1
+        ArithImmed16Params(
+            std::vector<uint8_t>{ 0x83, 0x10, 0xff },
+            { 2, 1, CF | AF }
+        )
     ));
 
 INSTANTIATE_TEST_CASE_P(Add, ArithmeticAlImmedTest,
     ::testing::Values(
         // add al, 1
-        std::vector<uint8_t>{ 0x04, 0x01 }
+        ArithImmed8Params(
+            std::vector<uint8_t>{ 0x04, 0x01 },
+            { 1, 2, 0 }
+        )
     ));
 
 INSTANTIATE_TEST_CASE_P(Add, ArithmeticAxImmedTest,
     ::testing::Values(
         // add ax, 1
-        std::vector<uint8_t>{ 0x05, 0x01, 0x00 }
+        ArithImmed16Params(
+            std::vector<uint8_t>{ 0x05, 0x01, 0x0 },
+            { 1, 2, 0 }
+        )
     ));
 
 TEST_F(EmulateFixture, AddRegImmedInvalidReg)
