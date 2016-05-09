@@ -6,31 +6,37 @@
 #include "Flags.h"
 
 template <typename T>
-struct AddTest {
+struct AdcTest {
     T v1;
     T v2;
     T expected;
     uint16_t expected_flags;
+    uint16_t carry_set;
 };
 
-static const std::vector<struct AddTest<uint8_t>> add8_tests = {
-    { 0, 0, 0, PF | ZF },
-    { 0xf, 1, 0x10, AF },
-    { 255, 1, 0, ZF | CF | PF | AF },
-    { 0xff, 0, 0xff, PF | SF },
-    { 127, 1, 128, OF | SF | AF },
+static const std::vector<struct AdcTest<uint8_t>> add8_tests = {
+    { 0, 0, 0, PF | ZF, false },
+    { 0, 0, 1, 0, true },
+    { 0xf, 1, 0x10, AF, false },
+    { 255, 0, 0, ZF | CF | PF, true },
+    { 0xff, 0, 0xff, PF | SF, false },
+    { 127, 0, 128, OF | SF, true },
+    { 255, 1, 1, CF | AF, true },
 };
 
-TEST_F(EmulateFixture, AddRegReg8)
+TEST_F(EmulateFixture, AdcRegReg8)
 {
     for (auto &t: add8_tests) {
         SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
-                     std::to_string(static_cast<int>(t.v2)));
+                     std::to_string(static_cast<int>(t.v2)) + " + " +
+                     std::to_string(static_cast<int>(t.carry_set)));
+        write_flags(0);
+        if (t.carry_set)
+            write_flags(CF);
         write_reg(AL, t.v1);
         write_reg(BL, t.v2);
-        write_flags(0);
-        // add al, bl
-        set_instruction({ 0x00, 0xd8 });
+        // adc al, bl
+        set_instruction({ 0x10, 0xd8 });
 
         emulate();
 
@@ -40,18 +46,21 @@ TEST_F(EmulateFixture, AddRegReg8)
     }
 }
 
-TEST_F(EmulateFixture, AddMemReg8)
+TEST_F(EmulateFixture, AdcMemReg8)
 {
     for (auto &t: add8_tests) {
         SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
-                     std::to_string(static_cast<int>(t.v2)));
+                     std::to_string(static_cast<int>(t.v2)) + " + " +
+                     std::to_string(static_cast<int>(t.carry_set)));
+        write_flags(0);
+        if (t.carry_set)
+            write_flags(CF);
         write_reg(AL, t.v2);
         write_reg(BX, 0x100);
         write_mem<uint8_t>(0x100, t.v1);
 
-        write_flags(0);
-        // add [bx], al
-        set_instruction({ 0x00, 0x07 });
+        // adc [bx], al
+        set_instruction({ 0x10, 0x07 });
 
         emulate();
 
@@ -61,16 +70,19 @@ TEST_F(EmulateFixture, AddMemReg8)
     }
 }
 
-TEST_F(EmulateFixture, AddRegReg8Reversed)
+TEST_F(EmulateFixture, AdcRegReg8Reversed)
 {
     for (auto &t: add8_tests) {
         SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
-                     std::to_string(static_cast<int>(t.v2)));
+                     std::to_string(static_cast<int>(t.v2)) + " + " +
+                     std::to_string(static_cast<int>(t.carry_set)));
+        write_flags(0);
+        if (t.carry_set)
+            write_flags(CF);
         write_reg(AL, t.v2);
         write_reg(BL, t.v1);
-        write_flags(0);
-        // add bl, al
-        set_instruction({ 0x02, 0xd8 });
+        // adc bl, al
+        set_instruction({ 0x12, 0xd8 });
 
         emulate();
 
@@ -80,18 +92,21 @@ TEST_F(EmulateFixture, AddRegReg8Reversed)
     }
 }
 
-TEST_F(EmulateFixture, AddMemReg8Reversed)
+TEST_F(EmulateFixture, AdcMemReg8Reversed)
 {
     for (auto &t: add8_tests) {
         SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
-                     std::to_string(static_cast<int>(t.v2)));
+                     std::to_string(static_cast<int>(t.v2)) + " + " +
+                     std::to_string(static_cast<int>(t.carry_set)));
+        write_flags(0);
+        if (t.carry_set)
+            write_flags(CF);
         write_reg(AL, t.v2);
         write_reg(BX, 0x100);
         write_mem<uint8_t>(0x100, t.v1);
 
-        write_flags(0);
-        // add al, [bx]
-        set_instruction({ 0x02, 0x07 });
+        // adc al, [bx]
+        set_instruction({ 0x12, 0x07 });
 
         emulate();
 
@@ -101,24 +116,29 @@ TEST_F(EmulateFixture, AddMemReg8Reversed)
     }
 }
 
-static const std::vector<struct AddTest<uint16_t>> add16_tests = {
-    { 0, 0, 0, PF | ZF },
-    { 0xf, 1, 0x10, AF },
-    { 0xffff, 1, 0, ZF | CF | PF | AF },
-    { 0xffff, 0, 0xffff, PF | SF },
-    { 32767, 1, 32768, OF | SF | AF },
+static const std::vector<struct AdcTest<uint16_t>> add16_tests = {
+    { 0, 0, 0, PF | ZF, false },
+    { 0, 1, 2, 0, true },
+    { 0xf, 1, 0x10, AF, false },
+    { 0xffff, 0, 0, ZF | CF | PF, true },
+    { 0xffff, 0, 0xffff, PF | SF, false },
+    { 32767, 0, 32768, OF | SF, true },
+    { 0xffff, 1, 1, CF | AF, true },
 };
 
-TEST_F(EmulateFixture, AddRegReg16)
+TEST_F(EmulateFixture, AdcRegReg16)
 {
     for (auto &t: add16_tests) {
         SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
-                     std::to_string(static_cast<int>(t.v2)));
+                     std::to_string(static_cast<int>(t.v2)) + " + " +
+                     std::to_string(static_cast<int>(t.carry_set)));
+        write_flags(0);
+        if (t.carry_set)
+            write_flags(CF);
         write_reg(AX, t.v1);
         write_reg(BX, t.v2);
-        write_flags(0);
-        // add ax, bx
-        set_instruction({ 0x01, 0xd8 });
+        // adc ax, bx
+        set_instruction({ 0x11, 0xd8 });
 
         emulate();
 
@@ -128,18 +148,21 @@ TEST_F(EmulateFixture, AddRegReg16)
     }
 }
 
-TEST_F(EmulateFixture, AddMemReg16)
+TEST_F(EmulateFixture, AdcMemReg16)
 {
     for (auto &t: add16_tests) {
         SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
-                     std::to_string(static_cast<int>(t.v2)));
+                     std::to_string(static_cast<int>(t.v2)) + " + " +
+                     std::to_string(static_cast<int>(t.carry_set)));
+        write_flags(0);
+        if (t.carry_set)
+            write_flags(CF);
         write_reg(AX, t.v2);
         write_reg(BX, 0x100);
         write_mem<uint16_t>(0x100, t.v1);
 
-        write_flags(0);
-        // add [bx], ax
-        set_instruction({ 0x01, 0x07 });
+        // adc [bx], ax
+        set_instruction({ 0x11, 0x07 });
 
         emulate();
 
@@ -149,16 +172,19 @@ TEST_F(EmulateFixture, AddMemReg16)
     }
 }
 
-TEST_F(EmulateFixture, AddRegReg16Reversed)
+TEST_F(EmulateFixture, AdcRegReg16Reversed)
 {
     for (auto &t: add16_tests) {
         SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
-                     std::to_string(static_cast<int>(t.v2)));
+                     std::to_string(static_cast<int>(t.v2)) + " + " +
+                     std::to_string(static_cast<int>(t.carry_set)));
+        write_flags(0);
+        if (t.carry_set)
+            write_flags(CF);
         write_reg(AX, t.v2);
         write_reg(BX, t.v1);
-        write_flags(0);
-        // add bx, ax
-        set_instruction({ 0x03, 0xd8 });
+        // adc bx, ax
+        set_instruction({ 0x13, 0xd8 });
 
         emulate();
 
@@ -168,18 +194,21 @@ TEST_F(EmulateFixture, AddRegReg16Reversed)
     }
 }
 
-TEST_F(EmulateFixture, AddMemReg16Reversed)
+TEST_F(EmulateFixture, AdcMemReg16Reversed)
 {
     for (auto &t: add16_tests) {
         SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
-                     std::to_string(static_cast<int>(t.v2)));
+                     std::to_string(static_cast<int>(t.v2)) + " + " +
+                     std::to_string(static_cast<int>(t.carry_set)));
+        write_flags(0);
+        if (t.carry_set)
+            write_flags(CF);
         write_reg(AX, t.v2);
         write_reg(BX, 0x100);
         write_mem<uint16_t>(0x100, t.v1);
 
-        write_flags(0);
-        // add ax, [bx]
-        set_instruction({ 0x03, 0x07 });
+        // adc ax, [bx]
+        set_instruction({ 0x13, 0x07 });
 
         emulate();
 
@@ -189,18 +218,11 @@ TEST_F(EmulateFixture, AddMemReg16Reversed)
     }
 }
 
-TEST_F(EmulateFixture, AddRegImmedInvalidReg)
+TEST_F(EmulateFixture, AdcRegImmed8)
 {
-    set_instruction({ 0x80, 0xff });
-
-    emulate();
-}
-
-TEST_F(EmulateFixture, AddRegImmed8)
-{
-    // add bl, 1
+    // adc bl, 1
     for (auto opc: std::vector<uint8_t>{ 0x80, 0x82 }) {
-        set_instruction({ opc, 0xc3, 0x01 });
+        set_instruction({ opc, 0xd3, 0x01 });
         write_reg(BL, 1);
 
         emulate();
@@ -210,11 +232,11 @@ TEST_F(EmulateFixture, AddRegImmed8)
     }
 }
 
-TEST_F(EmulateFixture, AddMemImmed8)
+TEST_F(EmulateFixture, AdcMemImmed8)
 {
-    // add byte [bx], 1
+    // adc byte [bx], 1
     for (auto opc: std::vector<uint8_t>{ 0x80, 0x82 }) {
-        set_instruction({ opc, 0x07, 0x01 });
+        set_instruction({ opc, 0x17, 0x01 });
         write_mem<uint8_t>(0x0100, 0x1);
         write_reg(BX, 0x0100);
 
@@ -225,10 +247,10 @@ TEST_F(EmulateFixture, AddMemImmed8)
     }
 }
 
-TEST_F(EmulateFixture, AddRegImmed16)
+TEST_F(EmulateFixture, AdcRegImmed16)
 {
-    // add bx, 1
-    set_instruction({ 0x81, 0xc3, 0x01, 0x00 });
+    // adc bx, 1
+    set_instruction({ 0x81, 0xd3, 0x01, 0x00 });
     write_reg(BX, 1);
 
     emulate();
@@ -237,10 +259,10 @@ TEST_F(EmulateFixture, AddRegImmed16)
     ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000);
 }
 
-TEST_F(EmulateFixture, AddMemImmed16)
+TEST_F(EmulateFixture, AdcMemImmed16)
 {
-    // add word [bx], 1
-    set_instruction({ 0x81, 0x07, 0x01, 0x00 });
+    // adc word [bx], 1
+    set_instruction({ 0x81, 0x17, 0x01, 0x00 });
     write_mem<uint16_t>(0x0100, 0x1);
     write_reg(BX, 0x0100);
 
@@ -250,10 +272,10 @@ TEST_F(EmulateFixture, AddMemImmed16)
     ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000);
 }
 
-TEST_F(EmulateFixture, AddRegImmed16Extend)
+TEST_F(EmulateFixture, AdcRegImmed16Extend)
 {
-    // add bx, -1
-    set_instruction({ 0x83, 0xc3, 0xff });
+    // adc bx, -1
+    set_instruction({ 0x83, 0xd3, 0xff });
     write_reg(BX, 2);
 
     emulate();
@@ -262,10 +284,10 @@ TEST_F(EmulateFixture, AddRegImmed16Extend)
     ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000 | CF | AF);
 }
 
-TEST_F(EmulateFixture, AddMemImmed16Extend)
+TEST_F(EmulateFixture, AdcMemImmed16Extend)
 {
-    // add word [bx], 1
-    set_instruction({ 0x83, 0x07, 0xff });
+    // adc word [bx], 1
+    set_instruction({ 0x83, 0x17, 0xff });
     write_mem<uint16_t>(0x0100, 0x2);
     write_reg(BX, 0x0100);
 
@@ -275,10 +297,10 @@ TEST_F(EmulateFixture, AddMemImmed16Extend)
     ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000 | CF | AF);
 }
 
-TEST_F(EmulateFixture, AddAlImmed)
+TEST_F(EmulateFixture, AdcAlImmed)
 {
-    // add al, 1
-    set_instruction({ 0x04, 0x01 });
+    // adc al, 1
+    set_instruction({ 0x14, 0x01 });
     write_reg(AL, 1);
 
     emulate();
@@ -287,10 +309,10 @@ TEST_F(EmulateFixture, AddAlImmed)
     ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), 0x8000);
 }
 
-TEST_F(EmulateFixture, AddAxImmed)
+TEST_F(EmulateFixture, AdcAxImmed)
 {
-    // add ax, 1
-    set_instruction({ 0x05, 0x01, 0x00 });
+    // adc ax, 1
+    set_instruction({ 0x15, 0x01, 0x00 });
     write_reg(AX, 1);
 
     emulate();

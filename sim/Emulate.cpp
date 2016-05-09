@@ -78,17 +78,25 @@ size_t Emulator::emulate()
     case 0x9c: pushf9c(); break;
     // popf
     case 0x9d: popf9d(); break;
+    // add / adc
+    case 0x80: add_adc_80(); break;
+    case 0x81: add_adc_81(); break;
+    case 0x82: add_adc_82(); break;
+    case 0x83: add_adc_83(); break;
     // add
     case 0x00: add00(); break;
     case 0x01: add01(); break;
     case 0x02: add02(); break;
     case 0x03: add03(); break;
-    case 0x80: add80(); break;
-    case 0x81: add81(); break;
-    case 0x82: add82(); break;
-    case 0x83: add83(); break;
     case 0x04: add04(); break;
     case 0x05: add05(); break;
+    // adc
+    case 0x10: adc10(); break;
+    case 0x11: adc11(); break;
+    case 0x12: adc12(); break;
+    case 0x13: adc13(); break;
+    case 0x14: adc14(); break;
+    case 0x15: adc15(); break;
     }
 
     return instr_length;
@@ -505,14 +513,14 @@ void Emulator::popf9d()
 }
 
 template <typename T>
-T Emulator::do_add(uint16_t v1, uint16_t v2)
+T Emulator::do_add(uint16_t v1, uint16_t v2, uint16_t carry_in)
 {
     uint16_t flags = registers->get_flags();
 
     flags &= ~(AF | CF | OF | PF | SF | ZF);
 
     uint32_t result32 = static_cast<uint32_t>(v1) +
-        static_cast<uint32_t>(v2);
+        static_cast<uint32_t>(v2) + static_cast<uint32_t>(carry_in);
     bool af = !!(((v1 & 0xf) + (v2 & 0xf)) & (1 << 4));
 
     auto sign_bit = (8 * sizeof(T)) - 1;
@@ -593,61 +601,69 @@ void Emulator::add03()
     registers->set(modrm_decoder->reg(), result & 0xffff);
 }
 
-// add r/m, immediate, 8-bit
-void Emulator::add80()
+void Emulator::add_adc_80()
 {
     modrm_decoder->set_width(OP_WIDTH_8);
     modrm_decoder->decode();
 
-    if (modrm_decoder->raw_reg() != 0)
+    if (modrm_decoder->raw_reg() != 0 &&
+        modrm_decoder->raw_reg() != 2)
         return;
 
     uint8_t v1 = read_data<uint8_t>();
     uint8_t v2 = fetch_byte();
+    bool carry_in = modrm_decoder->raw_reg() == 2 ?
+        !!(registers->get_flags() & CF) : 0;
 
-    auto result = do_add<uint8_t>(v1, v2);
+    auto result = do_add<uint8_t>(v1, v2, carry_in);
 
     write_data<uint8_t>(result & 0xff);
 }
 
-void Emulator::add82()
+void Emulator::add_adc_82()
 {
     // The 's' bit has no effect for 8-bit add immediate.
-    add80();
+    add_adc_80();
 }
 
 // add r/m, immediate, 16-bit
-void Emulator::add81()
+void Emulator::add_adc_81()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
 
-    if (modrm_decoder->raw_reg() != 0)
+    if (modrm_decoder->raw_reg() != 0 &&
+        modrm_decoder->raw_reg() != 2)
         return;
 
     uint16_t v1 = read_data<uint16_t>();
     uint16_t v2 = fetch_16bit();
+    bool carry_in = modrm_decoder->raw_reg() == 2 ?
+        !!(registers->get_flags() & CF) : 0;
 
-    auto result = do_add<uint16_t>(v1, v2);
+    auto result = do_add<uint16_t>(v1, v2, carry_in);
 
     write_data<uint16_t>(result & 0xffff);
 }
 
 // add r/m, immediate, 8-bit, sign-extended
-void Emulator::add83()
+void Emulator::add_adc_83()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
 
-    if (modrm_decoder->raw_reg() != 0)
+    if (modrm_decoder->raw_reg() != 0 &&
+        modrm_decoder->raw_reg() != 2)
         return;
 
     uint16_t v1 = read_data<uint16_t>();
     int16_t immed = fetch_byte();
     immed <<= 8;
     immed >>= 8;
+    bool carry_in = modrm_decoder->raw_reg() == 2 ?
+        !!(registers->get_flags() & CF) : 0;
 
-    auto result = do_add<uint16_t>(v1, immed);
+    auto result = do_add<uint16_t>(v1, immed, carry_in);
 
     write_data<uint16_t>(result & 0xffff);
 }
@@ -666,6 +682,86 @@ void Emulator::add05()
     auto v1 = registers->get(AX);
     auto v2 = fetch_16bit();
     auto result = do_add<uint16_t>(v1, v2);
+
+    registers->set(AX, result);
+}
+
+// adc r, r/m, 8-bit
+void Emulator::adc10()
+{
+    modrm_decoder->set_width(OP_WIDTH_8);
+    modrm_decoder->decode();
+
+    uint8_t v1 = read_data<uint8_t>();
+    uint8_t v2 = registers->get(modrm_decoder->reg());
+    bool carry_in = !!(registers->get_flags() & CF);
+
+    auto result = do_add<uint8_t>(v1, v2, carry_in);
+
+    write_data<uint8_t>(result & 0xff);
+}
+
+// adc r, r/m, 16-bit
+void Emulator::adc11()
+{
+    modrm_decoder->set_width(OP_WIDTH_16);
+    modrm_decoder->decode();
+
+    uint16_t v1 = read_data<uint16_t>();
+    uint16_t v2 = registers->get(modrm_decoder->reg());
+    bool carry_in = !!(registers->get_flags() & CF);
+
+    auto result = do_add<uint16_t>(v1, v2, carry_in);
+
+    write_data<uint16_t>(result & 0xffff);
+}
+
+// adc r/m, r, 8-bit
+void Emulator::adc12()
+{
+    modrm_decoder->set_width(OP_WIDTH_8);
+    modrm_decoder->decode();
+
+    uint8_t v1 = read_data<uint8_t>();
+    uint8_t v2 = registers->get(modrm_decoder->reg());
+    bool carry_in = !!(registers->get_flags() & CF);
+
+    auto result = do_add<uint8_t>(v1, v2, carry_in);
+
+    registers->set(modrm_decoder->reg(), result & 0xff);
+}
+
+// adc r/m, r, 16-bit
+void Emulator::adc13()
+{
+    modrm_decoder->set_width(OP_WIDTH_16);
+    modrm_decoder->decode();
+
+    uint16_t v1 = read_data<uint16_t>();
+    uint16_t v2 = registers->get(modrm_decoder->reg());
+    bool carry_in = !!(registers->get_flags() & CF);
+
+    auto result = do_add<uint16_t>(v1, v2, carry_in);
+
+    registers->set(modrm_decoder->reg(), result & 0xffff);
+}
+
+void Emulator::adc14()
+{
+    auto v1 = registers->get(AL);
+    auto v2 = fetch_byte();
+    bool carry_in = !!(registers->get_flags() & CF);
+    auto result = do_add<uint8_t>(v1, v2, carry_in);
+
+    registers->set(AL, result);
+}
+
+void Emulator::adc15()
+{
+    auto v1 = registers->get(AX);
+    auto v2 = fetch_16bit();
+    bool carry_in = !!(registers->get_flags() & CF);
+    auto result = do_add<uint16_t>(v1, v2, carry_in);
 
     registers->set(AX, result);
 }

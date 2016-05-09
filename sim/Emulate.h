@@ -123,20 +123,32 @@ private:
     //
     void popf9d();
     //
+    // add / adc
+    //
+    void add_adc_80();
+    void add_adc_81();
+    void add_adc_82();
+    void add_adc_83();
+    //
     // add
     //
     template <typename T>
-    T do_add(uint16_t v1, uint16_t v2);
+    T do_add(uint16_t v1, uint16_t v2, uint16_t carry_in=0);
     void add00();
     void add01();
     void add02();
     void add03();
-    void add80();
-    void add81();
-    void add82();
-    void add83();
     void add04();
     void add05();
+    //
+    // adc
+    //
+    void adc10();
+    void adc11();
+    void adc12();
+    void adc13();
+    void adc14();
+    void adc15();
     template <typename T>
         void write_data(T val, bool stack=false);
     template <typename T>

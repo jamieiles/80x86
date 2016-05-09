@@ -15,7 +15,8 @@ add_executable(unittest
                TestXlat.cpp
                TestPointer.cpp
                TestFlags.cpp
-               TestAdd.cpp)
+               TestAdd.cpp
+               TestAdc.cpp)
 target_link_libraries(unittest 8086sim gtest gmock)
 
 add_test(unittest ./unittest --gtest_color=yes)
