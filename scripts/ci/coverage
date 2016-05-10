@@ -1,0 +1,8 @@
+#!/bin/bash
+set -e
+rmdir -rf BUILD
+mkdir BUILD
+cd BUILD
+cmake .. -DCMAKE_BUILD_TYPE=coverage
+make all
+../scripts/coverage
