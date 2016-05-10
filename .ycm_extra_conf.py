@@ -31,8 +31,6 @@
 import os
 import ycm_core
 
-sys_paths = ['/usr/include', '/usr/include/x86_64-linux-gnu', '/usr/lib/llvm-3.6/bin/../lib/clang/3.6.2/include', '/usr/local/include', '/usr/bin/../lib/gcc/x86_64-linux-gnu/5.2.1/../../../../include/c++/5.2.1/backward', '/usr/bin/../lib/gcc/x86_64-linux-gnu/5.2.1/../../../../include/x86_64-linux-gnu/c++/5.2.1', '/usr/bin/../lib/gcc/x86_64-linux-gnu/5.2.1/../../../../include/c++/5.2.1']
-
 # These are the compilation flags that will be used in case there's no
 # compilation database set (by default, one is not set).
 # CHANGE THIS LIST OF FLAGS. YES, THIS IS THE DROID YOU HAVE BEEN LOOKING FOR.
@@ -44,56 +42,30 @@ flags = [
 '-Wno-long-long',
 '-Wno-variadic-macros',
 '-fexceptions',
-#'-DNDEBUG',
-# You 100% do NOT need -DUSE_CLANG_COMPLETER in your flags; only the YCM
-# source code needs it.
-#'-DUSE_CLANG_COMPLETER',
 # THIS IS IMPORTANT! Without a "-std=<something>" flag, clang won't know which
 # language to use when compiling headers. So it will guess. Badly. So C++
 # headers will be compiled as C headers. You don't want that so ALWAYS specify
 # a "-std=<something>".
 # For a C project, you would set this to something like 'c99' instead of
 # 'c++11'.
-'-std=c++14',
+'-std=c++13',
 # ...and the same thing goes for the magic -x option which specifies the
 # language that the files to be compiled are written in. This is mostly
 # relevant for c++ headers.
 # For a C project, you would set this to 'c' instead of 'c++'.
 '-x',
 'c++',
-'-I',
-'sim',
-'-I',
-'googletest/googletest/include',
-'-I',
-'googletest/googlemock/include',
-#'../BoostParts',
-#'-isystem',
-## This path will only work on OS X, but extra paths that don't exist are not
-## harmful
-#'/System/Library/Frameworks/Python.framework/Headers',
-#'-isystem',
-#'../llvm/include',
-#'-isystem',
-#'../llvm/tools/clang/include',
+# You can add the specified directory to the search path for
+# system include files. 
+'-isystem',
+'/usr/include/c++/5',
+'-isystem',
+'/usr/lib/clang/3.8/',
+# You can add the specified directory to the search path for
+# include files. 
 #'-I',
-#'.',
-#'-I',
-#'./ClangCompleter',
-#'-isystem',
-#'./tests/gmock/gtest',
-#'-isystem',
-#'./tests/gmock/gtest/include',
-#'-isystem',
-#'./tests/gmock',
-#'-isystem',
-#'./tests/gmock/include',
+#'/usr/include/gmock',
 ]
-
-flags += ['-isystem'] + ' -isystem '.join(sys_paths).split()
-
-with open('/tmp/x', 'w') as x:
-    x.write('\n'.join(flags))
 
 
 # Set this to the absolute path to the folder (NOT the file!) containing the
@@ -106,7 +78,7 @@ with open('/tmp/x', 'w') as x:
 #
 # Most projects will NOT need to set this to anything; you can just change the
 # 'flags' list of compilation flags. Notice that YCM itself uses that approach.
-compilation_database_folder = './BUILD'
+compilation_database_folder = 'BUILD'
 
 if os.path.exists( compilation_database_folder ):
   database = ycm_core.CompilationDatabase( compilation_database_folder )
@@ -195,6 +167,6 @@ def FlagsForFile( filename, **kwargs ):
     final_flags = MakeRelativePathsInFlagsAbsolute( flags, relative_to )
 
   return {
-    'flags': final_flags,
+    'flags': final_flags + ['-I', '/usr/lib/gcc/x86_64-linux-gnu/5/include'],
     'do_cache': True
   }
