@@ -1,7 +1,11 @@
 cmake_minimum_required(VERSION 2.8)
 project(8086 CXX)
 
-set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -O2 -ggdb3 -std=c++14")
+set(CMAKE_CONFIGURATION_TYPES "Coverage;Release")
+
+set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -ggdb3 -std=c++14")
+set(CMAKE_CXX_FLAGS_COVERAGE "-O0 -fprofile-arcs -ftest-coverage -fno-elide-constructors")
+set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 
 enable_testing()
 
