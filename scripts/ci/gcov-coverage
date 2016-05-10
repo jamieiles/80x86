@@ -1,0 +1,9 @@
+#!/bin/bash
+set -e
+git submodule update --init
+mkdir BUILD || :
+cd BUILD
+cmake .. -DCMAKE_BUILD_TYPE=coverage
+make all
+ctest
+../scripts/gcovr --delete --output=coverage.xml --gcov-exclude=".*googletest.*" --root=.. --xml-pretty .
