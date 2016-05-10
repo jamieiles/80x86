@@ -33,6 +33,9 @@ public:
 
 private:
     uint16_t calculate_effective_address();
+    uint16_t mod00();
+    uint16_t mod01();
+    uint16_t mod10();
     std::function<uint8_t()> get_byte;
     const RegisterFile *registers;
     OperandWidth width;

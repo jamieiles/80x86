@@ -68,49 +68,62 @@ uint16_t ModRMDecoder::effective_address()
 uint16_t ModRMDecoder::calculate_effective_address()
 {
     assert(rm_type() == OP_MEM);
+    assert(modrm >> 6 != 0x03);
 
-    switch (modrm >> 6) {
-    case 0x00: {
-        switch (modrm & 0x7) {
-        case 0x0: return registers->get(BX) + registers->get(SI);
-        case 0x1: return registers->get(BX) + registers->get(DI);
-        case 0x2: return registers->get(BP) + registers->get(SI);
-        case 0x3: return registers->get(BP) + registers->get(DI);
-        case 0x4: return registers->get(SI);
-        case 0x5: return registers->get(DI);
-        case 0x6: return static_cast<uint16_t>(get_byte()) | (static_cast<uint16_t>(get_byte()) << 8);
-        case 0x7: return registers->get(BX);
-        }
+    switch ((modrm >> 6) & 0x3) {
+    case 0x00: return mod00();
+    case 0x01: return mod01();
+    case 0x02: return mod10();
     }
-    case 0x01: {
-        auto displacement = static_cast<int8_t>(get_byte());
-        switch (modrm & 0x7) {
-        case 0x0: return registers->get(BX) + registers->get(SI) + displacement;
-        case 0x1: return registers->get(BX) + registers->get(DI) + displacement;
-        case 0x2: return registers->get(BP) + registers->get(SI) + displacement;
-        case 0x3: return registers->get(BP) + registers->get(DI) + displacement;
-        case 0x4: return registers->get(SI) + displacement;
-        case 0x5: return registers->get(DI) + displacement;
-        case 0x6: return registers->get(BP) + displacement;
-        case 0x7: return registers->get(BX) + displacement;
-        }
+
+    __builtin_unreachable();
+}
+
+uint16_t ModRMDecoder::mod00()
+{
+    switch (modrm & 0x7) {
+    case 0x0: return registers->get(BX) + registers->get(SI);
+    case 0x1: return registers->get(BX) + registers->get(DI);
+    case 0x2: return registers->get(BP) + registers->get(SI);
+    case 0x3: return registers->get(BP) + registers->get(DI);
+    case 0x4: return registers->get(SI);
+    case 0x5: return registers->get(DI);
+    case 0x6: return static_cast<uint16_t>(get_byte()) | (static_cast<uint16_t>(get_byte()) << 8);
+    case 0x7: return registers->get(BX);
     }
-    case 0x02: {
-        auto displacement = static_cast<int16_t>(get_byte()) | (static_cast<uint16_t>(get_byte()) << 8);
-        switch (modrm & 0x7) {
-        case 0x0: return registers->get(BX) + registers->get(SI) + displacement;
-        case 0x1: return registers->get(BX) + registers->get(DI) + displacement;
-        case 0x2: return registers->get(BP) + registers->get(SI) + displacement;
-        case 0x3: return registers->get(BP) + registers->get(DI) + displacement;
-        case 0x4: return registers->get(SI) + displacement;
-        case 0x5: return registers->get(DI) + displacement;
-        case 0x6: return registers->get(BP) + displacement;
-        case 0x7: return registers->get(BX) + displacement;
-        }
+    __builtin_unreachable();
+}
+
+uint16_t ModRMDecoder::mod01()
+{
+    auto displacement = static_cast<int8_t>(get_byte());
+    switch (modrm & 0x7) {
+    case 0x0: return registers->get(BX) + registers->get(SI) + displacement;
+    case 0x1: return registers->get(BX) + registers->get(DI) + displacement;
+    case 0x2: return registers->get(BP) + registers->get(SI) + displacement;
+    case 0x3: return registers->get(BP) + registers->get(DI) + displacement;
+    case 0x4: return registers->get(SI) + displacement;
+    case 0x5: return registers->get(DI) + displacement;
+    case 0x6: return registers->get(BP) + displacement;
+    case 0x7: return registers->get(BX) + displacement;
     }
-    default:
-        abort();
+    __builtin_unreachable();
+}
+
+uint16_t ModRMDecoder::mod10()
+{
+    auto displacement = static_cast<int16_t>(get_byte()) | (static_cast<uint16_t>(get_byte()) << 8);
+    switch (modrm & 0x7) {
+    case 0x0: return registers->get(BX) + registers->get(SI) + displacement;
+    case 0x1: return registers->get(BX) + registers->get(DI) + displacement;
+    case 0x2: return registers->get(BP) + registers->get(SI) + displacement;
+    case 0x3: return registers->get(BP) + registers->get(DI) + displacement;
+    case 0x4: return registers->get(SI) + displacement;
+    case 0x5: return registers->get(DI) + displacement;
+    case 0x6: return registers->get(BP) + displacement;
+    case 0x7: return registers->get(BX) + displacement;
     }
+    __builtin_unreachable();
 }
 
 bool ModRMDecoder::uses_bp_as_base() const
