@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+git submodule update --init
 rm -rf BUILD
 mkdir BUILD
 cd BUILD
