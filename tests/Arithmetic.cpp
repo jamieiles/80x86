@@ -196,6 +196,8 @@ TEST_P(ArithmeticMemReg16TestReversed, ResultAndFlags)
 TEST_P(ArithmeticRegImmed8Test, ResultAndFlags)
 {
     auto params = GetParam();
+    if (params.second.carry_set)
+        write_flags(CF);
     set_instruction(params.first);
     write_reg(BL, params.second.v1);
 
@@ -209,6 +211,8 @@ TEST_P(ArithmeticRegImmed8Test, ResultAndFlags)
 TEST_P(ArithmeticMemImmed8Test, ResultAndFlags)
 {
     auto params = GetParam();
+    if (params.second.carry_set)
+        write_flags(CF);
     set_instruction(params.first);
     write_mem<uint8_t>(0x0100, params.second.v1);
     write_reg(BX, 0x0100);
@@ -223,6 +227,8 @@ TEST_P(ArithmeticMemImmed8Test, ResultAndFlags)
 TEST_P(ArithmeticRegImmed16Test, ResultAndFlags)
 {
     auto params = GetParam();
+    if (params.second.carry_set)
+        write_flags(CF);
     // ARITH bx, 1
     set_instruction(params.first);
     write_reg(BX, params.second.v1);
@@ -237,6 +243,8 @@ TEST_P(ArithmeticRegImmed16Test, ResultAndFlags)
 TEST_P(ArithmeticMemImmed16Test, ResultAndFlags)
 {
     auto params = GetParam();
+    if (params.second.carry_set)
+        write_flags(CF);
     // ARITH word [bx], 1
     set_instruction(params.first);
     write_mem<uint16_t>(0x0100, params.second.v1);
@@ -252,6 +260,8 @@ TEST_P(ArithmeticMemImmed16Test, ResultAndFlags)
 TEST_P(ArithmeticRegImmed16TestExtend, ResultAndFlags)
 {
     auto params = GetParam();
+    if (params.second.carry_set)
+        write_flags(CF);
     // ARITH bx, -1
     set_instruction(params.first);
     write_reg(BX, params.second.v1);
@@ -266,6 +276,8 @@ TEST_P(ArithmeticRegImmed16TestExtend, ResultAndFlags)
 TEST_P(ArithmeticMemImmed16TestExtend, ResultAndFlags)
 {
     auto params = GetParam();
+    if (params.second.carry_set)
+        write_flags(CF);
     // ARITH word [bx], 1
     set_instruction(params.first);
     write_mem<uint16_t>(0x0100, params.second.v1);
@@ -281,6 +293,8 @@ TEST_P(ArithmeticMemImmed16TestExtend, ResultAndFlags)
 TEST_P(ArithmeticAlImmedTest, ResultAndFlags)
 {
     auto params = GetParam();
+    if (params.second.carry_set)
+        write_flags(CF);
     // ARITH al, 1
     set_instruction(params.first);
     write_reg(AL, params.second.v1);
@@ -295,6 +309,8 @@ TEST_P(ArithmeticAlImmedTest, ResultAndFlags)
 TEST_P(ArithmeticAxImmedTest, ResultAndFlags)
 {
     auto params = GetParam();
+    if (params.second.carry_set)
+        write_flags(CF);
     // ARITH ax, 1
     set_instruction(params.first);
     write_reg(AX, params.second.v1);

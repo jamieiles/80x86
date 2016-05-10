@@ -79,11 +79,11 @@ INSTANTIATE_TEST_CASE_P(Sub, ArithmeticRegImmed8Test,
         // sub bl, 1
         ArithImmed8Params(
             std::vector<uint8_t>{ 0x80, 0xeb, 0x01 },
-            { 2, 1, 0 }
+            { 2, 1, 0, false }
         ),
         ArithImmed8Params(
             std::vector<uint8_t>{ 0x82, 0xeb, 0x01 },
-            { 2, 1, 0 }
+            { 2, 1, 0, false }
         )
     ));
 
@@ -92,11 +92,11 @@ INSTANTIATE_TEST_CASE_P(Sub, ArithmeticMemImmed8Test,
         // sub byte [bx], 1
         ArithImmed8Params(
             std::vector<uint8_t>{ 0x80, 0x2f, 0x01 },
-            { 2, 1, 0 }
+            { 2, 1, 0, false }
         ),
         ArithImmed8Params(
             std::vector<uint8_t>{ 0x82, 0x2f, 0x01 },
-            { 2, 1, 0 }
+            { 2, 1, 0, false }
         )
     ));
 
@@ -105,7 +105,7 @@ INSTANTIATE_TEST_CASE_P(Sub, ArithmeticRegImmed16Test,
         // sub bx, 1
         ArithImmed16Params(
             std::vector<uint8_t>{ 0x81, 0xeb, 0x01, 0x0 },
-            { 2, 1, 0 }
+            { 2, 1, 0, false }
         )
     ));
 
@@ -114,7 +114,7 @@ INSTANTIATE_TEST_CASE_P(Sub, ArithmeticMemImmed16Test,
         // sub word [bx], 1
         ArithImmed16Params(
             std::vector<uint8_t>{ 0x81, 0x2f, 0x01, 0x00 },
-            { 2, 1, 0 }
+            { 2, 1, 0, false }
         )
     ));
 
@@ -123,12 +123,12 @@ INSTANTIATE_TEST_CASE_P(Sub, ArithmeticRegImmed16TestExtend,
         // sub bx, -1
         ArithImmed16Params(
             std::vector<uint8_t>{ 0x83, 0xeb, 0xff },
-            { 1, 2, CF | AF }
+            { 1, 2, CF | AF, false }
         ),
         // sub bx, 1
         ArithImmed16Params(
             std::vector<uint8_t>{ 0x83, 0xeb, 0x01 },
-            { 2, 1, 0 }
+            { 2, 1, 0, false }
         )
     ));
 
@@ -137,12 +137,12 @@ INSTANTIATE_TEST_CASE_P(Sub, ArithmeticMemImmed16TestExtend,
         // sub word [bx], -1
         ArithImmed16Params(
             std::vector<uint8_t>{ 0x83, 0x2f, 0xff },
-            { 1, 2, CF | AF }
+            { 1, 2, CF | AF, false }
         ),
         // sub word [bx], 1
         ArithImmed16Params(
             std::vector<uint8_t>{ 0x83, 0x2f, 0x01 },
-            { 2, 1, 0 }
+            { 2, 1, 0, false }
         )
     ));
 
@@ -151,7 +151,7 @@ INSTANTIATE_TEST_CASE_P(Sub, ArithmeticAlImmedTest,
         // sub al, 1
         ArithImmed8Params(
             std::vector<uint8_t>{ 0x2c, 0x01 },
-            { 2, 1, 0 }
+            { 2, 1, 0, false }
         )
     ));
 
@@ -160,6 +160,6 @@ INSTANTIATE_TEST_CASE_P(Sub, ArithmeticAxImmedTest,
         // sub ax, 1
         ArithImmed16Params(
             std::vector<uint8_t>{ 0x2d, 0x01, 0x0 },
-            { 2, 1, 0 }
+            { 2, 1, 0, false }
         )
     ));

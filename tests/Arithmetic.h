@@ -24,6 +24,7 @@ struct ArithmeticImmediateTest {
     T v1;
     T expected;
     uint16_t expected_flags;
+    bool carry_set;
 };
 
 using ArithImmed8Params = std::pair<const std::vector<uint8_t>,
