@@ -238,7 +238,7 @@ void Emulator::mov8e()
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
 
-    if (modrm_decoder->raw_reg() & (1 << 4))
+    if (modrm_decoder->raw_reg() & (1 << 2))
         return;
 
     uint16_t val = read_data<uint16_t>();
@@ -254,7 +254,7 @@ void Emulator::mov8c()
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
 
-    if (modrm_decoder->raw_reg() & (1 << 4))
+    if (modrm_decoder->raw_reg() & (1 << 2))
         return;
 
     auto segnum = modrm_decoder->raw_reg();
