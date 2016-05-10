@@ -58,7 +58,7 @@ void RegisterFile::set(GPR regnum, uint16_t value)
         registers[regnum] = value;
         break;
     default:
-        abort();
+        __builtin_unreachable();
     }
 }
 
@@ -86,7 +86,7 @@ uint16_t RegisterFile::get(GPR regnum) const
     case 0 ... NUM_16BIT_REGS - 1:
         return registers[regnum];
     default:
-        abort();
+        __builtin_unreachable();
     }
 }
 
