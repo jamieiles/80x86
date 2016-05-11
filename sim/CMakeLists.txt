@@ -1,4 +1,4 @@
-add_library(8086sim
+add_library(8086sim SHARED
             Fifo.h
             RegisterFile.h
             RegisterFile.cpp

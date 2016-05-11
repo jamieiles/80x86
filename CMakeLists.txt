@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
 project(8086 CXX)
 
+set(CMAKE_LINK_DEPENDS_NO_SHARED 1)
 set(CMAKE_CONFIGURATION_TYPES "Coverage;Release")
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -ggdb3 -std=c++14")
