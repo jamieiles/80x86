@@ -5,7 +5,167 @@
 #include "Fifo.h"
 #include "Memory.h"
 
-Emulator::Emulator(RegisterFile *registers)
+class EmulatorPimpl {
+public:
+    EmulatorPimpl(RegisterFile *registers);
+
+    size_t emulate();
+
+    void set_instruction_stream(Fifo<uint8_t> *instr_stream)
+    {
+        this->instr_stream = instr_stream;
+    }
+
+    void set_memory(Memory *mem)
+    {
+        this->mem = mem;
+    }
+
+    void set_io(Memory *io)
+    {
+        this->io = io;
+    }
+private:
+    uint8_t fetch_byte();
+    //
+    // mov
+    //
+    void mov88();
+    void mov89();
+    void mov8a();
+    void mov8b();
+    void movc6();
+    void movc7();
+    void movb0_b7();
+    void movb8_bf();
+    void mova0();
+    void mova1();
+    void mova2();
+    void mova3();
+    void mov8e();
+    void mov8c();
+    //
+    // push
+    //
+    void pushff();
+    void push50_57();
+    void pushsr();
+    //
+    // pop
+    //
+    void popf8();
+    void pop58_5f();
+    void popsr();
+    //
+    // xchg
+    //
+    void xchg86();
+    void xchg87();
+    void xchg90_97();
+    //
+    // in
+    //
+    void ine4();
+    void ine5();
+    void inec();
+    void ined();
+    //
+    // out
+    //
+    void oute6();
+    void oute7();
+    void outee();
+    void outef();
+    //
+    // xlat
+    //
+    void xlatd7();
+    //
+    // lea
+    //
+    void lea8d();
+    //
+    // lds
+    //
+    void ldsc5();
+    //
+    // les
+    //
+    void lesc4();
+    //
+    // lahf
+    //
+    void lahf9f();
+    //
+    // sahf
+    //
+    void sahf9e();
+    //
+    // pushf
+    //
+    void pushf9c();
+    //
+    // popf
+    //
+    void popf9d();
+    //
+    // add / adc
+    //
+    void add_adc_sub_80();
+    void add_adc_sub_81();
+    void add_adc_sub_82();
+    void add_adc_sub_83();
+    //
+    // add
+    //
+    template <typename T>
+    T do_add(uint16_t v1, uint16_t v2, uint16_t carry_in=0);
+    void add00();
+    void add01();
+    void add02();
+    void add03();
+    void add04();
+    void add05();
+    //
+    // adc
+    //
+    void adc10();
+    void adc11();
+    void adc12();
+    void adc13();
+    void adc14();
+    void adc15();
+    //
+    // sub
+    //
+    template <typename T>
+    T do_sub(uint16_t v1, uint16_t v2, uint16_t carry_in=0);
+    void sub28();
+    void sub29();
+    void sub2a();
+    void sub2b();
+    void sub2c();
+    void sub2d();
+    // Helpers
+    template <typename T>
+    T do_alu(uint16_t v1, uint16_t v2, uint16_t carry_in,
+             std::function<uint32_t(uint32_t, uint32_t, uint32_t)> alu_op);
+    template <typename T>
+        void write_data(T val, bool stack=false);
+    template <typename T>
+        T read_data(bool stack=false);
+    uint16_t fetch_16bit();
+
+    Fifo<uint8_t> *instr_stream;
+    Memory *mem;
+    Memory *io;
+    RegisterFile *registers;
+    size_t instr_length = 0;
+    std::unique_ptr<ModRMDecoder> modrm_decoder;
+    uint8_t opcode;
+};
+
+EmulatorPimpl::EmulatorPimpl(RegisterFile *registers)
     : registers(registers)
 {
     modrm_decoder = std::make_unique<ModRMDecoder>(
@@ -14,7 +174,7 @@ Emulator::Emulator(RegisterFile *registers)
     );
 }
 
-size_t Emulator::emulate()
+size_t EmulatorPimpl::emulate()
 {
     instr_length = 0;
 
@@ -111,7 +271,7 @@ size_t Emulator::emulate()
 }
 
 // mov m/r, r (8-bit)
-void Emulator::mov88()
+void EmulatorPimpl::mov88()
 {
     modrm_decoder->set_width(OP_WIDTH_8);
     modrm_decoder->decode();
@@ -123,7 +283,7 @@ void Emulator::mov88()
 }
 
 // mov m/r, r (16-bit)
-void Emulator::mov89()
+void EmulatorPimpl::mov89()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
@@ -135,7 +295,7 @@ void Emulator::mov89()
 }
 
 // mov r, m/r (8-bit)
-void Emulator::mov8a()
+void EmulatorPimpl::mov8a()
 {
     modrm_decoder->set_width(OP_WIDTH_8);
     modrm_decoder->decode();
@@ -147,7 +307,7 @@ void Emulator::mov8a()
 }
 
 // mov r, m/r (16-bit)
-void Emulator::mov8b()
+void EmulatorPimpl::mov8b()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
@@ -159,7 +319,7 @@ void Emulator::mov8b()
 }
 
 // mov r/m, immediate (reg == 0), 8-bit
-void Emulator::movc6()
+void EmulatorPimpl::movc6()
 {
     modrm_decoder->set_width(OP_WIDTH_8);
     modrm_decoder->decode();
@@ -171,7 +331,7 @@ void Emulator::movc6()
 }
 
 // mov r/m, immediate (reg == 0), 16-bit
-void Emulator::movc7()
+void EmulatorPimpl::movc7()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
@@ -181,7 +341,7 @@ void Emulator::movc7()
 }
 
 // mov r, immediate, 8-bit
-void Emulator::movb0_b7()
+void EmulatorPimpl::movb0_b7()
 {
     uint8_t immed = fetch_byte();
     auto reg = static_cast<GPR>(static_cast<int>(AL) + (opcode & 0x7));
@@ -189,7 +349,7 @@ void Emulator::movb0_b7()
 }
 
 // mov r, immediate, 16-bit
-void Emulator::movb8_bf()
+void EmulatorPimpl::movb8_bf()
 {
     uint16_t immed = fetch_16bit();
     auto reg = static_cast<GPR>(static_cast<int>(AX) + (opcode & 0x7));
@@ -197,7 +357,7 @@ void Emulator::movb8_bf()
 }
 
 // mov al, m, 8-bit
-void Emulator::mova0()
+void EmulatorPimpl::mova0()
 {
     auto displacement = fetch_16bit();
     auto addr = get_phys_addr(registers->get(DS), displacement);
@@ -206,7 +366,7 @@ void Emulator::mova0()
 }
 
 // mov ax, m, 16-bit
-void Emulator::mova1()
+void EmulatorPimpl::mova1()
 {
     auto displacement = fetch_16bit();
     auto addr = get_phys_addr(registers->get(DS), displacement);
@@ -215,7 +375,7 @@ void Emulator::mova1()
 }
 
 // mov m, al 8-bit
-void Emulator::mova2()
+void EmulatorPimpl::mova2()
 {
     auto displacement = fetch_16bit();
     auto val = registers->get(AL);
@@ -224,7 +384,7 @@ void Emulator::mova2()
 }
 
 // mov m, al 16-bit
-void Emulator::mova3()
+void EmulatorPimpl::mova3()
 {
     auto displacement = fetch_16bit();
     auto val = registers->get(AX);
@@ -233,7 +393,7 @@ void Emulator::mova3()
 }
 
 // mov sr, r/m
-void Emulator::mov8e()
+void EmulatorPimpl::mov8e()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
@@ -249,7 +409,7 @@ void Emulator::mov8e()
 }
 
 // mov r/m, sr
-void Emulator::mov8c()
+void EmulatorPimpl::mov8c()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
@@ -265,7 +425,7 @@ void Emulator::mov8c()
 }
 
 // push r/m
-void Emulator::pushff()
+void EmulatorPimpl::pushff()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
@@ -280,7 +440,7 @@ void Emulator::pushff()
 }
 
 // push r
-void Emulator::push50_57()
+void EmulatorPimpl::push50_57()
 {
     auto reg = static_cast<GPR>(static_cast<int>(AX) + (opcode & 0x7));
     auto val = registers->get(reg);
@@ -291,7 +451,7 @@ void Emulator::push50_57()
 }
 
 // push sr
-void Emulator::pushsr()
+void EmulatorPimpl::pushsr()
 {
     auto reg = static_cast<GPR>(static_cast<int>(ES) + ((opcode >> 3) & 0x3));
     auto val = registers->get(reg);
@@ -302,7 +462,7 @@ void Emulator::pushsr()
 }
 
 // pop r/m
-void Emulator::popf8()
+void EmulatorPimpl::popf8()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
@@ -318,7 +478,7 @@ void Emulator::popf8()
 }
 
 // pop r
-void Emulator::pop58_5f()
+void EmulatorPimpl::pop58_5f()
 {
     auto reg = static_cast<GPR>(static_cast<int>(AX) + (opcode & 0x7));
     auto addr = get_phys_addr(registers->get(SS), registers->get(SP));
@@ -329,7 +489,7 @@ void Emulator::pop58_5f()
 }
 
 // pop sr
-void Emulator::popsr()
+void EmulatorPimpl::popsr()
 {
     auto reg = static_cast<GPR>(static_cast<int>(ES) + ((opcode >> 3) & 0x3));
     auto addr = get_phys_addr(registers->get(SS), registers->get(SP));
@@ -340,7 +500,7 @@ void Emulator::popsr()
 }
 
 // xchg r, r/m, 8-bit
-void Emulator::xchg86()
+void EmulatorPimpl::xchg86()
 {
     modrm_decoder->set_width(OP_WIDTH_8);
     modrm_decoder->decode();
@@ -353,7 +513,7 @@ void Emulator::xchg86()
 }
 
 // xchg r, r/m, 16-bit
-void Emulator::xchg87()
+void EmulatorPimpl::xchg87()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
@@ -366,7 +526,7 @@ void Emulator::xchg87()
 }
 
 // xchg accumulator, r
-void Emulator::xchg90_97()
+void EmulatorPimpl::xchg90_97()
 {
     auto reg = static_cast<GPR>(static_cast<int>(AX) + (opcode & 0x7));
 
@@ -378,7 +538,7 @@ void Emulator::xchg90_97()
 }
 
 // in al, data8
-void Emulator::ine4()
+void EmulatorPimpl::ine4()
 {
     auto port_num = fetch_byte();
 
@@ -386,7 +546,7 @@ void Emulator::ine4()
 }
 
 // in ax, data8
-void Emulator::ine5()
+void EmulatorPimpl::ine5()
 {
     auto port_num = fetch_byte();
 
@@ -394,19 +554,19 @@ void Emulator::ine5()
 }
 
 // in al, dx
-void Emulator::inec()
+void EmulatorPimpl::inec()
 {
     registers->set(AL, io->read<uint8_t>(registers->get(DX)));
 }
 
 // in ax, dx
-void Emulator::ined()
+void EmulatorPimpl::ined()
 {
     registers->set(AX, io->read<uint16_t>(registers->get(DX)));
 }
 
 // out data8, al
-void Emulator::oute6()
+void EmulatorPimpl::oute6()
 {
     auto port_num = fetch_byte();
 
@@ -414,7 +574,7 @@ void Emulator::oute6()
 }
 
 // out data8, ax
-void Emulator::oute7()
+void EmulatorPimpl::oute7()
 {
     auto port_num = fetch_byte();
 
@@ -422,19 +582,19 @@ void Emulator::oute7()
 }
 
 // out dx, al
-void Emulator::outee()
+void EmulatorPimpl::outee()
 {
     io->write<uint8_t>(registers->get(DX), registers->get(AL));
 }
 
 // out dx, ax
-void Emulator::outef()
+void EmulatorPimpl::outef()
 {
     io->write<uint16_t>(registers->get(DX), registers->get(AX));
 }
 
 // xlat
-void Emulator::xlatd7()
+void EmulatorPimpl::xlatd7()
 {
     auto v = registers->get(AL);
     auto table_addr = registers->get(BX);
@@ -444,7 +604,7 @@ void Emulator::xlatd7()
 }
 
 // lea r, r/m
-void Emulator::lea8d()
+void EmulatorPimpl::lea8d()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
@@ -453,7 +613,7 @@ void Emulator::lea8d()
 }
 
 // lds r, m
-void Emulator::ldsc5()
+void EmulatorPimpl::ldsc5()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
@@ -470,7 +630,7 @@ void Emulator::ldsc5()
 }
 
 // les r, m
-void Emulator::lesc4()
+void EmulatorPimpl::lesc4()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
@@ -487,14 +647,14 @@ void Emulator::lesc4()
 }
 
 // lahf
-void Emulator::lahf9f()
+void EmulatorPimpl::lahf9f()
 {
     auto flags = registers->get_flags();
     registers->set(AH, flags & 0xff);
 }
 
 // sahf
-void Emulator::sahf9e()
+void EmulatorPimpl::sahf9e()
 {
     auto new_flags = registers->get(AH);
     auto old_flags = registers->get_flags();
@@ -502,7 +662,7 @@ void Emulator::sahf9e()
 }
 
 // pushf
-void Emulator::pushf9c()
+void EmulatorPimpl::pushf9c()
 {
     auto val = registers->get_flags();
     registers->set(SP, registers->get(SP) - 2);
@@ -511,7 +671,7 @@ void Emulator::pushf9c()
 }
 
 // popf
-void Emulator::popf9d()
+void EmulatorPimpl::popf9d()
 {
     auto addr = get_phys_addr(registers->get(SS), registers->get(SP));
     auto val = mem->read<uint16_t>(addr);
@@ -521,7 +681,7 @@ void Emulator::popf9d()
 }
 
 template <typename T>
-T Emulator::do_alu(uint16_t v1, uint16_t v2, uint16_t carry_in,
+T EmulatorPimpl::do_alu(uint16_t v1, uint16_t v2, uint16_t carry_in,
                    std::function<uint32_t(uint32_t, uint32_t, uint32_t)> alu_op)
 {
     uint16_t flags = registers->get_flags();
@@ -556,7 +716,7 @@ T Emulator::do_alu(uint16_t v1, uint16_t v2, uint16_t carry_in,
 }
 
 template <typename T>
-T Emulator::do_add(uint16_t v1, uint16_t v2, uint16_t carry_in)
+T EmulatorPimpl::do_add(uint16_t v1, uint16_t v2, uint16_t carry_in)
 {
     return do_alu<T>(v1, v2, carry_in,
         [](uint32_t a, uint32_t b, uint32_t c) -> uint32_t {
@@ -565,7 +725,7 @@ T Emulator::do_add(uint16_t v1, uint16_t v2, uint16_t carry_in)
 }
 
 template <typename T>
-T Emulator::do_sub(uint16_t v1, uint16_t v2, uint16_t carry_in)
+T EmulatorPimpl::do_sub(uint16_t v1, uint16_t v2, uint16_t carry_in)
 {
     return do_alu<T>(v1, v2, carry_in,
         [](uint32_t a, uint32_t b, uint32_t c) -> uint32_t {
@@ -574,7 +734,7 @@ T Emulator::do_sub(uint16_t v1, uint16_t v2, uint16_t carry_in)
 }
 
 // add r, r/m, 8-bit
-void Emulator::add00()
+void EmulatorPimpl::add00()
 {
     modrm_decoder->set_width(OP_WIDTH_8);
     modrm_decoder->decode();
@@ -588,7 +748,7 @@ void Emulator::add00()
 }
 
 // add r, r/m, 16-bit
-void Emulator::add01()
+void EmulatorPimpl::add01()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
@@ -602,7 +762,7 @@ void Emulator::add01()
 }
 
 // add r/m, r, 8-bit
-void Emulator::add02()
+void EmulatorPimpl::add02()
 {
     modrm_decoder->set_width(OP_WIDTH_8);
     modrm_decoder->decode();
@@ -616,7 +776,7 @@ void Emulator::add02()
 }
 
 // add r/m, r, 16-bit
-void Emulator::add03()
+void EmulatorPimpl::add03()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
@@ -629,7 +789,7 @@ void Emulator::add03()
     registers->set(modrm_decoder->reg(), result & 0xffff);
 }
 
-void Emulator::add_adc_sub_80()
+void EmulatorPimpl::add_adc_sub_80()
 {
     modrm_decoder->set_width(OP_WIDTH_8);
     modrm_decoder->decode();
@@ -654,14 +814,14 @@ void Emulator::add_adc_sub_80()
     write_data<uint8_t>(result & 0xff);
 }
 
-void Emulator::add_adc_sub_82()
+void EmulatorPimpl::add_adc_sub_82()
 {
     // The 's' bit has no effect for 8-bit add immediate.
     add_adc_sub_80();
 }
 
 // add r/m, immediate, 16-bit
-void Emulator::add_adc_sub_81()
+void EmulatorPimpl::add_adc_sub_81()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
@@ -687,7 +847,7 @@ void Emulator::add_adc_sub_81()
 }
 
 // add r/m, immediate, 8-bit, sign-extended
-void Emulator::add_adc_sub_83()
+void EmulatorPimpl::add_adc_sub_83()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
@@ -714,7 +874,7 @@ void Emulator::add_adc_sub_83()
     write_data<uint16_t>(result & 0xffff);
 }
 
-void Emulator::add04()
+void EmulatorPimpl::add04()
 {
     auto v1 = registers->get(AL);
     auto v2 = fetch_byte();
@@ -723,7 +883,7 @@ void Emulator::add04()
     registers->set(AL, result);
 }
 
-void Emulator::add05()
+void EmulatorPimpl::add05()
 {
     auto v1 = registers->get(AX);
     auto v2 = fetch_16bit();
@@ -733,7 +893,7 @@ void Emulator::add05()
 }
 
 // adc r, r/m, 8-bit
-void Emulator::adc10()
+void EmulatorPimpl::adc10()
 {
     modrm_decoder->set_width(OP_WIDTH_8);
     modrm_decoder->decode();
@@ -748,7 +908,7 @@ void Emulator::adc10()
 }
 
 // adc r, r/m, 16-bit
-void Emulator::adc11()
+void EmulatorPimpl::adc11()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
@@ -763,7 +923,7 @@ void Emulator::adc11()
 }
 
 // adc r/m, r, 8-bit
-void Emulator::adc12()
+void EmulatorPimpl::adc12()
 {
     modrm_decoder->set_width(OP_WIDTH_8);
     modrm_decoder->decode();
@@ -778,7 +938,7 @@ void Emulator::adc12()
 }
 
 // adc r/m, r, 16-bit
-void Emulator::adc13()
+void EmulatorPimpl::adc13()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
@@ -792,7 +952,7 @@ void Emulator::adc13()
     registers->set(modrm_decoder->reg(), result & 0xffff);
 }
 
-void Emulator::adc14()
+void EmulatorPimpl::adc14()
 {
     auto v1 = registers->get(AL);
     auto v2 = fetch_byte();
@@ -802,7 +962,7 @@ void Emulator::adc14()
     registers->set(AL, result);
 }
 
-void Emulator::adc15()
+void EmulatorPimpl::adc15()
 {
     auto v1 = registers->get(AX);
     auto v2 = fetch_16bit();
@@ -813,7 +973,7 @@ void Emulator::adc15()
 }
 
 // sub r, r/m, 8-bit
-void Emulator::sub28()
+void EmulatorPimpl::sub28()
 {
     modrm_decoder->set_width(OP_WIDTH_8);
     modrm_decoder->decode();
@@ -827,7 +987,7 @@ void Emulator::sub28()
 }
 
 // sub r, r/m, 16-bit
-void Emulator::sub29()
+void EmulatorPimpl::sub29()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
@@ -841,7 +1001,7 @@ void Emulator::sub29()
 }
 
 // sub r/m, r, 8-bit
-void Emulator::sub2a()
+void EmulatorPimpl::sub2a()
 {
     modrm_decoder->set_width(OP_WIDTH_8);
     modrm_decoder->decode();
@@ -855,7 +1015,7 @@ void Emulator::sub2a()
 }
 
 // sub r/m, r, 16-bit
-void Emulator::sub2b()
+void EmulatorPimpl::sub2b()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
@@ -868,7 +1028,7 @@ void Emulator::sub2b()
     registers->set(modrm_decoder->reg(), result & 0xffff);
 }
 
-void Emulator::sub2c()
+void EmulatorPimpl::sub2c()
 {
     auto v1 = registers->get(AL);
     auto v2 = fetch_byte();
@@ -877,7 +1037,7 @@ void Emulator::sub2c()
     registers->set(AL, result);
 }
 
-void Emulator::sub2d()
+void EmulatorPimpl::sub2d()
 {
     auto v1 = registers->get(AX);
     auto v2 = fetch_16bit();
@@ -886,14 +1046,14 @@ void Emulator::sub2d()
     registers->set(AX, result);
 }
 
-uint8_t Emulator::fetch_byte()
+uint8_t EmulatorPimpl::fetch_byte()
 {
     ++instr_length;
 
     return instr_stream->pop();
 }
 
-uint16_t Emulator::fetch_16bit()
+uint16_t EmulatorPimpl::fetch_16bit()
 {
     uint16_t immed = (static_cast<uint16_t>(fetch_byte()) |
                       (static_cast<uint16_t>(fetch_byte()) << 8));
@@ -901,7 +1061,7 @@ uint16_t Emulator::fetch_16bit()
 }
 
 template <typename T>
-void Emulator::write_data(T val, bool stack)
+void EmulatorPimpl::write_data(T val, bool stack)
 {
     if (modrm_decoder->rm_type() == OP_REG) {
         auto dest = modrm_decoder->rm_reg();
@@ -915,7 +1075,7 @@ void Emulator::write_data(T val, bool stack)
 }
 
 template <typename T>
-T Emulator::read_data(bool stack)
+T EmulatorPimpl::read_data(bool stack)
 {
     if (modrm_decoder->rm_type() == OP_MEM) {
         auto displacement = modrm_decoder->effective_address();
@@ -927,4 +1087,33 @@ T Emulator::read_data(bool stack)
         auto source = modrm_decoder->rm_reg();
         return registers->get(source);
     }
+}
+
+Emulator::Emulator(RegisterFile *registers)
+    : pimpl(std::make_unique<EmulatorPimpl>(registers))
+{
+}
+
+Emulator::~Emulator()
+{
+}
+
+size_t Emulator::emulate()
+{
+    return pimpl->emulate();
+}
+
+void Emulator::set_instruction_stream(Fifo<uint8_t> *instr_stream)
+{
+    pimpl->set_instruction_stream(instr_stream);
+}
+
+void Emulator::set_memory(Memory *mem)
+{
+    pimpl->set_memory(mem);
+}
+
+void Emulator::set_io(Memory *io)
+{
+    pimpl->set_io(io);
 }
