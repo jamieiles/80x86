@@ -1,5 +1,6 @@
 #include "Emulate.h"
 
+#include <cassert>
 #include <functional>
 #include <stdint.h>
 #include "Fifo.h"
@@ -148,7 +149,14 @@ private:
     void sub2b();
     void sub2c();
     void sub2d();
+    //
+    // inc
+    //
+    void incfe();
+    void incff();
+    void inc40_47();
     // Helpers
+    void push_inc_ff();
     template <typename T>
     std::pair<uint16_t, T> do_alu(uint16_t v1, uint16_t v2,
                                   uint16_t carry_in,
@@ -199,7 +207,7 @@ size_t EmulatorPimpl::emulate()
     case 0x8e: mov8e(); break;
     case 0x8c: mov8c(); break;
     // push
-    case 0xff: pushff(); break;
+    case 0xff: push_inc_ff(); break;
     case 0x50 ... 0x57: push50_57(); break;
     case 0x06: // fallthrough
     case 0x0e: // fallthrough
@@ -268,6 +276,9 @@ size_t EmulatorPimpl::emulate()
     case 0x2b: sub2b(); break;
     case 0x2c: sub2c(); break;
     case 0x2d: sub2d(); break;
+    // inc
+    case 0xfe: incfe(); break;
+    case 0x40 ... 0x47: inc40_47(); break;
     }
 
     return instr_length;
@@ -427,14 +438,21 @@ void EmulatorPimpl::mov8c()
     write_data<uint16_t>(val);
 }
 
-// push r/m
-void EmulatorPimpl::pushff()
+void EmulatorPimpl::push_inc_ff()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
 
-    if (modrm_decoder->raw_reg() != 6)
-        return;
+    if (modrm_decoder->raw_reg() == 6)
+        pushff();
+    else if (modrm_decoder->raw_reg() == 0)
+        incff();
+}
+
+// push r/m
+void EmulatorPimpl::pushff()
+{
+    assert(modrm_decoder->raw_reg() == 6);
 
     auto val = read_data<uint16_t>();
     registers->set(SP, registers->get(SP) - 2);
@@ -1107,6 +1125,60 @@ void EmulatorPimpl::sub2d()
 
     registers->set_flags(flags);
     registers->set(AX, result);
+}
+
+// inc r/m, 8-bit
+void EmulatorPimpl::incfe()
+{
+    modrm_decoder->set_width(OP_WIDTH_8);
+    modrm_decoder->decode();
+
+    if (modrm_decoder->raw_reg() != 0)
+        return;
+
+    uint8_t v = read_data<uint8_t>();
+    uint8_t result;
+    uint16_t flags, old_flags = registers->get_flags();
+
+    std::tie(flags, result) = do_add<uint8_t>(v, 1);
+
+    old_flags &= ~(OF | SF | ZF | AF | PF);
+    flags &= (OF | SF | ZF | AF | PF);
+    registers->set_flags(flags | old_flags);
+    write_data<uint8_t>(result);
+}
+
+// inc r/m, 16-bit
+void EmulatorPimpl::incff()
+{
+    assert(modrm_decoder->raw_reg() == 0);
+
+    uint16_t v = read_data<uint16_t>();
+    uint16_t result;
+    uint16_t flags, old_flags = registers->get_flags();
+
+    std::tie(flags, result) = do_add<uint16_t>(v, 1);
+
+    old_flags &= ~(OF | SF | ZF | AF | PF);
+    flags &= (OF | SF | ZF | AF | PF);
+    registers->set_flags(flags | old_flags);
+    write_data<uint16_t>(result);
+}
+
+// inc r, 16-bit
+void EmulatorPimpl::inc40_47()
+{
+    auto reg = static_cast<GPR>(static_cast<int>(AX) + (opcode & 0x7));
+    auto v = registers->get(reg);
+    uint16_t result;
+    uint16_t flags, old_flags = registers->get_flags();
+
+    std::tie(flags, result) = do_add<uint16_t>(v, 1);
+
+    old_flags &= ~(OF | SF | ZF | AF | PF);
+    flags &= (OF | SF | ZF | AF | PF);
+    registers->set_flags(flags | old_flags);
+    registers->set(reg, result);
 }
 
 uint8_t EmulatorPimpl::fetch_byte()
