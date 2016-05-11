@@ -119,7 +119,8 @@ private:
     // add
     //
     template <typename T>
-    T do_add(uint16_t v1, uint16_t v2, uint16_t carry_in=0);
+    std::pair<uint16_t, T> do_add(uint16_t v1, uint16_t v2,
+                                  uint16_t carry_in=0);
     void add00();
     void add01();
     void add02();
@@ -139,7 +140,8 @@ private:
     // sub
     //
     template <typename T>
-    T do_sub(uint16_t v1, uint16_t v2, uint16_t carry_in=0);
+    std::pair<uint16_t, T> do_sub(uint16_t v1, uint16_t v2,
+                                  uint16_t carry_in=0);
     void sub28();
     void sub29();
     void sub2a();
@@ -148,8 +150,9 @@ private:
     void sub2d();
     // Helpers
     template <typename T>
-    T do_alu(uint16_t v1, uint16_t v2, uint16_t carry_in,
-             std::function<uint32_t(uint32_t, uint32_t, uint32_t)> alu_op);
+    std::pair<uint16_t, T> do_alu(uint16_t v1, uint16_t v2,
+                                  uint16_t carry_in,
+                                  std::function<uint32_t(uint32_t, uint32_t, uint32_t)> alu_op);
     template <typename T>
         void write_data(T val, bool stack=false);
     template <typename T>
@@ -681,8 +684,9 @@ void EmulatorPimpl::popf9d()
 }
 
 template <typename T>
-T EmulatorPimpl::do_alu(uint16_t v1, uint16_t v2, uint16_t carry_in,
-                   std::function<uint32_t(uint32_t, uint32_t, uint32_t)> alu_op)
+std::pair<uint16_t, T>
+EmulatorPimpl::do_alu(uint16_t v1, uint16_t v2, uint16_t carry_in,
+                      std::function<uint32_t(uint32_t, uint32_t, uint32_t)> alu_op)
 {
     uint16_t flags = registers->get_flags();
 
@@ -710,13 +714,12 @@ T EmulatorPimpl::do_alu(uint16_t v1, uint16_t v2, uint16_t carry_in,
         (v1 & (1 << sign_bit)) != (result32 & (1 << sign_bit)))
         flags |= OF;
 
-    registers->set_flags(flags);
-
-    return result32;
+    return std::make_pair(flags, static_cast<T>(result32));
 }
 
 template <typename T>
-T EmulatorPimpl::do_add(uint16_t v1, uint16_t v2, uint16_t carry_in)
+std::pair<uint16_t, T> EmulatorPimpl::do_add(uint16_t v1, uint16_t v2,
+                                             uint16_t carry_in)
 {
     return do_alu<T>(v1, v2, carry_in,
         [](uint32_t a, uint32_t b, uint32_t c) -> uint32_t {
@@ -725,7 +728,8 @@ T EmulatorPimpl::do_add(uint16_t v1, uint16_t v2, uint16_t carry_in)
 }
 
 template <typename T>
-T EmulatorPimpl::do_sub(uint16_t v1, uint16_t v2, uint16_t carry_in)
+std::pair<uint16_t, T> EmulatorPimpl::do_sub(uint16_t v1, uint16_t v2,
+                                             uint16_t carry_in)
 {
     return do_alu<T>(v1, v2, carry_in,
         [](uint32_t a, uint32_t b, uint32_t c) -> uint32_t {
@@ -742,8 +746,11 @@ void EmulatorPimpl::add00()
     uint8_t v1 = read_data<uint8_t>();
     uint8_t v2 = registers->get(modrm_decoder->reg());
 
-    auto result = do_add<uint8_t>(v1, v2);
+    uint8_t result;
+    uint16_t flags;
+    std::tie(flags, result) = do_add<uint8_t>(v1, v2);
 
+    registers->set_flags(flags);
     write_data<uint8_t>(result & 0xff);
 }
 
@@ -756,8 +763,10 @@ void EmulatorPimpl::add01()
     uint16_t v1 = read_data<uint16_t>();
     uint16_t v2 = registers->get(modrm_decoder->reg());
 
-    auto result = do_add<uint16_t>(v1, v2);
+    uint16_t result, flags;
+    std::tie(flags, result) = do_add<uint16_t>(v1, v2);
 
+    registers->set_flags(flags);
     write_data<uint16_t>(result & 0xffff);
 }
 
@@ -770,8 +779,11 @@ void EmulatorPimpl::add02()
     uint8_t v1 = read_data<uint8_t>();
     uint8_t v2 = registers->get(modrm_decoder->reg());
 
-    auto result = do_add<uint8_t>(v1, v2);
+    uint8_t result;
+    uint16_t flags;
+    std::tie(flags, result) = do_add<uint8_t>(v1, v2);
 
+    registers->set_flags(flags);
     registers->set(modrm_decoder->reg(), result & 0xff);
 }
 
@@ -784,8 +796,11 @@ void EmulatorPimpl::add03()
     uint16_t v1 = read_data<uint16_t>();
     uint16_t v2 = registers->get(modrm_decoder->reg());
 
-    auto result = do_add<uint16_t>(v1, v2);
+    uint16_t result;
+    uint16_t flags;
+    std::tie(flags, result) = do_add<uint16_t>(v1, v2);
 
+    registers->set_flags(flags);
     registers->set(modrm_decoder->reg(), result & 0xffff);
 }
 
@@ -804,13 +819,15 @@ void EmulatorPimpl::add_adc_sub_80()
     bool carry_in = modrm_decoder->raw_reg() == 2 ?
         !!(registers->get_flags() & CF) : 0;
 
-    uint32_t result;
+    uint8_t result;
+    uint16_t flags;
     if (modrm_decoder->raw_reg() == 0 ||
         modrm_decoder->raw_reg() == 2)
-        result = do_add<uint8_t>(v1, v2, carry_in);
+        std::tie(flags, result) = do_add<uint8_t>(v1, v2, carry_in);
     else
-        result = do_sub<uint8_t>(v1, v2, carry_in);
+        std::tie(flags, result) = do_sub<uint8_t>(v1, v2, carry_in);
 
+    registers->set_flags(flags);
     write_data<uint8_t>(result & 0xff);
 }
 
@@ -836,13 +853,15 @@ void EmulatorPimpl::add_adc_sub_81()
     bool carry_in = modrm_decoder->raw_reg() == 2 ?
         !!(registers->get_flags() & CF) : 0;
 
-    uint32_t result;
+    uint16_t result;
+    uint16_t flags;
     if (modrm_decoder->raw_reg() == 0 ||
         modrm_decoder->raw_reg() == 2)
-        result = do_add<uint16_t>(v1, v2, carry_in);
+        std::tie(flags, result) = do_add<uint16_t>(v1, v2, carry_in);
     else
-        result = do_sub<uint16_t>(v1, v2, carry_in);
+        std::tie(flags, result) = do_sub<uint16_t>(v1, v2, carry_in);
 
+    registers->set_flags(flags);
     write_data<uint16_t>(result & 0xffff);
 }
 
@@ -864,13 +883,15 @@ void EmulatorPimpl::add_adc_sub_83()
     bool carry_in = modrm_decoder->raw_reg() == 2 ?
         !!(registers->get_flags() & CF) : 0;
 
-    uint32_t result;
+    uint16_t result;
+    uint16_t flags;
     if (modrm_decoder->raw_reg() == 0 ||
         modrm_decoder->raw_reg() == 2)
-        result = do_add<uint16_t>(v1, immed, carry_in);
+        std::tie(flags, result) = do_add<uint16_t>(v1, immed, carry_in);
     else
-        result = do_sub<uint16_t>(v1, immed, carry_in);
+        std::tie(flags, result) = do_sub<uint16_t>(v1, immed, carry_in);
 
+    registers->set_flags(flags);
     write_data<uint16_t>(result & 0xffff);
 }
 
@@ -878,8 +899,11 @@ void EmulatorPimpl::add04()
 {
     auto v1 = registers->get(AL);
     auto v2 = fetch_byte();
-    auto result = do_add<uint8_t>(v1, v2);
+    uint8_t result;
+    uint16_t flags;
+    std::tie(flags, result) = do_add<uint8_t>(v1, v2);
 
+    registers->set_flags(flags);
     registers->set(AL, result);
 }
 
@@ -887,8 +911,11 @@ void EmulatorPimpl::add05()
 {
     auto v1 = registers->get(AX);
     auto v2 = fetch_16bit();
-    auto result = do_add<uint16_t>(v1, v2);
+    uint16_t result;
+    uint16_t flags;
+    std::tie(flags, result) = do_add<uint16_t>(v1, v2);
 
+    registers->set_flags(flags);
     registers->set(AX, result);
 }
 
@@ -902,8 +929,11 @@ void EmulatorPimpl::adc10()
     uint8_t v2 = registers->get(modrm_decoder->reg());
     bool carry_in = !!(registers->get_flags() & CF);
 
-    auto result = do_add<uint8_t>(v1, v2, carry_in);
+    uint8_t result;
+    uint16_t flags;
+    std::tie(flags, result) = do_add<uint8_t>(v1, v2, carry_in);
 
+    registers->set_flags(flags);
     write_data<uint8_t>(result & 0xff);
 }
 
@@ -917,8 +947,11 @@ void EmulatorPimpl::adc11()
     uint16_t v2 = registers->get(modrm_decoder->reg());
     bool carry_in = !!(registers->get_flags() & CF);
 
-    auto result = do_add<uint16_t>(v1, v2, carry_in);
+    uint16_t result;
+    uint16_t flags;
+    std::tie(flags, result) = do_add<uint16_t>(v1, v2, carry_in);
 
+    registers->set_flags(flags);
     write_data<uint16_t>(result & 0xffff);
 }
 
@@ -932,8 +965,11 @@ void EmulatorPimpl::adc12()
     uint8_t v2 = registers->get(modrm_decoder->reg());
     bool carry_in = !!(registers->get_flags() & CF);
 
-    auto result = do_add<uint8_t>(v1, v2, carry_in);
+    uint8_t result;
+    uint16_t flags;
+    std::tie(flags, result) = do_add<uint8_t>(v1, v2, carry_in);
 
+    registers->set_flags(flags);
     registers->set(modrm_decoder->reg(), result & 0xff);
 }
 
@@ -947,8 +983,11 @@ void EmulatorPimpl::adc13()
     uint16_t v2 = registers->get(modrm_decoder->reg());
     bool carry_in = !!(registers->get_flags() & CF);
 
-    auto result = do_add<uint16_t>(v1, v2, carry_in);
+    uint16_t result;
+    uint16_t flags;
+    std::tie(flags, result) = do_add<uint16_t>(v1, v2, carry_in);
 
+    registers->set_flags(flags);
     registers->set(modrm_decoder->reg(), result & 0xffff);
 }
 
@@ -957,8 +996,11 @@ void EmulatorPimpl::adc14()
     auto v1 = registers->get(AL);
     auto v2 = fetch_byte();
     bool carry_in = !!(registers->get_flags() & CF);
-    auto result = do_add<uint8_t>(v1, v2, carry_in);
+    uint8_t result;
+    uint16_t flags;
+    std::tie(flags, result) = do_add<uint8_t>(v1, v2, carry_in);
 
+    registers->set_flags(flags);
     registers->set(AL, result);
 }
 
@@ -967,8 +1009,11 @@ void EmulatorPimpl::adc15()
     auto v1 = registers->get(AX);
     auto v2 = fetch_16bit();
     bool carry_in = !!(registers->get_flags() & CF);
-    auto result = do_add<uint16_t>(v1, v2, carry_in);
+    uint16_t result;
+    uint16_t flags;
+    std::tie(flags, result) = do_add<uint8_t>(v1, v2, carry_in);
 
+    registers->set_flags(flags);
     registers->set(AX, result);
 }
 
@@ -981,8 +1026,11 @@ void EmulatorPimpl::sub28()
     uint8_t v1 = read_data<uint8_t>();
     uint8_t v2 = registers->get(modrm_decoder->reg());
 
-    auto result = do_sub<uint8_t>(v1, v2);
+    uint8_t result;
+    uint16_t flags;
+    std::tie(flags, result) = do_sub<uint8_t>(v1, v2);
 
+    registers->set_flags(flags);
     write_data<uint8_t>(result & 0xff);
 }
 
@@ -995,8 +1043,11 @@ void EmulatorPimpl::sub29()
     uint16_t v1 = read_data<uint16_t>();
     uint16_t v2 = registers->get(modrm_decoder->reg());
 
-    auto result = do_sub<uint16_t>(v1, v2);
+    uint16_t result;
+    uint16_t flags;
+    std::tie(flags, result) = do_sub<uint16_t>(v1, v2);
 
+    registers->set_flags(flags);
     write_data<uint16_t>(result & 0xffff);
 }
 
@@ -1009,8 +1060,11 @@ void EmulatorPimpl::sub2a()
     uint8_t v1 = read_data<uint8_t>();
     uint8_t v2 = registers->get(modrm_decoder->reg());
 
-    auto result = do_sub<uint8_t>(v1, v2);
+    uint8_t result;
+    uint16_t flags;
+    std::tie(flags, result) = do_sub<uint8_t>(v1, v2);
 
+    registers->set_flags(flags);
     registers->set(modrm_decoder->reg(), result & 0xff);
 }
 
@@ -1023,8 +1077,11 @@ void EmulatorPimpl::sub2b()
     uint16_t v1 = read_data<uint16_t>();
     uint16_t v2 = registers->get(modrm_decoder->reg());
 
-    auto result = do_sub<uint16_t>(v1, v2);
+    uint16_t result;
+    uint16_t flags;
+    std::tie(flags, result) = do_sub<uint16_t>(v1, v2);
 
+    registers->set_flags(flags);
     registers->set(modrm_decoder->reg(), result & 0xffff);
 }
 
@@ -1032,8 +1089,11 @@ void EmulatorPimpl::sub2c()
 {
     auto v1 = registers->get(AL);
     auto v2 = fetch_byte();
-    auto result = do_sub<uint8_t>(v1, v2);
+    uint8_t result;
+    uint16_t flags;
+    std::tie(flags, result) = do_sub<uint8_t>(v1, v2);
 
+    registers->set_flags(flags);
     registers->set(AL, result);
 }
 
@@ -1041,8 +1101,11 @@ void EmulatorPimpl::sub2d()
 {
     auto v1 = registers->get(AX);
     auto v2 = fetch_16bit();
-    auto result = do_sub<uint16_t>(v1, v2);
+    uint16_t result;
+    uint16_t flags;
+    std::tie(flags, result) = do_sub<uint16_t>(v1, v2);
 
+    registers->set_flags(flags);
     registers->set(AX, result);
 }
 
