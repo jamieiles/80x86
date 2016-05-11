@@ -10,5 +10,6 @@ lcov --directory ./sim/CMakeFiles/8086sim.dir/ --directory ./tests/CMakeFiles/un
 lcov --remove 8086sim.info "/usr*" -o 8086sim.info -q
 lcov --remove 8086sim.info "4.*" -o 8086sim.info -q
 lcov --remove 8086sim.info "googletest/*" -o 8086sim.info -q
+lcov --remove 8086sim.info "tests/*" -o 8086sim.info -q
 rm -rf test_coverage
 genhtml -o test_coverage 8086sim.info
