@@ -17,6 +17,7 @@ add_executable(unittest
                TestPointer.cpp
                TestPush.cpp
                TestRegisterFile.cpp
+               TestSbb.cpp
                TestSub.cpp
                TestXchg.cpp
                TestXlat.cpp)
