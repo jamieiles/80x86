@@ -173,6 +173,7 @@ private:
     // ascii
     //
     void aad37();
+    void daa27();
     // Helpers
     void push_inc_ff();
     template <typename T>
@@ -308,6 +309,7 @@ size_t EmulatorPimpl::emulate()
     case 0x48 ... 0x4f: dec48_4f(); break;
     // ascii
     case 0x37: aad37(); break;
+    case 0x27: daa27(); break;
     }
 
     return instr_length;
@@ -1375,6 +1377,28 @@ void EmulatorPimpl::aad37()
         flags &= ~(AF | CF);
     }
 
+    registers->set_flags(flags);
+}
+
+// daa
+void EmulatorPimpl::daa27()
+{
+    uint16_t flags = registers->get_flags();
+
+    auto al = registers->get(AL);
+    if ((al & 0x0f) > 9 || (flags & AF)) {
+        al = (al + 6);
+        flags |= AF;
+    } else {
+        flags &= ~AF;
+    }
+
+    if (al > 0x9f || (flags & CF)) {
+        al += 0x60;
+        flags |= CF;
+    }
+
+    registers->set(AL, al);
     registers->set_flags(flags);
 }
 
