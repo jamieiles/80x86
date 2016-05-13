@@ -20,7 +20,7 @@ TEST_P(ArithmeticRegReg8Test, ResultAndFlags)
 
         ASSERT_EQ(read_reg(AL), t.expected);
         ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                            0x8000 | t.expected_flags);
+                            FLAGS_STUCK_BITS | t.expected_flags);
     }
 }
 
@@ -45,7 +45,7 @@ TEST_P(ArithmeticMemReg8Test, ResultAndFlags)
 
         ASSERT_EQ(read_mem<uint8_t>(0x100), t.expected);
         ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                            0x8000 | t.expected_flags);
+                            FLAGS_STUCK_BITS | t.expected_flags);
     }
 }
 
@@ -68,7 +68,7 @@ TEST_P(ArithmeticRegReg8TestReversed, ResultAndFlags)
 
         ASSERT_EQ(read_reg(BL), t.expected);
         ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                            0x8000 | t.expected_flags);
+                            FLAGS_STUCK_BITS | t.expected_flags);
     }
 }
 
@@ -93,7 +93,7 @@ TEST_P(ArithmeticMemReg8TestReversed, ResultAndFlags)
 
         ASSERT_EQ(read_reg(AL), t.expected);
         ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                            0x8000 | t.expected_flags);
+                            FLAGS_STUCK_BITS | t.expected_flags);
     }
 }
 
@@ -116,7 +116,7 @@ TEST_P(ArithmeticRegReg16Test, ResultAndFlags)
 
         ASSERT_EQ(read_reg(AX), t.expected);
         ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                            0x8000 | t.expected_flags);
+                            FLAGS_STUCK_BITS | t.expected_flags);
     }
 }
 
@@ -141,7 +141,7 @@ TEST_P(ArithmeticRegMem16Test, ResultAndFlags)
 
         ASSERT_EQ(read_mem<uint16_t>(0x100), t.expected);
         ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                            0x8000 | t.expected_flags);
+                            FLAGS_STUCK_BITS | t.expected_flags);
     }
 }
 
@@ -164,7 +164,7 @@ TEST_P(ArithmeticRegReg16TestReversed, ResultAndFlags)
 
         ASSERT_EQ(read_reg(BX), t.expected);
         ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                            0x8000 | t.expected_flags);
+                            FLAGS_STUCK_BITS | t.expected_flags);
     }
 }
 
@@ -189,7 +189,7 @@ TEST_P(ArithmeticMemReg16TestReversed, ResultAndFlags)
 
         ASSERT_EQ(read_reg(AX), t.expected);
         ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                            0x8000 | t.expected_flags);
+                            FLAGS_STUCK_BITS | t.expected_flags);
     }
 }
 
@@ -205,7 +205,7 @@ TEST_P(ArithmeticRegImmed8Test, ResultAndFlags)
 
     ASSERT_EQ(read_reg(BL), params.second.expected);
     ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                        0x8000 | params.second.expected_flags);
+                        FLAGS_STUCK_BITS | params.second.expected_flags);
 }
 
 TEST_P(ArithmeticMemImmed8Test, ResultAndFlags)
@@ -221,7 +221,7 @@ TEST_P(ArithmeticMemImmed8Test, ResultAndFlags)
 
     ASSERT_EQ(read_mem<uint8_t>(0x0100), params.second.expected);
     ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                        0x8000 | params.second.expected_flags);
+                        FLAGS_STUCK_BITS | params.second.expected_flags);
 }
 
 TEST_P(ArithmeticRegImmed16Test, ResultAndFlags)
@@ -237,7 +237,7 @@ TEST_P(ArithmeticRegImmed16Test, ResultAndFlags)
 
     ASSERT_EQ(read_reg(BX), params.second.expected);
     ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                        0x8000 | params.second.expected_flags);
+                        FLAGS_STUCK_BITS | params.second.expected_flags);
 }
 
 TEST_P(ArithmeticMemImmed16Test, ResultAndFlags)
@@ -254,7 +254,7 @@ TEST_P(ArithmeticMemImmed16Test, ResultAndFlags)
 
     ASSERT_EQ(read_mem<uint16_t>(0x0100), params.second.expected);
     ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                        0x8000 | params.second.expected_flags);
+                        FLAGS_STUCK_BITS | params.second.expected_flags);
 }
 
 TEST_P(ArithmeticRegImmed16TestExtend, ResultAndFlags)
@@ -270,7 +270,7 @@ TEST_P(ArithmeticRegImmed16TestExtend, ResultAndFlags)
 
     ASSERT_EQ(read_reg(BX), params.second.expected);
     ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                        0x8000 | params.second.expected_flags);
+                        FLAGS_STUCK_BITS | params.second.expected_flags);
 }
 
 TEST_P(ArithmeticMemImmed16TestExtend, ResultAndFlags)
@@ -287,7 +287,7 @@ TEST_P(ArithmeticMemImmed16TestExtend, ResultAndFlags)
 
     ASSERT_EQ(read_mem<uint16_t>(0x0100), params.second.expected);
     ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                        0x8000 | params.second.expected_flags);
+                        FLAGS_STUCK_BITS | params.second.expected_flags);
 }
 
 TEST_P(ArithmeticAlImmedTest, ResultAndFlags)
@@ -303,7 +303,7 @@ TEST_P(ArithmeticAlImmedTest, ResultAndFlags)
 
     ASSERT_EQ(read_reg(AL), params.second.expected);
     ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                        0x8000 | params.second.expected_flags);
+                        FLAGS_STUCK_BITS | params.second.expected_flags);
 }
 
 TEST_P(ArithmeticAxImmedTest, ResultAndFlags)
@@ -319,5 +319,5 @@ TEST_P(ArithmeticAxImmedTest, ResultAndFlags)
 
     ASSERT_EQ(read_reg(AX), params.second.expected);
     ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                        0x8000 | params.second.expected_flags);
+                        FLAGS_STUCK_BITS | params.second.expected_flags);
 }

@@ -30,5 +30,5 @@ TEST(RegisterFile, reset_clears)
     rf.reset();
     ASSERT_EQ(0x0000, rf.get(AX));
     // Bit 15 is always 1 on 8086
-    ASSERT_EQ(0x8000, rf.get_flags());
+    ASSERT_EQ(FLAGS_STUCK_BITS, rf.get_flags());
 }

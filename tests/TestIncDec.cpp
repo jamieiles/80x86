@@ -66,7 +66,7 @@ TEST_P(IncReg8Test, ResultAndFlags)
 
         ASSERT_EQ(read_reg(AL), t.expected);
         ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                            0x8000 | t.expected_flags);
+                            FLAGS_STUCK_BITS | t.expected_flags);
     }
 };
 INSTANTIATE_TEST_CASE_P(Inc, IncReg8Test,
@@ -98,7 +98,7 @@ TEST_P(IncMem8Test, ResultAndFlags)
 
         ASSERT_EQ(read_mem<uint8_t>(0x0100), t.expected);
         ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                            0x8000 | t.expected_flags);
+                            FLAGS_STUCK_BITS | t.expected_flags);
     }
 };
 INSTANTIATE_TEST_CASE_P(Inc, IncMem8Test,
@@ -138,7 +138,7 @@ TEST_P(IncReg16Test, ResultAndFlags)
 
         ASSERT_EQ(read_reg(AX), t.expected);
         ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                            0x8000 | t.expected_flags);
+                            FLAGS_STUCK_BITS | t.expected_flags);
     }
 };
 INSTANTIATE_TEST_CASE_P(Inc, IncReg16Test,
@@ -165,7 +165,7 @@ TEST_P(IncMem16Test, ResultAndFlags)
 
         ASSERT_EQ(read_mem<uint16_t>(0x0100), t.expected);
         ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                            0x8000 | t.expected_flags);
+                            FLAGS_STUCK_BITS | t.expected_flags);
     }
 };
 INSTANTIATE_TEST_CASE_P(Inc, IncMem16Test,

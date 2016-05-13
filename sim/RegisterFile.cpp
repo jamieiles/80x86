@@ -13,8 +13,7 @@ void RegisterFile::reset()
     for (int i = 0; i < NUM_16BIT_REGS; ++i)
         registers[i] = 0;
 
-    // Bit 15 is always 1 on 8086
-    flags = 0x8000;
+    flags = FLAGS_STUCK_BITS;
 }
 
 void RegisterFile::set(GPR regnum, uint16_t value)
