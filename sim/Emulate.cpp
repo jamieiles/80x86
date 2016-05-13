@@ -169,6 +169,10 @@ private:
     //
     void decff();
     void dec48_4f();
+    //
+    // ascii
+    //
+    void aad37();
     // Helpers
     void push_inc_ff();
     template <typename T>
@@ -302,6 +306,8 @@ size_t EmulatorPimpl::emulate()
     case 0x40 ... 0x47: inc40_47(); break;
     // dec
     case 0x48 ... 0x4f: dec48_4f(); break;
+    // ascii
+    case 0x37: aad37(); break;
     }
 
     return instr_length;
@@ -1348,6 +1354,28 @@ void EmulatorPimpl::dec48_4f()
     flags &= (OF | SF | ZF | AF | PF);
     registers->set_flags(flags | old_flags);
     registers->set(reg, result);
+}
+
+// aad
+void EmulatorPimpl::aad37()
+{
+    uint16_t flags = registers->get_flags();
+
+    auto al = registers->get(AL);
+    if ((al & 0x0f) > 9 || (flags & AF)) {
+        al = (al + 6) & 0x0f;
+        registers->set(AL, al);
+
+        auto ah = registers->get(AH);
+        ah++;
+        registers->set(AH, ah);
+
+        flags |= AF | CF;
+    } else {
+        flags &= ~(AF | CF);
+    }
+
+    registers->set_flags(flags);
 }
 
 uint16_t EmulatorPimpl::fetch_16bit()
