@@ -34,6 +34,21 @@ static std::vector<IncDecTest<uint16_t>> inc16_tests = {
     { 0xffff, 0, PF | ZF | AF | CF, true },
 };
 
+static std::vector<IncDecTest<uint8_t>> dec8_tests = {
+    { 1, 0, ZF | PF, false },
+    { 1, 0, ZF | PF | CF, true },
+    { 0, 0xff, PF | AF | OF | SF, false },
+    { 0, 0xff, PF | AF | CF | OF | SF, true },
+};
+
+static std::vector<IncDecTest<uint16_t>> dec16_tests = {
+    { 1, 0, ZF | PF, false },
+    { 1, 0, ZF | PF | CF, true },
+    { 0x0100, 0x00ff, CF | AF | PF, true },
+    { 0, 0xffff, PF | AF | OF | SF, false },
+    { 0, 0xffff, PF | AF | CF | OF | SF, true },
+};
+
 class IncReg8Test : public EmulateFixture,
     public ::testing::WithParamInterface<IncDec8Params> {
 };
@@ -58,6 +73,11 @@ INSTANTIATE_TEST_CASE_P(Inc, IncReg8Test,
     ::testing::Values(
         // inc al
         IncDec8Params({ 0xfe, 0xc0 }, inc8_tests)
+    ));
+INSTANTIATE_TEST_CASE_P(Dec, IncReg8Test,
+    ::testing::Values(
+        // dec al
+        IncDec8Params({ 0xfe, 0xc8 }, dec8_tests)
     ));
 
 class IncMem8Test : public EmulateFixture,
@@ -86,10 +106,15 @@ INSTANTIATE_TEST_CASE_P(Inc, IncMem8Test,
         // inc byte [bx]
         IncDec8Params({ 0xfe, 0x07 }, inc8_tests)
     ));
+INSTANTIATE_TEST_CASE_P(Dec, IncMem8Test,
+    ::testing::Values(
+        // dec byte [bx]
+        IncDec8Params({ 0xfe, 0x0f }, dec8_tests)
+    ));
 
 TEST_F(EmulateFixture, IncFEInvalidReg)
 {
-    set_instruction({ 0xfe, 0xc8 });
+    set_instruction({ 0xfe, 0xcc });
 
     emulate();
 
@@ -148,17 +173,22 @@ INSTANTIATE_TEST_CASE_P(Inc, IncMem16Test,
         // inc word [bx]
         IncDec16Params({ 0xff, 0x07 }, inc16_tests)
     ));
+INSTANTIATE_TEST_CASE_P(Dec, IncMem16Test,
+    ::testing::Values(
+        // dec word [bx]
+        IncDec16Params({ 0xff, 0x0f }, dec16_tests)
+    ));
 
-TEST_F(EmulateFixture, IncReg)
+TEST_F(EmulateFixture, DecReg)
 {
-    // inc REG
+    // dec REG
     for (uint8_t i = 0; i < 8; ++i) {
         auto reg = static_cast<GPR>(static_cast<int>(AX) + i);
-        write_reg(reg, 0x00ff);
+        write_reg(reg, 0x0100);
 
-        set_instruction({ static_cast<uint8_t>(0x40 + i) });
+        set_instruction({ static_cast<uint8_t>(0x48 + i) });
         emulate();
 
-        ASSERT_EQ(0x0100, read_reg(reg));
+        ASSERT_EQ(0x00ff, read_reg(reg));
     }
 }
