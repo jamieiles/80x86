@@ -1389,8 +1389,6 @@ void EmulatorPimpl::daa27()
     if ((al & 0x0f) > 9 || (flags & AF)) {
         al = (al + 6);
         flags |= AF;
-    } else {
-        flags &= ~AF;
     }
 
     if (al > 0x9f || (flags & CF)) {
