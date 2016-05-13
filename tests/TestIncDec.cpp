@@ -179,6 +179,20 @@ INSTANTIATE_TEST_CASE_P(Dec, IncMem16Test,
         IncDec16Params({ 0xff, 0x0f }, dec16_tests)
     ));
 
+TEST_F(EmulateFixture, IncReg)
+{
+    // inc REG
+    for (uint8_t i = 0; i < 8; ++i) {
+        auto reg = static_cast<GPR>(static_cast<int>(AX) + i);
+        write_reg(reg, 0x00ff);
+
+        set_instruction({ static_cast<uint8_t>(0x40 + i) });
+        emulate();
+
+        ASSERT_EQ(0x0100, read_reg(reg));
+    }
+}
+
 TEST_F(EmulateFixture, DecReg)
 {
     // dec REG
