@@ -1151,7 +1151,7 @@ void EmulatorPimpl::sub2a()
 
     uint8_t result;
     uint16_t flags;
-    std::tie(flags, result) = do_sub<uint8_t>(v1, v2);
+    std::tie(flags, result) = do_sub<uint8_t>(v2, v1);
 
     registers->set_flags(flags);
     registers->set(modrm_decoder->reg(), result & 0xff);
@@ -1168,7 +1168,7 @@ void EmulatorPimpl::sub2b()
 
     uint16_t result;
     uint16_t flags;
-    std::tie(flags, result) = do_sub<uint16_t>(v1, v2);
+    std::tie(flags, result) = do_sub<uint16_t>(v2, v1);
 
     registers->set_flags(flags);
     registers->set(modrm_decoder->reg(), result & 0xffff);
@@ -1245,7 +1245,7 @@ void EmulatorPimpl::sbb1a()
 
     uint8_t result;
     uint16_t flags;
-    std::tie(flags, result) = do_sub<uint8_t>(v1, v2, carry_in);
+    std::tie(flags, result) = do_sub<uint8_t>(v2, v1, carry_in);
 
     registers->set_flags(flags);
     registers->set(modrm_decoder->reg(), result & 0xff);
@@ -1263,7 +1263,7 @@ void EmulatorPimpl::sbb1b()
 
     uint16_t result;
     uint16_t flags;
-    std::tie(flags, result) = do_sub<uint16_t>(v1, v2, carry_in);
+    std::tie(flags, result) = do_sub<uint16_t>(v2, v1, carry_in);
 
     registers->set_flags(flags);
     registers->set(modrm_decoder->reg(), result & 0xffff);
@@ -1508,7 +1508,7 @@ void EmulatorPimpl::cmp3a()
 
     uint8_t result;
     uint16_t flags;
-    std::tie(flags, result) = do_sub<uint8_t>(v1, v2);
+    std::tie(flags, result) = do_sub<uint8_t>(v2, v1);
 
     registers->set_flags(flags);
 }
@@ -1524,7 +1524,7 @@ void EmulatorPimpl::cmp3b()
 
     uint16_t result;
     uint16_t flags;
-    std::tie(flags, result) = do_sub<uint16_t>(v1, v2);
+    std::tie(flags, result) = do_sub<uint16_t>(v2, v1);
 
     registers->set_flags(flags);
 }
