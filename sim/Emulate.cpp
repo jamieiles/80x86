@@ -174,6 +174,11 @@ private:
     //
     void aad37();
     void daa27();
+    //
+    // neg
+    //
+    void negf6();
+    void negf7();
     // Helpers
     void push_inc_ff();
     template <typename T>
@@ -310,6 +315,9 @@ size_t EmulatorPimpl::emulate()
     // ascii
     case 0x37: aad37(); break;
     case 0x27: daa27(); break;
+    // neg
+    case 0xf6: negf6(); break;
+    case 0xf7: negf7(); break;
     }
 
     return instr_length;
@@ -1399,6 +1407,36 @@ void EmulatorPimpl::daa27()
     }
 
     registers->set(AL, al);
+    registers->set_flags(flags);
+}
+
+// neg byte r/m
+void EmulatorPimpl::negf6()
+{
+    modrm_decoder->set_width(OP_WIDTH_8);
+    modrm_decoder->decode();
+
+    auto v = read_data<uint8_t>();
+    uint16_t flags;
+    uint8_t result;
+    std::tie(flags, result) = do_sub<uint8_t>(0, v);
+
+    write_data<uint8_t>(result);
+    registers->set_flags(flags);
+}
+
+// neg word r/m
+void EmulatorPimpl::negf7()
+{
+    modrm_decoder->set_width(OP_WIDTH_16);
+    modrm_decoder->decode();
+
+    auto v = read_data<uint16_t>();
+    uint16_t flags;
+    uint16_t result;
+    std::tie(flags, result) = do_sub<uint16_t>(0, v);
+
+    write_data<uint16_t>(result);
     registers->set_flags(flags);
 }
 

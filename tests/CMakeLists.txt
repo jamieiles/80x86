@@ -15,6 +15,7 @@ add_executable(unittest
                TestMemory.cpp
                TestModRM.cpp
                TestMov.cpp
+               TestNeg.cpp
                TestPointer.cpp
                TestPush.cpp
                TestRegisterFile.cpp
