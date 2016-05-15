@@ -57,3 +57,25 @@ TEST_F(EmulateFixture, Daa)
         ASSERT_EQ(read_reg(AX), t.ax_expected);
     }
 }
+
+static const std::vector<AsciiTest> aas_tests {
+    AsciiTest{0x00, 0x00, 0, 0},
+    AsciiTest{0x0a, 0xff04, 0, AF | CF},
+    AsciiTest{0x00, 0xff0a, AF, AF | CF},
+};
+
+TEST_F(EmulateFixture, Aas)
+{
+    // aas
+    for (auto &t: aas_tests) {
+        write_flags(t.flags);
+        write_reg(AX, t.ax);
+        set_instruction({ 0x3f });
+
+        emulate();
+
+        ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                            FLAGS_STUCK_BITS | t.flags_expected);
+        ASSERT_EQ(read_reg(AX), t.ax_expected);
+    }
+}
