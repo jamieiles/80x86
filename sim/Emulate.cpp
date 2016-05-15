@@ -175,6 +175,7 @@ private:
     void aad37();
     void daa27();
     void aas3f();
+    void das2f();
     //
     // neg
     //
@@ -325,6 +326,7 @@ size_t EmulatorPimpl::emulate()
     // ascii
     case 0x37: aad37(); break;
     case 0x27: daa27(); break;
+    case 0x2f: das2f(); break;
     case 0x3f: aas3f(); break;
     // neg
     case 0xf6: negf6(); break;
@@ -1453,6 +1455,39 @@ void EmulatorPimpl::aas3f()
     } else {
         flags &= ~(AF | CF);
     }
+
+    registers->set(AL, al);
+    registers->set(AH, ah);
+    registers->set_flags(flags);
+}
+
+// das
+void EmulatorPimpl::das2f()
+{
+    uint16_t flags = registers->get_flags();
+
+    auto al = registers->get(AL);
+    auto ah = registers->get(AH);
+    if ((al & 0x0f) > 9 || (flags & AF)) {
+        al -= 6;
+        flags |= AF;
+    } else {
+        flags &= ~AF;
+    }
+
+    if (al > 0x9f || (flags & CF)) {
+        al -= 0x60;
+        flags |= CF;
+    } else {
+        flags &= ~CF;
+    }
+
+    if (al & 0x80)
+        flags |= SF;
+    if (!al)
+        flags |= ZF;
+    if (!__builtin_parity(al))
+        flags |= PF;
 
     registers->set(AL, al);
     registers->set(AH, ah);

@@ -79,3 +79,27 @@ TEST_F(EmulateFixture, Aas)
         ASSERT_EQ(read_reg(AX), t.ax_expected);
     }
 }
+
+static const std::vector<AsciiTest> das_tests {
+    AsciiTest{0x00, 0x00, 0, ZF | PF},
+    AsciiTest{0x0a, 0x04, 0, AF},
+    AsciiTest{0x00, 0x9a, AF, AF | PF | SF | CF},
+    AsciiTest{0x00, 0xa0, CF, CF | PF | SF},
+    AsciiTest{0xff, 0x99, 0, AF | CF | PF | SF}
+};
+
+TEST_F(EmulateFixture, Das)
+{
+    // das
+    for (auto &t: das_tests) {
+        write_flags(t.flags);
+        write_reg(AX, t.ax);
+        set_instruction({ 0x2f });
+
+        emulate();
+
+        ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                            FLAGS_STUCK_BITS | t.flags_expected);
+        ASSERT_EQ(read_reg(AX), t.ax_expected);
+    }
+}
