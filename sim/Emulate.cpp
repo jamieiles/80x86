@@ -736,7 +736,7 @@ void EmulatorPimpl::popf9d()
 
 template <typename T>
 std::pair<uint16_t, T>
-EmulatorPimpl::do_alu(uint16_t v1, uint16_t v2, uint16_t carry_in,
+EmulatorPimpl::do_alu(uint16_t v1, uint16_t v2, uint16_t carry,
                       std::function<uint32_t(uint32_t, uint32_t, uint32_t)> alu_op)
 {
     uint16_t flags = registers->get_flags();
@@ -745,7 +745,7 @@ EmulatorPimpl::do_alu(uint16_t v1, uint16_t v2, uint16_t carry_in,
 
     uint32_t result32 = alu_op(static_cast<uint32_t>(v1),
                                static_cast<uint32_t>(v2),
-                               static_cast<uint32_t>(carry_in));
+                               static_cast<uint32_t>(carry));
     bool af = !!(alu_op(v1 & 0xf, v2 & 0xf, 0) & (1 << 4));
 
     auto sign_bit = (8 * sizeof(T)) - 1;
@@ -761,8 +761,10 @@ EmulatorPimpl::do_alu(uint16_t v1, uint16_t v2, uint16_t carry_in,
         flags |= ZF;
     if (!__builtin_parity(result32 & static_cast<T>(-1)))
         flags |= PF;
-    if ((v1 & (1 << sign_bit)) == (v2 & (1 << sign_bit)) &&
-        (v1 & (1 << sign_bit)) != (result32 & (1 << sign_bit)))
+    bool carry_in = !!(alu_op(static_cast<uint32_t>(v1) & ~(1 << sign_bit),
+                              static_cast<uint32_t>(v2) & ~(1 << sign_bit),
+                              static_cast<uint32_t>(carry)) & (1 << sign_bit));
+    if (carry_in ^ !!(flags & CF))
         flags |= OF;
 
     return std::make_pair(flags, static_cast<T>(result32));
