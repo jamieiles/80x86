@@ -159,10 +159,3 @@ INSTANTIATE_TEST_CASE_P(Add, ArithmeticAxImmedTest,
             { 1, 2, 0, false }
         )
     ));
-
-TEST_F(EmulateFixture, AddRegImmedInvalidReg)
-{
-    set_instruction({ 0x80, 0xff });
-
-    emulate();
-}

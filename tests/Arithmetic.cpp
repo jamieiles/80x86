@@ -97,6 +97,52 @@ TEST_P(ArithmeticMemReg8TestReversed, ResultAndFlags)
     }
 }
 
+TEST_P(ArithmeticRegReg8TestReversedNoResult, ResultAndFlags)
+{
+    auto params = GetParam();
+    for (auto &t: params.second) {
+        SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
+                     std::to_string(static_cast<int>(t.v2)) + " + " +
+                     std::to_string(static_cast<int>(t.carry_set)));
+        write_flags(0);
+        if (t.carry_set)
+            write_flags(CF);
+        write_reg(AL, t.v1);
+        write_reg(BL, t.v2);
+        // ARITH bl, al
+        set_instruction(params.first);
+
+        emulate();
+
+        ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                            FLAGS_STUCK_BITS | t.expected_flags);
+    }
+}
+
+TEST_P(ArithmeticMemReg8TestReversedNoResult, ResultAndFlags)
+{
+    auto params = GetParam();
+    for (auto &t: params.second) {
+        SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
+                     std::to_string(static_cast<int>(t.v2)) + " + " +
+                     std::to_string(static_cast<int>(t.carry_set)));
+        write_flags(0);
+        if (t.carry_set)
+            write_flags(CF);
+        write_reg(AL, t.v2);
+        write_reg(BX, 0x100);
+        write_mem<uint8_t>(0x100, t.v1);
+
+        // ARITH al, [bx]
+        set_instruction(params.first);
+
+        emulate();
+
+        ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                            FLAGS_STUCK_BITS | t.expected_flags);
+    }
+}
+
 TEST_P(ArithmeticRegReg16Test, ResultAndFlags)
 {
     auto params = GetParam();
@@ -188,6 +234,52 @@ TEST_P(ArithmeticMemReg16TestReversed, ResultAndFlags)
         emulate();
 
         ASSERT_EQ(read_reg(AX), t.expected);
+        ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                            FLAGS_STUCK_BITS | t.expected_flags);
+    }
+}
+
+TEST_P(ArithmeticRegReg16TestReversedNoResult, ResultAndFlags)
+{
+    auto params = GetParam();
+    for (auto &t: params.second) {
+        SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
+                     std::to_string(static_cast<int>(t.v2)) + " + " +
+                     std::to_string(static_cast<int>(t.carry_set)));
+        write_flags(0);
+        if (t.carry_set)
+            write_flags(CF);
+        write_reg(AX, t.v1);
+        write_reg(BX, t.v2);
+        // ARITH bx, ax
+        set_instruction(params.first);
+
+        emulate();
+
+        ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                            FLAGS_STUCK_BITS | t.expected_flags);
+    }
+}
+
+TEST_P(ArithmeticMemReg16TestReversedNoResult, ResultAndFlags)
+{
+    auto params = GetParam();
+    for (auto &t: params.second) {
+        SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
+                     std::to_string(static_cast<int>(t.v2)) + " + " +
+                     std::to_string(static_cast<int>(t.carry_set)));
+        write_flags(0);
+        if (t.carry_set)
+            write_flags(CF);
+        write_reg(AX, t.v2);
+        write_reg(BX, 0x100);
+        write_mem<uint16_t>(0x100, t.v1);
+
+        // ARITH ax, [bx]
+        set_instruction(params.first);
+
+        emulate();
+
         ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
                             FLAGS_STUCK_BITS | t.expected_flags);
     }

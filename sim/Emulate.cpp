@@ -112,10 +112,10 @@ private:
     //
     // add / adc
     //
-    void add_adc_sub_sbb_80();
-    void add_adc_sub_sbb_81();
-    void add_adc_sub_sbb_82();
-    void add_adc_sub_sbb_83();
+    void add_adc_sub_sbb_cmp_80();
+    void add_adc_sub_sbb_cmp_81();
+    void add_adc_sub_sbb_cmp_82();
+    void add_adc_sub_sbb_cmp_83();
     //
     // add
     //
@@ -179,6 +179,15 @@ private:
     //
     void negf6();
     void negf7();
+    //
+    // cmp
+    //
+    void cmp38();
+    void cmp39();
+    void cmp3a();
+    void cmp3b();
+    void cmp3c();
+    void cmp3d();
     // Helpers
     void push_inc_ff();
     template <typename T>
@@ -274,11 +283,11 @@ size_t EmulatorPimpl::emulate()
     case 0x9c: pushf9c(); break;
     // popf
     case 0x9d: popf9d(); break;
-    // add / adc / sub / sbb
-    case 0x80: add_adc_sub_sbb_80(); break;
-    case 0x81: add_adc_sub_sbb_81(); break;
-    case 0x82: add_adc_sub_sbb_82(); break;
-    case 0x83: add_adc_sub_sbb_83(); break;
+    // add / adc / sub / sbb / cmp
+    case 0x80: add_adc_sub_sbb_cmp_80(); break;
+    case 0x81: add_adc_sub_sbb_cmp_81(); break;
+    case 0x82: add_adc_sub_sbb_cmp_82(); break;
+    case 0x83: add_adc_sub_sbb_cmp_83(); break;
     // add
     case 0x00: add00(); break;
     case 0x01: add01(); break;
@@ -318,6 +327,13 @@ size_t EmulatorPimpl::emulate()
     // neg
     case 0xf6: negf6(); break;
     case 0xf7: negf7(); break;
+    // cmp
+    case 0x38: cmp38(); break;
+    case 0x39: cmp39(); break;
+    case 0x3a: cmp3a(); break;
+    case 0x3b: cmp3b(); break;
+    case 0x3c: cmp3c(); break;
+    case 0x3d: cmp3d(); break;
     }
 
     return instr_length;
@@ -865,7 +881,7 @@ void EmulatorPimpl::add03()
     registers->set(modrm_decoder->reg(), result & 0xffff);
 }
 
-void EmulatorPimpl::add_adc_sub_sbb_80()
+void EmulatorPimpl::add_adc_sub_sbb_cmp_80()
 {
     modrm_decoder->set_width(OP_WIDTH_8);
     modrm_decoder->decode();
@@ -873,7 +889,8 @@ void EmulatorPimpl::add_adc_sub_sbb_80()
     if (modrm_decoder->raw_reg() != 0 &&
         modrm_decoder->raw_reg() != 2 &&
         modrm_decoder->raw_reg() != 5 &&
-        modrm_decoder->raw_reg() != 3)
+        modrm_decoder->raw_reg() != 3 &&
+        modrm_decoder->raw_reg() != 7)
         return;
 
     uint8_t v1 = read_data<uint8_t>();
@@ -890,17 +907,19 @@ void EmulatorPimpl::add_adc_sub_sbb_80()
         std::tie(flags, result) = do_sub<uint8_t>(v1, v2, carry_in);
 
     registers->set_flags(flags);
-    write_data<uint8_t>(result & 0xff);
+    // cmp doesn't write the result
+    if (modrm_decoder->raw_reg() != 7)
+        write_data<uint8_t>(result & 0xff);
 }
 
-void EmulatorPimpl::add_adc_sub_sbb_82()
+void EmulatorPimpl::add_adc_sub_sbb_cmp_82()
 {
     // The 's' bit has no effect for 8-bit add immediate.
-    add_adc_sub_sbb_80();
+    add_adc_sub_sbb_cmp_80();
 }
 
 // add r/m, immediate, 16-bit
-void EmulatorPimpl::add_adc_sub_sbb_81()
+void EmulatorPimpl::add_adc_sub_sbb_cmp_81()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
@@ -908,7 +927,8 @@ void EmulatorPimpl::add_adc_sub_sbb_81()
     if (modrm_decoder->raw_reg() != 0 &&
         modrm_decoder->raw_reg() != 2 &&
         modrm_decoder->raw_reg() != 5 &&
-        modrm_decoder->raw_reg() != 3)
+        modrm_decoder->raw_reg() != 3 &&
+        modrm_decoder->raw_reg() != 7)
         return;
 
     uint16_t v1 = read_data<uint16_t>();
@@ -925,11 +945,13 @@ void EmulatorPimpl::add_adc_sub_sbb_81()
         std::tie(flags, result) = do_sub<uint16_t>(v1, v2, carry_in);
 
     registers->set_flags(flags);
-    write_data<uint16_t>(result & 0xffff);
+    // cmp doesn't write the result
+    if (modrm_decoder->raw_reg() != 7)
+        write_data<uint16_t>(result & 0xffff);
 }
 
 // add r/m, immediate, 8-bit, sign-extended
-void EmulatorPimpl::add_adc_sub_sbb_83()
+void EmulatorPimpl::add_adc_sub_sbb_cmp_83()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
@@ -937,7 +959,8 @@ void EmulatorPimpl::add_adc_sub_sbb_83()
     if (modrm_decoder->raw_reg() != 0 &&
         modrm_decoder->raw_reg() != 2 &&
         modrm_decoder->raw_reg() != 5 &&
-        modrm_decoder->raw_reg() != 3)
+        modrm_decoder->raw_reg() != 3 &&
+        modrm_decoder->raw_reg() != 7)
         return;
 
     uint16_t v1 = read_data<uint16_t>();
@@ -956,7 +979,9 @@ void EmulatorPimpl::add_adc_sub_sbb_83()
         std::tie(flags, result) = do_sub<uint16_t>(v1, immed, carry_in);
 
     registers->set_flags(flags);
-    write_data<uint16_t>(result & 0xffff);
+    // cmp doesn't write the result
+    if (modrm_decoder->raw_reg() != 7)
+        write_data<uint16_t>(result & 0xffff);
 }
 
 void EmulatorPimpl::add04()
@@ -1437,6 +1462,92 @@ void EmulatorPimpl::negf7()
     std::tie(flags, result) = do_sub<uint16_t>(0, v);
 
     write_data<uint16_t>(result);
+    registers->set_flags(flags);
+}
+
+// cmp r, r/m, 8-bit
+void EmulatorPimpl::cmp38()
+{
+    modrm_decoder->set_width(OP_WIDTH_8);
+    modrm_decoder->decode();
+
+    uint8_t v1 = read_data<uint8_t>();
+    uint8_t v2 = registers->get(modrm_decoder->reg());
+
+    uint8_t result;
+    uint16_t flags;
+    std::tie(flags, result) = do_sub<uint8_t>(v1, v2);
+
+    registers->set_flags(flags);
+}
+
+// cmp r, r/m, 16-bit
+void EmulatorPimpl::cmp39()
+{
+    modrm_decoder->set_width(OP_WIDTH_16);
+    modrm_decoder->decode();
+
+    uint16_t v1 = read_data<uint16_t>();
+    uint16_t v2 = registers->get(modrm_decoder->reg());
+
+    uint16_t result;
+    uint16_t flags;
+    std::tie(flags, result) = do_sub<uint16_t>(v1, v2);
+
+    registers->set_flags(flags);
+}
+
+// cmp r/m, r, 8-bit
+void EmulatorPimpl::cmp3a()
+{
+    modrm_decoder->set_width(OP_WIDTH_8);
+    modrm_decoder->decode();
+
+    uint8_t v1 = read_data<uint8_t>();
+    uint8_t v2 = registers->get(modrm_decoder->reg());
+
+    uint8_t result;
+    uint16_t flags;
+    std::tie(flags, result) = do_sub<uint8_t>(v1, v2);
+
+    registers->set_flags(flags);
+}
+
+// cmp r/m, r, 16-bit
+void EmulatorPimpl::cmp3b()
+{
+    modrm_decoder->set_width(OP_WIDTH_16);
+    modrm_decoder->decode();
+
+    uint16_t v1 = read_data<uint16_t>();
+    uint16_t v2 = registers->get(modrm_decoder->reg());
+
+    uint16_t result;
+    uint16_t flags;
+    std::tie(flags, result) = do_sub<uint16_t>(v1, v2);
+
+    registers->set_flags(flags);
+}
+
+void EmulatorPimpl::cmp3c()
+{
+    auto v1 = registers->get(AL);
+    auto v2 = fetch_byte();
+    uint8_t result;
+    uint16_t flags;
+    std::tie(flags, result) = do_sub<uint8_t>(v1, v2);
+
+    registers->set_flags(flags);
+}
+
+void EmulatorPimpl::cmp3d()
+{
+    auto v1 = registers->get(AX);
+    auto v2 = fetch_16bit();
+    uint16_t result;
+    uint16_t flags;
+    std::tie(flags, result) = do_sub<uint16_t>(v1, v2);
+
     registers->set_flags(flags);
 }
 

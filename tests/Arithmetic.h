@@ -44,7 +44,15 @@ class ArithmeticRegReg8TestReversed : public EmulateFixture,
     public ::testing::WithParamInterface<Arith8Params> {
 };
 
+class ArithmeticRegReg8TestReversedNoResult : public EmulateFixture,
+    public ::testing::WithParamInterface<Arith8Params> {
+};
+
 class ArithmeticMemReg8TestReversed : public EmulateFixture,
+    public ::testing::WithParamInterface<Arith8Params> {
+};
+
+class ArithmeticMemReg8TestReversedNoResult : public EmulateFixture,
     public ::testing::WithParamInterface<Arith8Params> {
 };
 
@@ -61,6 +69,14 @@ class ArithmeticRegReg16TestReversed : public EmulateFixture,
 };
 
 class ArithmeticMemReg16TestReversed : public EmulateFixture,
+    public ::testing::WithParamInterface<Arith16Params> {
+};
+
+class ArithmeticRegReg16TestReversedNoResult : public EmulateFixture,
+    public ::testing::WithParamInterface<Arith16Params> {
+};
+
+class ArithmeticMemReg16TestReversedNoResult : public EmulateFixture,
     public ::testing::WithParamInterface<Arith16Params> {
 };
 
