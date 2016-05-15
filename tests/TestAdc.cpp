@@ -21,7 +21,7 @@ static const std::vector<struct ArithmeticTest<uint16_t>> adc16_tests = {
     { 0xf, 1, 0x10, AF, false },
     { 0xffff, 0, 0, ZF | CF | PF, true },
     { 0xffff, 0, 0xffff, PF | SF, false },
-    { 32767, 0, 32768, OF | SF, true },
+    { 32767, 0, 32768, OF | SF | PF, true },
     { 0xffff, 1, 1, CF | AF, true },
 };
 

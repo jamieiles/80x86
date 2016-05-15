@@ -19,7 +19,7 @@ static const std::vector<struct ArithmeticTest<uint16_t>> add16_tests = {
     { 0xf, 1, 0x10, AF, false },
     { 0xffff, 1, 0, ZF | CF | PF | AF, false },
     { 0xffff, 0, 0xffff, PF | SF, false },
-    { 32767, 1, 32768, OF | SF | AF, false },
+    { 32767, 1, 32768, OF | SF | AF | PF, false },
 };
 
 INSTANTIATE_TEST_CASE_P(Add, ArithmeticRegReg8Test,

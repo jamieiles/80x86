@@ -29,7 +29,7 @@ static std::vector<IncDecTest<uint8_t>> inc8_tests = {
 static std::vector<IncDecTest<uint16_t>> inc16_tests = {
     { 0, 1, 0, false },
     { 0, 1, CF, true },
-    { 0x00ff, 0x0100, CF | AF, true },
+    { 0x00ff, 0x0100, CF | AF | PF, true },
     { 0xffff, 0, PF | ZF | AF, false },
     { 0xffff, 0, PF | ZF | AF | CF, true },
 };
@@ -37,16 +37,16 @@ static std::vector<IncDecTest<uint16_t>> inc16_tests = {
 static std::vector<IncDecTest<uint8_t>> dec8_tests = {
     { 1, 0, ZF | PF, false },
     { 1, 0, ZF | PF | CF, true },
-    { 0, 0xff, PF | AF | OF | SF, false },
-    { 0, 0xff, PF | AF | CF | OF | SF, true },
+    { 0, 0xff, PF | AF | SF, false },
+    { 0, 0xff, PF | AF | CF | SF, true },
 };
 
 static std::vector<IncDecTest<uint16_t>> dec16_tests = {
     { 1, 0, ZF | PF, false },
     { 1, 0, ZF | PF | CF, true },
     { 0x0100, 0x00ff, CF | AF | PF, true },
-    { 0, 0xffff, PF | AF | OF | SF, false },
-    { 0, 0xffff, PF | AF | CF | OF | SF, true },
+    { 0, 0xffff, PF | AF | SF, false },
+    { 0, 0xffff, PF | AF | CF | SF, true },
 };
 
 class IncReg8Test : public EmulateFixture,

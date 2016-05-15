@@ -759,7 +759,7 @@ EmulatorPimpl::do_alu(uint16_t v1, uint16_t v2, uint16_t carry,
         flags |= SF;
     if ((result32 & static_cast<T>(-1)) == 0)
         flags |= ZF;
-    if (!__builtin_parity(result32 & static_cast<T>(-1)))
+    if (!__builtin_parity(result32 & static_cast<uint8_t>(-1)))
         flags |= PF;
     bool carry_in = !!(alu_op(static_cast<uint32_t>(v1) & ~(1 << sign_bit),
                               static_cast<uint32_t>(v2) & ~(1 << sign_bit),
