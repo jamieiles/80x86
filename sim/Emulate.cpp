@@ -190,8 +190,17 @@ private:
     void cmp3b();
     void cmp3c();
     void cmp3d();
+    //
+    // mul
+    //
+    void mulf6();
+    void mulf7();
+    template <typename T>
+    std::pair<uint16_t, T> do_mul(uint16_t v1, uint16_t v2);
     // Helpers
     void push_inc_ff();
+    void neg_mul_f6();
+    void neg_mul_f7();
     template <typename T>
     std::pair<uint16_t, T> do_alu(uint16_t v1, uint16_t v2,
                                   uint16_t carry_in,
@@ -329,8 +338,8 @@ size_t EmulatorPimpl::emulate()
     case 0x2f: das2f(); break;
     case 0x3f: aas3f(); break;
     // neg
-    case 0xf6: negf6(); break;
-    case 0xf7: negf7(); break;
+    case 0xf6: neg_mul_f6(); break;
+    case 0xf7: neg_mul_f7(); break;
     // cmp
     case 0x38: cmp38(); break;
     case 0x39: cmp39(); break;
@@ -815,6 +824,15 @@ std::pair<uint16_t, T> EmulatorPimpl::do_sub(uint16_t v1, uint16_t v2,
     return do_alu<T>(v1, v2, carry_in,
         [](uint32_t a, uint32_t b, uint32_t c) -> uint32_t {
             return a - b - c;
+        });
+}
+
+template <typename T>
+std::pair<uint16_t, T> EmulatorPimpl::do_mul(uint16_t v1, uint16_t v2)
+{
+    return do_alu<T>(v1, v2, 0,
+        [](uint32_t a, uint32_t b, uint32_t __attribute__((unused)) c) -> uint32_t {
+            return a * b;
         });
 }
 
@@ -1494,12 +1512,20 @@ void EmulatorPimpl::das2f()
     registers->set_flags(flags);
 }
 
-// neg byte r/m
-void EmulatorPimpl::negf6()
+void EmulatorPimpl::neg_mul_f6()
 {
     modrm_decoder->set_width(OP_WIDTH_8);
     modrm_decoder->decode();
 
+    if (modrm_decoder->raw_reg() == 0x3)
+        negf6();
+    else if (modrm_decoder->raw_reg() == 0x4)
+        mulf6();
+}
+
+// neg byte r/m
+void EmulatorPimpl::negf6()
+{
     auto v = read_data<uint8_t>();
     uint16_t flags;
     uint8_t result;
@@ -1509,12 +1535,20 @@ void EmulatorPimpl::negf6()
     registers->set_flags(flags);
 }
 
-// neg word r/m
-void EmulatorPimpl::negf7()
+void EmulatorPimpl::neg_mul_f7()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
 
+    if (modrm_decoder->raw_reg() == 0x3)
+        negf7();
+    else if (modrm_decoder->raw_reg() == 0x4)
+        mulf7();
+}
+
+// neg word r/m
+void EmulatorPimpl::negf7()
+{
     auto v = read_data<uint16_t>();
     uint16_t flags;
     uint16_t result;
@@ -1607,6 +1641,44 @@ void EmulatorPimpl::cmp3d()
     uint16_t flags;
     std::tie(flags, result) = do_sub<uint16_t>(v1, v2);
 
+    registers->set_flags(flags);
+}
+
+// mul r/m, 8-bit
+void EmulatorPimpl::mulf6()
+{
+    auto old_flags = registers->get_flags();
+    auto v1 = read_data<uint8_t>();
+    auto v2 = registers->get(AL);
+
+    uint16_t result, flags;
+    std::tie(flags, result) = do_mul<uint16_t>(v1, v2);
+
+    flags = old_flags & ~(CF | OF);
+    if (result & 0xff00)
+        flags |= CF | OF;
+
+    registers->set(AX, result);
+    registers->set_flags(flags);
+}
+
+// mul r/m, 16-bit
+void EmulatorPimpl::mulf7()
+{
+    auto old_flags = registers->get_flags();
+    auto v1 = read_data<uint16_t>();
+    auto v2 = registers->get(AX);
+
+    uint32_t result;
+    uint16_t flags;
+    std::tie(flags, result) = do_mul<uint32_t>(v1, v2);
+
+    flags = old_flags & ~(CF | OF);
+    if (result & 0xffff0000)
+        flags |= CF | OF;
+
+    registers->set(AX, result & 0xffff);
+    registers->set(DX, (result >> 16) & 0xffff);
     registers->set_flags(flags);
 }
 
