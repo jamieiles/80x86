@@ -16,7 +16,6 @@ static inline phys_addr get_phys_addr(uint16_t segment,
 }
 
 class EmulatorPimpl;
-template <typename T> class Fifo;
 class Memory;
 class RegisterFile;
 
@@ -25,7 +24,6 @@ public:
     Emulator(RegisterFile *registers);
     virtual ~Emulator();
     size_t emulate();
-    void set_instruction_stream(Fifo<uint8_t> *instr_stream);
     void set_memory(Memory *mem);
     void set_io(Memory *io);
 

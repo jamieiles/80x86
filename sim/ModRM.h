@@ -5,7 +5,6 @@
 #include <functional>
 #include <functional>
 
-#include "Fifo.h"
 #include "RegisterFile.h"
 
 enum OperandType {

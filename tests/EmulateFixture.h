@@ -4,7 +4,6 @@
 #include <gtest/gtest.h>
 
 #include "Emulate.h"
-#include "Fifo.h"
 #include "Memory.h"
 #include "ModRM.h"
 #include "RegisterFile.h"
@@ -12,18 +11,17 @@
 class EmulateFixture : public ::testing::Test {
 public:
     EmulateFixture()
-        : instr_stream(16),
-        emulator(&registers)
+        : emulator(&registers)
     {
-        emulator.set_instruction_stream(&instr_stream);
         emulator.set_memory(&mem);
         emulator.set_io(&io);
     }
 
     void set_instruction(const std::vector<uint8_t> &instr)
     {
-        for (auto &b: instr)
-            instr_stream.push(b);
+        for (size_t m = 0; m < instr.size(); ++m)
+            mem.write<uint8_t>(get_phys_addr(registers.get(CS), registers.get(IP) + m),
+                               instr[m]);
         instr_len = instr.size();
     }
 
@@ -77,7 +75,6 @@ public:
         return registers.get_flags();
     }
 protected:
-    Fifo<uint8_t> instr_stream;
     size_t instr_len;
     Memory mem;
     Memory io;

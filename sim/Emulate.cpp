@@ -3,7 +3,6 @@
 #include <cassert>
 #include <functional>
 #include <stdint.h>
-#include "Fifo.h"
 #include "Memory.h"
 
 class EmulatorPimpl {
@@ -11,11 +10,6 @@ public:
     EmulatorPimpl(RegisterFile *registers);
 
     size_t emulate();
-
-    void set_instruction_stream(Fifo<uint8_t> *instr_stream)
-    {
-        this->instr_stream = instr_stream;
-    }
 
     void set_memory(Memory *mem)
     {
@@ -216,7 +210,6 @@ private:
         T read_data(bool stack=false);
     uint16_t fetch_16bit();
 
-    Fifo<uint8_t> *instr_stream;
     Memory *mem;
     Memory *io;
     RegisterFile *registers;
@@ -237,6 +230,7 @@ EmulatorPimpl::EmulatorPimpl(RegisterFile *registers)
 size_t EmulatorPimpl::emulate()
 {
     instr_length = 0;
+    auto orig_ip = registers->get(IP);
 
     opcode = fetch_byte();
     switch (opcode) {
@@ -355,6 +349,9 @@ size_t EmulatorPimpl::emulate()
     // int
     case 0xcc: intcc(); break;
     }
+
+    if (registers->get(IP) == orig_ip)
+        registers->set(IP, registers->get(IP) + instr_length);
 
     return instr_length;
 }
@@ -1401,9 +1398,8 @@ void EmulatorPimpl::decff()
 
 uint8_t EmulatorPimpl::fetch_byte()
 {
-    ++instr_length;
-
-    return instr_stream->pop();
+    return mem->read<uint8_t>(get_phys_addr(registers->get(CS),
+                                            registers->get(IP) + instr_length++));
 }
 
 // dec r, 16-bit
@@ -1695,7 +1691,7 @@ void EmulatorPimpl::intcc()
 
     push_word(flags);
     push_word(registers->get(CS));
-    push_word(registers->get(IP));
+    push_word(registers->get(IP) + instr_length);
 
     flags &= ~(IF | TF);
     registers->set_flags(flags);
@@ -1763,11 +1759,6 @@ Emulator::~Emulator()
 size_t Emulator::emulate()
 {
     return pimpl->emulate();
-}
-
-void Emulator::set_instruction_stream(Fifo<uint8_t> *instr_stream)
-{
-    pimpl->set_instruction_stream(instr_stream);
 }
 
 void Emulator::set_memory(Memory *mem)
