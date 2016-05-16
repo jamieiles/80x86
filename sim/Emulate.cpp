@@ -195,12 +195,17 @@ private:
     //
     void mulf6();
     void mulf7();
+    //
+    // int
+    //
+    void intcc();
     template <typename T>
     std::pair<uint16_t, T> do_mul(uint16_t v1, uint16_t v2);
     // Helpers
     void push_inc_ff();
     void neg_mul_f6();
     void neg_mul_f7();
+    void push_word(uint16_t v);
     template <typename T>
     std::pair<uint16_t, T> do_alu(uint16_t v1, uint16_t v2,
                                   uint16_t carry_in,
@@ -347,6 +352,8 @@ size_t EmulatorPimpl::emulate()
     case 0x3b: cmp3b(); break;
     case 0x3c: cmp3c(); break;
     case 0x3d: cmp3d(); break;
+    // int
+    case 0xcc: intcc(); break;
     }
 
     return instr_length;
@@ -1680,6 +1687,32 @@ void EmulatorPimpl::mulf7()
     registers->set(AX, result & 0xffff);
     registers->set(DX, (result >> 16) & 0xffff);
     registers->set_flags(flags);
+}
+
+void EmulatorPimpl::intcc()
+{
+    auto flags = registers->get_flags();
+
+    push_word(flags);
+    push_word(registers->get(CS));
+    push_word(registers->get(IP));
+
+    flags &= ~(IF | TF);
+    registers->set_flags(flags);
+
+    // int 3
+    auto new_cs = mem->read<uint16_t>(4 * 3 + 2);
+    auto new_ip = mem->read<uint16_t>(4 * 3 + 0);
+
+    registers->set(CS, new_cs);
+    registers->set(IP, new_ip);
+}
+
+void EmulatorPimpl::push_word(uint16_t v)
+{
+    registers->set(SP, registers->get(SP) - 2);
+    auto addr = get_phys_addr(registers->get(SS), registers->get(SP));
+    mem->write<uint16_t>(addr, v);
 }
 
 uint16_t EmulatorPimpl::fetch_16bit()
