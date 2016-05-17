@@ -62,6 +62,16 @@ public:
     {
         return registers.get_flags();
     }
+
+    bool has_trapped() const
+    {
+        return emulator.has_trapped();
+    }
+
+    void reset()
+    {
+        emulator.reset();
+    }
 private:
     Memory mem;
     Memory io;

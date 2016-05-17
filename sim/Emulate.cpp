@@ -20,6 +20,13 @@ public:
     {
         this->io = io;
     }
+
+    bool has_trapped() const
+    {
+        return executed_int3;
+    }
+
+    void reset();
 private:
     uint8_t fetch_byte();
     //
@@ -216,20 +223,33 @@ private:
     size_t instr_length = 0;
     std::unique_ptr<ModRMDecoder> modrm_decoder;
     uint8_t opcode;
+    bool executed_int3;
 };
 
 EmulatorPimpl::EmulatorPimpl(RegisterFile *registers)
-    : registers(registers)
+    : registers(registers),
+    executed_int3(false)
 {
     modrm_decoder = std::make_unique<ModRMDecoder>(
         [&]{ return this->fetch_byte(); },
         this->registers
     );
+
+    reset();
+}
+
+void EmulatorPimpl::reset()
+{
+    registers->reset();
+    opcode = 0;
+    instr_length = 0;
+    executed_int3 = false;
 }
 
 size_t EmulatorPimpl::emulate()
 {
     instr_length = 0;
+    executed_int3 = false;
     auto orig_ip = registers->get(IP);
 
     opcode = fetch_byte();
@@ -347,7 +367,10 @@ size_t EmulatorPimpl::emulate()
     case 0x3c: cmp3c(); break;
     case 0x3d: cmp3d(); break;
     // int
-    case 0xcc: intcc(); break;
+    case 0xcc:
+        intcc();
+        executed_int3 = true;
+        break;
     }
 
     if (registers->get(IP) == orig_ip)
@@ -1769,4 +1792,14 @@ void Emulator::set_memory(Memory *mem)
 void Emulator::set_io(Memory *io)
 {
     pimpl->set_io(io);
+}
+
+bool Emulator::has_trapped() const
+{
+    return pimpl->has_trapped();
+}
+
+void Emulator::reset()
+{
+    pimpl->reset();
 }

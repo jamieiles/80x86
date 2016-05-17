@@ -26,6 +26,8 @@ public:
     size_t emulate();
     void set_memory(Memory *mem);
     void set_io(Memory *io);
+    bool has_trapped() const;
+    void reset();
 
 private:
     std::unique_ptr<EmulatorPimpl> pimpl;
