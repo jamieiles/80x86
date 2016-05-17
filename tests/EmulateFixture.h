@@ -4,60 +4,54 @@
 #include <gtest/gtest.h>
 
 #include <cassert>
-#include "Emulate.h"
-#include "Memory.h"
-#include "ModRM.h"
-#include "RegisterFile.h"
+#include "CPU.h"
 
 class EmulateFixture : public ::testing::Test {
 public:
     EmulateFixture()
-        : emulator(&registers)
     {
-        emulator.set_memory(&mem);
-        emulator.set_io(&io);
     }
 
     void set_instruction(const std::vector<uint8_t> &instr)
     {
         for (size_t m = 0; m < instr.size(); ++m)
-            mem.write<uint8_t>(get_phys_addr(registers.get(CS), registers.get(IP) + m),
-                               instr[m]);
+            cpu.write_mem<uint8_t>(get_phys_addr(cpu.read_reg(CS), cpu.read_reg(IP) + m),
+                                   instr[m]);
         instr_len = instr.size();
     }
 
     void write_reg(GPR regnum, uint16_t val)
     {
-        registers.set(regnum, val);
+        cpu.write_reg(regnum, val);
     }
 
     uint16_t read_reg(GPR regnum)
     {
-        return registers.get(regnum);
+        return cpu.read_reg(regnum);
     }
 
     template <typename T>
-    void write_mem(uint16_t addr, T val)
+    void write_mem(uint32_t addr, T val)
     {
-        mem.write<T>(addr, val);
+        cpu.write_mem<T>(addr, val);
     }
 
     template <typename T>
     T read_mem(uint16_t addr)
     {
-        return mem.read<T>(addr);
+        return cpu.read_mem<T>(addr);
     }
 
     template <typename T>
     void write_io(uint16_t addr, T val)
     {
-        io.write<T>(addr, val);
+        cpu.write_io<T>(addr, val);
     }
 
     template <typename T>
     T read_io(uint16_t addr)
     {
-        return io.read<T>(addr);
+        return cpu.read_io<T>(addr);
     }
 
     void emulate(int count=1)
@@ -65,25 +59,22 @@ public:
         assert(count > 0);
         size_t len = 0;
         for (auto i = 0; i < count; ++i)
-             len += emulator.emulate();
+             len += cpu.cycle();
         ASSERT_EQ(len, instr_len);
     }
 
     void write_flags(uint16_t val)
     {
-        registers.set_flags(val);
+        cpu.write_flags(val);
     }
 
     uint16_t read_flags()
     {
-        return registers.get_flags();
+        return cpu.read_flags();
     }
 protected:
     size_t instr_len;
-    Memory mem;
-    Memory io;
-    RegisterFile registers;
-    Emulator emulator;
+    CPU cpu;
 };
 
 #endif /* __EMULATEFIXTURE_H__ */
