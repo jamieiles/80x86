@@ -3,6 +3,7 @@
 
 #include <gtest/gtest.h>
 
+#include <cassert>
 #include "Emulate.h"
 #include "Memory.h"
 #include "ModRM.h"
@@ -59,9 +60,12 @@ public:
         return io.read<T>(addr);
     }
 
-    void emulate()
+    void emulate(int count=1)
     {
-        auto len = emulator.emulate();
+        assert(count > 0);
+        size_t len = 0;
+        for (auto i = 0; i < count; ++i)
+             len += emulator.emulate();
         ASSERT_EQ(len, instr_len);
     }
 

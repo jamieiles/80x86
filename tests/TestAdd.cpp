@@ -159,3 +159,13 @@ INSTANTIATE_TEST_CASE_P(Add, ArithmeticAxImmedTest,
             { 1, 2, 0, false }
         )
     ));
+
+TEST_F(EmulateFixture, MultipleAdd)
+{
+    // add al, 1; add al, 1
+    set_instruction({ 0x04, 0x01, 0x04, 0x01 });
+
+    emulate(2);
+
+    ASSERT_EQ(0x2, read_reg(AL));
+}
