@@ -14,7 +14,10 @@ ModRMDecoder::ModRMDecoder(std::function<uint8_t()> get_byte,
 void ModRMDecoder::decode()
 {
     modrm = get_byte();
+    // Cache the address now, we need to process all mod/rm bytes +
+    // displacements before the opcode handler starts reading immediates etc.
     addr_is_cached = false;
+    effective_address();
 }
 
 OperandType ModRMDecoder::rm_type() const
