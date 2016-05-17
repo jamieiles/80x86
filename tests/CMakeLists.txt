@@ -24,6 +24,7 @@ add_executable(unittest
                TestRegisterFile.cpp
                TestSbb.cpp
                TestSub.cpp
+               TestTrap.cpp
                TestXchg.cpp
                TestXlat.cpp)
 target_link_libraries(unittest 8086sim gtest gmock)
