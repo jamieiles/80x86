@@ -197,19 +197,24 @@ private:
     void mulf6();
     void mulf7();
     //
+    // imul
+    //
+    void imulf6();
+    void imulf7();
+    //
     // int
     //
     void intcc();
     template <typename T>
-    std::pair<uint16_t, T> do_mul(uint16_t v1, uint16_t v2);
+    std::pair<uint16_t, T> do_mul(int32_t v1, int32_t v2);
     // Helpers
     void push_inc_ff();
     void neg_mul_f6();
     void neg_mul_f7();
     void push_word(uint16_t v);
     template <typename T>
-    std::pair<uint16_t, T> do_alu(uint16_t v1, uint16_t v2,
-                                  uint16_t carry_in,
+    std::pair<uint16_t, T> do_alu(int32_t v1, int32_t v2,
+                                  int32_t carry_in,
                                   std::function<uint32_t(uint32_t, uint32_t, uint32_t)> alu_op);
     template <typename T>
         void write_data(T val, bool stack=false);
@@ -800,7 +805,7 @@ void EmulatorPimpl::popf9d()
 
 template <typename T>
 std::pair<uint16_t, T>
-EmulatorPimpl::do_alu(uint16_t v1, uint16_t v2, uint16_t carry,
+EmulatorPimpl::do_alu(int32_t v1, int32_t v2, int32_t carry,
                       std::function<uint32_t(uint32_t, uint32_t, uint32_t)> alu_op)
 {
     uint16_t flags = registers->get_flags();
@@ -855,7 +860,7 @@ std::pair<uint16_t, T> EmulatorPimpl::do_sub(uint16_t v1, uint16_t v2,
 }
 
 template <typename T>
-std::pair<uint16_t, T> EmulatorPimpl::do_mul(uint16_t v1, uint16_t v2)
+std::pair<uint16_t, T> EmulatorPimpl::do_mul(int32_t v1, int32_t v2)
 {
     return do_alu<T>(v1, v2, 0,
         [](uint32_t a, uint32_t b, uint32_t __attribute__((unused)) c) -> uint32_t {
@@ -1547,6 +1552,8 @@ void EmulatorPimpl::neg_mul_f6()
         negf6();
     else if (modrm_decoder->raw_reg() == 0x4)
         mulf6();
+    else if (modrm_decoder->raw_reg() == 0x5)
+        imulf6();
 }
 
 // neg byte r/m
@@ -1570,6 +1577,8 @@ void EmulatorPimpl::neg_mul_f7()
         negf7();
     else if (modrm_decoder->raw_reg() == 0x4)
         mulf7();
+    else if (modrm_decoder->raw_reg() == 0x5)
+        imulf7();
 }
 
 // neg word r/m
@@ -1701,6 +1710,58 @@ void EmulatorPimpl::mulf7()
 
     flags = old_flags & ~(CF | OF);
     if (result & 0xffff0000)
+        flags |= CF | OF;
+
+    registers->set(AX, result & 0xffff);
+    registers->set(DX, (result >> 16) & 0xffff);
+    registers->set_flags(flags);
+}
+
+template <typename Out, typename In>
+static inline Out sign_extend(In v)
+{
+    static_assert(sizeof(Out) > sizeof(In), "May only sign extend to larger types");
+
+    size_t bit_shift = (sizeof(Out) - sizeof(In)) * 8;
+    Out o = static_cast<Out>(v);
+
+    o <<= bit_shift;
+    o >>= bit_shift;
+
+    return o;
+}
+
+// imul r/m, 8-bit
+void EmulatorPimpl::imulf6()
+{
+    auto old_flags = registers->get_flags();
+    int16_t v1 = sign_extend<int16_t, uint8_t>(read_data<uint8_t>());
+    int16_t v2 = sign_extend<int16_t, uint8_t>(registers->get(AL));
+
+    uint16_t result, flags;
+    std::tie(flags, result) = do_mul<int16_t>(v1, v2);
+    flags = old_flags & ~(CF | OF);
+    if ((result & 0xff80) != 0xff80 &&
+        (result & 0xff80) != 0x0000)
+        flags |= CF | OF;
+
+    registers->set(AX, result);
+    registers->set_flags(flags);
+}
+
+// imul r/m, 16-bit
+void EmulatorPimpl::imulf7()
+{
+    auto old_flags = registers->get_flags();
+    int32_t v1 = sign_extend<int32_t, uint16_t>(read_data<uint16_t>());
+    int32_t v2 = sign_extend<int32_t, uint16_t>(registers->get(AX));
+
+    uint32_t result;
+    uint16_t flags;
+    std::tie(flags, result) = do_mul<int32_t>(v1, v2);
+    flags = old_flags & ~(CF | OF);
+    if ((result & 0xffff8000) != 0xffff8000 &&
+        (result & 0xffff8000) != 0x00000000)
         flags |= CF | OF;
 
     registers->set(AX, result & 0xffff);
