@@ -11,5 +11,6 @@ set(CMAKE_CXX_FLAGS_RELEASE "-O2")
 enable_testing()
 
 add_subdirectory(googletest)
+add_subdirectory(python)
 add_subdirectory(sim)
 add_subdirectory(tests)

@@ -30,3 +30,11 @@ add_executable(unittest
 target_link_libraries(unittest 8086sim gtest gmock)
 
 add_test(unittest ./unittest --gtest_color=yes)
+
+add_subdirectory(programs)
+
+configure_file(python/Runner.py ${CMAKE_CURRENT_BINARY_DIR}/Runner.py)
+configure_file(moves.py ${CMAKE_CURRENT_BINARY_DIR}/moves.py)
+
+add_test(moves python ${CMAKE_CURRENT_BINARY_DIR}/moves.py)
+set_property(TEST moves PROPERTY ENVIRONMENT "PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}:${CMAKE_CURRENT_BINARY_DIR}/../python")
