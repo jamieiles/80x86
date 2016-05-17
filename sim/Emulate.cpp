@@ -205,6 +205,10 @@ private:
     // int
     //
     void intcc();
+    //
+    // cbw
+    //
+    void cbw98();
     template <typename T>
     std::pair<uint16_t, T> do_mul(int32_t v1, int32_t v2);
     // Helpers
@@ -376,6 +380,7 @@ size_t EmulatorPimpl::emulate()
         intcc();
         executed_int3 = true;
         break;
+    case 0x98: cbw98(); break;
     }
 
     if (registers->get(IP) == orig_ip)
@@ -1786,6 +1791,11 @@ void EmulatorPimpl::intcc()
 
     registers->set(CS, new_cs);
     registers->set(IP, new_ip);
+}
+
+void EmulatorPimpl::cbw98()
+{
+    registers->set(AX, sign_extend<int16_t, uint8_t>(registers->get(AL)));
 }
 
 void EmulatorPimpl::push_word(uint16_t v)

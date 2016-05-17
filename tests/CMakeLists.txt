@@ -9,6 +9,7 @@ add_executable(unittest
                TestAdd.cpp
                TestAscii.cpp
                TestCmp.cpp
+               TestExtend.cpp
                TestFifo.cpp
                TestFlags.cpp
                TestIncDec.cpp
