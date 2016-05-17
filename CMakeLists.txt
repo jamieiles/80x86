@@ -14,3 +14,5 @@ add_subdirectory(googletest)
 add_subdirectory(python)
 add_subdirectory(sim)
 add_subdirectory(tests)
+
+include(CTest)
