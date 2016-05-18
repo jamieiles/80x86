@@ -173,10 +173,11 @@ private:
     //
     // ascii
     //
-    void aad37();
+    void aaa37();
     void daa27();
     void aas3f();
     void das2f();
+    void aamd4();
     //
     // neg
     //
@@ -362,10 +363,11 @@ size_t EmulatorPimpl::emulate()
     // dec
     case 0x48 ... 0x4f: dec48_4f(); break;
     // ascii
-    case 0x37: aad37(); break;
+    case 0x37: aaa37(); break;
     case 0x27: daa27(); break;
     case 0x2f: das2f(); break;
     case 0x3f: aas3f(); break;
+    case 0xd4: aamd4(); break;
     // neg
     case 0xf6: neg_mul_f6(); break;
     case 0xf7: neg_mul_f7(); break;
@@ -381,7 +383,9 @@ size_t EmulatorPimpl::emulate()
         intcc();
         executed_int3 = true;
         break;
+    // cbw
     case 0x98: cbw98(); break;
+    // cwd
     case 0x99: cwd99(); break;
     }
 
@@ -1453,8 +1457,8 @@ void EmulatorPimpl::dec48_4f()
     registers->set(reg, result);
 }
 
-// aad
-void EmulatorPimpl::aad37()
+// aaa
+void EmulatorPimpl::aaa37()
 {
     uint16_t flags = registers->get_flags();
 
@@ -1514,6 +1518,31 @@ void EmulatorPimpl::aas3f()
 
     registers->set(AL, al);
     registers->set(AH, ah);
+    registers->set_flags(flags);
+}
+
+// aam
+void EmulatorPimpl::aamd4()
+{
+    auto divisor = fetch_byte();
+
+    auto al = registers->get(AL);
+    auto quotient = al / divisor;
+    auto remainder = al % divisor;
+
+    registers->set(AH, quotient);
+    registers->set(AL, remainder);
+
+    uint16_t flags = registers->get_flags();
+    flags &= ~(PF | SF | ZF);
+
+    if (!(registers->get(AL) & 0xff))
+        flags |= ZF;
+    if (!__builtin_parity(registers->get(AL) & 0xff))
+        flags |= PF;
+    if (registers->get(AL) & 0x80)
+        flags |= SF;
+
     registers->set_flags(flags);
 }
 

@@ -10,7 +10,7 @@ struct AsciiTest {
     uint16_t flags_expected;
 };
 
-static const std::vector<AsciiTest> aad_tests {
+static const std::vector<AsciiTest> aaa_tests {
     AsciiTest{0, 0, 0, 0},
     AsciiTest{0, 0, CF, 0},
     AsciiTest{0, 0x0106, AF, AF | CF},
@@ -18,10 +18,10 @@ static const std::vector<AsciiTest> aad_tests {
     AsciiTest{0xa, 0x0100, 0, AF | CF},
 };
 
-TEST_F(EmulateFixture, Aad)
+TEST_F(EmulateFixture, Aaa)
 {
-    // aad
-    for (auto &t: aad_tests) {
+    // aaa
+    for (auto &t: aaa_tests) {
         write_flags(t.flags);
         write_reg(AX, t.ax);
         set_instruction({ 0x37 });
@@ -95,6 +95,47 @@ TEST_F(EmulateFixture, Das)
         write_flags(t.flags);
         write_reg(AX, t.ax);
         set_instruction({ 0x2f });
+
+        emulate();
+
+        ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                            FLAGS_STUCK_BITS | t.flags_expected);
+        ASSERT_EQ(read_reg(AX), t.ax_expected);
+    }
+}
+
+static const std::vector<AsciiTest> aam_tests {
+    AsciiTest{0x00, 0x00, 0, ZF | PF},
+    AsciiTest{0x0a, 0x0100, 0, PF | ZF},
+    AsciiTest{0x50, 0x0800, 0, PF | ZF},
+};
+
+TEST_F(EmulateFixture, Aam)
+{
+    // aam
+    for (auto &t: aam_tests) {
+        write_flags(t.flags);
+        write_reg(AX, t.ax);
+        set_instruction({ 0xd4, 0x0a });
+
+        emulate();
+
+        ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                            FLAGS_STUCK_BITS | t.flags_expected);
+        ASSERT_EQ(read_reg(AX), t.ax_expected);
+    }
+}
+
+static const std::vector<AsciiTest> aam_129_tests {
+    AsciiTest{0x80, 0x0080, 0, SF},
+};
+TEST_F(EmulateFixture, Aam129)
+{
+    // aam 129
+    for (auto &t: aam_129_tests) {
+        write_flags(t.flags);
+        write_reg(AX, t.ax);
+        set_instruction({ 0xd4, 129 });
 
         emulate();
 
