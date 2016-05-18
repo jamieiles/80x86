@@ -63,6 +63,7 @@ public:
     virtual void set(GPR regnum, uint16_t value);
     virtual uint16_t get(GPR regnum) const;
     virtual uint16_t get_flags() const;
+    virtual bool get_flag(enum Flag f) const;
     virtual void set_flags(uint16_t val);
 private:
     uint16_t registers[NUM_16BIT_REGS];

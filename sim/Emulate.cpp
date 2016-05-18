@@ -219,6 +219,21 @@ private:
     void jmpff_intra();
     void jmpff_inter();
     void jmpea();
+    void je74();
+    void jl7c();
+    void jle7e();
+    void jp7a();
+    void jb72();
+    void jbe76();
+    void jo70();
+    void js78();
+    void jne75();
+    void jnl7d();
+    void jnle7f();
+    void jnb73();
+    void jnbe77();
+    void jnp7b();
+    void jno71();
     template <typename T>
     std::pair<uint16_t, T> do_mul(int32_t v1, int32_t v2);
     // Helpers
@@ -399,6 +414,21 @@ size_t EmulatorPimpl::emulate()
     case 0xe9: jmpe9(); break;
     case 0xea: jmpea(); break;
     case 0xeb: jmpeb(); break;
+    case 0x70: jo70(); break;
+    case 0x72: jb72(); break;
+    case 0x74: je74(); break;
+    case 0x76: jbe76(); break;
+    case 0x78: js78(); break;
+    case 0x7a: jp7a(); break;
+    case 0x7c: jl7c(); break;
+    case 0x7e: jle7e(); break;
+    case 0x75: jne75(); break;
+    case 0x7d: jnl7d(); break;
+    case 0x7f: jnle7f(); break;
+    case 0x73: jnb73(); break;
+    case 0x77: jnbe77(); break;
+    case 0x7b: jnp7b(); break;
+    case 0x71: jno71(); break;
     }
 
     if (registers->get(IP) == orig_ip)
@@ -1872,6 +1902,127 @@ void EmulatorPimpl::jmpeb()
     int8_t displacement = static_cast<int8_t>(fetch_byte());
 
     registers->set(IP, registers->get(IP) + displacement + instr_length);
+}
+
+void EmulatorPimpl::je74()
+{
+    int8_t displacement = static_cast<int8_t>(fetch_byte());
+
+    if (registers->get_flags() & ZF)
+        registers->set(IP, registers->get(IP) + displacement + instr_length);
+}
+
+void EmulatorPimpl::jl7c()
+{
+    int8_t displacement = static_cast<int8_t>(fetch_byte());
+
+    if (!!(registers->get_flags() & OF) ^ !!(registers->get_flags() & SF))
+        registers->set(IP, registers->get(IP) + displacement + instr_length);
+}
+
+void EmulatorPimpl::jle7e()
+{
+    int8_t displacement = static_cast<int8_t>(fetch_byte());
+
+    if ((!!(registers->get_flags() & OF) ^ !!(registers->get_flags() & SF)) ||
+        (registers->get_flags() & ZF))
+        registers->set(IP, registers->get(IP) + displacement + instr_length);
+}
+
+void EmulatorPimpl::jb72()
+{
+    int8_t displacement = static_cast<int8_t>(fetch_byte());
+
+    if (registers->get_flags() & CF)
+        registers->set(IP, registers->get(IP) + displacement + instr_length);
+}
+
+void EmulatorPimpl::jbe76()
+{
+    int8_t displacement = static_cast<int8_t>(fetch_byte());
+
+    if ((registers->get_flags() & CF) || (registers->get_flags() & ZF))
+        registers->set(IP, registers->get(IP) + displacement + instr_length);
+}
+
+void EmulatorPimpl::jp7a()
+{
+    int8_t displacement = static_cast<int8_t>(fetch_byte());
+
+    if (registers->get_flags() & PF)
+        registers->set(IP, registers->get(IP) + displacement + instr_length);
+}
+
+void EmulatorPimpl::jo70()
+{
+    int8_t displacement = static_cast<int8_t>(fetch_byte());
+
+    if (registers->get_flags() & OF)
+        registers->set(IP, registers->get(IP) + displacement + instr_length);
+}
+
+void EmulatorPimpl::js78()
+{
+    int8_t displacement = static_cast<int8_t>(fetch_byte());
+
+    if (registers->get_flags() & SF)
+        registers->set(IP, registers->get(IP) + displacement + instr_length);
+}
+
+void EmulatorPimpl::jne75()
+{
+    int8_t displacement = static_cast<int8_t>(fetch_byte());
+
+    if (!(registers->get_flags() & ZF))
+        registers->set(IP, registers->get(IP) + displacement + instr_length);
+}
+
+void EmulatorPimpl::jnl7d()
+{
+    int8_t displacement = static_cast<int8_t>(fetch_byte());
+
+    if ((!!(registers->get_flags() & SF) ^ !!(registers->get_flags() & OF)) == 0)
+        registers->set(IP, registers->get(IP) + displacement + instr_length);
+}
+
+void EmulatorPimpl::jnle7f()
+{
+    int8_t displacement = static_cast<int8_t>(fetch_byte());
+
+    if (((registers->get_flag(SF) ^ registers->get_flag(OF)) | registers->get_flag(ZF)) == 0)
+        registers->set(IP, registers->get(IP) + displacement + instr_length);
+}
+
+void EmulatorPimpl::jnb73()
+{
+    int8_t displacement = static_cast<int8_t>(fetch_byte());
+
+    if (!registers->get_flag(CF))
+        registers->set(IP, registers->get(IP) + displacement + instr_length);
+}
+
+void EmulatorPimpl::jnbe77()
+{
+    int8_t displacement = static_cast<int8_t>(fetch_byte());
+
+    if ((registers->get_flag(CF) || registers->get_flag(ZF)) == 0)
+        registers->set(IP, registers->get(IP) + displacement + instr_length);
+}
+
+void EmulatorPimpl::jnp7b()
+{
+    int8_t displacement = static_cast<int8_t>(fetch_byte());
+
+    if (!registers->get_flag(PF))
+        registers->set(IP, registers->get(IP) + displacement + instr_length);
+}
+
+void EmulatorPimpl::jno71()
+{
+    int8_t displacement = static_cast<int8_t>(fetch_byte());
+
+    if (!registers->get_flag(OF))
+        registers->set(IP, registers->get(IP) + displacement + instr_length);
 }
 
 void EmulatorPimpl::jmpff_intra()

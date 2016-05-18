@@ -94,6 +94,11 @@ uint16_t RegisterFile::get_flags() const
     return flags;
 }
 
+bool RegisterFile::get_flag(enum Flag f) const
+{
+    return !!(flags & f);
+}
+
 void RegisterFile::set_flags(uint16_t val)
 {
     flags = val | (1 << 15);
