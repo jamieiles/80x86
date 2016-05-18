@@ -211,10 +211,18 @@ private:
     //
     void cbw98();
     void cwd99();
+    //
+    // jump
+    //
+    void jmpe9();
+    void jmpeb();
+    void jmpff_intra();
+    void jmpff_inter();
+    void jmpea();
     template <typename T>
     std::pair<uint16_t, T> do_mul(int32_t v1, int32_t v2);
     // Helpers
-    void push_inc_ff();
+    void push_inc_jmp_ff();
     void neg_mul_f6();
     void neg_mul_f7();
     void push_word(uint16_t v);
@@ -281,7 +289,7 @@ size_t EmulatorPimpl::emulate()
     case 0x8e: mov8e(); break;
     case 0x8c: mov8c(); break;
     // push
-    case 0xff: push_inc_ff(); break;
+    case 0xff: push_inc_jmp_ff(); break;
     case 0x50 ... 0x57: push50_57(); break;
     case 0x06: // fallthrough
     case 0x0e: // fallthrough
@@ -387,6 +395,10 @@ size_t EmulatorPimpl::emulate()
     case 0x98: cbw98(); break;
     // cwd
     case 0x99: cwd99(); break;
+    // jmp
+    case 0xe9: jmpe9(); break;
+    case 0xea: jmpea(); break;
+    case 0xeb: jmpeb(); break;
     }
 
     if (registers->get(IP) == orig_ip)
@@ -549,7 +561,7 @@ void EmulatorPimpl::mov8c()
     write_data<uint16_t>(val);
 }
 
-void EmulatorPimpl::push_inc_ff()
+void EmulatorPimpl::push_inc_jmp_ff()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
@@ -560,6 +572,10 @@ void EmulatorPimpl::push_inc_ff()
         incff();
     else if (modrm_decoder->raw_reg() == 1)
         decff();
+    else if (modrm_decoder->raw_reg() == 4)
+        jmpff_intra();
+    else if (modrm_decoder->raw_reg() == 5)
+        jmpff_inter();
 }
 
 // push r/m
@@ -1833,6 +1849,47 @@ void EmulatorPimpl::cwd99()
 {
     int32_t v = sign_extend<int32_t, uint16_t>(registers->get(AX));
     registers->set(DX, (v >> 16) & 0xffff);
+}
+
+void EmulatorPimpl::jmpe9()
+{
+    int16_t displacement = static_cast<int16_t>(fetch_16bit());
+
+    registers->set(IP, registers->get(IP) + displacement + instr_length);
+}
+
+void EmulatorPimpl::jmpea()
+{
+    uint16_t ip = fetch_16bit();
+    uint16_t cs = fetch_16bit();
+
+    registers->set(IP, ip);
+    registers->set(CS, cs);
+}
+
+void EmulatorPimpl::jmpeb()
+{
+    int8_t displacement = static_cast<int8_t>(fetch_byte());
+
+    registers->set(IP, registers->get(IP) + displacement + instr_length);
+}
+
+void EmulatorPimpl::jmpff_intra()
+{
+    auto ip = read_data<uint16_t>();
+
+    registers->set(IP, ip);
+}
+
+void EmulatorPimpl::jmpff_inter()
+{
+    if (modrm_decoder->rm_type() == OP_REG)
+        return;
+
+    auto cs_ip = read_data<uint32_t>();
+
+    registers->set(IP, cs_ip & 0xffff);
+    registers->set(CS, (cs_ip >> 16) & 0xffff);
 }
 
 void EmulatorPimpl::push_word(uint16_t v)
