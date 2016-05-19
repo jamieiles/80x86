@@ -252,6 +252,10 @@ private:
     // iret
     //
     void iretcf();
+    //
+    // clc
+    //
+    void clcf8();
     template <typename T>
     std::pair<uint16_t, T> do_mul(int32_t v1, int32_t v2);
     // Helpers
@@ -458,6 +462,7 @@ size_t EmulatorPimpl::emulate()
     case 0xca: retca(); break;
     // iret
     case 0xcf: iretcf(); break;
+    case 0xf8: clcf8(); break;
     }
 
     if (registers->get(IP) == orig_ip)
@@ -729,6 +734,7 @@ static inline Out sign_extend(In v)
 #include "instructions/jmp.cpp"
 #include "instructions/call.cpp"
 #include "instructions/ret.cpp"
+#include "instructions/clc.cpp"
 
 void EmulatorPimpl::push_word(uint16_t v)
 {

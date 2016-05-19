@@ -10,6 +10,7 @@ add_executable(unittest
                TestAscii.cpp
                TestCall.cpp
                TestCmp.cpp
+               TestControl.cpp
                TestExtend.cpp
                TestFifo.cpp
                TestFlags.cpp
