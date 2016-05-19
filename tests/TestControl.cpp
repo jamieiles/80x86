@@ -122,3 +122,27 @@ TEST_F(EmulateFixture, StdDoesntClearDirection)
     ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
                         FLAGS_STUCK_BITS | DF);
 }
+
+TEST_F(EmulateFixture, CliClearsInterrupt)
+{
+    write_flags(IF);
+
+    set_instruction({ 0xfa });
+
+    emulate();
+
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        FLAGS_STUCK_BITS);
+}
+
+TEST_F(EmulateFixture, CliDoesntSetInterrupt)
+{
+    write_flags(0);
+
+    set_instruction({ 0xfa });
+
+    emulate();
+
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        FLAGS_STUCK_BITS);
+}
