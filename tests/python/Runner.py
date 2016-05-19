@@ -23,6 +23,8 @@ class Runner(object):
                 return
             self.cpu.cycle()
 
+        raise Exception('Test timed out')
+
     def setup(self):
         pass
 
