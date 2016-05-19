@@ -155,6 +155,7 @@ private:
     void cldfc();
     void stdfd();
     void clifa();
+    void stifb();
 
     uint8_t fetch_byte();
     template <typename T>
@@ -343,6 +344,7 @@ size_t EmulatorPimpl::emulate()
     case 0xfc: cldfc(); break;
     case 0xfd: stdfd(); break;
     case 0xfa: clifa(); break;
+    case 0xfb: stifb(); break;
     }
 
     if (registers->get(IP) == orig_ip)
@@ -620,6 +622,7 @@ static inline Out sign_extend(In v)
 #include "instructions/cld.cpp"
 #include "instructions/std.cpp"
 #include "instructions/cli.cpp"
+#include "instructions/sti.cpp"
 
 void EmulatorPimpl::push_word(uint16_t v)
 {

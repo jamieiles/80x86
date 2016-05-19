@@ -146,3 +146,27 @@ TEST_F(EmulateFixture, CliDoesntSetInterrupt)
     ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
                         FLAGS_STUCK_BITS);
 }
+
+TEST_F(EmulateFixture, StiSetsInterrupt)
+{
+    write_flags(0);
+
+    set_instruction({ 0xfb });
+
+    emulate();
+
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        FLAGS_STUCK_BITS | IF);
+}
+
+TEST_F(EmulateFixture, StiDoesntClearInterrupt)
+{
+    write_flags(IF);
+
+    set_instruction({ 0xfb });
+
+    emulate();
+
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        FLAGS_STUCK_BITS | IF);
+}
