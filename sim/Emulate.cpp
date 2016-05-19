@@ -153,6 +153,7 @@ private:
     void cmcf5();
     void stcf9();
     void cldfc();
+    void stdfd();
 
     uint8_t fetch_byte();
     template <typename T>
@@ -339,6 +340,7 @@ size_t EmulatorPimpl::emulate()
     case 0xf5: cmcf5(); break;
     case 0xf9: stcf9(); break;
     case 0xfc: cldfc(); break;
+    case 0xfd: stdfd(); break;
     }
 
     if (registers->get(IP) == orig_ip)
@@ -614,6 +616,7 @@ static inline Out sign_extend(In v)
 #include "instructions/cmc.cpp"
 #include "instructions/stc.cpp"
 #include "instructions/cld.cpp"
+#include "instructions/std.cpp"
 
 void EmulatorPimpl::push_word(uint16_t v)
 {
