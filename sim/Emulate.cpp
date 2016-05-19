@@ -2082,7 +2082,7 @@ void EmulatorPimpl::calle8()
 
     push_word(registers->get(IP) + instr_length);
 
-    registers->set(IP, displacement);
+    registers->set(IP, registers->get(IP) + instr_length + displacement);
 }
 
 void EmulatorPimpl::callff_intra()

@@ -15,7 +15,7 @@ TEST_F(EmulateFixture, CallDirectIntra)
     ASSERT_EQ(0x00fe, read_reg(SP));
     ASSERT_EQ(0x0033, read_mem<uint16_t>(0x00fe));
     ASSERT_EQ(0x2000, read_reg(CS));
-    ASSERT_EQ(0x2010, read_reg(IP));
+    ASSERT_EQ(0x2043, read_reg(IP));
 }
 
 TEST_F(EmulateFixture, CallIndirectIntraReg)
