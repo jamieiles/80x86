@@ -86,7 +86,7 @@ TEST_F(EmulateFixture, PushSR)
 TEST_F(EmulateFixture, PopRegFF)
 {
     // pop ax
-    set_instruction({ 0xf8, 0xc0 });
+    set_instruction({ 0x8f, 0xc0 });
 
     write_mem<uint16_t>(0x0fe, 0xaa55);
     write_reg(SP, 0x0fe);
@@ -100,7 +100,7 @@ TEST_F(EmulateFixture, PopRegFF)
 TEST_F(EmulateFixture, PopMemFF)
 {
     // pop [1234]
-    set_instruction({ 0xf8, 0x06, 0x34, 0x12 });
+    set_instruction({ 0x8f, 0x06, 0x34, 0x12 });
 
     write_mem<uint16_t>(0x0fe, 0xaa55);
     write_reg(SP, 0x0fe);
@@ -114,7 +114,7 @@ TEST_F(EmulateFixture, PopMemFF)
 TEST_F(EmulateFixture, PopRegFFInvalidReg)
 {
     // pop ax
-    set_instruction({ 0xf8, 0xc8 });
+    set_instruction({ 0x8f, 0xc8 });
 
     write_mem<uint16_t>(0x0fe, 0xaa55);
     write_reg(SP, 0x0fe);

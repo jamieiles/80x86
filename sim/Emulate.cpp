@@ -55,7 +55,7 @@ private:
     //
     // pop
     //
-    void popf8();
+    void pop8f();
     void pop58_5f();
     void popsr();
     //
@@ -330,7 +330,7 @@ size_t EmulatorPimpl::emulate()
     case 0x16: // fallthrough
     case 0x1e: pushsr(); break;
     // pop
-    case 0xf8: popf8(); break;
+    case 0x8f: pop8f(); break;
     case 0x58 ... 0x5f: pop58_5f(); break;
     case 0x07: // fallthrough
     case 0x0f: // fallthrough

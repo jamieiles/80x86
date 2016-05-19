@@ -1,5 +1,5 @@
 // pop r/m
-void EmulatorPimpl::popf8()
+void EmulatorPimpl::pop8f()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
