@@ -264,6 +264,10 @@ private:
     // stc
     //
     void stcf9();
+    //
+    // cld
+    //
+    void cldfc();
     template <typename T>
     std::pair<uint16_t, T> do_mul(int32_t v1, int32_t v2);
     // Helpers
@@ -476,6 +480,8 @@ size_t EmulatorPimpl::emulate()
     case 0xf5: cmcf5(); break;
     // stc
     case 0xf9: stcf9(); break;
+    // cld
+    case 0xfc: cldfc(); break;
     }
 
     if (registers->get(IP) == orig_ip)
@@ -750,6 +756,7 @@ static inline Out sign_extend(In v)
 #include "instructions/clc.cpp"
 #include "instructions/cmc.cpp"
 #include "instructions/stc.cpp"
+#include "instructions/cld.cpp"
 
 void EmulatorPimpl::push_word(uint16_t v)
 {

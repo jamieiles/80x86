@@ -74,3 +74,27 @@ TEST_F(EmulateFixture, StcDoesntClearCarry)
     ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
                         FLAGS_STUCK_BITS | CF);
 }
+
+TEST_F(EmulateFixture, CldClearsDirection)
+{
+    write_flags(DF);
+
+    set_instruction({ 0xfc });
+
+    emulate();
+
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        FLAGS_STUCK_BITS);
+}
+
+TEST_F(EmulateFixture, CldDoesntSetDirection)
+{
+    write_flags(0);
+
+    set_instruction({ 0xfc });
+
+    emulate();
+
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        FLAGS_STUCK_BITS);
+}
