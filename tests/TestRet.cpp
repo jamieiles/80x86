@@ -68,3 +68,23 @@ TEST_F(EmulateFixture, RetInterAddSp)
     ASSERT_EQ(0x8000, read_reg(CS));
     ASSERT_EQ(0x0100, read_reg(IP));
 }
+
+TEST_F(EmulateFixture, Iret)
+{
+    write_reg(CS, 0x2000);
+    write_reg(IP, 0x0030);
+    write_reg(SP, 0x00fa);
+    write_mem<uint16_t>(0x00fe, FLAGS_STUCK_BITS | CF);
+    write_mem<uint16_t>(0x00fc, 0x8000);
+    write_mem<uint16_t>(0x00fa, 0x0100);
+
+    set_instruction({ 0xcf });
+
+    emulate();
+
+    ASSERT_EQ(0x0100, read_reg(SP));
+    ASSERT_EQ(0x8000, read_reg(CS));
+    ASSERT_EQ(0x0100, read_reg(IP));
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        FLAGS_STUCK_BITS | CF);
+}

@@ -248,6 +248,10 @@ private:
     void retc2();
     void retcb();
     void retca();
+    //
+    // iret
+    //
+    void iretcf();
     template <typename T>
     std::pair<uint16_t, T> do_mul(int32_t v1, int32_t v2);
     // Helpers
@@ -452,6 +456,8 @@ size_t EmulatorPimpl::emulate()
     case 0xc2: retc2(); break;
     case 0xcb: retcb(); break;
     case 0xca: retca(); break;
+    // iret
+    case 0xcf: iretcf(); break;
     }
 
     if (registers->get(IP) == orig_ip)
@@ -2148,6 +2154,17 @@ void EmulatorPimpl::retca()
     registers->set(IP, ip);
     registers->set(CS, cs);
     registers->set(SP, registers->get(SP) + displacement);
+}
+
+void EmulatorPimpl::iretcf()
+{
+    auto ip = pop_word();
+    auto cs = pop_word();
+    auto flags = pop_word();
+
+    registers->set(IP, ip);
+    registers->set(CS, cs);
+    registers->set_flags(flags);
 }
 
 void EmulatorPimpl::push_word(uint16_t v)
