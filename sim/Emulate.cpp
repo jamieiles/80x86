@@ -241,6 +241,13 @@ private:
     void callff_intra();
     void callff_inter();
     void call9a();
+    //
+    // ret
+    //
+    void retc3();
+    void retc2();
+    void retcb();
+    void retca();
     template <typename T>
     std::pair<uint16_t, T> do_mul(int32_t v1, int32_t v2);
     // Helpers
@@ -248,6 +255,7 @@ private:
     void neg_mul_f6();
     void neg_mul_f7();
     void push_word(uint16_t v);
+    uint16_t pop_word();
     template <typename T>
     std::pair<uint16_t, T> do_alu(int32_t v1, int32_t v2,
                                   int32_t carry_in,
@@ -439,6 +447,11 @@ size_t EmulatorPimpl::emulate()
     // call
     case 0xe8: calle8(); break;
     case 0x9a: call9a(); break;
+    // ret
+    case 0xc3: retc3(); break;
+    case 0xc2: retc2(); break;
+    case 0xcb: retcb(); break;
+    case 0xca: retca(); break;
     }
 
     if (registers->get(IP) == orig_ip)
@@ -2101,11 +2114,56 @@ void EmulatorPimpl::call9a()
     registers->set(IP, new_ip);
 }
 
+void EmulatorPimpl::retc3()
+{
+    auto ip = pop_word();
+
+    registers->set(IP, ip);
+}
+
+void EmulatorPimpl::retc2()
+{
+    auto displacement = fetch_16bit();
+    auto ip = pop_word();
+
+    registers->set(IP, ip);
+    registers->set(SP, registers->get(SP) + displacement);
+}
+
+void EmulatorPimpl::retcb()
+{
+    auto ip = pop_word();
+    auto cs = pop_word();
+
+    registers->set(IP, ip);
+    registers->set(CS, cs);
+}
+
+void EmulatorPimpl::retca()
+{
+    auto displacement = fetch_16bit();
+    auto ip = pop_word();
+    auto cs = pop_word();
+
+    registers->set(IP, ip);
+    registers->set(CS, cs);
+    registers->set(SP, registers->get(SP) + displacement);
+}
+
 void EmulatorPimpl::push_word(uint16_t v)
 {
     registers->set(SP, registers->get(SP) - 2);
     auto addr = get_phys_addr(registers->get(SS), registers->get(SP));
     mem->write<uint16_t>(addr, v);
+}
+
+uint16_t EmulatorPimpl::pop_word()
+{
+    auto addr = get_phys_addr(registers->get(SS), registers->get(SP));
+    auto v = mem->read<uint16_t>(addr);
+    registers->set(SP, registers->get(SP) + 2);
+
+    return v;
 }
 
 uint16_t EmulatorPimpl::fetch_16bit()
