@@ -128,6 +128,7 @@ private:
     void imulf7();
     void intcc();
     void intcd();
+    void intoce();
     void cbw98();
     void cwd99();
     void jmpe9();
@@ -359,6 +360,7 @@ size_t EmulatorPimpl::emulate()
         case 0x3d: cmp3d(); break;
         case 0xcc: intcc(); break;
         case 0xcd: intcd(); break;
+        case 0xce: intoce(); break;
         case 0x98: cbw98(); break;
         case 0x99: cwd99(); break;
         case 0xe9: jmpe9(); break;
