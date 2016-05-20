@@ -160,6 +160,9 @@ private:
     void stdfd();
     void clifa();
     void stifb();
+    void loope2();
+    void loopee1();
+    void loopnze0();
 
     uint8_t fetch_byte();
     template <typename T>
@@ -351,6 +354,9 @@ size_t EmulatorPimpl::emulate()
         case 0xfd: stdfd(); break;
         case 0xfa: clifa(); break;
         case 0xfb: stifb(); break;
+        case 0xe2: loope2(); break;
+        case 0xe1: loopee1(); break;
+        case 0xe0: loopnze0(); break;
         case 0xf0: // lock
             processing_prefixes = true;
             break;
@@ -649,6 +655,9 @@ static inline Out sign_extend(In v)
 #include "instructions/std.cpp"
 #include "instructions/cli.cpp"
 #include "instructions/sti.cpp"
+#include "instructions/loop.cpp"
+#include "instructions/loope.cpp"
+#include "instructions/loopnz.cpp"
 
 void EmulatorPimpl::push_word(uint16_t v)
 {
