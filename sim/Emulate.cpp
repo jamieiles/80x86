@@ -184,6 +184,8 @@ private:
     template <typename T>
         T read_data(bool stack=false);
     uint16_t fetch_16bit();
+    GPR get_segment(bool is_stack_reference);
+    void set_override_segment(GPR segment);
 
     Memory *mem;
     Memory *io;
@@ -191,6 +193,9 @@ private:
     size_t instr_length = 0;
     std::unique_ptr<ModRMDecoder> modrm_decoder;
     uint8_t opcode;
+
+    bool default_segment_overriden;
+    GPR override_segment;
 };
 
 EmulatorPimpl::EmulatorPimpl(RegisterFile *registers)
@@ -216,6 +221,7 @@ size_t EmulatorPimpl::emulate()
     instr_length = 0;
     auto orig_ip = registers->get(IP);
     bool processing_prefixes;
+    default_segment_overriden = false;
 
     do {
         processing_prefixes = false;
@@ -346,6 +352,22 @@ size_t EmulatorPimpl::emulate()
         case 0xfa: clifa(); break;
         case 0xfb: stifb(); break;
         case 0xf0: // lock
+            processing_prefixes = true;
+            break;
+        case 0x26:
+            set_override_segment(ES);
+            processing_prefixes = true;
+            break;
+        case 0x2e:
+            set_override_segment(CS);
+            processing_prefixes = true;
+            break;
+        case 0x36:
+            set_override_segment(SS);
+            processing_prefixes = true;
+            break;
+        case 0x3e:
+            set_override_segment(DS);
             processing_prefixes = true;
             break;
         }
@@ -659,7 +681,7 @@ void EmulatorPimpl::write_data(T val, bool stack)
         registers->set(dest, val);
     } else {
         auto ea = modrm_decoder->effective_address();
-        auto segment = modrm_decoder->uses_bp_as_base() || stack ? SS : DS;
+        auto segment = get_segment(stack);
         auto addr = get_phys_addr(registers->get(segment), ea);
         mem->write<T>(addr, val);
     }
@@ -670,7 +692,7 @@ T EmulatorPimpl::read_data(bool stack)
 {
     if (modrm_decoder->rm_type() == OP_MEM) {
         auto displacement = modrm_decoder->effective_address();
-        auto segment = modrm_decoder->uses_bp_as_base() || stack ? SS : DS;
+        auto segment = get_segment(stack);
         auto addr = get_phys_addr(registers->get(segment), displacement);
 
         return mem->read<T>(addr);
@@ -678,6 +700,23 @@ T EmulatorPimpl::read_data(bool stack)
         auto source = modrm_decoder->rm_reg();
         return registers->get(source);
     }
+}
+
+GPR EmulatorPimpl::get_segment(bool is_stack_reference)
+{
+    if (is_stack_reference)
+        return SS;
+
+    if (default_segment_overriden)
+        return override_segment;
+
+    return modrm_decoder->uses_bp_as_base() || is_stack_reference ? SS : DS;
+}
+
+void EmulatorPimpl::set_override_segment(GPR segment)
+{
+    default_segment_overriden = true;
+    override_segment = segment;
 }
 
 Emulator::Emulator(RegisterFile *registers)
