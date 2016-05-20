@@ -23,7 +23,11 @@ public:
 
     bool has_trapped() const
     {
-        return executed_int3;
+        auto int_cs = mem->read<uint16_t>(VEC_INT + 2);
+        auto int_ip = mem->read<uint16_t>(VEC_INT + 0);
+
+        return registers->get(CS) == int_cs &&
+            registers->get(IP) == int_ip;
     }
 
     void reset();
@@ -187,12 +191,10 @@ private:
     size_t instr_length = 0;
     std::unique_ptr<ModRMDecoder> modrm_decoder;
     uint8_t opcode;
-    bool executed_int3;
 };
 
 EmulatorPimpl::EmulatorPimpl(RegisterFile *registers)
-    : registers(registers),
-    executed_int3(false)
+    : registers(registers)
 {
     modrm_decoder = std::make_unique<ModRMDecoder>(
         [&]{ return this->fetch_byte(); },
@@ -207,13 +209,11 @@ void EmulatorPimpl::reset()
     registers->reset();
     opcode = 0;
     instr_length = 0;
-    executed_int3 = false;
 }
 
 size_t EmulatorPimpl::emulate()
 {
     instr_length = 0;
-    executed_int3 = false;
     auto orig_ip = registers->get(IP);
 
     opcode = fetch_byte();
@@ -307,10 +307,7 @@ size_t EmulatorPimpl::emulate()
     case 0x3b: cmp3b(); break;
     case 0x3c: cmp3c(); break;
     case 0x3d: cmp3d(); break;
-    case 0xcc:
-        intcc();
-        executed_int3 = true;
-        break;
+    case 0xcc: intcc(); break;
     case 0x98: cbw98(); break;
     case 0x99: cwd99(); break;
     case 0xe9: jmpe9(); break;
