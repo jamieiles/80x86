@@ -31,19 +31,19 @@ public:
     }
 
     template <typename T>
-    T read_mem(uint16_t addr)
+    T read_mem(uint32_t addr)
     {
         return mem.read<T>(addr);
     }
 
     template <typename T>
-    void write_io(uint16_t addr, T val)
+    void write_io(uint32_t addr, T val)
     {
         io.write<T>(addr, val);
     }
 
     template <typename T>
-    T read_io(uint16_t addr)
+    T read_io(uint32_t addr)
     {
         return io.read<T>(addr);
     }
