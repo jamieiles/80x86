@@ -18,3 +18,21 @@ TEST_F(EmulateFixture, Wait)
 
     emulate();
 }
+
+TEST_F(EmulateFixture, EscReg)
+{
+    // esc
+    for (uint8_t v = 0xd8; v <= 0xdf; ++v)
+        set_instruction({ v, 0xc0 });
+
+    emulate();
+}
+
+TEST_F(EmulateFixture, EscMem)
+{
+    // esc
+    for (uint8_t v = 0xd8; v <= 0xdf; ++v)
+        set_instruction({ v, 0x87, 0x34, 0x12 });
+
+    emulate();
+}

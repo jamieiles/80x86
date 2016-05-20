@@ -176,6 +176,7 @@ private:
     void scasbaf();
     void hltf4();
     void wait9b();
+    void escd8();
 
     uint8_t fetch_byte();
     template <typename T>
@@ -408,6 +409,7 @@ size_t EmulatorPimpl::emulate()
         case 0xaf: scasbaf(); break;
         case 0xf4: hltf4(); break;
         case 0x9b: wait9b(); break;
+        case 0xd8 ... 0xdf: escd8(); break;
         case 0xf0: // lock
             processing_prefixes = true;
             break;
@@ -722,6 +724,7 @@ static inline Out sign_extend(In v)
 #include "instructions/scas.cpp"
 #include "instructions/hlt.cpp"
 #include "instructions/wait.cpp"
+#include "instructions/esc.cpp"
 
 void EmulatorPimpl::push_word(uint16_t v)
 {
