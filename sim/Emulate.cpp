@@ -5,6 +5,11 @@
 #include <stdint.h>
 #include "Memory.h"
 
+enum RepMode {
+    REPNE, // Prefix 0xf2
+    REPE, // Prefix 0xf3
+};
+
 class EmulatorPimpl {
 public:
     EmulatorPimpl(RegisterFile *registers);
@@ -163,6 +168,8 @@ private:
     void loope2();
     void loopee1();
     void loopnze0();
+    void scasbae();
+    void scasbaf();
 
     uint8_t fetch_byte();
     template <typename T>
@@ -199,7 +206,36 @@ private:
 
     bool default_segment_overriden;
     GPR override_segment;
+
+    RepMode rep_mode;
+    bool has_rep_prefix;
+
+    void do_rep(std::function<void()> primitive,
+                std::function<bool()> should_terminate);
+    bool string_rep_complete();
 };
+
+void EmulatorPimpl::do_rep(std::function<void()> primitive,
+                           std::function<bool()> should_terminate)
+{
+    if (!has_rep_prefix)
+        primitive();
+
+    while (registers->get(CX) != 0) {
+        primitive();
+        if (should_terminate())
+            break;
+    }
+}
+
+bool EmulatorPimpl::string_rep_complete()
+{
+    if (rep_mode == REPE && !registers->get_flag(ZF))
+        return true;
+    if (rep_mode == REPNE && registers->get_flag(ZF))
+        return true;
+    return false;
+}
 
 EmulatorPimpl::EmulatorPimpl(RegisterFile *registers)
     : registers(registers)
@@ -225,6 +261,7 @@ size_t EmulatorPimpl::emulate()
     auto orig_ip = registers->get(IP);
     bool processing_prefixes;
     default_segment_overriden = false;
+    has_rep_prefix = false;
 
     do {
         processing_prefixes = false;
@@ -357,6 +394,8 @@ size_t EmulatorPimpl::emulate()
         case 0xe2: loope2(); break;
         case 0xe1: loopee1(); break;
         case 0xe0: loopnze0(); break;
+        case 0xae: scasbae(); break;
+        case 0xaf: scasbaf(); break;
         case 0xf0: // lock
             processing_prefixes = true;
             break;
@@ -374,6 +413,16 @@ size_t EmulatorPimpl::emulate()
             break;
         case 0x3e:
             set_override_segment(DS);
+            processing_prefixes = true;
+            break;
+        case 0xf2:
+            rep_mode = REPNE;
+            has_rep_prefix = true;
+            processing_prefixes = true;
+            break;
+        case 0xf3:
+            rep_mode = REPE;
+            has_rep_prefix = true;
             processing_prefixes = true;
             break;
         }
@@ -658,6 +707,7 @@ static inline Out sign_extend(In v)
 #include "instructions/loop.cpp"
 #include "instructions/loope.cpp"
 #include "instructions/loopnz.cpp"
+#include "instructions/scas.cpp"
 
 void EmulatorPimpl::push_word(uint16_t v)
 {

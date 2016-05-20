@@ -31,6 +31,7 @@ add_executable(unittest
                TestRet.cpp
                TestSegment.cpp
                TestSbb.cpp
+               TestString.cpp
                TestSub.cpp
                TestTrap.cpp
                TestXchg.cpp

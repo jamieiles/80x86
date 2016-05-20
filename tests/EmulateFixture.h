@@ -40,6 +40,13 @@ public:
         cpu.write_mem<T>(addr, val);
     }
 
+    void write_cstring(uint32_t addr, const char *str)
+    {
+        do {
+            write_mem<uint8_t>(addr++, *str++);
+        } while (*str);
+    }
+
     template <typename T>
     T read_mem(uint32_t addr)
     {
