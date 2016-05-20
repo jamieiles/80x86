@@ -144,6 +144,7 @@ private:
     void jbe76();
     void jo70();
     void js78();
+    void jns79();
     void jne75();
     void jnl7d();
     void jnle7f();
@@ -151,6 +152,7 @@ private:
     void jnbe77();
     void jnp7b();
     void jno71();
+    void jcxze3();
     void calle8();
     void callff_intra();
     void callff_inter();
@@ -371,6 +373,7 @@ size_t EmulatorPimpl::emulate()
         case 0x74: je74(); break;
         case 0x76: jbe76(); break;
         case 0x78: js78(); break;
+        case 0x79: jns79(); break;
         case 0x7a: jp7a(); break;
         case 0x7c: jl7c(); break;
         case 0x7e: jle7e(); break;
@@ -381,6 +384,7 @@ size_t EmulatorPimpl::emulate()
         case 0x77: jnbe77(); break;
         case 0x7b: jnp7b(); break;
         case 0x71: jno71(); break;
+        case 0xe3: jcxze3(); break;
         case 0xe8: calle8(); break;
         case 0x9a: call9a(); break;
         case 0xc3: retc3(); break;

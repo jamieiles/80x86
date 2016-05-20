@@ -189,5 +189,30 @@ INSTANTIATE_TEST_CASE_P(JmpConditional, JmpFixture,
         JmpTest{"jnp/jpo", 0x7b, PF, false},
 
         JmpTest{"jno", 0x71, 0, true},
-        JmpTest{"jno", 0x71, OF, false}
+        JmpTest{"jno", 0x71, OF, false},
+
+        JmpTest{"jns", 0x79, SF, false},
+        JmpTest{"jns", 0x79, 0, true}
     ));
+
+TEST_F(EmulateFixture, JcxzNotTaken)
+{
+    write_reg(CX, 1);
+    write_reg(IP, 0x0030);
+    set_instruction({ 0xe3, 0x80 });
+
+    emulate();
+
+    ASSERT_EQ(read_reg(IP), 0x0032);
+}
+
+TEST_F(EmulateFixture, JcxzTaken)
+{
+    write_reg(CX, 0);
+    write_reg(IP, 0x0030);
+    set_instruction({ 0xe3, 0x10 });
+
+    emulate();
+
+    ASSERT_EQ(read_reg(IP), 0x0042);
+}

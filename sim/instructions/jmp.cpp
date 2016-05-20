@@ -159,3 +159,19 @@ void EmulatorPimpl::jmpff_inter()
     registers->set(IP, cs_ip & 0xffff);
     registers->set(CS, (cs_ip >> 16) & 0xffff);
 }
+
+void EmulatorPimpl::jns79()
+{
+    int8_t displacement = static_cast<int8_t>(fetch_byte());
+
+    if (!(registers->get_flags() & SF))
+        registers->set(IP, registers->get(IP) + displacement + instr_length);
+}
+
+void EmulatorPimpl::jcxze3()
+{
+    int8_t displacement = static_cast<int8_t>(fetch_byte());
+
+    if (!registers->get(CX))
+        registers->set(IP, registers->get(IP) + displacement + instr_length);
+}
