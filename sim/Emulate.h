@@ -9,6 +9,14 @@
 #include "Memory.h"
 #include "ModRM.h"
 
+enum InterruptVectorOffset {
+    VEC_DIVIDE_ERROR = 0,
+    VEC_SINGLE_STEP = 4,
+    VEC_NMI = 8,
+    VEC_INT = 12,
+    VEC_OVERFLOW = 16
+};
+
 static inline phys_addr get_phys_addr(uint16_t segment,
                                       uint16_t displacement)
 {
