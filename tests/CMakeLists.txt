@@ -18,6 +18,7 @@ add_executable(unittest
                TestIncDec.cpp
                TestInt.cpp
                TestIO.cpp
+               TestLock.cpp
                TestMemory.cpp
                TestModRM.cpp
                TestMov.cpp
