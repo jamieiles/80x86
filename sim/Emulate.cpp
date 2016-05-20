@@ -174,6 +174,8 @@ private:
     void loopnze0();
     void scasbae();
     void scasbaf();
+    void hltf4();
+    void wait9b();
 
     uint8_t fetch_byte();
     template <typename T>
@@ -404,6 +406,8 @@ size_t EmulatorPimpl::emulate()
         case 0xe0: loopnze0(); break;
         case 0xae: scasbae(); break;
         case 0xaf: scasbaf(); break;
+        case 0xf4: hltf4(); break;
+        case 0x9b: wait9b(); break;
         case 0xf0: // lock
             processing_prefixes = true;
             break;
@@ -716,6 +720,8 @@ static inline Out sign_extend(In v)
 #include "instructions/loope.cpp"
 #include "instructions/loopnz.cpp"
 #include "instructions/scas.cpp"
+#include "instructions/hlt.cpp"
+#include "instructions/wait.cpp"
 
 void EmulatorPimpl::push_word(uint16_t v)
 {

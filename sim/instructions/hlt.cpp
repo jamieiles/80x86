@@ -1,0 +1,3 @@
+void EmulatorPimpl::hltf4()
+{
+}
