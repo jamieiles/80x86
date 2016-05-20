@@ -61,6 +61,8 @@ flags = [
 '/usr/include/c++/5',
 '-isystem',
 '/usr/lib/clang/3.8/',
+'-Igoogletest/googletest/include/',
+'-Igoogletest/googlemock/include/',
 # You can add the specified directory to the search path for
 # include files. 
 #'-I',
