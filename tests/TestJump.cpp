@@ -125,9 +125,9 @@ TEST_P(JmpFixture, TakenNotTaken)
     emulate();
 
     if (GetParam().taken)
-        ASSERT_EQ(read_reg(IP), 0x10);
+        ASSERT_EQ(read_reg(IP), 0x1010);
     else
-        ASSERT_EQ(read_reg(IP), 0x02);
+        ASSERT_EQ(read_reg(IP), 0x1002);
 }
 INSTANTIATE_TEST_CASE_P(JmpConditional, JmpFixture,
     ::testing::Values(

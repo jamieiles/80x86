@@ -48,3 +48,6 @@ class Runner(object):
             raise ValueError('Invalid memory width')
         if v != expected:
             raise ValueError('mem[{0:x}]: {1:x} != {2:x}'.format(address, v, expected))
+
+    def write_reg(self, reg, val):
+        self.cpu.write_reg(reg, val)

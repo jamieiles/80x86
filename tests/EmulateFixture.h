@@ -10,6 +10,10 @@ class EmulateFixture : public ::testing::Test {
 public:
     EmulateFixture()
     {
+        // Doesn't need to model the reset vector of FFF0:0000 otherwise we
+        // need to handle wrapping around to 0.  Just start off away from the
+        // interrupt vector table so we can easily detect interrupts.
+        cpu.write_reg(IP, 0x1000);
     }
 
     void set_instruction(const std::vector<uint8_t> &instr)

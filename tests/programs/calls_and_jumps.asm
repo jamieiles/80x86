@@ -1,5 +1,7 @@
 cpu 8086
 
+    times 1024 db 0
+
     call near near_call_target
     call 0:far_call_target
     mov ax, 0
