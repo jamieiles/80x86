@@ -177,6 +177,7 @@ private:
     void hltf4();
     void wait9b();
     void escd8();
+    void aadd5();
 
     uint8_t fetch_byte();
     template <typename T>
@@ -410,6 +411,7 @@ size_t EmulatorPimpl::emulate()
         case 0xf4: hltf4(); break;
         case 0x9b: wait9b(); break;
         case 0xd8 ... 0xdf: escd8(); break;
+        case 0xd5: aadd5(); break;
         case 0xf0: // lock
             processing_prefixes = true;
             break;
@@ -701,6 +703,7 @@ static inline Out sign_extend(In v)
 #include "instructions/aas.cpp"
 #include "instructions/aam.cpp"
 #include "instructions/das.cpp"
+#include "instructions/aad.cpp"
 #include "instructions/neg.cpp"
 #include "instructions/cmp.cpp"
 #include "instructions/mul.cpp"

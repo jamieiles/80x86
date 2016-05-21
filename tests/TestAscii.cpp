@@ -144,3 +144,25 @@ TEST_F(EmulateFixture, Aam129)
         ASSERT_EQ(read_reg(AX), t.ax_expected);
     }
 }
+
+static const std::vector<AsciiTest> aad_tests {
+    AsciiTest{0x0000, 0x00, 0, ZF | PF},
+    AsciiTest{0x0105, 0x0f, 0, PF},
+    AsciiTest{0x0909, 0x63, 0, PF},
+};
+
+TEST_F(EmulateFixture, Aad)
+{
+    // aad
+    for (auto &t: aad_tests) {
+        write_flags(t.flags);
+        write_reg(AX, t.ax);
+        set_instruction({ 0xd5, 0x0a });
+
+        emulate();
+
+        ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                            FLAGS_STUCK_BITS | t.flags_expected);
+        ASSERT_EQ(read_reg(AX), t.ax_expected);
+    }
+}
