@@ -176,6 +176,7 @@ private:
     void scasbaf();
     void movsba4();
     void movswa5();
+    void cmpsba6();
     void hltf4();
     void wait9b();
     void escd8();
@@ -413,6 +414,7 @@ size_t EmulatorPimpl::emulate()
         case 0xaf: scasbaf(); break;
         case 0xa4: movsba4(); break;
         case 0xa5: movswa5(); break;
+        case 0xa6: cmpsba6(); break;
         case 0xf4: hltf4(); break;
         case 0x9b: wait9b(); break;
         case 0xd8 ... 0xdf: escd8(); break;
@@ -731,6 +733,7 @@ static inline Out sign_extend(In v)
 #include "instructions/loopnz.cpp"
 #include "instructions/scas.cpp"
 #include "instructions/movs.cpp"
+#include "instructions/cmps.cpp"
 #include "instructions/hlt.cpp"
 #include "instructions/wait.cpp"
 #include "instructions/esc.cpp"

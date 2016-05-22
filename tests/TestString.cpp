@@ -212,3 +212,70 @@ TEST_F(EmulateFixture, MovswDec)
     ASSERT_EQ(read_mem<uint16_t>(0x400), 0xaa55);
     ASSERT_EQ(read_mem<uint16_t>(0x402), 0x55aa);
 }
+
+struct CmpsTest {
+    std::string src;
+    std::string dst;
+    uint16_t expected_flags;
+    uint8_t prefix;
+    uint8_t expected_length;
+};
+
+class CmpsFixture : public EmulateFixture,
+    public ::testing::WithParamInterface<struct CmpsTest> {
+};
+TEST_P(CmpsFixture, Flags)
+{
+    auto p = GetParam();
+    SCOPED_TRACE("cmps " + p.src + "/" + p.dst);
+
+    write_flags(0);
+
+    write_reg(SI, 0x800);
+    write_reg(DI, 0x400);
+    write_reg(CX, std::max(p.src.size() + 1, p.dst.size() + 1));
+
+    write_cstring(0x800, p.src.c_str());
+    write_cstring(0x400, p.dst.c_str());
+
+    set_instruction({ p.prefix, 0xa6 });
+
+    emulate();
+
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        FLAGS_STUCK_BITS | p.expected_flags);
+    ASSERT_EQ(p.expected_length, read_reg(SI) - 0x800);
+}
+INSTANTIATE_TEST_CASE_P(CmpsRepe, CmpsFixture,
+    ::testing::Values(
+        CmpsTest{"foo", "foo", ZF | PF, 0xf3, 4},
+        CmpsTest{"a", "b", SF | PF | CF | AF, 0xf3, 1},
+        CmpsTest{"b", "a", 0, 0xf3, 1},
+        CmpsTest{"b", "", 0, 0xf3, 1}
+    ));
+INSTANTIATE_TEST_CASE_P(CmpsRepne, CmpsFixture,
+    ::testing::Values(
+        CmpsTest{"bar", "bar", ZF | PF, 0xf2, 1},
+        CmpsTest{"bar", "foo", ZF | PF, 0xf2, 4},
+        CmpsTest{"bar", "for", ZF | PF, 0xf2, 3},
+        CmpsTest{"bar", "c", ZF | PF, 0xf2, 4}
+    ));
+
+TEST_F(EmulateFixture, CmpsbDec)
+{
+    write_flags(DF);
+    write_reg(SI, 0x800);
+    write_reg(DI, 0x400);
+
+    write_mem<uint8_t>(0x800, 'f');
+    write_mem<uint8_t>(0x400, 'g');
+
+    set_instruction({ 0xa6 });
+
+    emulate();
+
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        FLAGS_STUCK_BITS | SF | PF | CF | DF | AF);
+    ASSERT_EQ(read_reg(SI), 0x7ff);
+    ASSERT_EQ(read_reg(DI), 0x3ff);
+}
