@@ -190,6 +190,8 @@ private:
     void aadd5();
     void shld0();
     void shld1();
+    void shld2();
+    void shld3();
 
     uint8_t fetch_byte();
     template <typename T>
@@ -435,6 +437,8 @@ size_t EmulatorPimpl::emulate()
         case 0xd5: aadd5(); break;
         case 0xd0: shld0(); break;
         case 0xd1: shld1(); break;
+        case 0xd2: shld2(); break;
+        case 0xd3: shld3(); break;
         case 0xf0: // lock
             processing_prefixes = true;
             break;
