@@ -188,6 +188,8 @@ private:
     void wait9b();
     void escd8();
     void aadd5();
+    void shld0();
+    void shld1();
 
     uint8_t fetch_byte();
     template <typename T>
@@ -431,6 +433,8 @@ size_t EmulatorPimpl::emulate()
         case 0x9b: wait9b(); break;
         case 0xd8 ... 0xdf: escd8(); break;
         case 0xd5: aadd5(); break;
+        case 0xd0: shld0(); break;
+        case 0xd1: shld1(); break;
         case 0xf0: // lock
             processing_prefixes = true;
             break;
@@ -756,6 +760,7 @@ static inline Out sign_extend(In v)
 #include "instructions/wait.cpp"
 #include "instructions/esc.cpp"
 #include "instructions/not.cpp"
+#include "instructions/shl.cpp"
 
 void EmulatorPimpl::push_word(uint16_t v)
 {
