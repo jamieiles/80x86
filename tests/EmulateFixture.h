@@ -47,6 +47,21 @@ public:
         } while (*str);
     }
 
+    std::string read_cstring(uint32_t addr)
+    {
+        std::string str;
+
+        char v;
+        for (;;) {
+            v = read_mem<uint8_t>(addr++);
+            if (!v)
+                break;
+            str += v;
+        }
+
+        return str;
+    }
+
     template <typename T>
     T read_mem(uint32_t addr)
     {

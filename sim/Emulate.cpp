@@ -174,6 +174,8 @@ private:
     void loopnze0();
     void scasbae();
     void scasbaf();
+    void movsba4();
+    void movswa5();
     void hltf4();
     void wait9b();
     void escd8();
@@ -231,6 +233,7 @@ void EmulatorPimpl::do_rep(std::function<void()> primitive,
 
     while (registers->get(CX) != 0) {
         primitive();
+        registers->set(CX, registers->get(CX) - 1);
         if (should_terminate())
             break;
     }
@@ -408,6 +411,8 @@ size_t EmulatorPimpl::emulate()
         case 0xe0: loopnze0(); break;
         case 0xae: scasbae(); break;
         case 0xaf: scasbaf(); break;
+        case 0xa4: movsba4(); break;
+        case 0xa5: movswa5(); break;
         case 0xf4: hltf4(); break;
         case 0x9b: wait9b(); break;
         case 0xd8 ... 0xdf: escd8(); break;
@@ -725,6 +730,7 @@ static inline Out sign_extend(In v)
 #include "instructions/loope.cpp"
 #include "instructions/loopnz.cpp"
 #include "instructions/scas.cpp"
+#include "instructions/movs.cpp"
 #include "instructions/hlt.cpp"
 #include "instructions/wait.cpp"
 #include "instructions/esc.cpp"
