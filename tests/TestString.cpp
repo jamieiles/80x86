@@ -223,6 +223,7 @@ struct CmpsTest {
 };
 
 using Cmps8Test = struct CmpsTest<uint8_t>;
+using Cmps16Test = struct CmpsTest<uint16_t>;
 
 class Cmps8Fixture : public EmulateFixture,
     public ::testing::WithParamInterface<Cmps8Test> {
@@ -289,3 +290,50 @@ TEST_F(EmulateFixture, CmpsbDec)
     ASSERT_EQ(read_reg(SI), 0x7ff);
     ASSERT_EQ(read_reg(DI), 0x3ff);
 }
+
+class Cmps16Fixture : public EmulateFixture,
+    public ::testing::WithParamInterface<Cmps16Test> {
+};
+TEST_P(Cmps16Fixture, Flags)
+{
+    auto p = GetParam();
+
+    write_flags(0);
+
+    write_reg(SI, 0x800);
+    write_reg(DI, 0x400);
+    write_reg(CX, std::max(p.src.size() + 1, p.dst.size() + 1));
+
+    write_vector(0x800, p.src);
+    write_vector(0x400, p.dst);
+
+    set_instruction({ p.prefix, 0xa7 });
+
+    emulate();
+
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        FLAGS_STUCK_BITS | p.expected_flags);
+    ASSERT_EQ(p.expected_length, read_reg(SI) - 0x800);
+}
+INSTANTIATE_TEST_CASE_P(CmpsRepe, Cmps16Fixture,
+    ::testing::Values(
+        Cmps16Test{std::vector<uint16_t>{0xaa55, 0xaa56, 0xaa57},
+                  std::vector<uint16_t>{0xaa55, 0xaa56, 0xaa57}, ZF | PF, 0xf3, 8},
+        Cmps16Test{std::vector<uint16_t>{0x1000},
+                  std::vector<uint16_t>{0x2000}, SF | PF | CF, 0xf3, 2},
+        Cmps16Test{std::vector<uint16_t>{0x2000},
+                  std::vector<uint16_t>{0x1000}, PF, 0xf3, 2},
+        Cmps16Test{std::vector<uint16_t>{0x2000},
+                  std::vector<uint16_t>{}, PF, 0xf3, 2}
+    ));
+INSTANTIATE_TEST_CASE_P(CmpsRepne, Cmps16Fixture,
+    ::testing::Values(
+        Cmps16Test{std::vector<uint16_t>{0xaa55, 0xaa56, 0xaa57},
+                  std::vector<uint16_t>{0xaa55, 0xaa56, 0xaa57}, ZF | PF, 0xf2, 2},
+        Cmps16Test{std::vector<uint16_t>{0xaa55, 0xaa56, 0xaa57},
+                  std::vector<uint16_t>{0x55aa, 0x55ab, 0x55ac}, ZF | PF, 0xf2, 6},
+        Cmps16Test{std::vector<uint16_t>{0xaa55, 0xaa56, 0xaa57},
+                  std::vector<uint16_t>{0x55aa, 0x55aa, 0xaa57}, ZF | PF, 0xf2, 4},
+        Cmps16Test{std::vector<uint16_t>{0xaa55, 0xaa56, 0xaa57},
+                  std::vector<uint16_t>{0x1234}, ZF | PF, 0xf2, 6}
+    ));
