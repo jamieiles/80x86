@@ -356,3 +356,63 @@ TEST_F(EmulateFixture, CmpswDec)
     ASSERT_EQ(read_reg(SI), 0x7fe);
     ASSERT_EQ(read_reg(DI), 0x3fe);
 }
+
+TEST_F(EmulateFixture, Lodsb)
+{
+    write_flags(0);
+    write_reg(SI, 0x800);
+    write_cstring(0x800, "foo");
+    write_reg(CX, 3);
+
+    set_instruction({ 0xf2, 0xac });
+
+    emulate();
+
+    ASSERT_EQ(read_reg(AL), 'o');
+    ASSERT_EQ(read_reg(SI), 0x803);
+}
+
+TEST_F(EmulateFixture, Lodsw)
+{
+    write_flags(0);
+    write_reg(SI, 0x800);
+    write_vector<uint16_t>(0x800, { 0x1234, 0x5678 });
+    write_reg(CX, 2);
+
+    set_instruction({ 0xf2, 0xad });
+
+    emulate();
+
+    ASSERT_EQ(read_reg(AX), 0x5678);
+    ASSERT_EQ(read_reg(SI), 0x804);
+}
+
+TEST_F(EmulateFixture, LodsbDec)
+{
+    write_flags(DF);
+    write_reg(SI, 0x802);
+    write_cstring(0x800, "foo");
+    write_reg(CX, 3);
+
+    set_instruction({ 0xf2, 0xac });
+
+    emulate();
+
+    ASSERT_EQ(read_reg(AL), 'f');
+    ASSERT_EQ(read_reg(SI), 0x7ff);
+}
+
+TEST_F(EmulateFixture, LodswDec)
+{
+    write_flags(DF);
+    write_reg(SI, 0x802);
+    write_vector<uint16_t>(0x800, { 0x1234, 0x5678 });
+    write_reg(CX, 2);
+
+    set_instruction({ 0xf2, 0xad });
+
+    emulate();
+
+    ASSERT_EQ(read_reg(AX), 0x1234);
+    ASSERT_EQ(read_reg(SI), 0x7fe);
+}
