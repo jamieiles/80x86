@@ -5,6 +5,7 @@ include_directories(../sim)
 add_executable(unittest
                main.cpp
                Arithmetic.cpp
+               Shift.cpp
                TestAdc.cpp
                TestAdd.cpp
                TestAscii.cpp
