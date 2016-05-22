@@ -337,3 +337,22 @@ INSTANTIATE_TEST_CASE_P(CmpsRepne, Cmps16Fixture,
         Cmps16Test{std::vector<uint16_t>{0xaa55, 0xaa56, 0xaa57},
                   std::vector<uint16_t>{0x1234}, ZF | PF, 0xf2, 6}
     ));
+
+TEST_F(EmulateFixture, CmpswDec)
+{
+    write_flags(DF);
+    write_reg(SI, 0x800);
+    write_reg(DI, 0x400);
+
+    write_mem<uint16_t>(0x800, 0xaa55);
+    write_mem<uint16_t>(0x400, 0xaa56);
+
+    set_instruction({ 0xa7 });
+
+    emulate();
+
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        FLAGS_STUCK_BITS | SF | PF | CF | DF | AF);
+    ASSERT_EQ(read_reg(SI), 0x7fe);
+    ASSERT_EQ(read_reg(DI), 0x3fe);
+}
