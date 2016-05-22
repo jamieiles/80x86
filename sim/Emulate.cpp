@@ -116,6 +116,8 @@ private:
     void aamd4();
     void negf6();
     void negf7();
+    void notf6();
+    void notf7();
     void cmp38();
     void cmp39();
     void cmp3a();
@@ -197,8 +199,8 @@ private:
     std::pair<uint16_t, T> do_sub(uint16_t v1, uint16_t v2,
                                   uint16_t carry_in=0);
     void push_inc_jmp_call_ff();
-    void neg_mul_f6();
-    void neg_mul_f7();
+    void neg_mul_not_f6();
+    void neg_mul_not_f7();
     void push_word(uint16_t v);
     uint16_t pop_word();
     template <typename T>
@@ -365,8 +367,8 @@ size_t EmulatorPimpl::emulate()
         case 0x2f: das2f(); break;
         case 0x3f: aas3f(); break;
         case 0xd4: aamd4(); break;
-        case 0xf6: neg_mul_f6(); break;
-        case 0xf7: neg_mul_f7(); break;
+        case 0xf6: neg_mul_not_f6(); break;
+        case 0xf7: neg_mul_not_f7(); break;
         case 0x38: cmp38(); break;
         case 0x39: cmp39(); break;
         case 0x3a: cmp3a(); break;
@@ -662,12 +664,14 @@ uint8_t EmulatorPimpl::fetch_byte()
                                             registers->get(IP) + instr_length++));
 }
 
-void EmulatorPimpl::neg_mul_f6()
+void EmulatorPimpl::neg_mul_not_f6()
 {
     modrm_decoder->set_width(OP_WIDTH_8);
     modrm_decoder->decode();
 
-    if (modrm_decoder->raw_reg() == 0x3)
+    if (modrm_decoder->raw_reg() == 0x2)
+        notf6();
+    else if (modrm_decoder->raw_reg() == 0x3)
         negf6();
     else if (modrm_decoder->raw_reg() == 0x4)
         mulf6();
@@ -675,12 +679,14 @@ void EmulatorPimpl::neg_mul_f6()
         imulf6();
 }
 
-void EmulatorPimpl::neg_mul_f7()
+void EmulatorPimpl::neg_mul_not_f7()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
 
-    if (modrm_decoder->raw_reg() == 0x3)
+    if (modrm_decoder->raw_reg() == 0x2)
+        notf7();
+    else if (modrm_decoder->raw_reg() == 0x3)
         negf7();
     else if (modrm_decoder->raw_reg() == 0x4)
         mulf7();
@@ -749,6 +755,7 @@ static inline Out sign_extend(In v)
 #include "instructions/hlt.cpp"
 #include "instructions/wait.cpp"
 #include "instructions/esc.cpp"
+#include "instructions/not.cpp"
 
 void EmulatorPimpl::push_word(uint16_t v)
 {
