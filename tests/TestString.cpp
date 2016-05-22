@@ -331,11 +331,11 @@ INSTANTIATE_TEST_CASE_P(CmpsRepne, Cmps16Fixture,
         Cmps16Test{std::vector<uint16_t>{0xaa55, 0xaa56, 0xaa57},
                   std::vector<uint16_t>{0xaa55, 0xaa56, 0xaa57}, ZF | PF, 0xf2, 2},
         Cmps16Test{std::vector<uint16_t>{0xaa55, 0xaa56, 0xaa57},
-                  std::vector<uint16_t>{0x55aa, 0x55ab, 0x55ac}, ZF | PF, 0xf2, 6},
+                  std::vector<uint16_t>{0x55aa, 0x55ab, 0x55ac}, ZF | PF, 0xf2, 8},
         Cmps16Test{std::vector<uint16_t>{0xaa55, 0xaa56, 0xaa57},
-                  std::vector<uint16_t>{0x55aa, 0x55aa, 0xaa57}, ZF | PF, 0xf2, 4},
+                  std::vector<uint16_t>{0x55aa, 0x55aa, 0xaa57}, ZF | PF, 0xf2, 6},
         Cmps16Test{std::vector<uint16_t>{0xaa55, 0xaa56, 0xaa57},
-                  std::vector<uint16_t>{0x1234}, ZF | PF, 0xf2, 6}
+                  std::vector<uint16_t>{0x1234}, ZF | PF, 0xf2, 8}
     ));
 
 TEST_F(EmulateFixture, CmpswDec)

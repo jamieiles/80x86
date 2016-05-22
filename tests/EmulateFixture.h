@@ -51,8 +51,10 @@ public:
     template <typename T>
     void write_vector(uint32_t addr, std::vector<T> vec)
     {
-        for (auto v: vec)
-            write_mem<T>(addr++, v);
+        for (auto v: vec) {
+            write_mem<T>(addr, v);
+            addr += sizeof(T);
+        }
     }
 
     std::string read_cstring(uint32_t addr)
