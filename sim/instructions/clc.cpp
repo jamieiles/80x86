@@ -4,5 +4,5 @@ void EmulatorPimpl::clcf8()
 
     flags &= ~CF;
 
-    registers->set_flags(flags);
+    registers->set_flags(flags, CF);
 }

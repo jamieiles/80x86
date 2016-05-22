@@ -32,3 +32,12 @@ TEST(RegisterFile, reset_clears)
     // Bit 15 is always 1 on 8086
     ASSERT_EQ(FLAGS_STUCK_BITS, rf.get_flags());
 }
+
+TEST(RegisterFile, flags_mask)
+{
+    RegisterFile rf;
+
+    rf.set_flags(CF | AF, CF);
+
+    ASSERT_EQ(CF | FLAGS_STUCK_BITS, rf.get_flags());
+}

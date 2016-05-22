@@ -4,5 +4,5 @@ void EmulatorPimpl::stcf9()
 
     flags |= CF;
 
-    registers->set_flags(flags);
+    registers->set_flags(flags, CF);
 }

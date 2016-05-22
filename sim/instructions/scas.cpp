@@ -7,7 +7,7 @@ void EmulatorPimpl::scasbae()
         uint8_t result;
         uint16_t flags;
         std::tie(flags, result) = do_sub<uint8_t>(v, registers->get(AL));
-        registers->set_flags(flags);
+        registers->set_flags(flags, OF | SF | ZF | CF | PF | AF);
 
         if (registers->get_flag(DF))
             registers->set(DI, registers->get(DI) - 1);
@@ -26,7 +26,7 @@ void EmulatorPimpl::scasbaf()
         uint16_t result;
         uint16_t flags;
         std::tie(flags, result) = do_sub<uint16_t>(v, registers->get(AX));
-        registers->set_flags(flags);
+        registers->set_flags(flags, OF | SF | ZF | CF | PF | AF);
 
         if (registers->get_flag(DF))
             registers->set(DI, registers->get(DI) - 2);

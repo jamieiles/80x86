@@ -17,5 +17,5 @@ void EmulatorPimpl::aaa37()
         flags &= ~(AF | CF);
     }
 
-    registers->set_flags(flags);
+    registers->set_flags(flags, AF | CF);
 }

@@ -28,5 +28,5 @@ void EmulatorPimpl::das2f()
 
     registers->set(AL, al);
     registers->set(AH, ah);
-    registers->set_flags(flags);
+    registers->set_flags(flags, SF | ZF | AF | CF | PF);
 }

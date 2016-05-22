@@ -17,5 +17,5 @@ void EmulatorPimpl::aas3f()
 
     registers->set(AL, al);
     registers->set(AH, ah);
-    registers->set_flags(flags);
+    registers->set_flags(flags, AF | CF);
 }

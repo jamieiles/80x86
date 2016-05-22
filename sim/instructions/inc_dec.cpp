@@ -10,16 +10,14 @@ void EmulatorPimpl::inc_dec_fe()
 
     uint8_t v = read_data<uint8_t>();
     uint8_t result;
-    uint16_t flags, old_flags = registers->get_flags();
+    uint16_t flags;
 
     if (modrm_decoder->raw_reg() == 0)
         std::tie(flags, result) = do_add<uint8_t>(v, 1);
     else
         std::tie(flags, result) = do_sub<uint8_t>(v, 1);
 
-    old_flags &= ~(OF | SF | ZF | AF | PF);
-    flags &= (OF | SF | ZF | AF | PF);
-    registers->set_flags(flags | old_flags);
+    registers->set_flags(flags, OF | SF | ZF | AF | PF);
     write_data<uint8_t>(result);
 }
 
@@ -30,13 +28,11 @@ void EmulatorPimpl::incff()
 
     uint16_t v = read_data<uint16_t>();
     uint16_t result;
-    uint16_t flags, old_flags = registers->get_flags();
+    uint16_t flags;
 
     std::tie(flags, result) = do_add<uint16_t>(v, 1);
 
-    old_flags &= ~(OF | SF | ZF | AF | PF);
-    flags &= (OF | SF | ZF | AF | PF);
-    registers->set_flags(flags | old_flags);
+    registers->set_flags(flags, OF | SF | ZF | AF | PF);
     write_data<uint16_t>(result);
 }
 
@@ -46,13 +42,11 @@ void EmulatorPimpl::inc40_47()
     auto reg = static_cast<GPR>(static_cast<int>(AX) + (opcode & 0x7));
     auto v = registers->get(reg);
     uint16_t result;
-    uint16_t flags, old_flags = registers->get_flags();
+    uint16_t flags;
 
     std::tie(flags, result) = do_add<uint16_t>(v, 1);
 
-    old_flags &= ~(OF | SF | ZF | AF | PF);
-    flags &= (OF | SF | ZF | AF | PF);
-    registers->set_flags(flags | old_flags);
+    registers->set_flags(flags, OF | SF | ZF | AF | PF);
     registers->set(reg, result);
 }
 
@@ -63,13 +57,11 @@ void EmulatorPimpl::decff()
 
     uint16_t v = read_data<uint16_t>();
     uint16_t result;
-    uint16_t flags, old_flags = registers->get_flags();
+    uint16_t flags;
 
     std::tie(flags, result) = do_sub<uint16_t>(v, 1);
 
-    old_flags &= ~(OF | SF | ZF | AF | PF);
-    flags &= (OF | SF | ZF | AF | PF);
-    registers->set_flags(flags | old_flags);
+    registers->set_flags(flags, OF | SF | ZF | AF | PF);
     write_data<uint16_t>(result);
 }
 
@@ -79,12 +71,10 @@ void EmulatorPimpl::dec48_4f()
     auto reg = static_cast<GPR>(static_cast<int>(AX) + (opcode & 0x7));
     auto v = registers->get(reg);
     uint16_t result;
-    uint16_t flags, old_flags = registers->get_flags();
+    uint16_t flags;
 
     std::tie(flags, result) = do_sub<uint16_t>(v, 1);
 
-    old_flags &= ~(OF | SF | ZF | AF | PF);
-    flags &= (OF | SF | ZF | AF | PF);
-    registers->set_flags(flags | old_flags);
+    registers->set_flags(flags, OF | SF | ZF | AF | PF);
     registers->set(reg, result);
 }

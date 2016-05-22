@@ -7,5 +7,5 @@ void EmulatorPimpl::cmcf5()
     else
         flags |= CF;
 
-    registers->set_flags(flags);
+    registers->set_flags(flags, CF);
 }

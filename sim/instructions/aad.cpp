@@ -14,5 +14,5 @@ void EmulatorPimpl::aadd5()
 
     registers->set(AL, al);
     registers->set(AH, 0);
-    registers->set_flags(flags);
+    registers->set_flags(flags, SF | ZF | PF);
 }

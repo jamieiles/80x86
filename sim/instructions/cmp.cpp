@@ -11,7 +11,7 @@ void EmulatorPimpl::cmp38()
     uint16_t flags;
     std::tie(flags, result) = do_sub<uint8_t>(v1, v2);
 
-    registers->set_flags(flags);
+    registers->set_flags(flags, OF | SF | ZF | AF | CF | PF);
 }
 
 // cmp r, r/m, 16-bit
@@ -27,7 +27,7 @@ void EmulatorPimpl::cmp39()
     uint16_t flags;
     std::tie(flags, result) = do_sub<uint16_t>(v1, v2);
 
-    registers->set_flags(flags);
+    registers->set_flags(flags, OF | SF | ZF | AF | CF | PF);
 }
 
 // cmp r/m, r, 8-bit
@@ -43,7 +43,7 @@ void EmulatorPimpl::cmp3a()
     uint16_t flags;
     std::tie(flags, result) = do_sub<uint8_t>(v2, v1);
 
-    registers->set_flags(flags);
+    registers->set_flags(flags, OF | SF | ZF | AF | CF | PF);
 }
 
 // cmp r/m, r, 16-bit
@@ -59,7 +59,7 @@ void EmulatorPimpl::cmp3b()
     uint16_t flags;
     std::tie(flags, result) = do_sub<uint16_t>(v2, v1);
 
-    registers->set_flags(flags);
+    registers->set_flags(flags, OF | SF | ZF | AF | CF | PF);
 }
 
 void EmulatorPimpl::cmp3c()
@@ -70,7 +70,7 @@ void EmulatorPimpl::cmp3c()
     uint16_t flags;
     std::tie(flags, result) = do_sub<uint8_t>(v1, v2);
 
-    registers->set_flags(flags);
+    registers->set_flags(flags, OF | SF | ZF | AF | CF | PF);
 }
 
 void EmulatorPimpl::cmp3d()
@@ -81,5 +81,5 @@ void EmulatorPimpl::cmp3d()
     uint16_t flags;
     std::tie(flags, result) = do_sub<uint16_t>(v1, v2);
 
-    registers->set_flags(flags);
+    registers->set_flags(flags, OF | SF | ZF | AF | CF | PF);
 }

@@ -4,5 +4,5 @@ void EmulatorPimpl::clifa()
 
     flags &= ~IF;
 
-    registers->set_flags(flags);
+    registers->set_flags(flags, IF);
 }

@@ -15,5 +15,5 @@ void EmulatorPimpl::daa27()
     }
 
     registers->set(AL, al);
-    registers->set_flags(flags);
+    registers->set_flags(flags, SF | ZF | AF | CF | PF);
 }

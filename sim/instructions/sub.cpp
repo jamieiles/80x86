@@ -11,7 +11,7 @@ void EmulatorPimpl::sub28()
     uint16_t flags;
     std::tie(flags, result) = do_sub<uint8_t>(v1, v2);
 
-    registers->set_flags(flags);
+    registers->set_flags(flags, OF | SF | ZF | CF | PF | AF);
     write_data<uint8_t>(result & 0xff);
 }
 
@@ -28,7 +28,7 @@ void EmulatorPimpl::sub29()
     uint16_t flags;
     std::tie(flags, result) = do_sub<uint16_t>(v1, v2);
 
-    registers->set_flags(flags);
+    registers->set_flags(flags, OF | SF | ZF | CF | PF | AF);
     write_data<uint16_t>(result & 0xffff);
 }
 
@@ -45,7 +45,7 @@ void EmulatorPimpl::sub2a()
     uint16_t flags;
     std::tie(flags, result) = do_sub<uint8_t>(v2, v1);
 
-    registers->set_flags(flags);
+    registers->set_flags(flags, OF | SF | ZF | CF | PF | AF);
     registers->set(modrm_decoder->reg(), result & 0xff);
 }
 
@@ -62,7 +62,7 @@ void EmulatorPimpl::sub2b()
     uint16_t flags;
     std::tie(flags, result) = do_sub<uint16_t>(v2, v1);
 
-    registers->set_flags(flags);
+    registers->set_flags(flags, OF | SF | ZF | CF | PF | AF);
     registers->set(modrm_decoder->reg(), result & 0xffff);
 }
 
@@ -74,7 +74,7 @@ void EmulatorPimpl::sub2c()
     uint16_t flags;
     std::tie(flags, result) = do_sub<uint8_t>(v1, v2);
 
-    registers->set_flags(flags);
+    registers->set_flags(flags, OF | SF | ZF | CF | PF | AF);
     registers->set(AL, result);
 }
 
@@ -86,6 +86,6 @@ void EmulatorPimpl::sub2d()
     uint16_t flags;
     std::tie(flags, result) = do_sub<uint16_t>(v1, v2);
 
-    registers->set_flags(flags);
+    registers->set_flags(flags, OF | SF | ZF | CF | PF | AF);
     registers->set(AX, result);
 }

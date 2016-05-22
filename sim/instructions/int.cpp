@@ -7,7 +7,7 @@ void EmulatorPimpl::intcc()
     push_word(registers->get(IP) + instr_length);
 
     flags &= ~(IF | TF);
-    registers->set_flags(flags);
+    registers->set_flags(flags, IF | TF);
 
     // int 3
     auto new_cs = mem->read<uint16_t>(VEC_INT + 2);
@@ -27,7 +27,7 @@ void EmulatorPimpl::intcd()
     push_word(registers->get(IP) + instr_length);
 
     flags &= ~(IF | TF);
-    registers->set_flags(flags);
+    registers->set_flags(flags, IF | TF);
 
     // int 3
     auto new_cs = mem->read<uint16_t>(int_num * 4 + 2);
@@ -48,7 +48,7 @@ void EmulatorPimpl::intoce()
     push_word(registers->get(IP) + instr_length);
 
     flags &= ~(IF | TF);
-    registers->set_flags(flags);
+    registers->set_flags(flags, IF | TF);
 
     // int 3
     auto new_cs = mem->read<uint16_t>(VEC_OVERFLOW + 2);

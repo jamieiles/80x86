@@ -13,7 +13,7 @@ void EmulatorPimpl::imulf6()
         flags |= CF | OF;
 
     registers->set(AX, result);
-    registers->set_flags(flags);
+    registers->set_flags(flags, OF | CF);
 }
 
 // imul r/m, 16-bit
@@ -33,5 +33,5 @@ void EmulatorPimpl::imulf7()
 
     registers->set(AX, result & 0xffff);
     registers->set(DX, (result >> 16) & 0xffff);
-    registers->set_flags(flags);
+    registers->set_flags(flags, OF | CF);
 }

@@ -4,5 +4,5 @@ void EmulatorPimpl::stdfd()
 
     flags |= DF;
 
-    registers->set_flags(flags);
+    registers->set_flags(flags, DF);
 }

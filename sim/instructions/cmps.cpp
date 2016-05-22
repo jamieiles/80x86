@@ -9,7 +9,7 @@ void EmulatorPimpl::cmpsba6()
         uint8_t result;
         uint16_t flags;
         std::tie(flags, result) = do_sub<uint8_t>(s, d);
-        registers->set_flags(flags);
+        registers->set_flags(flags, OF | SF | ZF | AF | CF | PF);
 
         if (registers->get_flag(DF)) {
             registers->set(DI, registers->get(DI) - 1);

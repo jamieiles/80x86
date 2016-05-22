@@ -568,7 +568,7 @@ void EmulatorPimpl::add_adc_sub_sbb_cmp_80()
     else
         std::tie(flags, result) = do_sub<uint8_t>(v1, v2, carry_in);
 
-    registers->set_flags(flags);
+    registers->set_flags(flags, OF | SF | ZF | CF | PF | AF);
     // cmp doesn't write the result
     if (modrm_decoder->raw_reg() != 7)
         write_data<uint8_t>(result & 0xff);
@@ -606,7 +606,7 @@ void EmulatorPimpl::add_adc_sub_sbb_cmp_81()
     else
         std::tie(flags, result) = do_sub<uint16_t>(v1, v2, carry_in);
 
-    registers->set_flags(flags);
+    registers->set_flags(flags, OF | SF | ZF | CF | PF | AF);
     // cmp doesn't write the result
     if (modrm_decoder->raw_reg() != 7)
         write_data<uint16_t>(result & 0xffff);
@@ -640,7 +640,7 @@ void EmulatorPimpl::add_adc_sub_sbb_cmp_83()
     else
         std::tie(flags, result) = do_sub<uint16_t>(v1, immed, carry_in);
 
-    registers->set_flags(flags);
+    registers->set_flags(flags, OF | SF | ZF | CF | PF | AF);
     // cmp doesn't write the result
     if (modrm_decoder->raw_reg() != 7)
         write_data<uint16_t>(result & 0xffff);

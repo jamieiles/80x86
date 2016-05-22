@@ -7,7 +7,7 @@ void EmulatorPimpl::negf6()
     std::tie(flags, result) = do_sub<uint8_t>(0, v);
 
     write_data<uint8_t>(result);
-    registers->set_flags(flags);
+    registers->set_flags(flags, OF | SF | ZF | CF | PF);
 }
 
 // neg word r/m
@@ -19,5 +19,5 @@ void EmulatorPimpl::negf7()
     std::tie(flags, result) = do_sub<uint16_t>(0, v);
 
     write_data<uint16_t>(result);
-    registers->set_flags(flags);
+    registers->set_flags(flags, OF | SF | ZF | CF | PF);
 }

@@ -20,6 +20,6 @@ void EmulatorPimpl::aamd4()
     if (registers->get(AL) & 0x80)
         flags |= SF;
 
-    registers->set_flags(flags);
+    registers->set_flags(flags, SF | ZF | PF);
 }
 

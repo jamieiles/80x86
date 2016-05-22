@@ -99,7 +99,8 @@ bool RegisterFile::get_flag(enum Flag f) const
     return !!(flags & f);
 }
 
-void RegisterFile::set_flags(uint16_t val)
+void RegisterFile::set_flags(uint16_t val, uint16_t mask)
 {
-    flags = val | (1 << 15);
+    flags &= ~mask;
+    flags |= (val & mask) | (1 << 15);
 }
