@@ -416,3 +416,63 @@ TEST_F(EmulateFixture, LodswDec)
     ASSERT_EQ(read_reg(AX), 0x1234);
     ASSERT_EQ(read_reg(SI), 0x7fe);
 }
+
+TEST_F(EmulateFixture, Stosb)
+{
+    write_flags(0);
+    write_reg(DI, 0x800);
+    write_reg(AL, 'a');
+    write_reg(CX, 3);
+
+    set_instruction({ 0xf2, 0xaa });
+
+    emulate();
+
+    ASSERT_EQ(read_reg(DI), 0x803);
+    ASSERT_EQ(read_cstring(0x800), "aaa");
+}
+
+TEST_F(EmulateFixture, StosbDec)
+{
+    write_flags(DF);
+    write_reg(DI, 0x802);
+    write_reg(AL, 'a');
+    write_reg(CX, 3);
+
+    set_instruction({ 0xf2, 0xaa });
+
+    emulate();
+
+    ASSERT_EQ(read_reg(DI), 0x7ff);
+    ASSERT_EQ(read_cstring(0x800), "aaa");
+}
+
+TEST_F(EmulateFixture, Stosw)
+{
+    write_flags(0);
+    write_reg(DI, 0x800);
+    write_reg(AX, 0x6261);
+    write_reg(CX, 3);
+
+    set_instruction({ 0xf2, 0xab });
+
+    emulate();
+
+    ASSERT_EQ(read_reg(DI), 0x806);
+    ASSERT_EQ(read_cstring(0x800), "ababab");
+}
+
+TEST_F(EmulateFixture, StoswDec)
+{
+    write_flags(DF);
+    write_reg(DI, 0x804);
+    write_reg(AX, 0x6261);
+    write_reg(CX, 3);
+
+    set_instruction({ 0xf2, 0xab });
+
+    emulate();
+
+    ASSERT_EQ(read_reg(DI), 0x7fe);
+    ASSERT_EQ(read_cstring(0x800), "ababab");
+}
