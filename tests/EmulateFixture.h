@@ -1,6 +1,7 @@
 #ifndef __EMULATEFIXTURE_H__
 #define __EMULATEFIXTURE_H__
 
+#include <vector>
 #include <gtest/gtest.h>
 
 #include <cassert>
@@ -45,6 +46,13 @@ public:
         do {
             write_mem<uint8_t>(addr++, *str++);
         } while (*str);
+    }
+
+    template <typename T>
+    void write_vector(uint32_t addr, std::vector<T> vec)
+    {
+        for (auto v: vec)
+            write_mem<T>(addr++, v);
     }
 
     std::string read_cstring(uint32_t addr)

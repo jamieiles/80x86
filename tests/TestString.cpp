@@ -213,21 +213,23 @@ TEST_F(EmulateFixture, MovswDec)
     ASSERT_EQ(read_mem<uint16_t>(0x402), 0x55aa);
 }
 
+template <typename T>
 struct CmpsTest {
-    std::string src;
-    std::string dst;
+    std::vector<T> src;
+    std::vector<T> dst;
     uint16_t expected_flags;
     uint8_t prefix;
     uint8_t expected_length;
 };
 
-class CmpsFixture : public EmulateFixture,
-    public ::testing::WithParamInterface<struct CmpsTest> {
+using Cmps8Test = struct CmpsTest<uint8_t>;
+
+class Cmps8Fixture : public EmulateFixture,
+    public ::testing::WithParamInterface<Cmps8Test> {
 };
-TEST_P(CmpsFixture, Flags)
+TEST_P(Cmps8Fixture, Flags)
 {
     auto p = GetParam();
-    SCOPED_TRACE("cmps " + p.src + "/" + p.dst);
 
     write_flags(0);
 
@@ -235,8 +237,8 @@ TEST_P(CmpsFixture, Flags)
     write_reg(DI, 0x400);
     write_reg(CX, std::max(p.src.size() + 1, p.dst.size() + 1));
 
-    write_cstring(0x800, p.src.c_str());
-    write_cstring(0x400, p.dst.c_str());
+    write_vector(0x800, p.src);
+    write_vector(0x400, p.dst);
 
     set_instruction({ p.prefix, 0xa6 });
 
@@ -246,19 +248,27 @@ TEST_P(CmpsFixture, Flags)
                         FLAGS_STUCK_BITS | p.expected_flags);
     ASSERT_EQ(p.expected_length, read_reg(SI) - 0x800);
 }
-INSTANTIATE_TEST_CASE_P(CmpsRepe, CmpsFixture,
+INSTANTIATE_TEST_CASE_P(CmpsRepe, Cmps8Fixture,
     ::testing::Values(
-        CmpsTest{"foo", "foo", ZF | PF, 0xf3, 4},
-        CmpsTest{"a", "b", SF | PF | CF | AF, 0xf3, 1},
-        CmpsTest{"b", "a", 0, 0xf3, 1},
-        CmpsTest{"b", "", 0, 0xf3, 1}
+        Cmps8Test{std::vector<uint8_t>{'f', 'o', 'o'},
+                  std::vector<uint8_t>{'f', 'o', 'o'}, ZF | PF, 0xf3, 4},
+        Cmps8Test{std::vector<uint8_t>{'a'},
+                  std::vector<uint8_t>{'b'}, SF | PF | CF | AF, 0xf3, 1},
+        Cmps8Test{std::vector<uint8_t>{'b'},
+                  std::vector<uint8_t>{'a'}, 0, 0xf3, 1},
+        Cmps8Test{std::vector<uint8_t>{'b'},
+                  std::vector<uint8_t>{}, 0, 0xf3, 1}
     ));
-INSTANTIATE_TEST_CASE_P(CmpsRepne, CmpsFixture,
+INSTANTIATE_TEST_CASE_P(CmpsRepne, Cmps8Fixture,
     ::testing::Values(
-        CmpsTest{"bar", "bar", ZF | PF, 0xf2, 1},
-        CmpsTest{"bar", "foo", ZF | PF, 0xf2, 4},
-        CmpsTest{"bar", "for", ZF | PF, 0xf2, 3},
-        CmpsTest{"bar", "c", ZF | PF, 0xf2, 4}
+        Cmps8Test{std::vector<uint8_t>{'b', 'a', 'r'},
+                  std::vector<uint8_t>{'b', 'a', 'r'}, ZF | PF, 0xf2, 1},
+        Cmps8Test{std::vector<uint8_t>{'b', 'a', 'r'},
+                  std::vector<uint8_t>{'f', 'o', 'o'}, ZF | PF, 0xf2, 4},
+        Cmps8Test{std::vector<uint8_t>{'b', 'a', 'r'},
+                  std::vector<uint8_t>{'f', 'o', 'r'}, ZF | PF, 0xf2, 3},
+        Cmps8Test{std::vector<uint8_t>{'b', 'a', 'r'},
+                  std::vector<uint8_t>{'c'}, ZF | PF, 0xf2, 4}
     ));
 
 TEST_F(EmulateFixture, CmpsbDec)
