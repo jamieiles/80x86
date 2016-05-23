@@ -5,13 +5,14 @@ from py8086sim.Cpu import Sim
 
 class Runner(object):
     binary = None
+    load_address = 0
 
     def __init__(self):
         self.cpu = Sim()
 
         with open(os.path.join('${CMAKE_CURRENT_BINARY_DIR}', 'programs', self.binary)) as b:
             for offset, b in enumerate(b.read()):
-                self.cpu.write_mem8(offset, ord(b))
+                self.cpu.write_mem8(self.load_address + offset, ord(b))
 
     def run(self, max_cycles=1000):
         self.setup()
