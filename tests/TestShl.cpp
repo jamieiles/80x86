@@ -91,3 +91,8 @@ INSTANTIATE_TEST_CASE_P(ShlN, ShiftMem16Test,
         // shl word [bx], N
         Shift16Params({ 0xd3, 0x27 }, shl16_shiftN_tests)
     ));
+
+INSTANTIATE_TEST_CASE_P(ShlCL, ShiftCLTest,
+    ::testing::Values(
+        ShiftCLTestParams{4, 64, { 0xd2, 0xe1 }}
+    ));

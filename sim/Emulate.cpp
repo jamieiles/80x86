@@ -188,10 +188,18 @@ private:
     void wait9b();
     void escd8();
     void aadd5();
+    void shiftd0();
+    void shiftd1();
+    void shiftd2();
+    void shiftd3();
     void shld0();
     void shld1();
     void shld2();
     void shld3();
+    void shrd0();
+    void shrd1();
+    void shrd2();
+    void shrd3();
 
     uint8_t fetch_byte();
     template <typename T>
@@ -435,10 +443,10 @@ size_t EmulatorPimpl::emulate()
         case 0x9b: wait9b(); break;
         case 0xd8 ... 0xdf: escd8(); break;
         case 0xd5: aadd5(); break;
-        case 0xd0: shld0(); break;
-        case 0xd1: shld1(); break;
-        case 0xd2: shld2(); break;
-        case 0xd3: shld3(); break;
+        case 0xd0: shiftd0(); break;
+        case 0xd1: shiftd1(); break;
+        case 0xd2: shiftd2(); break;
+        case 0xd3: shiftd3(); break;
         case 0xf0: // lock
             processing_prefixes = true;
             break;
@@ -702,6 +710,50 @@ void EmulatorPimpl::neg_mul_not_f7()
         imulf7();
 }
 
+void EmulatorPimpl::shiftd0()
+{
+    modrm_decoder->set_width(OP_WIDTH_8);
+    modrm_decoder->decode();
+
+    if (modrm_decoder->raw_reg() == 4)
+        shld0();
+    else if (modrm_decoder->raw_reg() == 5)
+        shrd0();
+}
+
+void EmulatorPimpl::shiftd1()
+{
+    modrm_decoder->set_width(OP_WIDTH_16);
+    modrm_decoder->decode();
+
+    if (modrm_decoder->raw_reg() == 4)
+        shld1();
+    else if (modrm_decoder->raw_reg() == 5)
+        shrd1();
+}
+
+void EmulatorPimpl::shiftd2()
+{
+    modrm_decoder->set_width(OP_WIDTH_8);
+    modrm_decoder->decode();
+
+    if (modrm_decoder->raw_reg() == 4)
+        shld2();
+    else if (modrm_decoder->raw_reg() == 5)
+        shrd2();
+}
+
+void EmulatorPimpl::shiftd3()
+{
+    modrm_decoder->set_width(OP_WIDTH_16);
+    modrm_decoder->decode();
+
+    if (modrm_decoder->raw_reg() == 4)
+        shld3();
+    else if (modrm_decoder->raw_reg() == 5)
+        shrd3();
+}
+
 template <typename Out, typename In>
 static inline Out sign_extend(In v)
 {
@@ -765,6 +817,7 @@ static inline Out sign_extend(In v)
 #include "instructions/esc.cpp"
 #include "instructions/not.cpp"
 #include "instructions/shl.cpp"
+#include "instructions/shr.cpp"
 
 void EmulatorPimpl::push_word(uint16_t v)
 {

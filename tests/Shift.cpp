@@ -72,3 +72,15 @@ TEST_P(ShiftMem16Test, ResultAndFlags)
                             FLAGS_STUCK_BITS | t.expected_flags);
     }
 }
+
+// Shifting the count is an odd thing to do, but we should shift the initial
+// value even though it is decremented on each iteration.
+TEST_P(ShiftCLTest, ShiftCL)
+{
+    write_reg(CL, GetParam().count);
+    set_instruction(GetParam().instruction);
+
+    emulate();
+
+    ASSERT_EQ(GetParam().expected, read_reg(CL));
+}

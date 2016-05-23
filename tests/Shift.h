@@ -35,4 +35,14 @@ class ShiftMem16Test : public EmulateFixture,
     public ::testing::WithParamInterface<Shift16Params> {
 };
 
+struct ShiftCLTestParams {
+    uint8_t count;
+    uint8_t expected;
+    std::vector<uint8_t> instruction;
+};
+
+class ShiftCLTest : public EmulateFixture,
+    public ::testing::WithParamInterface<ShiftCLTestParams> {
+};
+
 #endif /* __SHIFT_H__ */
