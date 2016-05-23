@@ -30,6 +30,7 @@ add_executable(unittest
                TestNot.cpp
                TestPointer.cpp
                TestPush.cpp
+               TestRcl.cpp
                TestRegisterFile.cpp
                TestRol.cpp
                TestRet.cpp
