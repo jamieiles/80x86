@@ -2,10 +2,6 @@ template <typename T>
 std::pair<uint16_t, T> do_sar(T v, int count)
 {
     uint16_t flags = 0;
-    T overflow_test_bits = 0xc0 << (8 * (sizeof(T) - 1));
-    if ((v & overflow_test_bits) == overflow_test_bits)
-        flags |= OF;
-
     T sign_bit = 0x80 << (8 * (sizeof(T) - 1));
     bool is_negative = !!(v & sign_bit);
     for (int i = 0; i < (count & 0x1f); ++i) {
