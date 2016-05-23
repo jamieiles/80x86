@@ -7,7 +7,9 @@ TEST_P(ShiftReg8Test, ResultAndFlags)
     for (auto &t: GetParam().second) {
         write_flags(t.flags);
         write_reg(CL, t.shift_count);
-        SCOPED_TRACE("SHIFT " + std::to_string(static_cast<int>(t.val)) + " << 1");
+        SCOPED_TRACE("SHIFT " + std::to_string(static_cast<int>(t.val)) +
+                     " << " + std::to_string(static_cast<int>(t.shift_count)) +
+                     ((t.flags & CF) ? " + CF" : ""));
         write_reg(AL, t.val);
         set_instruction(GetParam().first);
 
@@ -24,7 +26,9 @@ TEST_P(ShiftMem8Test, ResultAndFlags)
     for (auto &t: GetParam().second) {
         write_flags(t.flags);
         write_reg(CL, t.shift_count);
-        SCOPED_TRACE("SHIFT " + std::to_string(static_cast<int>(t.val)) + " << 1");
+        SCOPED_TRACE("SHIFT " + std::to_string(static_cast<int>(t.val)) +
+                     " << " + std::to_string(static_cast<int>(t.shift_count)) +
+                     ((t.flags & CF) ? " + CF" : ""));
         write_reg(BX, 0x100);
         write_mem<uint8_t>(0x100, t.val);
         set_instruction(GetParam().first);
@@ -43,7 +47,9 @@ TEST_P(ShiftReg16Test, ResultAndFlags)
     for (auto &t: GetParam().second) {
         write_flags(t.flags);
         write_reg(CL, t.shift_count);
-        SCOPED_TRACE("SHIFT " + std::to_string(static_cast<int>(t.val)) + " << 1");
+        SCOPED_TRACE("SHIFT " + std::to_string(static_cast<int>(t.val)) +
+                     " << " + std::to_string(static_cast<int>(t.shift_count)) +
+                     ((t.flags & CF) ? " + CF" : ""));
         write_reg(AX, t.val);
         set_instruction(GetParam().first);
 
@@ -60,7 +66,9 @@ TEST_P(ShiftMem16Test, ResultAndFlags)
     for (auto &t: GetParam().second) {
         write_flags(t.flags);
         write_reg(CL, t.shift_count);
-        SCOPED_TRACE("SHIFT " + std::to_string(static_cast<int>(t.val)) + " << 1");
+        SCOPED_TRACE("SHIFT " + std::to_string(static_cast<int>(t.val)) +
+                     " << " + std::to_string(static_cast<int>(t.shift_count)) +
+                     ((t.flags & CF) ? " + CF" : ""));
         write_reg(BX, 0x100);
         write_mem<uint16_t>(0x100, t.val);
         set_instruction(GetParam().first);
