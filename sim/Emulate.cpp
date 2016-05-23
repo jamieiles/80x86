@@ -204,6 +204,10 @@ private:
     void sard1();
     void sard2();
     void sard3();
+    void rold0();
+    void rold1();
+    void rold2();
+    void rold3();
 
     uint8_t fetch_byte();
     template <typename T>
@@ -725,6 +729,8 @@ void EmulatorPimpl::shiftd0()
         shrd0();
     else if (modrm_decoder->raw_reg() == 7)
         sard0();
+    else if (modrm_decoder->raw_reg() == 0)
+        rold0();
 }
 
 void EmulatorPimpl::shiftd1()
@@ -738,6 +744,8 @@ void EmulatorPimpl::shiftd1()
         shrd1();
     else if (modrm_decoder->raw_reg() == 7)
         sard1();
+    else if (modrm_decoder->raw_reg() == 0)
+        rold1();
 }
 
 void EmulatorPimpl::shiftd2()
@@ -751,6 +759,8 @@ void EmulatorPimpl::shiftd2()
         shrd2();
     else if (modrm_decoder->raw_reg() == 7)
         sard2();
+    else if (modrm_decoder->raw_reg() == 0)
+        rold2();
 }
 
 void EmulatorPimpl::shiftd3()
@@ -764,6 +774,8 @@ void EmulatorPimpl::shiftd3()
         shrd3();
     else if (modrm_decoder->raw_reg() == 7)
         sard3();
+    else if (modrm_decoder->raw_reg() == 0)
+        rold3();
 }
 
 template <typename Out, typename In>
@@ -831,6 +843,7 @@ static inline Out sign_extend(In v)
 #include "instructions/shl.cpp"
 #include "instructions/shr.cpp"
 #include "instructions/sar.cpp"
+#include "instructions/rol.cpp"
 
 void EmulatorPimpl::push_word(uint16_t v)
 {
