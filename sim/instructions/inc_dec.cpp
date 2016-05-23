@@ -5,8 +5,12 @@ void EmulatorPimpl::inc_dec_fe()
     modrm_decoder->decode();
 
     if (modrm_decoder->raw_reg() != 0 &&
-        modrm_decoder->raw_reg() != 1)
+        modrm_decoder->raw_reg() != 1) {
+        std::cerr << "warning: invalid reg " << std::hex <<
+            (unsigned)modrm_decoder->raw_reg() <<
+            " for opcode 0x" << opcode << std::endl;
         return;
+    }
 
     uint8_t v = read_data<uint8_t>();
     uint8_t result;

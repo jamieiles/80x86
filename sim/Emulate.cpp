@@ -1,6 +1,7 @@
 #include "Emulate.h"
 
 #include <cassert>
+#include <iostream>
 #include <functional>
 #include <stdint.h>
 #include "Memory.h"
@@ -488,6 +489,9 @@ size_t EmulatorPimpl::emulate()
             has_rep_prefix = true;
             processing_prefixes = true;
             break;
+        default:
+            std::cerr << "warning: unknown opcode 0x" << std::hex <<
+                (unsigned)opcode << std::endl;
         }
     } while (processing_prefixes);
 
@@ -516,6 +520,10 @@ void EmulatorPimpl::push_inc_jmp_call_ff()
         jmpff_intra();
     else if (modrm_decoder->raw_reg() == 5)
         jmpff_inter();
+    else
+        std::cerr << "warning: invalid reg " << std::hex <<
+            (unsigned)modrm_decoder->raw_reg() <<
+            " for opcode 0x" << opcode << std::endl;
 }
 
 template <typename T>
@@ -592,8 +600,12 @@ void EmulatorPimpl::add_adc_sub_sbb_cmp_80()
         modrm_decoder->raw_reg() != 2 &&
         modrm_decoder->raw_reg() != 5 &&
         modrm_decoder->raw_reg() != 3 &&
-        modrm_decoder->raw_reg() != 7)
+        modrm_decoder->raw_reg() != 7) {
+        std::cerr << "warning: invalid reg " << std::hex <<
+            (unsigned)modrm_decoder->raw_reg() <<
+            " for opcode 0x" << opcode << std::endl;
         return;
+    }
 
     uint8_t v1 = read_data<uint8_t>();
     uint8_t v2 = fetch_byte();
@@ -630,8 +642,12 @@ void EmulatorPimpl::add_adc_sub_sbb_cmp_81()
         modrm_decoder->raw_reg() != 2 &&
         modrm_decoder->raw_reg() != 5 &&
         modrm_decoder->raw_reg() != 3 &&
-        modrm_decoder->raw_reg() != 7)
+        modrm_decoder->raw_reg() != 7) {
+        std::cerr << "warning: invalid reg " << std::hex <<
+            (unsigned)modrm_decoder->raw_reg() <<
+            " for opcode 0x" << opcode << std::endl;
         return;
+    }
 
     uint16_t v1 = read_data<uint16_t>();
     uint16_t v2 = fetch_16bit();
@@ -662,8 +678,12 @@ void EmulatorPimpl::add_adc_sub_sbb_cmp_83()
         modrm_decoder->raw_reg() != 2 &&
         modrm_decoder->raw_reg() != 5 &&
         modrm_decoder->raw_reg() != 3 &&
-        modrm_decoder->raw_reg() != 7)
+        modrm_decoder->raw_reg() != 7) {
+        std::cerr << "warning: invalid reg " << std::hex <<
+            (unsigned)modrm_decoder->raw_reg() <<
+            " for opcode 0x" << opcode << std::endl;
         return;
+    }
 
     uint16_t v1 = read_data<uint16_t>();
     int16_t immed = fetch_byte();
@@ -705,6 +725,10 @@ void EmulatorPimpl::neg_mul_not_f6()
         mulf6();
     else if (modrm_decoder->raw_reg() == 0x5)
         imulf6();
+    else
+        std::cerr << "warning: invalid reg " << std::hex <<
+            (unsigned)modrm_decoder->raw_reg() <<
+            " for opcode 0x" << opcode << std::endl;
 }
 
 void EmulatorPimpl::neg_mul_not_f7()
@@ -720,6 +744,10 @@ void EmulatorPimpl::neg_mul_not_f7()
         mulf7();
     else if (modrm_decoder->raw_reg() == 0x5)
         imulf7();
+    else
+        std::cerr << "warning: invalid reg " << std::hex <<
+            (unsigned)modrm_decoder->raw_reg() <<
+            " for opcode 0x" << opcode << std::endl;
 }
 
 void EmulatorPimpl::shiftd0()
@@ -737,6 +765,10 @@ void EmulatorPimpl::shiftd0()
         rold0();
     else if (modrm_decoder->raw_reg() == 2)
         rcld0();
+    else
+        std::cerr << "warning: invalid reg " << std::hex <<
+            (unsigned)modrm_decoder->raw_reg() <<
+            " for opcode 0x" << opcode << std::endl;
 }
 
 void EmulatorPimpl::shiftd1()
@@ -754,6 +786,10 @@ void EmulatorPimpl::shiftd1()
         rold1();
     else if (modrm_decoder->raw_reg() == 2)
         rcld1();
+    else
+        std::cerr << "warning: invalid reg " << std::hex <<
+            (unsigned)modrm_decoder->raw_reg() <<
+            " for opcode 0x" << opcode << std::endl;
 }
 
 void EmulatorPimpl::shiftd2()
@@ -771,6 +807,10 @@ void EmulatorPimpl::shiftd2()
         rold2();
     else if (modrm_decoder->raw_reg() == 2)
         rcld2();
+    else
+        std::cerr << "warning: invalid reg " << std::hex <<
+            (unsigned)modrm_decoder->raw_reg() <<
+            " for opcode 0x" << opcode << std::endl;
 }
 
 void EmulatorPimpl::shiftd3()
@@ -788,6 +828,10 @@ void EmulatorPimpl::shiftd3()
         rold3();
     else if (modrm_decoder->raw_reg() == 2)
         rcld3();
+    else
+        std::cerr << "warning: invalid reg " << std::hex <<
+            (unsigned)modrm_decoder->raw_reg() <<
+            " for opcode 0x" << opcode << std::endl;
 }
 
 template <typename Out, typename In>
