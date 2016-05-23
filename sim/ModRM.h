@@ -21,6 +21,7 @@ class ModRMDecoder {
 public:
     ModRMDecoder(std::function<uint8_t()> get_byte,
                  const RegisterFile *registers);
+    void clear();
     void set_width(OperandWidth width);
     void decode();
     GPR reg() const;
@@ -41,6 +42,7 @@ private:
     uint8_t modrm;
     uint16_t cached_address;
     bool addr_is_cached;
+    bool is_decoded;
 };
 
 #endif /* __MODRM_H__ */

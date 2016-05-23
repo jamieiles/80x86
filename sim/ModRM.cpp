@@ -11,8 +11,14 @@ ModRMDecoder::ModRMDecoder(std::function<uint8_t()> get_byte,
 {
 }
 
+void ModRMDecoder::clear()
+{
+    is_decoded = false;
+}
+
 void ModRMDecoder::decode()
 {
+    is_decoded = true;
     modrm = get_byte();
     // Cache the address now, we need to process all mod/rm bytes +
     // displacements before the opcode handler starts reading immediates etc.
@@ -23,6 +29,7 @@ void ModRMDecoder::decode()
 
 OperandType ModRMDecoder::rm_type() const
 {
+    assert(is_decoded);
     return (modrm & 0xc0) == 0xc0 ? OP_REG : OP_MEM;
 }
 
@@ -33,6 +40,7 @@ void ModRMDecoder::set_width(OperandWidth width)
 
 GPR ModRMDecoder::reg() const
 {
+    assert(is_decoded);
     auto reg = raw_reg();
 
     if (width == OP_WIDTH_8)
@@ -43,11 +51,13 @@ GPR ModRMDecoder::reg() const
 
 int ModRMDecoder::raw_reg() const
 {
+    assert(is_decoded);
     return (modrm >> 3) & 0x7;
 }
 
 GPR ModRMDecoder::rm_reg() const
 {
+    assert(is_decoded);
     assert(rm_type() == OP_REG);
 
     int reg = (modrm >> 0) & 0x7;
@@ -60,6 +70,7 @@ GPR ModRMDecoder::rm_reg() const
 
 uint16_t ModRMDecoder::effective_address()
 {
+    assert(is_decoded);
     if (addr_is_cached)
         return cached_address;
 
@@ -132,7 +143,11 @@ uint16_t ModRMDecoder::mod10()
 
 bool ModRMDecoder::uses_bp_as_base() const
 {
-    assert(rm_type() == OP_MEM);
+    if (!is_decoded)
+        return false;
+
+    if (rm_type() != OP_MEM)
+        return false;
 
     auto mod = modrm >> 6;
     auto rm = modrm & 0x7;

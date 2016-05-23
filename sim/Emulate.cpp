@@ -306,6 +306,7 @@ size_t EmulatorPimpl::emulate()
     bool processing_prefixes;
     default_segment_overriden = false;
     has_rep_prefix = false;
+    modrm_decoder->clear();
 
     do {
         processing_prefixes = false;
