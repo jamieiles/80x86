@@ -34,8 +34,9 @@ add_executable(unittest
                TestPush.cpp
                TestRcl.cpp
                TestRegisterFile.cpp
-               TestRol.cpp
                TestRet.cpp
+               TestRol.cpp
+               TestRor.cpp
                TestSar.cpp
                TestSegment.cpp
                TestSbb.cpp

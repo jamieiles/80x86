@@ -231,6 +231,10 @@ private:
     void rcld1();
     void rcld2();
     void rcld3();
+    void rord0();
+    void rord1();
+    void rord2();
+    void rord3();
 
     uint8_t fetch_byte();
     template <typename T>
@@ -883,6 +887,8 @@ void EmulatorPimpl::shiftd0()
         rold0();
     else if (modrm_decoder->raw_reg() == 2)
         rcld0();
+    else if (modrm_decoder->raw_reg() == 1)
+        rord0();
     else
         std::cerr << "warning: invalid reg " << std::hex <<
             (unsigned)modrm_decoder->raw_reg() <<
@@ -904,6 +910,8 @@ void EmulatorPimpl::shiftd1()
         rold1();
     else if (modrm_decoder->raw_reg() == 2)
         rcld1();
+    else if (modrm_decoder->raw_reg() == 1)
+        rord1();
     else
         std::cerr << "warning: invalid reg " << std::hex <<
             (unsigned)modrm_decoder->raw_reg() <<
@@ -925,6 +933,8 @@ void EmulatorPimpl::shiftd2()
         rold2();
     else if (modrm_decoder->raw_reg() == 2)
         rcld2();
+    else if (modrm_decoder->raw_reg() == 1)
+        rord2();
     else
         std::cerr << "warning: invalid reg " << std::hex <<
             (unsigned)modrm_decoder->raw_reg() <<
@@ -946,6 +956,8 @@ void EmulatorPimpl::shiftd3()
         rold3();
     else if (modrm_decoder->raw_reg() == 2)
         rcld3();
+    else if (modrm_decoder->raw_reg() == 1)
+        rord3();
     else
         std::cerr << "warning: invalid reg " << std::hex <<
             (unsigned)modrm_decoder->raw_reg() <<
@@ -1022,6 +1034,7 @@ static inline Out sign_extend(In v)
 #include "instructions/sar.cpp"
 #include "instructions/rol.cpp"
 #include "instructions/rcl.cpp"
+#include "instructions/ror.cpp"
 
 void EmulatorPimpl::push_word(uint16_t v)
 {
