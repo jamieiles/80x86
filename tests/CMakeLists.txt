@@ -8,6 +8,7 @@ add_executable(unittest
                Shift.cpp
                TestAdc.cpp
                TestAdd.cpp
+               TestAnd.cpp
                TestAscii.cpp
                TestCall.cpp
                TestCmp.cpp

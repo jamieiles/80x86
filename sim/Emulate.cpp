@@ -77,8 +77,8 @@ private:
     void sahf9e();
     void pushf9c();
     void popf9d();
-    void add_adc_sub_sbb_cmp_xor_or_80();
-    void add_adc_sub_sbb_cmp_xor_or_81();
+    void add_adc_sub_sbb_cmp_xor_or_and_80();
+    void add_adc_sub_sbb_cmp_xor_or_and_81();
     void add_adc_sub_sbb_cmp_82();
     void add_adc_sub_sbb_cmp_83();
     void add00();
@@ -87,6 +87,12 @@ private:
     void add03();
     void add04();
     void add05();
+    void and20();
+    void and21();
+    void and22();
+    void and23();
+    void and24();
+    void and25();
     void xor30();
     void xor31();
     void xor32();
@@ -239,6 +245,8 @@ private:
     std::pair<uint16_t, T> do_xor(uint16_t v1, uint16_t v2);
     template <typename T>
     std::pair<uint16_t, T> do_or(uint16_t v1, uint16_t v2);
+    template <typename T>
+    std::pair<uint16_t, T> do_and(uint16_t v1, uint16_t v2);
     void push_inc_jmp_call_ff();
     void neg_mul_not_f6();
     void neg_mul_not_f7();
@@ -374,8 +382,8 @@ size_t EmulatorPimpl::emulate()
         case 0x9e: sahf9e(); break;
         case 0x9c: pushf9c(); break;
         case 0x9d: popf9d(); break;
-        case 0x80: add_adc_sub_sbb_cmp_xor_or_80(); break;
-        case 0x81: add_adc_sub_sbb_cmp_xor_or_81(); break;
+        case 0x80: add_adc_sub_sbb_cmp_xor_or_and_80(); break;
+        case 0x81: add_adc_sub_sbb_cmp_xor_or_and_81(); break;
         case 0x82: add_adc_sub_sbb_cmp_82(); break;
         case 0x83: add_adc_sub_sbb_cmp_83(); break;
         case 0x00: add00(); break;
@@ -384,6 +392,12 @@ size_t EmulatorPimpl::emulate()
         case 0x03: add03(); break;
         case 0x04: add04(); break;
         case 0x05: add05(); break;
+        case 0x20: and20(); break;
+        case 0x21: and21(); break;
+        case 0x22: and22(); break;
+        case 0x23: and23(); break;
+        case 0x24: and24(); break;
+        case 0x25: and25(); break;
         case 0x30: xor30(); break;
         case 0x31: xor31(); break;
         case 0x32: xor32(); break;
@@ -621,6 +635,15 @@ std::pair<uint16_t, T> EmulatorPimpl::do_or(uint16_t v1, uint16_t v2)
 }
 
 template <typename T>
+std::pair<uint16_t, T> EmulatorPimpl::do_and(uint16_t v1, uint16_t v2)
+{
+    return do_alu<T>(v1, v2, 0,
+        [](uint32_t a, uint32_t b, uint32_t __attribute__((unused)) c) -> uint32_t {
+            return a & b;
+        });
+}
+
+template <typename T>
 std::pair<uint16_t, T> EmulatorPimpl::do_sub(uint16_t v1, uint16_t v2,
                                              uint16_t carry_in)
 {
@@ -639,7 +662,7 @@ std::pair<uint16_t, T> EmulatorPimpl::do_mul(int32_t v1, int32_t v2)
         });
 }
 
-void EmulatorPimpl::add_adc_sub_sbb_cmp_xor_or_80()
+void EmulatorPimpl::add_adc_sub_sbb_cmp_xor_or_and_80()
 {
     modrm_decoder->set_width(OP_WIDTH_8);
     modrm_decoder->decode();
@@ -647,6 +670,7 @@ void EmulatorPimpl::add_adc_sub_sbb_cmp_xor_or_80()
     if (modrm_decoder->raw_reg() != 0 &&
         modrm_decoder->raw_reg() != 1 &&
         modrm_decoder->raw_reg() != 2 &&
+        modrm_decoder->raw_reg() != 4 &&
         modrm_decoder->raw_reg() != 5 &&
         modrm_decoder->raw_reg() != 3 &&
         modrm_decoder->raw_reg() != 7 &&
@@ -671,6 +695,8 @@ void EmulatorPimpl::add_adc_sub_sbb_cmp_xor_or_80()
         std::tie(flags, result) = do_xor<uint8_t>(v1, v2);
     else if (modrm_decoder->raw_reg() == 1)
         std::tie(flags, result) = do_or<uint8_t>(v1, v2);
+    else if (modrm_decoder->raw_reg() == 4)
+        std::tie(flags, result) = do_and<uint8_t>(v1, v2);
     else
         std::tie(flags, result) = do_sub<uint8_t>(v1, v2, carry_in);
 
@@ -716,7 +742,7 @@ void EmulatorPimpl::add_adc_sub_sbb_cmp_82()
 }
 
 // add r/m, immediate, 16-bit
-void EmulatorPimpl::add_adc_sub_sbb_cmp_xor_or_81()
+void EmulatorPimpl::add_adc_sub_sbb_cmp_xor_or_and_81()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
@@ -724,6 +750,7 @@ void EmulatorPimpl::add_adc_sub_sbb_cmp_xor_or_81()
     if (modrm_decoder->raw_reg() != 0 &&
         modrm_decoder->raw_reg() != 1 &&
         modrm_decoder->raw_reg() != 2 &&
+        modrm_decoder->raw_reg() != 4 &&
         modrm_decoder->raw_reg() != 5 &&
         modrm_decoder->raw_reg() != 3 &&
         modrm_decoder->raw_reg() != 6 &&
@@ -748,6 +775,8 @@ void EmulatorPimpl::add_adc_sub_sbb_cmp_xor_or_81()
         std::tie(flags, result) = do_xor<uint8_t>(v1, v2);
     else if (modrm_decoder->raw_reg() == 1)
         std::tie(flags, result) = do_or<uint8_t>(v1, v2);
+    else if (modrm_decoder->raw_reg() == 4)
+        std::tie(flags, result) = do_and<uint8_t>(v1, v2);
     else
         std::tie(flags, result) = do_sub<uint16_t>(v1, v2, carry_in);
 
@@ -947,6 +976,7 @@ static inline Out sign_extend(In v)
 #include "instructions/lahf_sahf.cpp"
 #include "instructions/add.cpp"
 #include "instructions/xor.cpp"
+#include "instructions/and.cpp"
 #include "instructions/or.cpp"
 #include "instructions/adc.cpp"
 #include "instructions/sub.cpp"
