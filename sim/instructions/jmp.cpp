@@ -3,6 +3,7 @@ void EmulatorPimpl::jmpe9()
     int16_t displacement = static_cast<int16_t>(fetch_16bit());
 
     registers->set(IP, registers->get(IP) + displacement + instr_length);
+    jump_taken = true;
 }
 
 void EmulatorPimpl::jmpea()
@@ -12,6 +13,7 @@ void EmulatorPimpl::jmpea()
 
     registers->set(IP, ip);
     registers->set(CS, cs);
+    jump_taken = true;
 }
 
 void EmulatorPimpl::jmpeb()
@@ -19,22 +21,27 @@ void EmulatorPimpl::jmpeb()
     int8_t displacement = static_cast<int8_t>(fetch_byte());
 
     registers->set(IP, registers->get(IP) + displacement + instr_length);
+    jump_taken = true;
 }
 
 void EmulatorPimpl::je74()
 {
     int8_t displacement = static_cast<int8_t>(fetch_byte());
 
-    if (registers->get_flags() & ZF)
+    if (registers->get_flags() & ZF) {
         registers->set(IP, registers->get(IP) + displacement + instr_length);
+        jump_taken = true;
+    }
 }
 
 void EmulatorPimpl::jl7c()
 {
     int8_t displacement = static_cast<int8_t>(fetch_byte());
 
-    if (!!(registers->get_flags() & OF) ^ !!(registers->get_flags() & SF))
+    if (!!(registers->get_flags() & OF) ^ !!(registers->get_flags() & SF)) {
         registers->set(IP, registers->get(IP) + displacement + instr_length);
+        jump_taken = true;
+    }
 }
 
 void EmulatorPimpl::jle7e()
@@ -42,104 +49,130 @@ void EmulatorPimpl::jle7e()
     int8_t displacement = static_cast<int8_t>(fetch_byte());
 
     if ((!!(registers->get_flags() & OF) ^ !!(registers->get_flags() & SF)) ||
-        (registers->get_flags() & ZF))
+        (registers->get_flags() & ZF)) {
         registers->set(IP, registers->get(IP) + displacement + instr_length);
+        jump_taken = true;
+    }
 }
 
 void EmulatorPimpl::jb72()
 {
     int8_t displacement = static_cast<int8_t>(fetch_byte());
 
-    if (registers->get_flags() & CF)
+    if (registers->get_flags() & CF) {
         registers->set(IP, registers->get(IP) + displacement + instr_length);
+        jump_taken = true;
+    }
 }
 
 void EmulatorPimpl::jbe76()
 {
     int8_t displacement = static_cast<int8_t>(fetch_byte());
 
-    if ((registers->get_flags() & CF) || (registers->get_flags() & ZF))
+    if ((registers->get_flags() & CF) || (registers->get_flags() & ZF)) {
         registers->set(IP, registers->get(IP) + displacement + instr_length);
+        jump_taken = true;
+    }
 }
 
 void EmulatorPimpl::jp7a()
 {
     int8_t displacement = static_cast<int8_t>(fetch_byte());
 
-    if (registers->get_flags() & PF)
+    if (registers->get_flags() & PF) {
         registers->set(IP, registers->get(IP) + displacement + instr_length);
+        jump_taken = true;
+    }
 }
 
 void EmulatorPimpl::jo70()
 {
     int8_t displacement = static_cast<int8_t>(fetch_byte());
 
-    if (registers->get_flags() & OF)
+    if (registers->get_flags() & OF) {
         registers->set(IP, registers->get(IP) + displacement + instr_length);
+        jump_taken = true;
+    }
 }
 
 void EmulatorPimpl::js78()
 {
     int8_t displacement = static_cast<int8_t>(fetch_byte());
 
-    if (registers->get_flags() & SF)
+    if (registers->get_flags() & SF) {
         registers->set(IP, registers->get(IP) + displacement + instr_length);
+        jump_taken = true;
+    }
 }
 
 void EmulatorPimpl::jne75()
 {
     int8_t displacement = static_cast<int8_t>(fetch_byte());
 
-    if (!(registers->get_flags() & ZF))
+    if (!(registers->get_flags() & ZF)) {
         registers->set(IP, registers->get(IP) + displacement + instr_length);
+        jump_taken = true;
+    }
 }
 
 void EmulatorPimpl::jnl7d()
 {
     int8_t displacement = static_cast<int8_t>(fetch_byte());
 
-    if ((!!(registers->get_flags() & SF) ^ !!(registers->get_flags() & OF)) == 0)
+    if ((!!(registers->get_flags() & SF) ^ !!(registers->get_flags() & OF)) == 0) {
         registers->set(IP, registers->get(IP) + displacement + instr_length);
+        jump_taken = true;
+    }
 }
 
 void EmulatorPimpl::jnle7f()
 {
     int8_t displacement = static_cast<int8_t>(fetch_byte());
 
-    if (((registers->get_flag(SF) ^ registers->get_flag(OF)) | registers->get_flag(ZF)) == 0)
+    if (((registers->get_flag(SF) ^ registers->get_flag(OF)) | registers->get_flag(ZF)) == 0) {
         registers->set(IP, registers->get(IP) + displacement + instr_length);
+        jump_taken = true;
+    }
 }
 
 void EmulatorPimpl::jnb73()
 {
     int8_t displacement = static_cast<int8_t>(fetch_byte());
 
-    if (!registers->get_flag(CF))
+    if (!registers->get_flag(CF)) {
         registers->set(IP, registers->get(IP) + displacement + instr_length);
+        jump_taken = true;
+    }
 }
 
 void EmulatorPimpl::jnbe77()
 {
     int8_t displacement = static_cast<int8_t>(fetch_byte());
 
-    if ((registers->get_flag(CF) || registers->get_flag(ZF)) == 0)
+    if ((registers->get_flag(CF) || registers->get_flag(ZF)) == 0) {
         registers->set(IP, registers->get(IP) + displacement + instr_length);
+        jump_taken = true;
+    }
 }
 
 void EmulatorPimpl::jnp7b()
 {
     int8_t displacement = static_cast<int8_t>(fetch_byte());
 
-    if (!registers->get_flag(PF))
+    if (!registers->get_flag(PF)) {
         registers->set(IP, registers->get(IP) + displacement + instr_length);
+        jump_taken = true;
+    }
 }
 
 void EmulatorPimpl::jno71()
 {
     int8_t displacement = static_cast<int8_t>(fetch_byte());
 
-    if (!registers->get_flag(OF))
+    if (!registers->get_flag(OF)) {
         registers->set(IP, registers->get(IP) + displacement + instr_length);
+        jump_taken = true;
+    }
 }
 
 void EmulatorPimpl::jmpff_intra()
@@ -147,6 +180,7 @@ void EmulatorPimpl::jmpff_intra()
     auto ip = read_data<uint16_t>();
 
     registers->set(IP, ip);
+    jump_taken = true;
 }
 
 void EmulatorPimpl::jmpff_inter()
@@ -158,20 +192,25 @@ void EmulatorPimpl::jmpff_inter()
 
     registers->set(IP, cs_ip & 0xffff);
     registers->set(CS, (cs_ip >> 16) & 0xffff);
+    jump_taken = true;
 }
 
 void EmulatorPimpl::jns79()
 {
     int8_t displacement = static_cast<int8_t>(fetch_byte());
 
-    if (!(registers->get_flags() & SF))
+    if (!(registers->get_flags() & SF)) {
         registers->set(IP, registers->get(IP) + displacement + instr_length);
+        jump_taken = true;
+    }
 }
 
 void EmulatorPimpl::jcxze3()
 {
     int8_t displacement = static_cast<int8_t>(fetch_byte());
 
-    if (!registers->get(CX))
+    if (!registers->get(CX)) {
         registers->set(IP, registers->get(IP) + displacement + instr_length);
+        jump_taken = true;
+    }
 }

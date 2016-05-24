@@ -4,6 +4,8 @@ void EmulatorPimpl::loopnze0()
 
     registers->set(CX, registers->get(CX) - 1);
 
-    if (registers->get(CX) != 0 && !registers->get_flag(ZF))
+    if (registers->get(CX) != 0 && !registers->get_flag(ZF)) {
         registers->set(IP, registers->get(IP) + instr_length + displacement);
+        jump_taken = true;
+    }
 }

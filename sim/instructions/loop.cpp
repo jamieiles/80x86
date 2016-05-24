@@ -4,6 +4,8 @@ void EmulatorPimpl::loope2()
 
     registers->set(CX, registers->get(CX) - 1);
 
-    if (registers->get(CX) != 0)
+    if (registers->get(CX) != 0) {
         registers->set(IP, registers->get(IP) + instr_length + displacement);
+        jump_taken = true;
+    }
 }

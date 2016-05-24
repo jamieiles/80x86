@@ -15,6 +15,7 @@ void EmulatorPimpl::intcc()
 
     registers->set(CS, new_cs);
     registers->set(IP, new_ip);
+    jump_taken = true;
 }
 
 void EmulatorPimpl::intcd()
@@ -35,6 +36,7 @@ void EmulatorPimpl::intcd()
 
     registers->set(CS, new_cs);
     registers->set(IP, new_ip);
+    jump_taken = true;
 }
 
 void EmulatorPimpl::intoce()
@@ -56,4 +58,5 @@ void EmulatorPimpl::intoce()
 
     registers->set(CS, new_cs);
     registers->set(IP, new_ip);
+    jump_taken = true;
 }

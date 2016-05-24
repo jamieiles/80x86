@@ -3,6 +3,7 @@ void EmulatorPimpl::retc3()
     auto ip = pop_word();
 
     registers->set(IP, ip);
+    jump_taken = true;
 }
 
 void EmulatorPimpl::retc2()
@@ -12,6 +13,7 @@ void EmulatorPimpl::retc2()
 
     registers->set(IP, ip);
     registers->set(SP, registers->get(SP) + displacement);
+    jump_taken = true;
 }
 
 void EmulatorPimpl::retcb()
@@ -21,6 +23,7 @@ void EmulatorPimpl::retcb()
 
     registers->set(IP, ip);
     registers->set(CS, cs);
+    jump_taken = true;
 }
 
 void EmulatorPimpl::retca()
@@ -32,6 +35,7 @@ void EmulatorPimpl::retca()
     registers->set(IP, ip);
     registers->set(CS, cs);
     registers->set(SP, registers->get(SP) + displacement);
+    jump_taken = true;
 }
 
 void EmulatorPimpl::iretcf()
@@ -43,4 +47,5 @@ void EmulatorPimpl::iretcf()
     registers->set(IP, ip);
     registers->set(CS, cs);
     registers->set_flags(flags);
+    jump_taken = true;
 }

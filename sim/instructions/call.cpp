@@ -5,6 +5,7 @@ void EmulatorPimpl::calle8()
     push_word(registers->get(IP) + instr_length);
 
     registers->set(IP, registers->get(IP) + instr_length + displacement);
+    jump_taken = true;
 }
 
 void EmulatorPimpl::callff_intra()
@@ -14,6 +15,7 @@ void EmulatorPimpl::callff_intra()
     push_word(registers->get(IP) + instr_length);
 
     registers->set(IP, displacement);
+    jump_taken = true;
 }
 
 void EmulatorPimpl::callff_inter()
@@ -28,6 +30,7 @@ void EmulatorPimpl::callff_inter()
 
     registers->set(IP, cs_ip & 0xffff);
     registers->set(CS, (cs_ip >> 16) & 0xffff);
+    jump_taken = true;
 }
 
 void EmulatorPimpl::call9a()
@@ -40,4 +43,5 @@ void EmulatorPimpl::call9a()
 
     registers->set(CS, new_cs);
     registers->set(IP, new_ip);
+    jump_taken = true;
 }

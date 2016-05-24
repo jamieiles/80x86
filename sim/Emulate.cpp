@@ -262,6 +262,7 @@ private:
     size_t instr_length = 0;
     std::unique_ptr<ModRMDecoder> modrm_decoder;
     uint8_t opcode;
+    bool jump_taken;
 
     bool default_segment_overriden;
     GPR override_segment;
@@ -318,11 +319,11 @@ void EmulatorPimpl::reset()
 size_t EmulatorPimpl::emulate()
 {
     instr_length = 0;
-    auto orig_ip = registers->get(IP);
     bool processing_prefixes;
     default_segment_overriden = false;
     has_rep_prefix = false;
     modrm_decoder->clear();
+    jump_taken = false;
 
     do {
         processing_prefixes = false;
@@ -524,7 +525,7 @@ size_t EmulatorPimpl::emulate()
         }
     } while (processing_prefixes);
 
-    if (registers->get(IP) == orig_ip)
+    if (!jump_taken)
         registers->set(IP, registers->get(IP) + instr_length);
 
     return instr_length;
