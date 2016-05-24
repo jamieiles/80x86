@@ -45,6 +45,7 @@ add_executable(unittest
                TestShr.cpp
                TestString.cpp
                TestSub.cpp
+               TestTest.cpp
                TestTrap.cpp
                TestXchg.cpp
                TestXlat.cpp

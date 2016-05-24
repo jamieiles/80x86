@@ -239,6 +239,12 @@ private:
     void rord1();
     void rord2();
     void rord3();
+    void test84();
+    void test85();
+    void testa8();
+    void testa9();
+    void testf6();
+    void testf7();
 
     uint8_t fetch_byte();
     template <typename T>
@@ -256,8 +262,8 @@ private:
     template <typename T>
     std::pair<uint16_t, T> do_and(uint16_t v1, uint16_t v2);
     void push_inc_jmp_call_ff();
-    void neg_mul_not_f6();
-    void neg_mul_not_f7();
+    void neg_mul_not_test_f6();
+    void neg_mul_not_test_f7();
     void push_word(uint16_t v);
     uint16_t pop_word();
     template <typename T>
@@ -444,8 +450,8 @@ size_t EmulatorPimpl::emulate()
         case 0x2f: das2f(); break;
         case 0x3f: aas3f(); break;
         case 0xd4: aamd4(); break;
-        case 0xf6: neg_mul_not_f6(); break;
-        case 0xf7: neg_mul_not_f7(); break;
+        case 0xf6: neg_mul_not_test_f6(); break;
+        case 0xf7: neg_mul_not_test_f7(); break;
         case 0x38: cmp38(); break;
         case 0x39: cmp39(); break;
         case 0x3a: cmp3a(); break;
@@ -512,6 +518,10 @@ size_t EmulatorPimpl::emulate()
         case 0xd1: shiftd1(); break;
         case 0xd2: shiftd2(); break;
         case 0xd3: shiftd3(); break;
+        case 0x84: test84(); break;
+        case 0x85: test85(); break;
+        case 0xa8: testa8(); break;
+        case 0xa9: testa9(); break;
         case 0xf0: // lock
             processing_prefixes = true;
             break;
@@ -838,7 +848,7 @@ uint8_t EmulatorPimpl::fetch_byte()
                                             registers->get(IP) + instr_length++));
 }
 
-void EmulatorPimpl::neg_mul_not_f6()
+void EmulatorPimpl::neg_mul_not_test_f6()
 {
     modrm_decoder->set_width(OP_WIDTH_8);
     modrm_decoder->decode();
@@ -851,13 +861,15 @@ void EmulatorPimpl::neg_mul_not_f6()
         mulf6();
     else if (modrm_decoder->raw_reg() == 0x5)
         imulf6();
+    else if (modrm_decoder->raw_reg() == 0x0)
+        testf6();
     else
         std::cerr << "warning: invalid reg " << std::hex <<
             (unsigned)modrm_decoder->raw_reg() <<
             " for opcode 0x" << opcode << std::endl;
 }
 
-void EmulatorPimpl::neg_mul_not_f7()
+void EmulatorPimpl::neg_mul_not_test_f7()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
@@ -870,6 +882,8 @@ void EmulatorPimpl::neg_mul_not_f7()
         mulf7();
     else if (modrm_decoder->raw_reg() == 0x5)
         imulf7();
+    else if (modrm_decoder->raw_reg() == 0x0)
+        testf7();
     else
         std::cerr << "warning: invalid reg " << std::hex <<
             (unsigned)modrm_decoder->raw_reg() <<
@@ -1048,6 +1062,7 @@ static inline Out sign_extend(In v)
 #include "instructions/rcl.cpp"
 #include "instructions/ror.cpp"
 #include "instructions/rcr.cpp"
+#include "instructions/test.cpp"
 
 void EmulatorPimpl::push_word(uint16_t v)
 {
