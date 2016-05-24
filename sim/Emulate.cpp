@@ -77,8 +77,8 @@ private:
     void sahf9e();
     void pushf9c();
     void popf9d();
-    void add_adc_sub_sbb_cmp_80();
-    void add_adc_sub_sbb_cmp_81();
+    void add_adc_sub_sbb_cmp_xor_80();
+    void add_adc_sub_sbb_cmp_xor_81();
     void add_adc_sub_sbb_cmp_82();
     void add_adc_sub_sbb_cmp_83();
     void add00();
@@ -87,6 +87,12 @@ private:
     void add03();
     void add04();
     void add05();
+    void xor30();
+    void xor31();
+    void xor32();
+    void xor33();
+    void xor34();
+    void xor35();
     void adc10();
     void adc11();
     void adc12();
@@ -223,6 +229,8 @@ private:
     template <typename T>
     std::pair<uint16_t, T> do_sub(uint16_t v1, uint16_t v2,
                                   uint16_t carry_in=0);
+    template <typename T>
+    std::pair<uint16_t, T> do_xor(uint16_t v1, uint16_t v2);
     void push_inc_jmp_call_ff();
     void neg_mul_not_f6();
     void neg_mul_not_f7();
@@ -357,8 +365,8 @@ size_t EmulatorPimpl::emulate()
         case 0x9e: sahf9e(); break;
         case 0x9c: pushf9c(); break;
         case 0x9d: popf9d(); break;
-        case 0x80: add_adc_sub_sbb_cmp_80(); break;
-        case 0x81: add_adc_sub_sbb_cmp_81(); break;
+        case 0x80: add_adc_sub_sbb_cmp_xor_80(); break;
+        case 0x81: add_adc_sub_sbb_cmp_xor_81(); break;
         case 0x82: add_adc_sub_sbb_cmp_82(); break;
         case 0x83: add_adc_sub_sbb_cmp_83(); break;
         case 0x00: add00(); break;
@@ -367,6 +375,12 @@ size_t EmulatorPimpl::emulate()
         case 0x03: add03(); break;
         case 0x04: add04(); break;
         case 0x05: add05(); break;
+        case 0x30: xor30(); break;
+        case 0x31: xor31(); break;
+        case 0x32: xor32(); break;
+        case 0x33: xor33(); break;
+        case 0x34: xor34(); break;
+        case 0x35: xor35(); break;
         case 0x10: adc10(); break;
         case 0x11: adc11(); break;
         case 0x12: adc12(); break;
@@ -574,6 +588,15 @@ std::pair<uint16_t, T> EmulatorPimpl::do_add(uint16_t v1, uint16_t v2,
 }
 
 template <typename T>
+std::pair<uint16_t, T> EmulatorPimpl::do_xor(uint16_t v1, uint16_t v2)
+{
+    return do_alu<T>(v1, v2, 0,
+        [](uint32_t a, uint32_t b, uint32_t __attribute__((unused)) c) -> uint32_t {
+            return a ^ b;
+        });
+}
+
+template <typename T>
 std::pair<uint16_t, T> EmulatorPimpl::do_sub(uint16_t v1, uint16_t v2,
                                              uint16_t carry_in)
 {
@@ -592,7 +615,45 @@ std::pair<uint16_t, T> EmulatorPimpl::do_mul(int32_t v1, int32_t v2)
         });
 }
 
-void EmulatorPimpl::add_adc_sub_sbb_cmp_80()
+void EmulatorPimpl::add_adc_sub_sbb_cmp_xor_80()
+{
+    modrm_decoder->set_width(OP_WIDTH_8);
+    modrm_decoder->decode();
+
+    if (modrm_decoder->raw_reg() != 0 &&
+        modrm_decoder->raw_reg() != 2 &&
+        modrm_decoder->raw_reg() != 5 &&
+        modrm_decoder->raw_reg() != 3 &&
+        modrm_decoder->raw_reg() != 7 &&
+        modrm_decoder->raw_reg() != 6) {
+        std::cerr << "warning: invalid reg " << std::hex <<
+            (unsigned)modrm_decoder->raw_reg() <<
+            " for opcode 0x" << opcode << std::endl;
+        return;
+    }
+
+    uint8_t v1 = read_data<uint8_t>();
+    uint8_t v2 = fetch_byte();
+    bool carry_in = modrm_decoder->raw_reg() == 2 || modrm_decoder->raw_reg() == 3 ?
+        !!(registers->get_flags() & CF) : 0;
+
+    uint8_t result;
+    uint16_t flags;
+    if (modrm_decoder->raw_reg() == 0 ||
+        modrm_decoder->raw_reg() == 2)
+        std::tie(flags, result) = do_add<uint8_t>(v1, v2, carry_in);
+    else if (modrm_decoder->raw_reg() == 6)
+        std::tie(flags, result) = do_xor<uint8_t>(v1, v2);
+    else
+        std::tie(flags, result) = do_sub<uint8_t>(v1, v2, carry_in);
+
+    registers->set_flags(flags, OF | SF | ZF | CF | PF | AF);
+    // cmp doesn't write the result
+    if (modrm_decoder->raw_reg() != 7)
+        write_data<uint8_t>(result & 0xff);
+}
+
+void EmulatorPimpl::add_adc_sub_sbb_cmp_82()
 {
     modrm_decoder->set_width(OP_WIDTH_8);
     modrm_decoder->decode();
@@ -627,14 +688,8 @@ void EmulatorPimpl::add_adc_sub_sbb_cmp_80()
         write_data<uint8_t>(result & 0xff);
 }
 
-void EmulatorPimpl::add_adc_sub_sbb_cmp_82()
-{
-    // The 's' bit has no effect for 8-bit add immediate.
-    add_adc_sub_sbb_cmp_80();
-}
-
 // add r/m, immediate, 16-bit
-void EmulatorPimpl::add_adc_sub_sbb_cmp_81()
+void EmulatorPimpl::add_adc_sub_sbb_cmp_xor_81()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
@@ -643,6 +698,7 @@ void EmulatorPimpl::add_adc_sub_sbb_cmp_81()
         modrm_decoder->raw_reg() != 2 &&
         modrm_decoder->raw_reg() != 5 &&
         modrm_decoder->raw_reg() != 3 &&
+        modrm_decoder->raw_reg() != 6 &&
         modrm_decoder->raw_reg() != 7) {
         std::cerr << "warning: invalid reg " << std::hex <<
             (unsigned)modrm_decoder->raw_reg() <<
@@ -660,6 +716,8 @@ void EmulatorPimpl::add_adc_sub_sbb_cmp_81()
     if (modrm_decoder->raw_reg() == 0 ||
         modrm_decoder->raw_reg() == 2)
         std::tie(flags, result) = do_add<uint16_t>(v1, v2, carry_in);
+    else if (modrm_decoder->raw_reg() == 6)
+        std::tie(flags, result) = do_xor<uint8_t>(v1, v2);
     else
         std::tie(flags, result) = do_sub<uint16_t>(v1, v2, carry_in);
 
@@ -858,6 +916,7 @@ static inline Out sign_extend(In v)
 #include "instructions/lea.cpp"
 #include "instructions/lahf_sahf.cpp"
 #include "instructions/add.cpp"
+#include "instructions/xor.cpp"
 #include "instructions/adc.cpp"
 #include "instructions/sub.cpp"
 #include "instructions/sbb.cpp"
