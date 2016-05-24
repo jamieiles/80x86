@@ -231,6 +231,10 @@ private:
     void rcld1();
     void rcld2();
     void rcld3();
+    void rcrd0();
+    void rcrd1();
+    void rcrd2();
+    void rcrd3();
     void rord0();
     void rord1();
     void rord2();
@@ -887,6 +891,8 @@ void EmulatorPimpl::shiftd0()
         rold0();
     else if (modrm_decoder->raw_reg() == 2)
         rcld0();
+    else if (modrm_decoder->raw_reg() == 3)
+        rcrd0();
     else if (modrm_decoder->raw_reg() == 1)
         rord0();
     else
@@ -910,6 +916,8 @@ void EmulatorPimpl::shiftd1()
         rold1();
     else if (modrm_decoder->raw_reg() == 2)
         rcld1();
+    else if (modrm_decoder->raw_reg() == 3)
+        rcrd1();
     else if (modrm_decoder->raw_reg() == 1)
         rord1();
     else
@@ -935,6 +943,8 @@ void EmulatorPimpl::shiftd2()
         rcld2();
     else if (modrm_decoder->raw_reg() == 1)
         rord2();
+    else if (modrm_decoder->raw_reg() == 3)
+        rcrd2();
     else
         std::cerr << "warning: invalid reg " << std::hex <<
             (unsigned)modrm_decoder->raw_reg() <<
@@ -958,6 +968,8 @@ void EmulatorPimpl::shiftd3()
         rcld3();
     else if (modrm_decoder->raw_reg() == 1)
         rord3();
+    else if (modrm_decoder->raw_reg() == 3)
+        rcrd3();
     else
         std::cerr << "warning: invalid reg " << std::hex <<
             (unsigned)modrm_decoder->raw_reg() <<
@@ -1035,6 +1047,7 @@ static inline Out sign_extend(In v)
 #include "instructions/rol.cpp"
 #include "instructions/rcl.cpp"
 #include "instructions/ror.cpp"
+#include "instructions/rcr.cpp"
 
 void EmulatorPimpl::push_word(uint16_t v)
 {
