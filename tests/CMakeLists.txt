@@ -28,6 +28,7 @@ add_executable(unittest
                TestMul.cpp
                TestNeg.cpp
                TestNot.cpp
+               TestOr.cpp
                TestPointer.cpp
                TestPush.cpp
                TestRcl.cpp
