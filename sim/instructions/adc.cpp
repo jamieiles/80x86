@@ -90,7 +90,7 @@ void EmulatorPimpl::adc15()
     bool carry_in = !!(registers->get_flags() & CF);
     uint16_t result;
     uint16_t flags;
-    std::tie(flags, result) = do_add<uint8_t>(v1, v2, carry_in);
+    std::tie(flags, result) = do_add<uint16_t>(v1, v2, carry_in);
 
     registers->set_flags(flags, OF | SF | ZF | AF | CF | PF);
     registers->set(AX, result);
