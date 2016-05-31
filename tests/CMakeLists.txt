@@ -13,6 +13,7 @@ add_executable(unittest
                TestCall.cpp
                TestCmp.cpp
                TestControl.cpp
+               TestDiv.cpp
                TestExtend.cpp
                TestFifo.cpp
                TestFlags.cpp

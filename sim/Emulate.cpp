@@ -162,6 +162,10 @@ private:
     void mulf7();
     void imulf6();
     void imulf7();
+    void divf6();
+    void divf7();
+    void idivf6();
+    void idivf7();
     void intcc();
     void intcd();
     void intoce();
@@ -277,8 +281,8 @@ private:
     template <typename T>
     std::pair<uint16_t, T> do_and(uint16_t v1, uint16_t v2);
     void push_inc_jmp_call_ff();
-    void neg_mul_not_test_f6();
-    void neg_mul_not_test_f7();
+    void neg_mul_not_test_div_f6();
+    void neg_mul_not_test_div_f7();
     void push_word(uint16_t v);
     uint16_t pop_word();
     template <typename T>
@@ -824,6 +828,8 @@ void EmulatorPimpl::add_adc_sub_sbb_cmp_83()
         modrm_decoder->raw_reg() != 2 &&
         modrm_decoder->raw_reg() != 5 &&
         modrm_decoder->raw_reg() != 3 &&
+        modrm_decoder->raw_reg() != 4 &&
+        modrm_decoder->raw_reg() != 1 &&
         modrm_decoder->raw_reg() != 7) {
         std::cerr << "warning: invalid reg " << std::hex <<
             (unsigned)modrm_decoder->raw_reg() <<
@@ -866,7 +872,7 @@ uint8_t EmulatorPimpl::fetch_byte()
                                             registers->get(IP) + instr_length++));
 }
 
-void EmulatorPimpl::neg_mul_not_test_f6()
+void EmulatorPimpl::neg_mul_not_test_div_f6()
 {
     modrm_decoder->set_width(OP_WIDTH_8);
     modrm_decoder->decode();
@@ -881,13 +887,17 @@ void EmulatorPimpl::neg_mul_not_test_f6()
         imulf6();
     else if (modrm_decoder->raw_reg() == 0x0)
         testf6();
+    else if (modrm_decoder->raw_reg() == 0x6)
+        divf6();
+    else if (modrm_decoder->raw_reg() == 0x7)
+        idivf6();
     else
         std::cerr << "warning: invalid reg " << std::hex <<
             (unsigned)modrm_decoder->raw_reg() <<
             " for opcode 0x" << (unsigned)opcode << std::endl;
 }
 
-void EmulatorPimpl::neg_mul_not_test_f7()
+void EmulatorPimpl::neg_mul_not_test_div_f7()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
@@ -902,6 +912,10 @@ void EmulatorPimpl::neg_mul_not_test_f7()
         imulf7();
     else if (modrm_decoder->raw_reg() == 0x0)
         testf7();
+    else if (modrm_decoder->raw_reg() == 0x6)
+        divf7();
+    else if (modrm_decoder->raw_reg() == 0x7)
+        idivf7();
     else
         std::cerr << "warning: invalid reg " << std::hex <<
             (unsigned)modrm_decoder->raw_reg() <<
@@ -1034,6 +1048,7 @@ void EmulatorPimpl::shiftd3()
 #include "instructions/cmp.cpp"
 #include "instructions/mul.cpp"
 #include "instructions/imul.cpp"
+#include "instructions/div.cpp"
 #include "instructions/int.cpp"
 #include "instructions/cbw.cpp"
 #include "instructions/cwd.cpp"
