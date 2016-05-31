@@ -18,9 +18,9 @@ enum InterruptVectorOffset {
 };
 
 static inline phys_addr get_phys_addr(uint16_t segment,
-                                      uint16_t displacement)
+                                      uint32_t displacement)
 {
-    return (static_cast<uint32_t>(segment) << 4) + displacement;
+    return ((static_cast<uint32_t>(segment) << 4) + displacement) % (1 * 1024 * 1024);
 }
 
 class EmulatorPimpl;
