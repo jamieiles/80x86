@@ -8,3 +8,4 @@ add_library(8086sim SHARED
             ModRM.cpp
             Emulate.h
             Emulate.cpp)
+nasm_file(bios.asm bios.bin)
