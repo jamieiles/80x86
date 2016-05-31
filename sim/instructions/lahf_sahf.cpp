@@ -8,7 +8,6 @@ void EmulatorPimpl::lahf9f()
 // sahf
 void EmulatorPimpl::sahf9e()
 {
-    auto new_flags = registers->get(AH);
-    auto old_flags = registers->get_flags();
-    registers->set_flags((old_flags & 0xff00) | new_flags);
+    auto flags = registers->get(AH);
+    registers->set_flags(flags, 0xff);
 }
