@@ -3,6 +3,25 @@ void EmulatorPimpl::aamd4()
 {
     auto divisor = fetch_byte();
 
+    if (divisor == 0) {
+        auto flags = registers->get_flags();
+        push_word(flags);
+        push_word(registers->get(CS));
+        push_word(registers->get(IP));
+
+        flags &= ~(IF | TF);
+        registers->set_flags(flags, IF | TF);
+
+        auto new_cs = mem->read<uint16_t>(VEC_DIVIDE_ERROR + 2);
+        auto new_ip = mem->read<uint16_t>(VEC_DIVIDE_ERROR + 0);
+
+        registers->set(CS, new_cs);
+        registers->set(IP, new_ip);
+        jump_taken = true;
+
+        return;
+    }
+
     auto al = registers->get(AL);
     auto quotient = al / divisor;
     auto remainder = al % divisor;
