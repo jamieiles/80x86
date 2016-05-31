@@ -1,10 +1,25 @@
 #include "Emulate.h"
 
 #include <cassert>
+#include <cstdlib>
 #include <iostream>
 #include <functional>
 #include <stdint.h>
 #include "Memory.h"
+
+template <typename Out, typename In>
+static inline Out sign_extend(In v)
+{
+    static_assert(sizeof(Out) > sizeof(In), "May only sign extend to larger types");
+
+    size_t bit_shift = (sizeof(Out) - sizeof(In)) * 8;
+    Out o = static_cast<Out>(v);
+
+    o <<= bit_shift;
+    o >>= bit_shift;
+
+    return o;
+}
 
 enum RepMode {
     REPNE, // Prefix 0xf2
@@ -836,9 +851,7 @@ void EmulatorPimpl::add_adc_sub_sbb_cmp_83()
     }
 
     uint16_t v1 = read_data<uint16_t>();
-    int16_t immed = fetch_byte();
-    immed <<= 8;
-    immed >>= 8;
+    int16_t immed = sign_extend<int16_t, uint8_t>(fetch_byte());
     bool carry_in = modrm_decoder->raw_reg() == 2 || modrm_decoder->raw_reg() == 3 ?
         !!(registers->get_flags() & CF) : 0;
 
@@ -1011,21 +1024,7 @@ void EmulatorPimpl::shiftd3()
     else
         std::cerr << "warning: invalid reg " << std::hex <<
             (unsigned)modrm_decoder->raw_reg() <<
-            " for opcode 0x" << opcode << std::endl;
-}
-
-template <typename Out, typename In>
-static inline Out sign_extend(In v)
-{
-    static_assert(sizeof(Out) > sizeof(In), "May only sign extend to larger types");
-
-    size_t bit_shift = (sizeof(Out) - sizeof(In)) * 8;
-    Out o = static_cast<Out>(v);
-
-    o <<= bit_shift;
-    o >>= bit_shift;
-
-    return o;
+            " for opcode 0x" << (unsigned)opcode << std::endl;
 }
 
 #include "instructions/mov.cpp"
