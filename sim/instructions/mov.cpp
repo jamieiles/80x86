@@ -129,7 +129,7 @@ void EmulatorPimpl::mov8e()
     if (modrm_decoder->raw_reg() & (1 << 2)) {
         std::cerr << "warning: invalid reg " << std::hex <<
             (unsigned)modrm_decoder->raw_reg() <<
-            " for opcode 0x" << opcode << std::endl;
+            " for opcode 0x" << (unsigned)opcode << std::endl;
         return;
     }
 
@@ -149,7 +149,7 @@ void EmulatorPimpl::mov8c()
     if (modrm_decoder->raw_reg() & (1 << 2)) {
         std::cerr << "warning: invalid reg " << std::hex <<
             (unsigned)modrm_decoder->raw_reg() <<
-            " for opcode 0x" << opcode << std::endl;
+            " for opcode 0x" << (unsigned)opcode << std::endl;
         return;
     }
 
