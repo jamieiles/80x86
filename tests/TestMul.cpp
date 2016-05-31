@@ -35,7 +35,7 @@ static const std::vector<struct MulTest<uint8_t>> imul8_tests = {
     { 2, 8, 16, 0x00, 0 },
     { 0x80, 2, 0x00, 0xff, CF | OF },
     { 0xff, 0xff, 0x01, 0x00, 0 },
-    { 0xff, 1, 0xff, 0xff, 0 },
+    { 0xff, 1, 0xff, 0xff, CF | OF },
     { 32, 8, 0x00, 0x01, CF | OF },
 };
 
@@ -122,7 +122,7 @@ static const std::vector<struct MulTest<uint16_t>> imul16_tests = {
     { 2, 8, 16, 0x00, 0 },
     { 0x8000, 2, 0x0000, 0xffff, CF | OF },
     { 0xffff, 0xffff, 0x0001, 0x0000, 0 },
-    { 0xffff, 1, 0xffff, 0xffff, 0 },
+    { 0xffff, 1, 0xffff, 0xffff, CF | OF },
     { 8192, 8, 0x0000, 0x0001, CF | OF },
 };
 

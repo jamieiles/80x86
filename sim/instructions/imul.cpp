@@ -7,13 +7,12 @@ void EmulatorPimpl::imulf6()
 
     uint16_t result, flags;
     std::tie(flags, result) = do_mul<int16_t>(v1, v2);
-    flags = old_flags & ~(CF | OF);
-    if ((result & 0xff80) != 0xff80 &&
-        (result & 0xff80) != 0x0000)
+    flags = old_flags & ~(CF | OF | ZF);
+    if (result & 0xff00)
         flags |= CF | OF;
 
     registers->set(AX, result);
-    registers->set_flags(flags, OF | CF);
+    registers->set_flags(flags, OF | CF | ZF);
 }
 
 // imul r/m, 16-bit
@@ -26,12 +25,11 @@ void EmulatorPimpl::imulf7()
     uint32_t result;
     uint16_t flags;
     std::tie(flags, result) = do_mul<int32_t>(v1, v2);
-    flags = old_flags & ~(CF | OF);
-    if ((result & 0xffff8000) != 0xffff8000 &&
-        (result & 0xffff8000) != 0x00000000)
+    flags = old_flags & ~(CF | OF | ZF);
+    if (result & 0xffff0000)
         flags |= CF | OF;
 
     registers->set(AX, result & 0xffff);
     registers->set(DX, (result >> 16) & 0xffff);
-    registers->set_flags(flags, OF | CF);
+    registers->set_flags(flags, OF | CF | ZF);
 }
