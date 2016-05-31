@@ -53,6 +53,9 @@ void EmulatorPimpl::sard2()
     auto v = read_data<uint8_t>();
     uint16_t flags;
 
+    if (!registers->get(CL))
+        return;
+
     std::tie(flags, v) = do_sar(v, registers->get(CL));
 
     write_data<uint8_t>(v);
@@ -64,6 +67,9 @@ void EmulatorPimpl::sard3()
 {
     auto v = read_data<uint16_t>();
     uint16_t flags;
+
+    if (!registers->get(CL))
+        return;
 
     std::tie(flags, v) = do_sar(v, registers->get(CL));
 

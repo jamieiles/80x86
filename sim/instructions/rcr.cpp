@@ -52,6 +52,9 @@ void EmulatorPimpl::rcrd2()
     auto v = read_data<uint8_t>();
     uint16_t flags;
 
+    if (!registers->get(CL))
+        return;
+
     std::tie(flags, v) = do_rcr(v, registers->get(CL),
                                 registers->get_flag(CF));
 
@@ -64,6 +67,9 @@ void EmulatorPimpl::rcrd3()
 {
     auto v = read_data<uint16_t>();
     uint16_t flags;
+
+    if (!registers->get(CL))
+        return;
 
     std::tie(flags, v) = do_rcr(v, registers->get(CL),
                                 registers->get_flag(CF));

@@ -53,6 +53,9 @@ void EmulatorPimpl::shld2()
     auto v = read_data<uint8_t>();
     uint16_t flags;
 
+    if (!registers->get(CL))
+        return;
+
     std::tie(flags, v) = do_shl(v, registers->get(CL));
 
     write_data<uint8_t>(v);

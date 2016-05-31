@@ -51,6 +51,9 @@ void EmulatorPimpl::rord2()
     auto v = read_data<uint8_t>();
     uint16_t flags;
 
+    if (!registers->get(CL))
+        return;
+
     std::tie(flags, v) = do_ror(v, registers->get(CL));
 
     write_data<uint8_t>(v);
@@ -62,6 +65,9 @@ void EmulatorPimpl::rord3()
 {
     auto v = read_data<uint16_t>();
     uint16_t flags;
+
+    if (!registers->get(CL))
+        return;
 
     std::tie(flags, v) = do_ror(v, registers->get(CL));
 
