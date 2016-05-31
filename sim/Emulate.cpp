@@ -702,20 +702,6 @@ void EmulatorPimpl::add_adc_sub_sbb_cmp_xor_or_and_80()
     modrm_decoder->set_width(OP_WIDTH_8);
     modrm_decoder->decode();
 
-    if (modrm_decoder->raw_reg() != 0 &&
-        modrm_decoder->raw_reg() != 1 &&
-        modrm_decoder->raw_reg() != 2 &&
-        modrm_decoder->raw_reg() != 4 &&
-        modrm_decoder->raw_reg() != 5 &&
-        modrm_decoder->raw_reg() != 3 &&
-        modrm_decoder->raw_reg() != 7 &&
-        modrm_decoder->raw_reg() != 6) {
-        std::cerr << "warning: invalid reg " << std::hex <<
-            (unsigned)modrm_decoder->raw_reg() <<
-            " for opcode 0x" << opcode << std::endl;
-        return;
-    }
-
     uint8_t v1 = read_data<uint8_t>();
     uint8_t v2 = fetch_byte();
     bool carry_in = modrm_decoder->raw_reg() == 2 || modrm_decoder->raw_reg() == 3 ?
@@ -753,17 +739,6 @@ void EmulatorPimpl::add_adc_sub_sbb_cmp_82()
     modrm_decoder->set_width(OP_WIDTH_8);
     modrm_decoder->decode();
 
-    if (modrm_decoder->raw_reg() != 0 &&
-        modrm_decoder->raw_reg() != 2 &&
-        modrm_decoder->raw_reg() != 5 &&
-        modrm_decoder->raw_reg() != 3 &&
-        modrm_decoder->raw_reg() != 7) {
-        std::cerr << "warning: invalid reg " << std::hex <<
-            (unsigned)modrm_decoder->raw_reg() <<
-            " for opcode 0x" << opcode << std::endl;
-        return;
-    }
-
     uint8_t v1 = read_data<uint8_t>();
     uint8_t v2 = fetch_byte();
     bool carry_in = modrm_decoder->raw_reg() == 2 || modrm_decoder->raw_reg() == 3 ?
@@ -788,20 +763,6 @@ void EmulatorPimpl::add_adc_sub_sbb_cmp_xor_or_and_81()
 {
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
-
-    if (modrm_decoder->raw_reg() != 0 &&
-        modrm_decoder->raw_reg() != 1 &&
-        modrm_decoder->raw_reg() != 2 &&
-        modrm_decoder->raw_reg() != 4 &&
-        modrm_decoder->raw_reg() != 5 &&
-        modrm_decoder->raw_reg() != 3 &&
-        modrm_decoder->raw_reg() != 6 &&
-        modrm_decoder->raw_reg() != 7) {
-        std::cerr << "warning: invalid reg " << std::hex <<
-            (unsigned)modrm_decoder->raw_reg() <<
-            " for opcode 0x" << opcode << std::endl;
-        return;
-    }
 
     uint16_t v1 = read_data<uint16_t>();
     uint16_t v2 = fetch_16bit();
