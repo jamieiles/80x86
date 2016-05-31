@@ -3,16 +3,16 @@ void EmulatorPimpl::aadd5()
 {
     uint16_t flags = registers->get_flags();
 
-    auto al = registers->get(AL) + registers->get(AH) * fetch_byte();
+    uint16_t v = registers->get(AL) + registers->get(AH) * fetch_byte();
 
-    if (al & 0x80)
+    if (v & 0x8000)
         flags |= SF;
-    if (!al)
+    if (!v)
         flags |= ZF;
-    if (!__builtin_parity(al))
+    if (!__builtin_parity(v & 0xff))
         flags |= PF;
 
-    registers->set(AL, al);
+    registers->set(AL, v);
     registers->set(AH, 0);
     registers->set_flags(flags, SF | ZF | PF);
 }
