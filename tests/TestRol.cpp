@@ -49,23 +49,23 @@ INSTANTIATE_TEST_CASE_P(Rol1, ShiftMem16Test,
 static const std::vector<struct ShiftTest<uint8_t>> rol8_shiftN_tests = {
     { 1, 0, 0, 0, 0 },
     { 1, 1, 2, 0, 0 },
-    { 1, 0x80, 0x01, 0, CF | OF },
+    { 1, 0x80, 0x01, 0, CF },
     { 1, 0xc0, 0x81, 0, CF },
-    { 1, 0x40, 0x80, 0, OF },
+    { 1, 0x40, 0x80, 0, 0 },
     { 8, 0, 0, 0, 0 },
-    { 7, 1, 0x80, 0, OF },
-    { 8, 1, 0x01, 0, CF | OF },
+    { 7, 1, 0x80, 0, 0 },
+    { 8, 1, 0x01, 0, CF },
 };
 
 static const std::vector<struct ShiftTest<uint16_t>> rol16_shiftN_tests = {
     { 1, 0, 0, 0, 0 },
     { 1, 1, 2, 0, 0 },
-    { 1, 0x8000, 0x0001, 0, CF | OF },
+    { 1, 0x8000, 0x0001, 0, CF },
     { 1, 0xc000, 0x8001, 0, CF },
-    { 1, 0x4000, 0x8000, 0, OF },
+    { 1, 0x4000, 0x8000, 0, 0 },
     { 16, 0, 0, 0, 0 },
-    { 15, 1, 0x8000, 0, OF },
-    { 16, 1, 0x0001, 0, CF | OF },
+    { 15, 1, 0x8000, 0, 0 },
+    { 16, 1, 0x0001, 0, CF },
 };
 
 INSTANTIATE_TEST_CASE_P(RolN, ShiftReg8Test,

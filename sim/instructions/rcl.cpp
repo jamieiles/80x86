@@ -53,7 +53,7 @@ void EmulatorPimpl::rcld2()
                                 registers->get_flag(CF));
 
     write_data<uint8_t>(v);
-    registers->set_flags(flags, CF | OF);
+    registers->set_flags(flags, CF);
 }
 
 // rcl r/m, N
@@ -66,5 +66,5 @@ void EmulatorPimpl::rcld3()
                                 registers->get_flag(CF));
 
     write_data<uint16_t>(v);
-    registers->set_flags(flags, CF | OF);
+    registers->set_flags(flags, CF);
 }

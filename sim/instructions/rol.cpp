@@ -52,7 +52,7 @@ void EmulatorPimpl::rold2()
     std::tie(flags, v) = do_rol(v, registers->get(CL));
 
     write_data<uint8_t>(v);
-    registers->set_flags(flags, CF | OF);
+    registers->set_flags(flags, CF);
 }
 
 // rol r/m, N
@@ -64,5 +64,5 @@ void EmulatorPimpl::rold3()
     std::tie(flags, v) = do_rol(v, registers->get(CL));
 
     write_data<uint16_t>(v);
-    registers->set_flags(flags, CF | OF);
+    registers->set_flags(flags, CF);
 }

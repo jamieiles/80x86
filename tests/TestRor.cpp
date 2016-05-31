@@ -48,7 +48,7 @@ static const std::vector<struct ShiftTest<uint8_t>> ror8_shiftN_tests = {
     { 1, 0, 0, 0, 0 },
     { 1, 2, 1, 0, 0 },
     { 1, 0x81, 0xc0, 0, CF },
-    { 1, 0x01, 0x80, 0, CF | OF },
+    { 1, 0x01, 0x80, 0, CF },
 
     { 8, 0, 0, 0, 0 },
     { 7, 0x80, 1, 0, 0 },
@@ -59,7 +59,7 @@ static const std::vector<struct ShiftTest<uint16_t>> ror16_shiftN_tests = {
     { 1, 0, 0, 0, 0 },
     { 1, 2, 1, 0, 0 },
     { 1, 0x8001, 0xc000, 0, CF },
-    { 1, 0x0001, 0x8000, 0, CF | OF },
+    { 1, 0x0001, 0x8000, 0, CF },
 
     { 16, 0, 0, 0, 0 },
     { 15, 0x8000, 1, 0, 0 },

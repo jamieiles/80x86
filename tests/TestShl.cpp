@@ -9,17 +9,17 @@
 static const std::vector<struct ShiftTest<uint8_t>> shl8_shift1_tests = {
     { 1, 0, 0, 0, PF | ZF },
     { 1, 1, 2, 0, 0 },
-    { 1, 0x80, 0x00, 0, CF | ZF | PF },
-    { 1, 0xc0, 0x80, 0, CF | SF | OF },
-    { 1, 0x40, 0x80, 0, SF },
+    { 1, 0x80, 0x00, 0, CF | ZF | OF | PF },
+    { 1, 0xc0, 0x80, 0, CF | SF },
+    { 1, 0x40, 0x80, 0, SF | OF },
 };
 
 static const std::vector<struct ShiftTest<uint16_t>> shl16_shift1_tests = {
     { 1, 0, 0, 0, PF | ZF },
     { 1, 1, 2, 0, 0 },
-    { 1, 0x8000, 0x0000, 0, CF | ZF | PF },
-    { 1, 0xc000, 0x8000, 0, CF | SF | OF | PF },
-    { 1, 0x4000, 0x8000, 0, SF | PF },
+    { 1, 0x8000, 0x0000, 0, CF | ZF | OF | PF },
+    { 1, 0xc000, 0x8000, 0, CF | SF | PF },
+    { 1, 0x4000, 0x8000, 0, SF | PF | OF },
 };
 
 INSTANTIATE_TEST_CASE_P(Shl1, ShiftReg8Test,
@@ -50,7 +50,7 @@ static const std::vector<struct ShiftTest<uint8_t>> shl8_shiftN_tests = {
     { 1, 0, 0, 0, PF | ZF },
     { 1, 1, 2, 0, 0 },
     { 1, 0x80, 0x00, 0, CF | ZF | PF },
-    { 1, 0xc0, 0x80, 0, CF | SF | OF },
+    { 1, 0xc0, 0x80, 0, CF | SF },
     { 1, 0x40, 0x80, 0, SF },
     { 8, 0, 0, 0, PF | ZF },
     { 7, 1, 0x80, 0, SF },
@@ -61,7 +61,7 @@ static const std::vector<struct ShiftTest<uint16_t>> shl16_shiftN_tests = {
     { 1, 0, 0, 0, PF | ZF },
     { 1, 1, 2, 0, 0 },
     { 1, 0x8000, 0x0000, 0, CF | ZF | PF },
-    { 1, 0xc000, 0x8000, 0, CF | SF | OF | PF },
+    { 1, 0xc000, 0x8000, 0, CF | SF | PF },
     { 1, 0x4000, 0x8000, 0, SF | PF },
     { 8, 0, 0, 0, PF | ZF },
     { 15, 1, 0x8000, 0, SF | PF },

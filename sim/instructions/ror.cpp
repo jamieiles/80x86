@@ -54,7 +54,7 @@ void EmulatorPimpl::rord2()
     std::tie(flags, v) = do_ror(v, registers->get(CL));
 
     write_data<uint8_t>(v);
-    registers->set_flags(flags, CF | OF);
+    registers->set_flags(flags, CF);
 }
 
 // ror r/m, N
@@ -66,5 +66,5 @@ void EmulatorPimpl::rord3()
     std::tie(flags, v) = do_ror(v, registers->get(CL));
 
     write_data<uint16_t>(v);
-    registers->set_flags(flags, CF | OF);
+    registers->set_flags(flags, CF);
 }

@@ -50,8 +50,8 @@ static const std::vector<struct ShiftTest<uint8_t>> shr8_shiftN_tests = {
     { 1, 2, 1, 0, 0 },
     { 1, 0, 0, CF, PF | ZF },
     { 8, 0, 0, 0, PF | ZF },
-    { 7, 0x80, 1, 0, OF },
-    { 8, 0x80, 0x00, 0, CF | PF | ZF | OF },
+    { 7, 0x80, 1, 0, 0 },
+    { 8, 0x80, 0x00, 0, CF | PF | ZF },
 };
 
 static const std::vector<struct ShiftTest<uint16_t>> shr16_shiftN_tests = {
@@ -60,8 +60,8 @@ static const std::vector<struct ShiftTest<uint16_t>> shr16_shiftN_tests = {
     { 1, 2, 1, 0, 0 },
     { 1, 0, 0, CF, PF | ZF },
     { 8, 0, 0, 0, PF | ZF },
-    { 15, 0x8000, 1, 0, OF },
-    { 16, 0x8000, 0x00, 0, CF | PF | ZF | OF },
+    { 15, 0x8000, 1, 0, 0 },
+    { 16, 0x8000, 0x00, 0, CF | PF | ZF },
 };
 
 INSTANTIATE_TEST_CASE_P(ShrN, ShiftReg8Test,

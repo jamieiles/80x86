@@ -56,7 +56,7 @@ void EmulatorPimpl::shld2()
     std::tie(flags, v) = do_shl(v, registers->get(CL));
 
     write_data<uint8_t>(v);
-    registers->set_flags(flags, OF | CF | ZF | PF | SF);
+    registers->set_flags(flags, CF | ZF | PF | SF);
 }
 
 // shl r/m, N
@@ -68,5 +68,5 @@ void EmulatorPimpl::shld3()
     std::tie(flags, v) = do_shl(v, registers->get(CL));
 
     write_data<uint16_t>(v);
-    registers->set_flags(flags, OF | CF | ZF | PF | SF);
+    registers->set_flags(flags, CF | ZF | PF | SF);
 }

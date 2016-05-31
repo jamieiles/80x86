@@ -54,7 +54,7 @@ void EmulatorPimpl::shrd2()
     std::tie(flags, v) = do_shr(v, registers->get(CL));
 
     write_data<uint8_t>(v);
-    registers->set_flags(flags, OF | CF | ZF | PF | SF);
+    registers->set_flags(flags, CF | ZF | PF | SF);
 }
 
 // shr r/m, N
@@ -66,5 +66,5 @@ void EmulatorPimpl::shrd3()
     std::tie(flags, v) = do_shr(v, registers->get(CL));
 
     write_data<uint16_t>(v);
-    registers->set_flags(flags, OF | CF | ZF | PF | SF);
+    registers->set_flags(flags, CF | ZF | PF | SF);
 }
