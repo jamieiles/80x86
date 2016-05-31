@@ -106,8 +106,8 @@ TEST_F(EmulateFixture, Das)
 
 static const std::vector<AsciiTest> aam_tests {
     AsciiTest{0x00, 0x00, 0, ZF | PF},
-    AsciiTest{0x0a, 0x0100, 0, PF | ZF},
-    AsciiTest{0x50, 0x0800, 0, PF | ZF},
+    AsciiTest{0x0a, 0x0100, 0, PF},
+    AsciiTest{0x50, 0x0800, 0, PF},
 };
 
 TEST_F(EmulateFixture, Aam)
@@ -127,7 +127,7 @@ TEST_F(EmulateFixture, Aam)
 }
 
 static const std::vector<AsciiTest> aam_129_tests {
-    AsciiTest{0x80, 0x0080, 0, SF},
+    AsciiTest{0x80, 0x0080, 0, 0},
 };
 TEST_F(EmulateFixture, Aam129)
 {
