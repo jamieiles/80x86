@@ -10,8 +10,9 @@ void EmulatorPimpl::or08()
     uint8_t result;
     uint16_t flags;
     std::tie(flags, result) = do_or<uint8_t>(v1, v2);
+    flags &= ~(CF | OF);
 
-    registers->set_flags(flags, OF | SF | ZF | AF | CF | PF);
+    registers->set_flags(flags, OF | SF | ZF | CF | PF);
     write_data<uint8_t>(result & 0xff);
 }
 
@@ -26,8 +27,9 @@ void EmulatorPimpl::or09()
 
     uint16_t result, flags;
     std::tie(flags, result) = do_or<uint16_t>(v1, v2);
+    flags &= ~(CF | OF);
 
-    registers->set_flags(flags, OF | SF | ZF | AF | CF | PF);
+    registers->set_flags(flags, OF | SF | ZF | CF | PF);
     write_data<uint16_t>(result & 0xffff);
 }
 
@@ -43,8 +45,9 @@ void EmulatorPimpl::or0a()
     uint8_t result;
     uint16_t flags;
     std::tie(flags, result) = do_or<uint8_t>(v1, v2);
+    flags &= ~(CF | OF);
 
-    registers->set_flags(flags, OF | SF | ZF | AF | CF | PF);
+    registers->set_flags(flags, OF | SF | ZF | CF | PF);
     registers->set(modrm_decoder->reg(), result & 0xff);
 }
 
@@ -60,8 +63,9 @@ void EmulatorPimpl::or0b()
     uint16_t result;
     uint16_t flags;
     std::tie(flags, result) = do_or<uint16_t>(v1, v2);
+    flags &= ~(CF | OF);
 
-    registers->set_flags(flags, OF | SF | ZF | AF | CF | PF);
+    registers->set_flags(flags, OF | SF | ZF | CF | PF);
     registers->set(modrm_decoder->reg(), result & 0xffff);
 }
 
@@ -72,8 +76,9 @@ void EmulatorPimpl::or0c()
     uint8_t result;
     uint16_t flags;
     std::tie(flags, result) = do_or<uint8_t>(v1, v2);
+    flags &= ~(CF | OF);
 
-    registers->set_flags(flags, OF | SF | ZF | AF | CF | PF);
+    registers->set_flags(flags, OF | SF | ZF | CF | PF);
     registers->set(AL, result);
 }
 
@@ -84,7 +89,8 @@ void EmulatorPimpl::or0d()
     uint16_t result;
     uint16_t flags;
     std::tie(flags, result) = do_or<uint16_t>(v1, v2);
+    flags &= ~(CF | OF);
 
-    registers->set_flags(flags, OF | SF | ZF | AF | CF | PF);
+    registers->set_flags(flags, OF | SF | ZF | CF | PF);
     registers->set(AX, result);
 }

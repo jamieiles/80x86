@@ -19,6 +19,7 @@ static const std::vector<struct ArithmeticTest<uint16_t>> and16_tests = {
     { 0x000f, 0xf000, 0x0, PF | ZF, false },
     { 0xf00f, 0xf000, 0xf000, PF | SF, false },
     { 0x0f, 0x01, 0x01, 0, false },
+    { 0x0240, 0x3c84, 0x0, PF | ZF, false },
 };
 
 INSTANTIATE_TEST_CASE_P(And, ArithmeticRegReg8Test,

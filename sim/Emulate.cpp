@@ -706,19 +706,26 @@ void EmulatorPimpl::add_adc_sub_sbb_cmp_xor_or_and_80()
 
     uint8_t result;
     uint16_t flags;
+    uint16_t update_mask = OF | SF | ZF | CF | PF | AF;
     if (modrm_decoder->raw_reg() == 0 ||
         modrm_decoder->raw_reg() == 2)
         std::tie(flags, result) = do_add<uint8_t>(v1, v2, carry_in);
-    else if (modrm_decoder->raw_reg() == 6)
+    else if (modrm_decoder->raw_reg() == 6) {
         std::tie(flags, result) = do_xor<uint8_t>(v1, v2);
-    else if (modrm_decoder->raw_reg() == 1)
+        flags &= ~(CF | OF);
+        update_mask &= ~AF;
+    } else if (modrm_decoder->raw_reg() == 1) {
         std::tie(flags, result) = do_or<uint8_t>(v1, v2);
-    else if (modrm_decoder->raw_reg() == 4)
+        flags &= ~(CF | OF);
+        update_mask &= ~AF;
+    } else if (modrm_decoder->raw_reg() == 4) {
         std::tie(flags, result) = do_and<uint8_t>(v1, v2);
-    else
+        flags &= ~(CF | OF);
+        update_mask &= ~AF;
+    } else
         std::tie(flags, result) = do_sub<uint8_t>(v1, v2, carry_in);
 
-    registers->set_flags(flags, OF | SF | ZF | CF | PF | AF);
+    registers->set_flags(flags, update_mask);
     // cmp doesn't write the result
     if (modrm_decoder->raw_reg() != 7)
         write_data<uint8_t>(result & 0xff);
@@ -786,19 +793,26 @@ void EmulatorPimpl::add_adc_sub_sbb_cmp_xor_or_and_81()
 
     uint16_t result;
     uint16_t flags;
+    uint16_t update_mask = OF | SF | ZF | CF | PF | AF;
     if (modrm_decoder->raw_reg() == 0 ||
         modrm_decoder->raw_reg() == 2)
         std::tie(flags, result) = do_add<uint16_t>(v1, v2, carry_in);
-    else if (modrm_decoder->raw_reg() == 6)
-        std::tie(flags, result) = do_xor<uint8_t>(v1, v2);
-    else if (modrm_decoder->raw_reg() == 1)
-        std::tie(flags, result) = do_or<uint8_t>(v1, v2);
-    else if (modrm_decoder->raw_reg() == 4)
-        std::tie(flags, result) = do_and<uint8_t>(v1, v2);
-    else
+    else if (modrm_decoder->raw_reg() == 6) {
+        std::tie(flags, result) = do_xor<uint16_t>(v1, v2);
+        flags &= ~(CF | OF);
+        update_mask &= ~AF;
+    } else if (modrm_decoder->raw_reg() == 1) {
+        std::tie(flags, result) = do_or<uint16_t>(v1, v2);
+        flags &= ~(CF | OF);
+        update_mask &= ~AF;
+    } else if (modrm_decoder->raw_reg() == 4) {
+        std::tie(flags, result) = do_and<uint16_t>(v1, v2);
+        flags &= ~(CF | OF);
+        update_mask &= ~AF;
+    } else
         std::tie(flags, result) = do_sub<uint16_t>(v1, v2, carry_in);
 
-    registers->set_flags(flags, OF | SF | ZF | CF | PF | AF);
+    registers->set_flags(flags, update_mask);
     // cmp doesn't write the result
     if (modrm_decoder->raw_reg() != 7)
         write_data<uint16_t>(result & 0xffff);
@@ -830,13 +844,23 @@ void EmulatorPimpl::add_adc_sub_sbb_cmp_83()
 
     uint16_t result;
     uint16_t flags;
+    uint16_t update_mask = OF | SF | ZF | CF | PF | AF;
     if (modrm_decoder->raw_reg() == 0 ||
-        modrm_decoder->raw_reg() == 2)
+        modrm_decoder->raw_reg() == 2) {
         std::tie(flags, result) = do_add<uint16_t>(v1, immed, carry_in);
-    else
+    } else if (modrm_decoder->raw_reg() == 4) {
+        std::tie(flags, result) = do_and<uint16_t>(v1, immed);
+        flags &= ~(CF | OF);
+        update_mask &= ~AF;
+    } else if (modrm_decoder->raw_reg() == 1) {
+        std::tie(flags, result) = do_or<uint16_t>(v1, immed);
+        flags &= ~(CF | OF);
+        update_mask &= ~AF;
+    } else {
         std::tie(flags, result) = do_sub<uint16_t>(v1, immed, carry_in);
+    }
 
-    registers->set_flags(flags, OF | SF | ZF | CF | PF | AF);
+    registers->set_flags(flags, update_mask);
     // cmp doesn't write the result
     if (modrm_decoder->raw_reg() != 7)
         write_data<uint16_t>(result & 0xffff);

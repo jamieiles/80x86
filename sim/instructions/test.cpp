@@ -10,8 +10,9 @@ void EmulatorPimpl::test84()
     uint8_t result;
     uint16_t flags;
     std::tie(flags, result) = do_and<uint8_t>(v1, v2);
+    flags &= ~(CF | OF);
 
-    registers->set_flags(flags, OF | SF | ZF | AF | CF | PF);
+    registers->set_flags(flags, OF | SF | ZF | CF | PF);
 }
 
 // test r, r/m, 16-bit
@@ -25,8 +26,9 @@ void EmulatorPimpl::test85()
 
     uint16_t result, flags;
     std::tie(flags, result) = do_and<uint16_t>(v1, v2);
+    flags &= ~(CF | OF);
 
-    registers->set_flags(flags, OF | SF | ZF | AF | CF | PF);
+    registers->set_flags(flags, OF | SF | ZF | CF | PF);
 }
 
 void EmulatorPimpl::testa8()
@@ -36,8 +38,9 @@ void EmulatorPimpl::testa8()
     uint8_t result;
     uint16_t flags;
     std::tie(flags, result) = do_and<uint8_t>(v1, v2);
+    flags &= ~(CF | OF);
 
-    registers->set_flags(flags, OF | SF | ZF | AF | CF | PF);
+    registers->set_flags(flags, OF | SF | ZF | CF | PF);
 }
 
 void EmulatorPimpl::testa9()
@@ -47,8 +50,9 @@ void EmulatorPimpl::testa9()
     uint16_t result;
     uint16_t flags;
     std::tie(flags, result) = do_and<uint16_t>(v1, v2);
+    flags &= ~(CF | OF);
 
-    registers->set_flags(flags, OF | SF | ZF | AF | CF | PF);
+    registers->set_flags(flags, OF | SF | ZF | CF | PF);
 }
 
 // test byte r/m
@@ -59,6 +63,7 @@ void EmulatorPimpl::testf6()
     uint16_t flags;
     uint8_t result;
     std::tie(flags, result) = do_and<uint8_t>(v1, v2);
+    flags &= ~(CF | OF);
 
     registers->set_flags(flags, OF | SF | ZF | CF | PF);
 }
@@ -71,6 +76,7 @@ void EmulatorPimpl::testf7()
     uint16_t flags;
     uint16_t result;
     std::tie(flags, result) = do_and<uint16_t>(v1, v2);
+    flags &= ~(CF | OF);
 
     registers->set_flags(flags, OF | SF | ZF | CF | PF);
 }

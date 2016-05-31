@@ -10,8 +10,9 @@ void EmulatorPimpl::and20()
     uint8_t result;
     uint16_t flags;
     std::tie(flags, result) = do_and<uint8_t>(v1, v2);
+    flags &= ~(CF | OF);
 
-    registers->set_flags(flags, OF | SF | ZF | AF | CF | PF);
+    registers->set_flags(flags, OF | SF | ZF | CF | PF);
     write_data<uint8_t>(result & 0xff);
 }
 
@@ -26,8 +27,9 @@ void EmulatorPimpl::and21()
 
     uint16_t result, flags;
     std::tie(flags, result) = do_and<uint16_t>(v1, v2);
+    flags &= ~(CF | OF);
 
-    registers->set_flags(flags, OF | SF | ZF | AF | CF | PF);
+    registers->set_flags(flags, OF | SF | ZF | CF | PF);
     write_data<uint16_t>(result & 0xffff);
 }
 
@@ -43,8 +45,9 @@ void EmulatorPimpl::and22()
     uint8_t result;
     uint16_t flags;
     std::tie(flags, result) = do_and<uint8_t>(v1, v2);
+    flags &= ~(CF | OF);
 
-    registers->set_flags(flags, OF | SF | ZF | AF | CF | PF);
+    registers->set_flags(flags, OF | SF | ZF | CF | PF);
     registers->set(modrm_decoder->reg(), result & 0xff);
 }
 
@@ -60,8 +63,9 @@ void EmulatorPimpl::and23()
     uint16_t result;
     uint16_t flags;
     std::tie(flags, result) = do_and<uint16_t>(v1, v2);
+    flags &= ~(CF | OF);
 
-    registers->set_flags(flags, OF | SF | ZF | AF | CF | PF);
+    registers->set_flags(flags, OF | SF | ZF | CF | PF);
     registers->set(modrm_decoder->reg(), result & 0xffff);
 }
 
@@ -72,8 +76,9 @@ void EmulatorPimpl::and24()
     uint8_t result;
     uint16_t flags;
     std::tie(flags, result) = do_and<uint8_t>(v1, v2);
+    flags &= ~(CF | OF);
 
-    registers->set_flags(flags, OF | SF | ZF | AF | CF | PF);
+    registers->set_flags(flags, OF | SF | ZF | CF | PF);
     registers->set(AL, result);
 }
 
@@ -84,7 +89,8 @@ void EmulatorPimpl::and25()
     uint16_t result;
     uint16_t flags;
     std::tie(flags, result) = do_and<uint16_t>(v1, v2);
+    flags &= ~(CF | OF);
 
-    registers->set_flags(flags, OF | SF | ZF | AF | CF | PF);
+    registers->set_flags(flags, OF | SF | ZF | CF | PF);
     registers->set(AX, result);
 }
