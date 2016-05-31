@@ -617,7 +617,7 @@ EmulatorPimpl::do_alu(int32_t v1, int32_t v2, int32_t carry,
     uint32_t result32 = alu_op(static_cast<uint32_t>(v1),
                                static_cast<uint32_t>(v2),
                                static_cast<uint32_t>(carry));
-    bool af = !!(alu_op(v1 & 0xf, v2 & 0xf, 0) & (1 << 4));
+    bool af = !!(alu_op(v1 & 0xf, v2 & 0xf, carry) & (1 << 4));
 
     auto sign_bit = (8 * sizeof(T)) - 1;
     auto carry_bit = (8 * sizeof(T));

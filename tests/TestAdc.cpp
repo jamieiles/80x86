@@ -9,9 +9,9 @@ static const std::vector<struct ArithmeticTest<uint8_t>> adc8_tests = {
     { 0, 0, 0, PF | ZF, false },
     { 0, 0, 1, 0, true },
     { 0xf, 1, 0x10, AF, false },
-    { 255, 0, 0, ZF | CF | PF, true },
+    { 255, 0, 0, ZF | AF | CF | PF, true },
     { 0xff, 0, 0xff, PF | SF, false },
-    { 127, 0, 128, OF | SF, true },
+    { 127, 0, 128, OF | SF | AF, true },
     { 255, 1, 1, CF | AF, true },
 };
 
@@ -19,10 +19,11 @@ static const std::vector<struct ArithmeticTest<uint16_t>> adc16_tests = {
     { 0, 0, 0, PF | ZF, false },
     { 0, 1, 2, 0, true },
     { 0xf, 1, 0x10, AF, false },
-    { 0xffff, 0, 0, ZF | CF | PF, true },
+    { 0xffff, 0, 0, ZF | AF | CF | PF, true },
     { 0xffff, 0, 0xffff, PF | SF, false },
-    { 32767, 0, 32768, OF | SF | PF, true },
+    { 32767, 0, 32768, OF | SF | AF | PF, true },
     { 0xffff, 1, 1, CF | AF, true },
+    { 0x7fff, 1, 0x8000, SF | PF | AF | OF, false },
 };
 
 INSTANTIATE_TEST_CASE_P(Adc, ArithmeticRegReg8Test,

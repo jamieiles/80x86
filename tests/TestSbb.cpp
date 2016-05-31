@@ -8,23 +8,23 @@
 
 static const std::vector<struct ArithmeticTest<uint8_t>> sbb8_tests = {
     { 0, 0, 0, PF | ZF, false },
-    { 0, 0, 0xff, PF | SF | CF, true },
+    { 0, 0, 0xff, PF | AF | SF | CF, true },
     { 0, 1, 0xff, PF | SF | CF | AF, false },
     { 3, 2, 1, 0, false },
     { 3, 2, 0, PF | ZF, true },
     { 0xff, 0xff, 0, PF | ZF, false },
-    { 0xff, 0xff, 0xff, PF | SF | CF, true },
+    { 0xff, 0xff, 0xff, PF | AF | SF | CF, true },
     { 0, 0xff, 1, CF | AF, false },
 };
 
 static const std::vector<struct ArithmeticTest<uint16_t>> sbb16_tests = {
     { 0, 0, 0, PF | ZF, false },
-    { 0, 0, 0xffff, PF | SF | CF, true },
+    { 0, 0, 0xffff, PF | AF | SF | CF, true },
     { 0, 1, 0xffff, PF | SF | CF | AF, false },
     { 3, 2, 1, 0, false },
     { 3, 2, 0, PF | ZF, true },
     { 0xffff, 0xffff, 0, PF | ZF, false },
-    { 0xffff, 0xffff, 0xffff, PF | SF | CF, true },
+    { 0xffff, 0xffff, 0xffff, PF | AF | SF | CF, true },
     { 0, 0xffff, 1, CF | AF, false },
 };
 
