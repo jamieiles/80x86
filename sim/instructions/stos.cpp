@@ -2,7 +2,7 @@ void EmulatorPimpl::stosbaa()
 {
     auto stos = [&]() {
         auto v = registers->get(AL);
-        mem->write<uint8_t>(get_phys_addr(registers->get(get_segment(false)),
+        mem->write<uint8_t>(get_phys_addr(registers->get(ES),
                                           registers->get(DI)), v);
         registers->set(AL, v);
 
@@ -18,9 +18,8 @@ void EmulatorPimpl::stoswab()
 {
     auto stos = [&]() {
         auto v = registers->get(AX);
-        mem->write<uint16_t>(get_phys_addr(registers->get(get_segment(false)),
+        mem->write<uint16_t>(get_phys_addr(registers->get(ES),
                                            registers->get(DI)), v);
-        registers->set(AX, v);
 
         if (registers->get_flag(DF))
             registers->set(DI, registers->get(DI) - 2);
