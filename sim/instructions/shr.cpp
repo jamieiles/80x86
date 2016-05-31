@@ -6,7 +6,7 @@ std::pair<uint16_t, T> do_shr(T v, int count)
     if (v & sign_bit)
         flags |= OF;
 
-    for (int i = 0; i < (count & 0x1f); ++i) {
+    for (int i = 0; i < count; ++i) {
         flags &= ~CF;
         if (v & 0x1)
             flags |= CF;

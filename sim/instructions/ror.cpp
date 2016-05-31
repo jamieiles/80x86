@@ -3,7 +3,7 @@ std::pair<uint16_t, T> do_ror(T v, int count)
 {
     uint16_t flags = 0;
 
-    for (int i = 0; i < (count & 0x1f); ++i) {
+    for (int i = 0; i < count; ++i) {
         flags &= ~CF;
         if (v & 0x1)
             flags |= CF;
