@@ -5,8 +5,14 @@ void EmulatorPimpl::daa27()
 
     auto al = registers->get(AL);
     if ((al & 0x0f) > 9 || (flags & AF)) {
-        al = (al + 6);
+        uint16_t tmp = (al + 6);
+
+        al = tmp & 0xff;
         flags |= AF;
+        if (tmp & 0xff00)
+            flags |= CF;
+    } else {
+        flags &= ~AF;
     }
 
     if (al > 0x9f || (flags & CF)) {
