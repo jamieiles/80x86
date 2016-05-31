@@ -5,12 +5,11 @@ std::pair<uint16_t, T> do_ror(T v, int count)
 
     for (int i = 0; i < (count & 0x1f); ++i) {
         flags &= ~CF;
+        if (v & 0x1)
+            flags |= CF;
         T lsb = v & 1;
         v >>= 1;
         v += (lsb << ((sizeof(T) * 8) - 1));
-
-        if (lsb)
-            flags |= CF;
     }
 
     // 2 MSB's XOR'd == OF
