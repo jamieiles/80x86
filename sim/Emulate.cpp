@@ -315,8 +315,10 @@ private:
 void EmulatorPimpl::do_rep(std::function<void()> primitive,
                            std::function<bool()> should_terminate)
 {
-    if (!has_rep_prefix)
+    if (!has_rep_prefix) {
         primitive();
+        return;
+    }
 
     while (registers->get(CX) != 0) {
         primitive();
