@@ -53,8 +53,7 @@ enum Flag {
     OF = (1 << OF_OFFS),
 };
 
-// Bit 15 is always 1 on 8086
-enum { FLAGS_STUCK_BITS = (1 << 15) };
+enum { FLAGS_STUCK_BITS = 1 << 1 };
 
 class RegisterFile {
 public:

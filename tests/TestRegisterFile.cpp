@@ -23,13 +23,13 @@ TEST(RegisterFile, reset_clears)
 
     rf.set(AX, 0x1234);
     ASSERT_EQ(0x1234, rf.get(AX));
-    rf.set_flags(0x00ff);
-    // Bit 15 is always 1 on 8086
-    ASSERT_EQ(0x80ff, rf.get_flags());
+    rf.set_flags(0x0000);
+    // Bit 1 is always 1 on 8086
+    ASSERT_EQ(0x0002, rf.get_flags());
 
     rf.reset();
     ASSERT_EQ(0x0000, rf.get(AX));
-    // Bit 15 is always 1 on 8086
+    // Bit 1 is always 1 on 8086
     ASSERT_EQ(FLAGS_STUCK_BITS, rf.get_flags());
 }
 

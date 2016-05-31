@@ -91,7 +91,7 @@ uint16_t RegisterFile::get(GPR regnum) const
 
 uint16_t RegisterFile::get_flags() const
 {
-    return flags;
+    return flags | FLAGS_STUCK_BITS;
 }
 
 bool RegisterFile::get_flag(enum Flag f) const
@@ -101,6 +101,10 @@ bool RegisterFile::get_flag(enum Flag f) const
 
 void RegisterFile::set_flags(uint16_t val, uint16_t mask)
 {
+    const uint16_t reserved_mask = (1 << 1) | (1 << 3) | (1 << 5);
+    const uint16_t valid_mask = (CF | PF | AF | ZF | SF | TF | IF | DF | OF);
+    mask &= ~reserved_mask;
+    mask &= valid_mask;
     flags &= ~mask;
-    flags |= (val & mask) | (1 << 15);
+    flags |= (val & mask) | FLAGS_STUCK_BITS;
 }
