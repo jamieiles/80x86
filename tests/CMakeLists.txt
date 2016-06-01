@@ -1,5 +1,6 @@
 include_directories(../googletest/googletest/include)
 include_directories(../googletest/googlemock/include)
+include_directories(../sim/cpu)
 include_directories(../sim)
 
 add_executable(unittest

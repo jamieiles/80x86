@@ -2,7 +2,7 @@ find_package(PythonLibs REQUIRED)
 include_directories(${PYTHON_INCLUDE_DIRS})
 find_package(Boost COMPONENTS python REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
-include_directories(../../sim)
+include_directories(../../sim/cpu)
 
 add_library(Cpu SHARED
             Cpu.cpp)
