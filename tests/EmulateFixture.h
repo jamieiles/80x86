@@ -92,6 +92,8 @@ public:
 
     void emulate(int count=1)
     {
+        cpu.clear_side_effects();
+
         assert(count > 0);
         size_t len = 0;
         for (auto i = 0; i < count; ++i)
@@ -107,6 +109,11 @@ public:
     uint16_t read_flags()
     {
         return cpu.read_flags();
+    }
+
+    bool instruction_had_side_effects()
+    {
+        return cpu.instruction_had_side_effects();
     }
 protected:
     size_t instr_len;

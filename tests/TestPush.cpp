@@ -28,6 +28,8 @@ TEST_F(EmulateFixture, PushRegFFInvalidReg)
 
     ASSERT_EQ(0x100, read_reg(SP));
     ASSERT_EQ(0x0, read_mem<uint16_t>(0x0fe));
+
+    ASSERT_FALSE(instruction_had_side_effects());
 }
 
 TEST_F(EmulateFixture, PushMemFF)
@@ -123,6 +125,8 @@ TEST_F(EmulateFixture, PopRegFFInvalidReg)
 
     ASSERT_EQ(0x0fe, read_reg(SP));
     ASSERT_EQ(0x0, read_reg(AX));
+
+    ASSERT_FALSE(instruction_had_side_effects());
 }
 
 TEST_F(EmulateFixture, PopReg5X)

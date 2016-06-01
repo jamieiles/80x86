@@ -72,6 +72,19 @@ public:
     {
         emulator.reset();
     }
+
+    bool instruction_had_side_effects() const
+    {
+        return mem.has_written() || io.has_written() ||
+            registers.has_written();
+    }
+
+    void clear_side_effects()
+    {
+        mem.clear_has_written();
+        io.clear_has_written();
+        registers.clear_has_written();
+    }
 private:
     Memory mem;
     Memory io;

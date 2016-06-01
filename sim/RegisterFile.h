@@ -65,9 +65,12 @@ public:
     virtual bool get_flag(enum Flag f) const;
     virtual void set_flags(uint16_t val,
                            uint16_t mask=0xffff);
+    virtual bool has_written() const;
+    virtual void clear_has_written();
 private:
     uint16_t registers[NUM_16BIT_REGS];
     uint16_t flags;
+    bool written;
 };
 
 #endif /* __REGISTERFILE_H__ */

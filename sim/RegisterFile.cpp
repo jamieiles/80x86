@@ -14,11 +14,15 @@ void RegisterFile::reset()
         registers[i] = 0;
 
     flags = FLAGS_STUCK_BITS;
+    written = false;
 }
 
 void RegisterFile::set(GPR regnum, uint16_t value)
 {
     assert(regnum < NUM_REGS);
+
+    if (regnum != IP)
+        written = false;
 
     switch (regnum) {
     case AL:
@@ -107,4 +111,16 @@ void RegisterFile::set_flags(uint16_t val, uint16_t mask)
     mask &= valid_mask;
     flags &= ~mask;
     flags |= (val & mask) | FLAGS_STUCK_BITS;
+
+    written = true;
+}
+
+bool RegisterFile::has_written() const
+{
+    return written;
+}
+
+void RegisterFile::clear_has_written()
+{
+    written = false;
 }

@@ -20,6 +20,7 @@ add_executable(unittest
                TestJump.cpp
                TestIncDec.cpp
                TestInt.cpp
+               TestInvalid.cpp
                TestIO.cpp
                TestLock.cpp
                TestLoop.cpp

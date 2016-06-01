@@ -10,4 +10,6 @@ TEST_F(EmulateFixture, Lock)
     set_instruction({ 0xf0, 0x90 });
 
     emulate();
+
+    ASSERT_FALSE(instruction_had_side_effects());
 }

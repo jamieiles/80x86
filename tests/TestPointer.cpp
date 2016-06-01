@@ -30,6 +30,8 @@ TEST_F(EmulateFixture, LdsReg)
     // Invalid encoding
     set_instruction({ 0xc5, 0xc0 });
     emulate();
+
+    ASSERT_FALSE(instruction_had_side_effects());
 }
 
 TEST_F(EmulateFixture, Lds)
@@ -48,6 +50,8 @@ TEST_F(EmulateFixture, LesReg)
     // Invalid encoding
     set_instruction({ 0xc4, 0xc0 });
     emulate();
+
+    ASSERT_FALSE(instruction_had_side_effects());
 }
 
 TEST_F(EmulateFixture, Les)

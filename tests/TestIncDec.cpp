@@ -119,6 +119,8 @@ TEST_F(EmulateFixture, IncFEInvalidReg)
     emulate();
 
     ASSERT_EQ(0x0, read_reg(AL));
+
+    ASSERT_FALSE(instruction_had_side_effects());
 }
 
 class IncReg16Test : public EmulateFixture,

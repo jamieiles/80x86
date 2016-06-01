@@ -14,8 +14,11 @@ public:
         void write(phys_addr addr, T val);
     template <typename T>
         T read(phys_addr addr) const;
+    bool has_written() const;
+    void clear_has_written();
 private:
     uint8_t mem[MEMORY_SIZE];
+    bool written;
 };
 
 #endif /* __MEMORY_H__ */

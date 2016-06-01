@@ -82,6 +82,8 @@ TEST_F(EmulateFixture, JmpIndirectInterReg)
 
     ASSERT_EQ(0x2000, read_reg(CS));
     ASSERT_EQ(0x0032, read_reg(IP));
+
+    ASSERT_FALSE(instruction_had_side_effects());
 }
 
 TEST_F(EmulateFixture, JmpIndirectInterMem)
