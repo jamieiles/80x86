@@ -196,6 +196,71 @@ INSTANTIATE_TEST_CASE_P(JmpConditional, JmpFixture,
         JmpTest{"jns", 0x79, SF, false},
         JmpTest{"jns", 0x79, 0, true}
     ));
+INSTANTIATE_TEST_CASE_P(JmpConditionalAlias, JmpFixture,
+    ::testing::Values(
+        JmpTest{"je/jz", 0x64, ZF, true},
+        JmpTest{"je/jz", 0x64, 0, false},
+
+        JmpTest{"jl/jnge", 0x6c, SF, true},
+        JmpTest{"jl/jnge", 0x6c, OF, true},
+        JmpTest{"jl/jnge", 0x6c, OF | SF, false},
+        JmpTest{"jl/jnge", 0x6c, 0, false},
+
+        JmpTest{"jle/jng", 0x6e, SF, true},
+        JmpTest{"jle/jng", 0x6e, OF, true},
+        JmpTest{"jle/jng", 0x6e, OF | SF, false},
+        JmpTest{"jle/jng", 0x6e, ZF | OF | SF, true},
+        JmpTest{"jle/jng", 0x6e, ZF, true},
+        JmpTest{"jle/jng", 0x6e, 0, false},
+
+        JmpTest{"jb/jnae", 0x62, 0, false},
+        JmpTest{"jb/jnae", 0x62, CF, true},
+
+        JmpTest{"jbe/jna", 0x66, 0, false},
+        JmpTest{"jbe/jna", 0x66, CF, true},
+        JmpTest{"jbe/jna", 0x66, ZF, true},
+        JmpTest{"jbe/jna", 0x66, CF | ZF, true},
+
+        JmpTest{"jp/jpe", 0x6a, 0, false},
+        JmpTest{"jp/jpe", 0x6a, PF, true},
+
+        JmpTest{"jo", 0x60, 0, false},
+        JmpTest{"jo", 0x60, OF, true},
+
+        JmpTest{"js", 0x68, 0, false},
+        JmpTest{"js", 0x68, SF, true},
+
+        JmpTest{"jne/jnz", 0x65, 0, true},
+        JmpTest{"jne/jnz", 0x65, ZF, false},
+
+        JmpTest{"jnl/jge", 0x6d, 0, true},
+        JmpTest{"jnl/jge", 0x6d, SF | OF, true},
+        JmpTest{"jnl/jge", 0x6d, OF, false},
+        JmpTest{"jnl/jge", 0x6d, SF, false},
+
+        JmpTest{"jnle/jg", 0x6f, ZF, false},
+        JmpTest{"jnle/jg", 0x6f, 0, true},
+        JmpTest{"jnle/jg", 0x6f, SF | OF, true},
+        JmpTest{"jnle/jg", 0x6f, SF, false},
+        JmpTest{"jnle/jg", 0x6f, OF, false},
+
+        JmpTest{"jnb/jae", 0x63, 0, true},
+        JmpTest{"jnb/jae", 0x63, CF, false},
+
+        JmpTest{"jnbe/ja", 0x67, 0, true},
+        JmpTest{"jnbe/ja", 0x67, CF, false},
+        JmpTest{"jnbe/ja", 0x67, ZF, false},
+        JmpTest{"jnbe/ja", 0x67, CF | ZF, false},
+
+        JmpTest{"jnp/jpo", 0x6b, 0, true},
+        JmpTest{"jnp/jpo", 0x6b, PF, false},
+
+        JmpTest{"jno", 0x61, 0, true},
+        JmpTest{"jno", 0x61, OF, false},
+
+        JmpTest{"jns", 0x69, SF, false},
+        JmpTest{"jns", 0x69, 0, true}
+    ));
 
 TEST_F(EmulateFixture, JcxzNotTaken)
 {

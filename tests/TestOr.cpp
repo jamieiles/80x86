@@ -121,3 +121,31 @@ INSTANTIATE_TEST_CASE_P(Or, ArithmeticAxImmedTest,
             { 2, 3, PF, false }
         )
     ));
+
+INSTANTIATE_TEST_CASE_P(Or, ArithmeticRegImmed16TestExtend,
+    ::testing::Values(
+        // or bx, -1
+        ArithImmed16Params(
+            std::vector<uint8_t>{ 0x83, 0xcb, 0xff },
+            { 2, 0xffff, SF | PF, false }
+        ),
+        // or bx, 1
+        ArithImmed16Params(
+            std::vector<uint8_t>{ 0x83, 0xcb, 0x01 },
+            { 2, 3, PF, false }
+        )
+    ));
+
+INSTANTIATE_TEST_CASE_P(Or, ArithmeticMemImmed16TestExtend,
+    ::testing::Values(
+        // or word [bx], -1
+        ArithImmed16Params(
+            std::vector<uint8_t>{ 0x83, 0x0f, 0xff },
+            { 2, 0xffff, SF | PF, false }
+        ),
+        // or word [bx], 1
+        ArithImmed16Params(
+            std::vector<uint8_t>{ 0x83, 0x0f, 0x01 },
+            { 2, 3, PF, false }
+        )
+    ));

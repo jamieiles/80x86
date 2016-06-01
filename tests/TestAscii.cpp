@@ -145,6 +145,37 @@ TEST_F(EmulateFixture, Aam129)
     }
 }
 
+TEST_F(EmulateFixture, AamSigned)
+{
+    // aam 1
+    write_flags(0);
+    write_reg(AX, 0xffff);
+    set_instruction({ 0xd4, 1 });
+
+    emulate();
+
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        FLAGS_STUCK_BITS | PF | SF);
+    ASSERT_EQ(read_reg(AX), 0xff00);
+}
+
+TEST_F(EmulateFixture, AamDivByZero)
+{
+    // aam 0
+    write_flags(0);
+    write_reg(AX, 1);
+    set_instruction({ 0xd4, 0 });
+    write_mem<uint16_t>(VEC_DIVIDE_ERROR + 0, 0x8000);
+    write_mem<uint16_t>(VEC_DIVIDE_ERROR + 2, 0xc000);
+
+    emulate();
+
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        FLAGS_STUCK_BITS | 0);
+    ASSERT_EQ(read_reg(CS), 0xc000);
+    ASSERT_EQ(read_reg(IP), 0x8000);
+}
+
 static const std::vector<AsciiTest> aad_tests {
     AsciiTest{0x0000, 0x00, 0, ZF | PF},
     AsciiTest{0x0105, 0x0f, 0, PF},
@@ -165,4 +196,18 @@ TEST_F(EmulateFixture, Aad)
                             FLAGS_STUCK_BITS | t.flags_expected);
         ASSERT_EQ(read_reg(AX), t.ax_expected);
     }
+}
+
+TEST_F(EmulateFixture, AadSigned)
+{
+    // aad 0xff
+    write_flags(0);
+    write_reg(AX, 0xff00);
+    set_instruction({ 0xd5, 0xff });
+
+    emulate();
+
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        FLAGS_STUCK_BITS | SF);
+    ASSERT_EQ(read_reg(AX), 1);
 }
