@@ -47,6 +47,7 @@ INSTANTIATE_TEST_CASE_P(Rcrg1, ShiftMem16Test,
     ));
 
 static const std::vector<struct ShiftTest<uint8_t>> rcr8_shiftN_tests = {
+    { 0, 1, 1, 0, 0 },
     { 1, 0, 0, 0, 0 },
     { 1, 0x80, 0x40, 0, 0 },
     { 1, 0, 0x80, CF, 0 },
@@ -58,6 +59,7 @@ static const std::vector<struct ShiftTest<uint8_t>> rcr8_shiftN_tests = {
 };
 
 static const std::vector<struct ShiftTest<uint16_t>> rcr16_shiftN_tests = {
+    { 0, 1, 1, 0, 0 },
     { 1, 0, 0, 0, 0 },
     { 1, 0x8000, 0x4000, 0, 0 },
     { 1, 0, 0x8000, CF, 0 },

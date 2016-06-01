@@ -45,6 +45,7 @@ INSTANTIATE_TEST_CASE_P(Shr1, ShiftMem16Test,
     ));
 
 static const std::vector<struct ShiftTest<uint8_t>> shr8_shiftN_tests = {
+    { 0, 1, 1, 0, 0 },
     { 1, 0, 0, 0, PF | ZF },
     { 1, 1, 0, 0, PF | ZF | CF },
     { 1, 2, 1, 0, 0 },
@@ -55,6 +56,7 @@ static const std::vector<struct ShiftTest<uint8_t>> shr8_shiftN_tests = {
 };
 
 static const std::vector<struct ShiftTest<uint16_t>> shr16_shiftN_tests = {
+    { 0, 1, 1, 0, 0 },
     { 1, 0, 0, 0, PF | ZF },
     { 1, 1, 0, 0, PF | ZF | CF },
     { 1, 2, 1, 0, 0 },
