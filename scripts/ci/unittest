@@ -1,6 +1,6 @@
 #!/bin/bash
 finish() {
-    ./scripts/ci/fixup-docker-owner
+    ./fixup-docker-owner
 }
 trap finish EXIT
 set -e
