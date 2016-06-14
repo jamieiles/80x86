@@ -1,0 +1,3 @@
+#!/bin/bash
+set -e
+docker build -t s80x86-build docker/build/
