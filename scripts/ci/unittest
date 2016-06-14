@@ -1,4 +1,8 @@
 #!/bin/bash
+finish() {
+    ./scripts/ci/fixup-docker-owner
+}
+trap finish EXIT
 set -e
 git submodule update --init
 mkdir BUILD || :
