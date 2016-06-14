@@ -11,3 +11,5 @@ cd BUILD
 cmake ..
 make all
 ./tests/unittest --gtest_output=xml
+rm -rf BUILD/Testing
+ctest -T Test
