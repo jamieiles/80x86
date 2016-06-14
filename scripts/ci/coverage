@@ -1,6 +1,7 @@
 #!/bin/bash
 finish() {
-    ./fixup-docker-owner
+    user_id=$(stat -c '%u:%g' /data)
+    chown -R ${user_id} /data
 }
 trap finish EXIT
 

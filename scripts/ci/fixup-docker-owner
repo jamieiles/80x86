@@ -1,3 +1,0 @@
-#!/bin/bash
-user_id=$(stat -c '%u:%g' /data)
-chown -R ${user_id} /data
