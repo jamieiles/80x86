@@ -25,7 +25,7 @@ Display::Display(int num_rows, int num_cols)
     font = std::make_unique<Font>("/usr/share/fonts/truetype/droid/DroidSansMono.ttf");
     window = std::make_unique<Window>("8086sim",
                                       num_cols * (font->glyph_width() + 1),
-                                      num_rows * font_size);
+                                      num_rows * (font_size + 1));
 }
 
 Display::~Display()
