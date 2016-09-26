@@ -1,0 +1,47 @@
+include_directories(..)
+
+add_library(instructions
+            Arithmetic.cpp
+            Shift.cpp
+            TestAdc.cpp
+            TestAdd.cpp
+            TestAnd.cpp
+            TestAscii.cpp
+            TestCall.cpp
+            TestCmp.cpp
+            TestControl.cpp
+            TestDiv.cpp
+            TestExtend.cpp
+            TestFlags.cpp
+            TestJump.cpp
+            TestIncDec.cpp
+            TestInt.cpp
+            TestInvalid.cpp
+            TestIO.cpp
+            TestLock.cpp
+            TestLoop.cpp
+            TestMisc.cpp
+            TestMov.cpp
+            TestMul.cpp
+            TestNeg.cpp
+            TestNot.cpp
+            TestOr.cpp
+            TestPointer.cpp
+            TestPush.cpp
+            TestRcl.cpp
+            TestRcr.cpp
+            TestRet.cpp
+            TestRol.cpp
+            TestRor.cpp
+            TestSar.cpp
+            TestSegment.cpp
+            TestSbb.cpp
+            TestShl.cpp
+            TestShr.cpp
+            TestString.cpp
+            TestSub.cpp
+            TestTest.cpp
+            TestTrap.cpp
+            TestXchg.cpp
+            TestXlat.cpp
+            TestXor.cpp)

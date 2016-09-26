@@ -2,62 +2,20 @@ include_directories(../googletest/googletest/include)
 include_directories(../googletest/googlemock/include)
 include_directories(../sim/cpu)
 include_directories(../sim)
+include_directories(include)
 
 add_executable(unittest
                main.cpp
-               Arithmetic.cpp
-               Shift.cpp
-               TestAdc.cpp
-               TestAdd.cpp
-               TestAnd.cpp
-               TestAscii.cpp
-               TestCall.cpp
-               TestCmp.cpp
-               TestControl.cpp
-               TestDiv.cpp
-               TestExtend.cpp
-               TestFifo.cpp
-               TestFlags.cpp
-               TestJump.cpp
-               TestIncDec.cpp
-               TestInt.cpp
-               TestInvalid.cpp
-               TestIO.cpp
-               TestLock.cpp
-               TestLoop.cpp
+	       TestFifo.cpp
                TestMemory.cpp
-               TestMisc.cpp
                TestModRM.cpp
-               TestMov.cpp
-               TestMul.cpp
-               TestNeg.cpp
-               TestNot.cpp
-               TestOr.cpp
-               TestPointer.cpp
-               TestPush.cpp
-               TestRcl.cpp
-               TestRcr.cpp
-               TestRegisterFile.cpp
-               TestRet.cpp
-               TestRol.cpp
-               TestRor.cpp
-               TestSar.cpp
-               TestSegment.cpp
-               TestSbb.cpp
-               TestShl.cpp
-               TestShr.cpp
-               TestString.cpp
-               TestSub.cpp
-               TestTest.cpp
-               TestTrap.cpp
-               TestXchg.cpp
-               TestXlat.cpp
-               TestXor.cpp)
-target_link_libraries(unittest 8086sim gtest gmock)
+               TestRegisterFile.cpp)
+target_link_libraries(unittest 8086sim gtest gmock instructions)
 
 add_test(unittest ./unittest --gtest_color=yes)
 
 add_subdirectory(programs)
+add_subdirectory(instructions)
 
 configure_file(python/Runner.py ${CMAKE_CURRENT_BINARY_DIR}/Runner.py)
 
