@@ -1,6 +1,6 @@
 include_directories(..)
 
-add_library(instructions
+add_library(instructions OBJECT
             Arithmetic.cpp
             Shift.cpp
             TestAdc.cpp

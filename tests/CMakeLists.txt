@@ -6,16 +6,18 @@ include_directories(include)
 
 add_executable(unittest
                main.cpp
-	       TestFifo.cpp
-               TestMemory.cpp
-               TestModRM.cpp
-               TestRegisterFile.cpp)
-target_link_libraries(unittest 8086sim gtest gmock instructions)
+	       $<TARGET_OBJECTS:instructions>
+	       $<TARGET_OBJECTS:simtests>)
+target_link_libraries(unittest
+		      8086sim
+		      gtest
+		      gmock)
 
 add_test(unittest ./unittest --gtest_color=yes)
 
 add_subdirectory(programs)
 add_subdirectory(instructions)
 add_subdirectory(integration)
+add_subdirectory(simulator)
 
 configure_file(python/Runner.py ${CMAKE_CURRENT_BINARY_DIR}/Runner.py)
