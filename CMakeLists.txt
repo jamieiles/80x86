@@ -4,6 +4,7 @@ project(8086 CXX)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMake/")
 
 find_package(Nasm)
+find_package(Verilator)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
