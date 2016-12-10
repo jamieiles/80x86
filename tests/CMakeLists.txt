@@ -19,5 +19,6 @@ add_subdirectory(programs)
 add_subdirectory(instructions)
 add_subdirectory(integration)
 add_subdirectory(simulator)
+add_subdirectory(rtl)
 
 configure_file(python/Runner.py ${CMAKE_CURRENT_BINARY_DIR}/Runner.py)
