@@ -3,7 +3,7 @@ set -e
 ./docker/build-all
 git submodule update --init
 mkdir BUILD || :
-./docker/s80x86-build 'cd BUILD; \
+./docker/s80x86-build -e -c 'cd BUILD; \
         cmake .. -DCMAKE_BUILD_TYPE=coverage; \
         make; \
         ctest; \

@@ -14,5 +14,5 @@ Building
 
 ./docker/build-all
 mkdir BUILD
-./docker/s80x86-build 'cd BUILD; cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON'
-./docker/s80x86-build 'cd BUILD; make all test CTEST_OUTPUT_ON_FAILURE=TRUE'
+./docker/s80x86-build -c 'cd BUILD; cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON'
+./docker/s80x86-build -c 'cd BUILD; make all test CTEST_OUTPUT_ON_FAILURE=TRUE'

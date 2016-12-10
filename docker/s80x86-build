@@ -1,6 +1,6 @@
 #!/bin/bash
 if [[ $# -ge 1 ]]; then
-    docker run --rm -it -v $(pwd):/build -u 1000:1000 s80x86-build:latest /bin/bash -c "$*"
+    docker run --rm -it -v $(pwd):/build -u 1000:1000 s80x86-build:latest /bin/bash "$@"
 else
     docker run --rm -it -v $(pwd):/build -u 1000:1000 s80x86-build:latest /bin/bash
 fi

@@ -3,4 +3,4 @@ set -e
 ./docker/build-all
 git submodule update --init
 mkdir BUILD || :
-./docker/s80x86-build 'cd BUILD; cmake ..; make; ../scripts/coverage'
+./docker/s80x86-build -e -c 'cd BUILD; cmake ..; make; ../scripts/coverage'
