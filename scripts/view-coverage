@@ -1,0 +1,10 @@
+#!/bin/bash
+set -e
+
+die() {
+    echo $1 >&2
+    exit 1
+}
+
+[ -e BUILD-coverage/test_coverage/index.html ] || die "Coverage not generated, run ./scripts/ci/coverage to generate it".
+xdg-open BUILD-coverage/test_coverage/index.html
