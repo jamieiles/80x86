@@ -1,6 +1,9 @@
 #!/bin/bash
 if [ -z "$DOCKER_NONINTERACTIVE" ]; then
-    DOCKER_INTERACTIVE_FLAGS=${DOCKER_INTERACTIVE_FLAGS:--it}
+    DOCKER_INTERACTIVE_FLAGS=${DOCKER_INTERACTIVE_FLAGS:-"-it"}
+    if [ -n "$DISPLAY" ]; then
+        DOCKER_INTERACTIVE_FLAGS="$DOCKER_INTERACTIVE_FLAGS -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=unix$DISPLAY"
+    fi
 fi
 if [[ $# -ge 1 ]]; then
     docker run --rm $DOCKER_INTERACTIVE_FLAGS -v $(pwd):/build -u $(id -u):$(id -g) s80x86-build:latest /bin/bash "$@"
