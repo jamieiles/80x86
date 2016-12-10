@@ -3,7 +3,7 @@ if [ -z "$DOCKER_NONINTERACTIVE" ]; then
     DOCKER_INTERACTIVE_FLAGS=${DOCKER_INTERACTIVE_FLAGS:--it}
 fi
 if [[ $# -ge 1 ]]; then
-    docker run --rm $DOCKER_INTERACTIVE_FLAGS -v $(pwd):/build -u 1000:1000 s80x86-build:latest /bin/bash "$@"
+    docker run --rm $DOCKER_INTERACTIVE_FLAGS -v $(pwd):/build -u $(id -u):$(id -g) s80x86-build:latest /bin/bash "$@"
 else
-    docker run --rm $DOCKER_INTERACTIVE_FLAGS -v $(pwd):/build -u 1000:1000 s80x86-build:latest /bin/bash
+    docker run --rm $DOCKER_INTERACTIVE_FLAGS -v $(pwd):/build -u $(id -u):$(id -g) s80x86-build:latest /bin/bash
 fi
