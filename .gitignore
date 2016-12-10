@@ -1,6 +1,6 @@
-BUILD
 *.pyc
 .*.swp
 .*.swo
 *.pyc
 *.pyo
+/BUILD*
