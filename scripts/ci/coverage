@@ -2,5 +2,5 @@
 set -e
 ./docker/build-all
 git submodule update --init
-mkdir BUILD || :
-DOCKER_NONINTERACTIVE=1 ./docker/s80x86-build -e -c 'cd BUILD; cmake ..; make; ../scripts/coverage'
+[ -d BUILD-coverage ] || mkdir BUILD-coverage
+DOCKER_NONINTERACTIVE=1 ./docker/s80x86-build -e -c 'cd BUILD-coverage; cmake ..; make; ../scripts/coverage'
