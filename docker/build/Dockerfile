@@ -1,6 +1,7 @@
 FROM ubuntu:xenial
 MAINTAINER Jamie Iles <jamie@jamieiles.com>
-RUN apt-get update && apt-get install -y \
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update && apt-get install --no-install-recommends -y \
         cmake \
         nasm \
         libsdl2-2.0-0 \
@@ -10,8 +11,7 @@ RUN apt-get update && apt-get install -y \
         g++ \
         libboost-python-dev \
         python-dev \
-        git \
         verilator \
-        lcov && rm -rf /var/cache/apt
+        lcov
 RUN mkdir -p /build
 WORKDIR /build
