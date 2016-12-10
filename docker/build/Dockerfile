@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
         libboost-python-dev \
         python-dev \
         git \
-        verilator && rm -rf /var/cache/apt
+        verilator \
+        lcov && rm -rf /var/cache/apt
 RUN mkdir -p /build
 WORKDIR /build

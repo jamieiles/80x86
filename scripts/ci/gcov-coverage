@@ -1,14 +1,10 @@
 #!/bin/bash
-finish() {
-    user_id=$(stat -c '%u:%g' /data)
-    chown -R ${user_id} /data
-}
-trap finish EXIT
 set -e
+./docker/build-all
 git submodule update --init
 mkdir BUILD || :
-cd BUILD
-cmake .. -DCMAKE_BUILD_TYPE=coverage
-make all
-ctest
-../scripts/gcovr --delete --output=coverage.xml --gcov-exclude=".*googletest.*" --gcov-exclude="tests.*" --root=.. --xml-pretty --exclude-unreachable-branches .
+./docker/s80x86-build 'cd BUILD; \
+        cmake .. -DCMAKE_BUILD_TYPE=coverage; \
+        make; \
+        ctest; \
+        ../scripts/gcovr --delete --output=coverage.xml --gcov-exclude=".*googletest.*" --gcov-exclude="tests.*" --root=.. --xml-pretty --exclude-unreachable-branches .'

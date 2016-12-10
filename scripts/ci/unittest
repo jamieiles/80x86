@@ -1,15 +1,13 @@
 #!/bin/bash
-finish() {
-    user_id=$(stat -c '%u:%g' /data)
-    chown -R ${user_id} /data
-}
-trap finish EXIT
 set -e
+./docker/build-all
 git submodule update --init
 mkdir BUILD || :
-cd BUILD
-cmake ..
-make all
-./tests/unittest --gtest_output=xml
-rm -rf BUILD/Testing
-ctest -T Test
+./docker/s80x86-build 'cd BUILD; \
+        cmake .. -DCMAKE_BUILD_TYPE=coverage; \
+        make -j8; \
+        mkdir test_results; \
+        ./tests/unittest --gtest_output=xml:test_results/simulation.xml; \
+        ./tests/rtl/rtl-unittest --gtest_output=xml:test_results/rtl.xml; \
+        rm -rf Testing; \
+        ctest -T Test'
