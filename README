@@ -9,10 +9,12 @@ function which can then be turned into microcode at a later date.  All of the
 emulation unit tests should be reusable in the hardware verification
 test-bench without modification.
 
+System Requirements
+-------------------
+
+- Docker
+
 Building
 --------
 
-./docker/build-all
-mkdir BUILD
-./docker/s80x86-build -c 'cd BUILD; cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON'
-./docker/s80x86-build -c 'cd BUILD; make all test CTEST_OUTPUT_ON_FAILURE=TRUE'
+./scripts/build

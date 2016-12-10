@@ -1,0 +1,8 @@
+#!/bin/bash
+set -e
+./docker/build-all
+git submodule update --init
+[ -d BUILD ] || mkdir BUILD
+DOCKER_NONINTERACTIVE=1 ./docker/s80x86-build -e -c 'cd BUILD; \
+        cmake .. ; \
+        make -j8 all test CTEST_OUTPUT_ON_FAILURE=TRUE;'
