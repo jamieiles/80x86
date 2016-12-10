@@ -8,8 +8,6 @@ macro(verilate sources toplevel)
     set(generated
         ${CMAKE_CURRENT_BINARY_DIR}/V${toplevel}.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/V${toplevel}.h
-        ${CMAKE_CURRENT_BINARY_DIR}/V${toplevel}_${toplevel}.h
-        ${CMAKE_CURRENT_BINARY_DIR}/V${toplevel}_${toplevel}.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/V${toplevel}__Syms.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/V${toplevel}__Syms.h)
     set(VERILATED_HEADERS "${VERILATED_HEADERS} ${CMAKE_CURRENT_BINARY_DIR}/V${toplevel}.h" )
