@@ -1,5 +1,4 @@
 #!/bin/bash
-set -x
 if [ -z "$DOCKER_NONINTERACTIVE" ]; then
     DOCKER_INTERACTIVE_FLAGS=${DOCKER_INTERACTIVE_FLAGS:--it}
 fi
