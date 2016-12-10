@@ -22,7 +22,7 @@ Display::Display(int num_rows, int num_cols)
 
     // Each row has a NUL terminator
     characters = std::make_unique<char[]>(num_rows * (num_cols + 1));
-    font = std::make_unique<Font>("/usr/share/fonts/truetype/droid/DroidSansMono.ttf");
+    font = std::make_unique<Font>("/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf");
     window = std::make_unique<Window>("8086sim",
                                       num_cols * (font->glyph_width() + 1),
                                       num_rows * (font_size + 1));
