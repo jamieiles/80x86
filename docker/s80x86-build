@@ -6,7 +6,7 @@ if [ -z "$DOCKER_NONINTERACTIVE" ]; then
     fi
 fi
 if [[ $# -ge 1 ]]; then
-    docker run --rm $DOCKER_INTERACTIVE_FLAGS -v $(pwd):/build -u $(id -u):$(id -g) s80x86-build:latest /bin/bash "$@"
+    docker run -e CCACHE_DIR=/build/_build/.ccache --rm $DOCKER_INTERACTIVE_FLAGS -v $(pwd):/build -u $(id -u):$(id -g) s80x86-build:latest /bin/bash "$@"
 else
-    docker run --rm $DOCKER_INTERACTIVE_FLAGS -v $(pwd):/build -u $(id -u):$(id -g) s80x86-build:latest /bin/bash
+    docker run -e CCACHE_DIR=/build/_build/.ccache --rm $DOCKER_INTERACTIVE_FLAGS -v $(pwd):/build -u $(id -u):$(id -g) s80x86-build:latest /bin/bash
 fi

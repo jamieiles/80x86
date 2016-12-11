@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         libboost-python-dev \
         python-dev \
         verilator \
-        lcov
+        lcov \
+        ccache
 RUN mkdir -p /build
 WORKDIR /build
