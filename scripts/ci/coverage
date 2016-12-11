@@ -2,5 +2,6 @@
 set -e
 ./docker/build-all
 git submodule update --init
-[ -d BUILD-coverage ] || mkdir BUILD-coverage
-DOCKER_NONINTERACTIVE=1 ./docker/s80x86-build -e -c 'cd BUILD-coverage; cmake -DCMAKE_BUILD_TYPE=coverage ..; make; ../scripts/coverage'
+[ -d _build/coverage ] || mkdir -p _build/coverage
+[ -d _build/.ccache ] || mkdir -p _build/.ccache
+DOCKER_NONINTERACTIVE=1 ./docker/s80x86-build -e -c 'cd _build/coverage; cmake -DCMAKE_BUILD_TYPE=coverage ../..; make; ../../scripts/coverage'
