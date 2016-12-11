@@ -7,4 +7,5 @@ DOCKER_NONINTERACTIVE=1 ./docker/s80x86-build -e -c 'cd BUILD-gcov-coverage; \
         cmake .. -DCMAKE_BUILD_TYPE=coverage; \
         make; \
         ctest; \
-        ../scripts/gcovr --delete --output=coverage.xml --gcov-exclude=".*googletest.*" --gcov-exclude="tests.*" --root=.. --xml-pretty --exclude-unreachable-branches .'
+        ../scripts/gcovr --delete --output=coverage.xml --gcov-exclude=".*googletest.*" --gcov-exclude="tests.*" --root=.. --xml-pretty --exclude-unreachable-branches .; \
+        rm ../*.gcov'
