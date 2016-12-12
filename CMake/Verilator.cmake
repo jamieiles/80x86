@@ -12,7 +12,7 @@ macro(verilate sources toplevel)
         ${CMAKE_CURRENT_BINARY_DIR}/V${toplevel}__Syms.h)
     set(VERILATED_HEADERS "${VERILATED_HEADERS} ${CMAKE_CURRENT_BINARY_DIR}/V${toplevel}.h" )
     add_custom_command(OUTPUT ${generated}
-                       COMMAND verilator ${sources} --cc --top-module ${toplevel} --Mdir ${CMAKE_CURRENT_BINARY_DIR} --coverage
+                       COMMAND verilator ${sources} --cc --top-module ${toplevel} --Mdir ${CMAKE_CURRENT_BINARY_DIR} -Wall -Wwarn-lint -Wwarn-style
                        DEPENDS ${sources})
     add_library(V${toplevel} STATIC ${generated} ${VERILATOR_LIB_SOURCES})
     include_directories(${CMAKE_CURRENT_BINARY_DIR})
