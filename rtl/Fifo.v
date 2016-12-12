@@ -2,29 +2,52 @@ module Fifo(input logic clk,
             input logic reset,
             /* Write port */
             input logic wr_en,
-            input logic [31:0] wr_data,
+            input logic [data_width-1:0] wr_data,
             /* Read port */
             input logic rd_en,
-            output logic [31:0] rd_data,
+            output logic [data_width-1:0] rd_data,
             output logic empty,
             output logic full);
 
-reg [31:0] val = 32'b0;
+parameter data_width = 32;
+parameter depth = 8;
+
+localparam ptr_bits = $clog2(depth);
+
+reg [data_width-1:0] mem[depth-1:0];
+reg [ptr_bits-1:0] rd_ptr;
+reg [ptr_bits-1:0] wr_ptr;
+reg [ptr_bits:0] count;
+
+assign empty = count == 0;
+assign full = count == depth;
 
 always_ff @(posedge clk or posedge reset) begin
     if (reset) begin
-        empty <= 1'b1;
-        full <= 1'b0;
-    end else begin
-        if (wr_en) begin
-            empty <= 1'b0;
-            val <= wr_data;
-        end
-        if (rd_en) begin
-            empty <= 1'b1;
-            rd_data <= val;
-        end
+        wr_ptr <= {ptr_bits{1'b0}};
+    end if (wr_en && !full) begin
+        mem[wr_ptr] <= wr_data;
+        wr_ptr <= wr_ptr + 1'b1;
     end
+end
+
+always_ff @(posedge clk or posedge reset) begin
+    if (reset) begin
+        rd_ptr <= {ptr_bits{1'b0}};
+        rd_data <= {data_width{1'b0}};
+    end if (rd_en && !empty) begin
+        rd_data <= mem[rd_ptr];
+        rd_ptr <= rd_ptr + 1'b1;
+    end
+end
+
+always_ff @(posedge clk or posedge reset) begin
+    if (reset)
+        count <= {ptr_bits + 1{1'b0}};
+    else if (wr_en && !full && !rd_en)
+        count <= count + 1'b1;
+    else if (rd_en && !empty && !wr_en)
+        count <= count - 1'b1;
 end
 
 endmodule
