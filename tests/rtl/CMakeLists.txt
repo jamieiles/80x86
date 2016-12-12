@@ -3,7 +3,8 @@ include(Verilator)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/../../rtl)
 
 add_executable(rtl-unittest
-               fifo.cpp)
+               fifo.cpp
+               main.cpp)
 
 target_link_libraries(rtl-unittest
                       VFifo

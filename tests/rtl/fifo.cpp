@@ -3,7 +3,6 @@
 
 #include "VerilogTestbench.h"
 
-
 class FifoTestbench : public VerilogTestbench<VFifo> {
 public:
     FifoTestbench(VFifo *dut);
@@ -69,11 +68,4 @@ TEST(Fifo, one_push_one_pop)
     auto v = tb.pop();
     ASSERT_TRUE(tb.dut->empty);
     ASSERT_EQ(v, 0xdeadbeef);
-}
-
-int main(int argc, char *argv[])
-{
-    ::testing::InitGoogleTest(&argc, argv);
-
-    return RUN_ALL_TESTS();
 }
