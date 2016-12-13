@@ -119,3 +119,11 @@ TEST_F(FifoTestFixture, read_during_write)
     tb.cycle();
     ASSERT_EQ(tb.pop(), 0xaa55LU);
 }
+
+TEST_F(FifoTestFixture, fill_at_threshold)
+{
+    for (uint32_t m = 0; m < 6; ++m)
+        tb.push(m);
+
+    ASSERT_TRUE(tb.dut->nearly_full);
+}
