@@ -15,11 +15,12 @@ endif(CCACHE_FOUND)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 set(CMAKE_LINK_DEPENDS_NO_SHARED 1)
-set(CMAKE_CONFIGURATION_TYPES "Coverage;Release")
+set(CMAKE_CONFIGURATION_TYPES "Coverage;Release;Debug")
 
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -Werror -ggdb3 -std=c++14")
 set(CMAKE_CXX_FLAGS_COVERAGE "-O0 -fprofile-arcs -ftest-coverage -fno-elide-constructors")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2")
+set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG ${CMAKE_CXX_FLAGS_DEBUG}")
 
 enable_testing()
 

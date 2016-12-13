@@ -10,11 +10,22 @@ macro(verilate sources toplevel)
         ${CMAKE_CURRENT_BINARY_DIR}/V${toplevel}.h
         ${CMAKE_CURRENT_BINARY_DIR}/V${toplevel}__Syms.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/V${toplevel}__Syms.h)
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        list(APPEND generated
+             ${CMAKE_CURRENT_BINARY_DIR}/V${toplevel}__Trace.cpp
+             ${CMAKE_CURRENT_BINARY_DIR}/V${toplevel}__Trace__Slow.cpp)
+        set(VERILATOR_TRACE_FLAGS "--trace")
+    else()
+        set(VERILATOR_TRACE_FLAGS "")
+    endif()
     set(VERILATED_HEADERS "${VERILATED_HEADERS} ${CMAKE_CURRENT_BINARY_DIR}/V${toplevel}.h" )
     add_custom_command(OUTPUT ${generated}
-                       COMMAND verilator ${sources} -I${CMAKE_CURRENT_SOURCE_DIR} --cc --top-module ${toplevel} --Mdir ${CMAKE_CURRENT_BINARY_DIR} -Wall -Wwarn-lint -Wwarn-style
+                       COMMAND verilator ${sources}
+                            -I${CMAKE_CURRENT_SOURCE_DIR} ${VERILATOR_TRACE_FLAGS}
+                            --cc --top-module ${toplevel}
+                            --Mdir ${CMAKE_CURRENT_BINARY_DIR}
+                            -Wall -Wwarn-lint -Wwarn-style
                        DEPENDS ${sources})
     add_library(V${toplevel} STATIC ${generated} ${VERILATOR_LIB_SOURCES})
     include_directories(${CMAKE_CURRENT_BINARY_DIR})
 endmacro()
-message(${VERILATOR_INCLUDE_DIRS})
