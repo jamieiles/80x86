@@ -13,6 +13,9 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         python-dev \
         verilator \
         lcov \
-        ccache
+        ccache \
+        ruby \
+        ruby-dev
+RUN gem install --no-ri --pre asciidoctor-pdf coderay pygments.rb
 RUN mkdir -p /build
 WORKDIR /build

@@ -1,0 +1,77 @@
+s80x86 Core Development Guide
+=============================
+Jamie Iles <jamie@jamieiles.com>
+
+:source-highlighter: coderay
+
+Building
+--------
+
+System Requirements
+~~~~~~~~~~~~~~~~~~~
+
+- Docker, tested with version 1.12.1.
+
+Quick Start Build
+~~~~~~~~~~~~~~~~~
+
+The `scripts/build` script provides everything that is needed to quickly build
+and test the project.  On the first run, the script will build the required
+Docker images from `docker/build/Dockerfile`, configure and build the project
+and run all of the built-in tests.
+
+[source,bash]
+----
+./scripts/build
+----
+
+Build Environments
+~~~~~~~~~~~~~~~~~~
+
+The s80x86 project uses Docker to provide convenient build environments.  This
+means that it is possible to build and test the design on any Linux system
+with Docker, regardless of distribution.  The Docker images used internally
+are all based on Ubuntu 16.04 LTS.
+
+There are two primary build environments:
+
+  - s80x86-build
+  - s80x86-dev
+
+Each build environment has a script in `docker` to enter the container and
+build it if not already built.  A 'ccache' cache is created in
+`_build/.ccache` that persists across container runs to increase build
+performance.
+
+'s80x86-build' is a minimal Ubuntu 16.04 LTS container with the dependencies for
+building the project and running the tests.  This environment runs everything
+as the current user's uid/gid to preserve file permissions outside of the
+container and bind-mounts the project directory into `/build`.  The
+'s80x86-build' container 
+
+'s80x86-dev' is intended for developing the project itself and includes extra
+packages and convenience scripts to make developing easier.  Unlike the
+'s80x86-build' container, this container bind mounts `/home` from the host
+into the container for convenience and includes packages like GTKWave for
+viewing waveforms.  It is recommended to use the Docker build environments for
+all builds and developments as those are used for the baseline development and
+verification.
+
+CI Build Scripts
+~~~~~~~~~~~~~~~~
+
+Several build scripts are included suitable for use in a continuous
+integration environment.
+
+*scripts/ci/unittest* builds the project from scratch and then runs all of the
+unit tests, producing JUnit XML suitable for importing into the CI test runner
+history.
+
+*scripts/ci/coverage* builds the project and runs all of the tests, with the
+addition of generating coverage information for all of the C++ code in the
+simulator, and generates HTML with lcov.  Running `scripts/view-coverage` will
+display the coverage report in a browser.
+
+*scripts/ci/gcov-coverage* performs the same steps as `scripts/ci/coverage`
+but produces Cobertura compatible coverage information that can be read into
+Jenkins or other CI systems supporting this format.
