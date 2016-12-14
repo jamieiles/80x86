@@ -18,8 +18,8 @@ private:
     void setup_trace();
     void teardown_trace();
     VerilatedVcdC tracer;
-    vluint64_t cur_time;
 #endif
+    vluint64_t cur_time;
 };
 
 template <typename T>
@@ -28,6 +28,7 @@ VerilogTestbench<T>::VerilogTestbench(T *dut)
 {
     dut->reset = 0;
     dut->clk = 0;
+    cur_time = 0;
 #ifdef DEBUG
     setup_trace();
 #endif
@@ -38,7 +39,6 @@ VerilogTestbench<T>::VerilogTestbench(T *dut)
 template <typename T>
 void VerilogTestbench<T>::setup_trace()
 {
-    cur_time = 0;
     Verilated::traceEverOn(true);
     dut->trace(&tracer, 99);
 
@@ -77,8 +77,9 @@ void VerilogTestbench<T>::step()
     dut->eval();
     dut->clk = !dut->clk;
 #ifdef DEBUG
-    tracer.dump(cur_time++);
+    tracer.dump(cur_time);
 #endif
+    cur_time++;
 }
 
 template <typename T>
