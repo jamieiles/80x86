@@ -36,7 +36,7 @@ wire [15:0] next_address = mem_ack && !abort_cur ? fetch_address + 1'b1 : fetch_
 /* verilator lint_on UNUSED */
 
 assign mem_address = {cs, 4'b0} + {4'b0, next_address[15:1], 1'b0};
-assign mem_access = !reset && !fifo_full && !mem_ack;
+assign mem_access = !reset && !fifo_full && !mem_ack && !write_second;
 
 assign fifo_wr_en = !abort_cur && !load_new_ip && (mem_ack || write_second);
 assign fifo_reset = load_new_ip;
