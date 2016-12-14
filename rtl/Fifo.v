@@ -23,7 +23,7 @@ reg [ptr_bits:0] count;
 
 assign empty = count == 0;
 assign full = count == depth;
-assign nearly_full = count >= depth - full_threshold;
+assign nearly_full = count > depth - full_threshold;
 
 always_ff @(posedge clk or posedge reset) begin
     if (reset) begin

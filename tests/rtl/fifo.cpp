@@ -122,8 +122,14 @@ TEST_F(FifoTestFixture, read_during_write)
 
 TEST_F(FifoTestFixture, fill_at_threshold)
 {
-    for (uint32_t m = 0; m < 6; ++m)
-        tb.push(m);
+    int pushed = 0;
 
-    ASSERT_TRUE(tb.dut->nearly_full);
+    for (;;) {
+        tb.push(1);
+        if (tb.dut->nearly_full)
+            break;
+        ++pushed;
+    }
+
+    ASSERT_EQ(pushed, 6);
 }
