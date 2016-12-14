@@ -4,7 +4,8 @@ set(VERILATED_HEADERS)
 
 set(CMAKE_CXX_FLAGS "-DVM_COVERAGE ${CMAKE_CXX_FLAGS} -O2 -ggdb3 -std=c++14")
 
-macro(verilate sources toplevel)
+function(verilate toplevel sources)
+    separate_arguments(sources)
     set(generated
         ${CMAKE_CURRENT_BINARY_DIR}/V${toplevel}.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/V${toplevel}.h
@@ -28,4 +29,4 @@ macro(verilate sources toplevel)
                        DEPENDS ${sources})
     add_library(V${toplevel} STATIC ${generated} ${VERILATOR_LIB_SOURCES})
     include_directories(${CMAKE_CURRENT_BINARY_DIR})
-endmacro()
+endfunction()

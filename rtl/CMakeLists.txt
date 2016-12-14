@@ -1,4 +1,4 @@
 include(Verilator)
 
-verilate(${CMAKE_CURRENT_SOURCE_DIR}/Fifo.v Fifo)
-verilate(${CMAKE_CURRENT_SOURCE_DIR}/Prefetch.v Prefetch)
+verilate(Fifo ${CMAKE_CURRENT_SOURCE_DIR}/Fifo.v)
+verilate(Prefetch ${CMAKE_CURRENT_SOURCE_DIR}/Prefetch.v)
