@@ -27,7 +27,7 @@ assign rd_val = rd_bypass ? wr_val : fetched_val;
 
 assign cs = wr_sel == CS ? wr_val : registers[CS];
 
-always @(posedge clk or posedge reset) begin
+always_ff @(posedge clk or posedge reset) begin
     if (reset)
         for (i = 0; i < 4; ++i)
             registers[i] <= 16'b0;
@@ -35,7 +35,7 @@ always @(posedge clk or posedge reset) begin
         registers[wr_sel] <= wr_val;
 end
 
-always @(posedge clk)
+always_ff @(posedge clk)
     fetched_val <= registers[rd_sel];
 
 endmodule

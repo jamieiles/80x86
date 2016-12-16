@@ -38,7 +38,7 @@ wire [2:0] wr_8_bit_sel = {1'b0, wr_sel[1:0]};
 
 integer i;
 
-always @(posedge clk or posedge reset) begin
+always_ff @(posedge clk or posedge reset) begin
     if (reset) begin
         for (i = 0; i < 8; ++i)
             gprs[i] <= 16'b0;
@@ -64,7 +64,7 @@ for (rd_port = 0; rd_port < 2; ++rd_port) begin: read_port
     wire bypass = wr_en && wr_sel == rd_sel[rd_port];
     assign rd_val[rd_port] = bypass ? wr_val : fetched_val;
 
-    always @(posedge clk) begin
+    always_ff @(posedge clk) begin
         if (is_8_bit)
             fetched_val <= {8'b0,
                             rd_sel_low_byte ?
