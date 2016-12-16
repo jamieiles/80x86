@@ -133,3 +133,13 @@ TEST_F(FifoTestFixture, fill_at_threshold)
 
     ASSERT_EQ(pushed, 6);
 }
+
+TEST_F(FifoTestFixture, reset_empties)
+{
+    for (uint32_t m = 0; m < 4; ++m)
+        tb.push(m);
+
+    ASSERT_FALSE(tb.dut->empty);
+    tb.reset();
+    ASSERT_TRUE(tb.dut->empty);
+}
