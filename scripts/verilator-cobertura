@@ -62,7 +62,7 @@ def verilator_to_cobertura(coverage_info):
                 file_covered_lines += 1
                 covered_lines += 1
         line_rates[filename] = file_covered_lines / len(lines)
-    global_line_rate = covered_lines / total_lines
+    global_line_rate = 0.0 if not total_lines else covered_lines / total_lines
 
     coverage = Element('coverage', attrib={
                        'branch-rate': '0.0',
