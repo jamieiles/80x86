@@ -93,6 +93,10 @@ def verilator_to_cobertura(coverage_info):
         lines_elem = SubElement(f, 'lines')
         for line in sorted(lines.keys(), key=lambda x: int(x)):
             count = lines[line]
+            # Maximum of 31-bits so that cobertura plugin doesn't get sad.
+            # With toggles etc this can get pretty large.
+            if count > 0x7fffffff:
+                count = 0x7fffffff
             l = SubElement(lines_elem, 'line',
                         attrib={'hits': str(count), 'number': str(line), 'branch': 'false'})
 
