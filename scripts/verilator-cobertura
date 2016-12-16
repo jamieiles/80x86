@@ -88,7 +88,8 @@ def verilator_to_cobertura(coverage_info):
                        'line-rate': str(line_rates[filename]),
                        })
         lines_elem = SubElement(f, 'lines')
-        for line, count in lines.items():
+        for line in sorted(lines.keys(), key=lambda x: int(x)):
+            count = lines[line]
             l = SubElement(lines_elem, 'line',
                         attrib={'hits': str(count), 'number': str(line), 'branch': 'false'})
 
