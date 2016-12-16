@@ -22,10 +22,8 @@ reg [15:0] registers[4];
 integer i;
 
 wire rd_bypass = wr_en && wr_sel == rd_sel;
-reg [15:0] fetched_val;
-assign rd_val = rd_bypass ? wr_val : fetched_val;
 
-assign cs = wr_sel == CS ? wr_val : registers[CS];
+assign cs = registers[CS];
 
 always_ff @(posedge clk or posedge reset) begin
     if (reset)
@@ -36,6 +34,6 @@ always_ff @(posedge clk or posedge reset) begin
 end
 
 always_ff @(posedge clk)
-    fetched_val <= registers[rd_sel];
+    rd_val <= rd_bypass ? wr_val : registers[rd_sel];
 
 endmodule

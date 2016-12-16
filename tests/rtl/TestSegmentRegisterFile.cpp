@@ -58,17 +58,12 @@ TEST_F(SegmentRegisterFileTestFixture, segment_read_write)
 
 TEST_F(SegmentRegisterFileTestFixture, sr_read_during_write)
 {
-    tb.dut->wr_val = 0x1234;
-    tb.dut->wr_en = 1;
-    tb.dut->eval();
+    tb.write_sr(0, 0x1234);
     ASSERT_EQ(0x1234, tb.get_sr());
 }
 
 TEST_F(SegmentRegisterFileTestFixture, cs_output_during_write)
 {
-    tb.dut->wr_val = 0xf00f;
-    tb.dut->wr_en = 1;
-    tb.dut->wr_sel = 1;
-    tb.dut->eval();
+    tb.write_sr(1, 0xf00f);
     ASSERT_EQ(0xf00f, tb.dut->cs);
 }

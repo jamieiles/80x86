@@ -60,18 +60,16 @@ generate
 for (rd_port = 0; rd_port < 2; ++rd_port) begin: read_port
     wire rd_sel_low_byte = ~rd_sel[rd_port][2];
     wire [2:0] rd_8_bit_sel = {1'b0, rd_sel[rd_port][1:0]};
-    reg [15:0] fetched_val;
     wire bypass = wr_en && wr_sel == rd_sel[rd_port];
-    assign rd_val[rd_port] = bypass ? wr_val : fetched_val;
 
     always_ff @(posedge clk) begin
         if (is_8_bit)
-            fetched_val <= {8'b0,
-                            rd_sel_low_byte ?
-                                gprs[rd_8_bit_sel][7:0] :
-                                gprs[rd_8_bit_sel][15:8]};
+            rd_val[rd_port] <= bypass ? {8'b0, wr_val[7:0]} :
+                {8'b0, rd_sel_low_byte ?
+                    gprs[rd_8_bit_sel][7:0] : gprs[rd_8_bit_sel][15:8]};
         else
-            fetched_val <= gprs[rd_sel[rd_port]];
+            rd_val[rd_port] <= bypass ? wr_val :
+                gprs[rd_sel[rd_port]];
     end
 end
 endgenerate

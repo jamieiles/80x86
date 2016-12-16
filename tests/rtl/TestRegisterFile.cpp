@@ -103,9 +103,8 @@ TEST_F(RegisterFileTestFixture, reset)
 
 TEST_F(RegisterFileTestFixture, read_during_write)
 {
-    tb.dut->wr_en = 1;
-    tb.dut->wr_val = 0x1234;
-    tb.dut->eval();
+    tb.write16(0, 0x1234);
+    tb.trigger_read16(0, 0);
     ASSERT_EQ(0x1234, tb.get_value(0));
 }
 
