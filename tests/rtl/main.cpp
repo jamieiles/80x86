@@ -1,8 +1,14 @@
 #include <gtest/gtest.h>
+#include <verilated_cov.h>
 
 int main(int argc, char *argv[])
 {
     ::testing::InitGoogleTest(&argc, argv);
 
-    return RUN_ALL_TESTS();
+    int ret = RUN_ALL_TESTS();
+#ifdef VM_COVERAGE
+    VerilatedCov::write("coverage/rtl-unittest.dat");
+#endif
+
+    return ret;
 }

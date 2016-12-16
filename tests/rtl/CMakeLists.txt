@@ -2,6 +2,8 @@ include(Verilator)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/../../rtl)
 
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/coverage)
+
 add_executable(rtl-unittest
                TestFifo.cpp
                TestPrefetch.cpp

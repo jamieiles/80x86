@@ -2,6 +2,7 @@
 #define __VERILOGTESTBENCH_H__
 
 #include <verilated_vcd_c.h>
+
 #include <boost/format.hpp>
 #include <functional>
 #include <map>
