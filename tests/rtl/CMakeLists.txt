@@ -17,5 +17,6 @@ target_link_libraries(rtl-unittest
                       VRegisterFile
                       VSegmentRegisterFile
 		      gtest
-		      gmock)
+		      gmock
+                      verilator)
 add_test(rtl-unittest rtl-unittest)
