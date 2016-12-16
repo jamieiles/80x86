@@ -85,8 +85,10 @@ def verilator_to_cobertura(coverage_info):
     for filename, lines in coverage_info.items():
         f = SubElement(classes, 'class', attrib={
                        'filename': os.path.relpath(filename, args.source_root),
-                       'name': os.path.basename(filename),
+                       'name': os.path.basename(filename).replace('.', '_'),
                        'line-rate': str(line_rates[filename]),
+                       'branch-rate': '0.0',
+                       'complexity': '0.0',
                        })
         lines_elem = SubElement(f, 'lines')
         for line in sorted(lines.keys(), key=lambda x: int(x)):
