@@ -2,6 +2,7 @@
 import argparse
 import sys
 import os.path
+import time
 
 from collections import namedtuple, defaultdict
 from xml.dom import minidom
@@ -48,14 +49,44 @@ def get_coverage(filename):
     return parse_coverage(filename)
 
 def verilator_to_cobertura(coverage_info):
-    coverage = Element('coverage')
+    line_rates = {}
+    global_line_rate = 0.0
+
+    total_lines = 0.0
+    covered_lines = 0.0
+    for filename, lines in coverage_info.items():
+        file_covered_lines = 0.0
+        for line, count in lines.items():
+            total_lines += 1
+            if count > 0:
+                file_covered_lines += 1
+                covered_lines += 1
+        line_rates[filename] = file_covered_lines / len(lines)
+    global_line_rate = covered_lines / total_lines
+
+    coverage = Element('coverage', attrib={
+                       'branch-rate': '0.0',
+                       'complexity': '0.0',
+                       'line-rate': str(global_line_rate),
+                       'timestamp': str(int(time.time())),
+                       'version': 'verilator-cobertura-1',
+                       })
     sources = SubElement(coverage, 'sources')
     source = SubElement(sources, 'source')
     source.text = args.source_root
     packages = SubElement(coverage, 'packages')
-    package = SubElement(packages, 'package', attrib={'name': 'verilator'})
+    package = SubElement(packages, 'package', attrib={
+                         'name': 'verilator',
+                         'branch-rate': '0.0',
+                         'complexity': '0.0',
+                         'line-rate': str(global_line_rate),
+                         })
     for filename, lines in coverage_info.items():
-        f = SubElement(package, 'class', attrib={'filename': os.path.relpath(filename, args.source_root)})
+        f = SubElement(package, 'class', attrib={
+                       'filename': os.path.relpath(filename, args.source_root),
+                       'name': os.path.basename(filename),
+                       'line-rate': str(line_rates[filename]),
+                       })
         lines_elem = SubElement(f, 'lines')
         for line, count in lines.items():
             l = SubElement(lines_elem, 'line',
