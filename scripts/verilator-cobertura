@@ -53,14 +53,15 @@ def verilator_to_cobertura(coverage_info):
     source = SubElement(sources, 'source')
     source.text = args.source_root
     packages = SubElement(coverage, 'packages')
+    package = SubElement(packages, 'package', attrib={'name': 'verilator'})
     for filename, lines in coverage_info.items():
-        f = SubElement(packages, 'class', attrib={'filename': os.path.relpath(filename, args.source_root)})
+        f = SubElement(package, 'class', attrib={'filename': os.path.relpath(filename, args.source_root)})
         lines_elem = SubElement(f, 'lines')
         for line, count in lines.items():
             l = SubElement(lines_elem, 'line',
                         attrib={'hits': str(count), 'number': str(line), 'branch': 'false'})
 
-    return minidom.parseString(tostring(coverage)).toprettyxml(indent="\t")
+    return minidom.parseString(tostring(coverage)).toprettyxml(indent="  ")
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--source-root', default='/')
