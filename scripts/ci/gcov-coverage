@@ -9,4 +9,5 @@ DOCKER_NONINTERACTIVE=1 ./docker/s80x86-build -e -c 'cd _build/gcov-coverage; \
         make; \
         ctest; \
         ../../scripts/gcovr --delete --output=coverage.xml --gcov-exclude=".*googletest.*" --gcov-exclude="tests.*" --root=../.. --xml-pretty --exclude-unreachable-branches .; \
+        ../../scripts/verilator-cobertura --output=coverage-rtl-unittest.xml --source-root=../.. ./tests/rtl/coverage/rtl-unittest.dat; \
         rm ../../*.gcov'
