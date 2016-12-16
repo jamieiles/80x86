@@ -1,0 +1,78 @@
+#!/usr/bin/env python
+import argparse
+import sys
+import os.path
+
+from collections import namedtuple, defaultdict
+from xml.dom import minidom
+from xml.etree.ElementTree import Element, SubElement, tostring
+
+def get_coverage(filename):
+    CoveragePoint = namedtuple('CoveragePoint', ['file', 'line', 'count'])
+    FIELD_SPLIT = '\x01'
+    KEY_VALUE_SPLIT = '\x02'
+
+    def parse_point(point, count):
+        filename = None
+        line = None
+
+        for pair in point:
+            if not KEY_VALUE_SPLIT in pair:
+                continue
+            key, value = pair.split(KEY_VALUE_SPLIT)
+            if key == 'f':
+                filename = value
+            if key == 'l':
+                line = value
+
+        if not filename or not line:
+            return None
+
+        return CoveragePoint(filename, line, int(count))
+
+    def parse_coverage(filename):
+        with open(filename) as coverage:
+            coverage_lines = filter(lambda x: x.startswith('C'), coverage.readlines())
+
+        coverage = defaultdict(lambda: defaultdict(int))
+
+        for l in coverage_lines:
+            line_type, data, count = l.split()
+            entry_dict = data.replace("'", "").split(FIELD_SPLIT)
+            point = parse_point(entry_dict, count)
+            if point:
+                coverage[point.file][point.line] += point.count
+
+        return coverage
+
+    return parse_coverage(filename)
+
+def verilator_to_cobertura(coverage_info):
+    coverage = Element('coverage')
+    sources = SubElement(coverage, 'sources')
+    source = SubElement(sources, 'source')
+    source.text = args.source_root
+    packages = SubElement(coverage, 'packages')
+    for filename, lines in coverage_info.items():
+        f = SubElement(packages, 'class', attrib={'filename': os.path.relpath(filename, args.source_root)})
+        lines_elem = SubElement(f, 'lines')
+        for line, count in lines.items():
+            l = SubElement(lines_elem, 'line',
+                        attrib={'hits': str(count), 'number': str(line), 'branch': 'false'})
+
+    return minidom.parseString(tostring(coverage)).toprettyxml(indent="\t")
+
+parser = argparse.ArgumentParser()
+parser.add_argument('--source-root', default='/')
+parser.add_argument('--output', default='-')
+parser.add_argument('coverage_file')
+args = parser.parse_args()
+
+coverage_info = get_coverage(args.coverage_file)
+report = verilator_to_cobertura(coverage_info)
+
+if args.output == '-':
+    print report
+else:
+    with open(args.output, 'w') as outfile:
+        outfile.write(report)
