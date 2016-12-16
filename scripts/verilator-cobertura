@@ -96,7 +96,7 @@ def verilator_to_cobertura(coverage_info):
             l = SubElement(lines_elem, 'line',
                         attrib={'hits': str(count), 'number': str(line), 'branch': 'false'})
 
-    return minidom.parseString(tostring(coverage)).toprettyxml(indent="  ")
+    return minidom.parseString(tostring(coverage)).toprettyxml(indent="  ").replace('<?xml version="1.0" ?>', '<?xml version="1.0" ?>\n<!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-03.dtd">')
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--source-root', default='/')
