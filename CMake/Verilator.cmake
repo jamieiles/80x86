@@ -5,7 +5,7 @@ set(VERILATED_HEADERS)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -ggdb3 -std=c++14")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Coverage")
-    set(VERILATOR_COVERAGE_FLAGS --coverage -Wno-style)
+    set(VERILATOR_COVERAGE_FLAGS --coverage-line -Wno-style)
     set(CMAKE_CXX_FLAGS_COVERAGE "${CMAKE_CXX_FLAGS_COVERAGE} -DVM_COVERAGE=1")
 endif()
 
