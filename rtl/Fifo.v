@@ -28,7 +28,7 @@ assign nearly_full = count > depth - full_threshold;
 always_ff @(posedge clk or posedge reset) begin
     if (reset) begin
         wr_ptr <= {ptr_bits{1'b0}};
-    end if (wr_en && !full) begin
+    end else if (wr_en && !full) begin
         mem[wr_ptr] <= wr_data;
         wr_ptr <= wr_ptr + 1'b1;
     end
@@ -38,7 +38,7 @@ always_ff @(posedge clk or posedge reset) begin
     if (reset) begin
         rd_ptr <= {ptr_bits{1'b0}};
         rd_data <= {data_width{1'b0}};
-    end if (rd_en && !empty) begin
+    end else if (rd_en && !empty) begin
         rd_data <= mem[rd_ptr];
         rd_ptr <= rd_ptr + 1'b1;
     end
