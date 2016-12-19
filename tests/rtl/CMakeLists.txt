@@ -1,6 +1,7 @@
 include(Verilator)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/../../rtl)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../rtl)
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/coverage)
 

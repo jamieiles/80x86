@@ -20,6 +20,7 @@ function(verilate toplevel sources)
         ${CMAKE_CURRENT_BINARY_DIR}/V${toplevel}.h
         ${CMAKE_CURRENT_BINARY_DIR}/V${toplevel}__Syms.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/V${toplevel}__Syms.h)
+    list(APPEND generated ${ARGV2})
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         list(APPEND generated
              ${CMAKE_CURRENT_BINARY_DIR}/V${toplevel}__Trace.cpp
@@ -35,4 +36,5 @@ function(verilate toplevel sources)
                        DEPENDS ${sources})
     add_library(V${toplevel} STATIC ${generated})
     include_directories(${CMAKE_CURRENT_BINARY_DIR})
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 endfunction()
