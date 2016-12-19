@@ -72,8 +72,8 @@ TYPED_TEST_P(ModRMTestFixture, Mod00RM000)
 {
     TypeParam decoder;
 
-    EXPECT_CALL(*decoder.get_registers(), get(BX)).WillOnce(Return(0x100));
-    EXPECT_CALL(*decoder.get_registers(), get(SI)).WillOnce(Return(0x4));
+    decoder.get_registers()->set(BX, 0x100);
+    decoder.get_registers()->set(SI, 0x4);
 
     decoder.set_instruction({ 0 });
     decoder.decode();
@@ -85,8 +85,8 @@ TYPED_TEST_P(ModRMTestFixture, Mod00RM001)
 {
     TypeParam decoder;
 
-    EXPECT_CALL(*decoder.get_registers(), get(BX)).WillOnce(Return(0x100));
-    EXPECT_CALL(*decoder.get_registers(), get(DI)).WillOnce(Return(0x4));
+    decoder.get_registers()->set(BX, 0x100);
+    decoder.get_registers()->set(DI, 0x4);
 
     decoder.set_instruction({ 0x01 });
     decoder.decode();
@@ -98,8 +98,8 @@ TYPED_TEST_P(ModRMTestFixture, Mod00RM010)
 {
     TypeParam decoder;
 
-    EXPECT_CALL(*decoder.get_registers(), get(BP)).WillOnce(Return(0x100));
-    EXPECT_CALL(*decoder.get_registers(), get(SI)).WillOnce(Return(0x4));
+    decoder.get_registers()->set(BP, 0x100);
+    decoder.get_registers()->set(SI, 0x004);
 
     decoder.set_instruction({ 0x02 });
     decoder.decode();
@@ -111,8 +111,8 @@ TYPED_TEST_P(ModRMTestFixture, Mod00RM011)
 {
     TypeParam decoder;
 
-    EXPECT_CALL(*decoder.get_registers(), get(BP)).WillOnce(Return(0x100));
-    EXPECT_CALL(*decoder.get_registers(), get(DI)).WillOnce(Return(0x4));
+    decoder.get_registers()->set(BP, 0x100);
+    decoder.get_registers()->set(DI, 0x4);
 
     decoder.set_instruction({ 0x03 });
     decoder.decode();
@@ -124,7 +124,7 @@ TYPED_TEST_P(ModRMTestFixture, Mod00RM100)
 {
     TypeParam decoder;
 
-    EXPECT_CALL(*decoder.get_registers(), get(SI)).WillOnce(Return(0x100));
+    decoder.get_registers()->set(SI, 0x100);
 
     decoder.set_instruction({ 0x04 });
     decoder.decode();
@@ -136,7 +136,7 @@ TYPED_TEST_P(ModRMTestFixture, Mod00RM101)
 {
     TypeParam decoder;
 
-    EXPECT_CALL(*decoder.get_registers(), get(DI)).WillOnce(Return(0x100));
+    decoder.get_registers()->set(DI, 0x100);
 
     decoder.set_instruction({ 0x05 });
     decoder.decode();
@@ -159,7 +159,7 @@ TYPED_TEST_P(ModRMTestFixture, Mod00RM111)
 {
     TypeParam decoder;
 
-    EXPECT_CALL(*decoder.get_registers(), get(BX)).WillOnce(Return(0x100));
+    decoder.get_registers()->set(BX, 0x100);
 
     decoder.set_instruction({ 0x07 });
     decoder.decode();
@@ -175,8 +175,8 @@ TYPED_TEST_P(ModRMTestFixture, Mod01RM000)
 {
     TypeParam decoder;
 
-    EXPECT_CALL(*decoder.get_registers(), get(BX)).WillOnce(Return(0x100));
-    EXPECT_CALL(*decoder.get_registers(), get(SI)).WillOnce(Return(0x4));
+    decoder.get_registers()->set(BX, 0x100);
+    decoder.get_registers()->set(SI, 0x4);
 
     decoder.set_instruction({ 0x40, 0xff });
     decoder.decode();
@@ -188,8 +188,8 @@ TYPED_TEST_P(ModRMTestFixture, Mod01RM001)
 {
     TypeParam decoder;
 
-    EXPECT_CALL(*decoder.get_registers(), get(BX)).WillOnce(Return(0x100));
-    EXPECT_CALL(*decoder.get_registers(), get(DI)).WillOnce(Return(0x4));
+    decoder.get_registers()->set(BX, 0x100);
+    decoder.get_registers()->set(DI, 0x4);
 
     decoder.set_instruction({ 0x41, 0xff });
     decoder.decode();
@@ -201,8 +201,8 @@ TYPED_TEST_P(ModRMTestFixture, Mod01RM010)
 {
     TypeParam decoder;
 
-    EXPECT_CALL(*decoder.get_registers(), get(BP)).WillOnce(Return(0x100));
-    EXPECT_CALL(*decoder.get_registers(), get(SI)).WillOnce(Return(0x4));
+    decoder.get_registers()->set(BP, 0x100);
+    decoder.get_registers()->set(SI, 0x4);
 
     decoder.set_instruction({ 0x42, 0xff });
     decoder.decode();
@@ -214,8 +214,8 @@ TYPED_TEST_P(ModRMTestFixture, Mod01RM011)
 {
     TypeParam decoder;
 
-    EXPECT_CALL(*decoder.get_registers(), get(BP)).WillOnce(Return(0x100));
-    EXPECT_CALL(*decoder.get_registers(), get(DI)).WillOnce(Return(0x4));
+    decoder.get_registers()->set(BP, 0x100);
+    decoder.get_registers()->set(DI, 0x4);
 
     decoder.set_instruction({ 0x43, 0xff });
     decoder.decode();
@@ -227,7 +227,7 @@ TYPED_TEST_P(ModRMTestFixture, Mod01RM100)
 {
     TypeParam decoder;
 
-    EXPECT_CALL(*decoder.get_registers(), get(SI)).WillOnce(Return(0x100));
+    decoder.get_registers()->set(SI, 0x100);
 
     decoder.set_instruction({ 0x44, 0xff });
     decoder.decode();
@@ -239,7 +239,7 @@ TYPED_TEST_P(ModRMTestFixture, Mod01RM101)
 {
     TypeParam decoder;
 
-    EXPECT_CALL(*decoder.get_registers(), get(DI)).WillOnce(Return(0x100));
+    decoder.get_registers()->set(DI, 0x100);
 
     decoder.set_instruction({ 0x45, 0xff });
     decoder.decode();
@@ -251,7 +251,7 @@ TYPED_TEST_P(ModRMTestFixture, Mod01RM110)
 {
     TypeParam decoder;
 
-    EXPECT_CALL(*decoder.get_registers(), get(BP)).WillOnce(Return(0x100));
+    decoder.get_registers()->set(BP, 0x100);
 
     decoder.set_instruction({ 0x46, 0xff });
 
@@ -264,7 +264,7 @@ TYPED_TEST_P(ModRMTestFixture, Mod01RM111)
 {
     TypeParam decoder;
 
-    EXPECT_CALL(*decoder.get_registers(), get(BX)).WillOnce(Return(0x100));
+    decoder.get_registers()->set(BX, 0x100);
 
     decoder.set_instruction({ 0x47, 0xff });
     decoder.decode();
@@ -280,8 +280,8 @@ TYPED_TEST_P(ModRMTestFixture, Mod10RM000)
 {
     TypeParam decoder;
 
-    EXPECT_CALL(*decoder.get_registers(), get(BX)).WillOnce(Return(0x100));
-    EXPECT_CALL(*decoder.get_registers(), get(SI)).WillOnce(Return(0x4));
+    decoder.get_registers()->set(BX, 0x100);
+    decoder.get_registers()->set(SI, 0x4);
 
     decoder.set_instruction({ 0x80, 0xff, 0xff });
     decoder.decode();
@@ -293,8 +293,8 @@ TYPED_TEST_P(ModRMTestFixture, Mod10RM001)
 {
     TypeParam decoder;
 
-    EXPECT_CALL(*decoder.get_registers(), get(BX)).WillOnce(Return(0x100));
-    EXPECT_CALL(*decoder.get_registers(), get(DI)).WillOnce(Return(0x4));
+    decoder.get_registers()->set(BX, 0x100);
+    decoder.get_registers()->set(DI, 0x4);
 
     decoder.set_instruction({ 0x81, 0xff, 0xff });
     decoder.decode();
@@ -306,8 +306,8 @@ TYPED_TEST_P(ModRMTestFixture, Mod10RM010)
 {
     TypeParam decoder;
 
-    EXPECT_CALL(*decoder.get_registers(), get(BP)).WillOnce(Return(0x100));
-    EXPECT_CALL(*decoder.get_registers(), get(SI)).WillOnce(Return(0x4));
+    decoder.get_registers()->set(BP, 0x100);
+    decoder.get_registers()->set(SI, 0x4);
 
     decoder.set_instruction({ 0x82, 0xff, 0xff });
     decoder.decode();
@@ -319,8 +319,8 @@ TYPED_TEST_P(ModRMTestFixture, Mod10RM011)
 {
     TypeParam decoder;
 
-    EXPECT_CALL(*decoder.get_registers(), get(BP)).WillOnce(Return(0x100));
-    EXPECT_CALL(*decoder.get_registers(), get(DI)).WillOnce(Return(0x4));
+    decoder.get_registers()->set(BP, 0x100);
+    decoder.get_registers()->set(DI, 0x4);
 
     decoder.set_instruction({ 0x83, 0xff, 0xff });
     decoder.decode();
@@ -332,7 +332,7 @@ TYPED_TEST_P(ModRMTestFixture, Mod10RM100)
 {
     TypeParam decoder;
 
-    EXPECT_CALL(*decoder.get_registers(), get(SI)).WillOnce(Return(0x100));
+    decoder.get_registers()->set(SI, 0x100);
 
     decoder.set_instruction({ 0x84, 0xff, 0xff });
     decoder.decode();
@@ -344,7 +344,7 @@ TYPED_TEST_P(ModRMTestFixture, Mod10RM101)
 {
     TypeParam decoder;
 
-    EXPECT_CALL(*decoder.get_registers(), get(DI)).WillOnce(Return(0x100));
+    decoder.get_registers()->set(DI, 0x100);
 
     decoder.set_instruction({ 0x85, 0xff, 0xff });
     decoder.decode();
@@ -356,7 +356,7 @@ TYPED_TEST_P(ModRMTestFixture, Mod10RM110)
 {
     TypeParam decoder;
 
-    EXPECT_CALL(*decoder.get_registers(), get(BP)).WillOnce(Return(0x100));
+    decoder.get_registers()->set(BP, 0x100);
 
     decoder.set_instruction({ 0x86, 0xff, 0xff });
 
@@ -369,7 +369,7 @@ TYPED_TEST_P(ModRMTestFixture, Mod10RM111)
 {
     TypeParam decoder;
 
-    EXPECT_CALL(*decoder.get_registers(), get(BX)).WillOnce(Return(0x100));
+    decoder.get_registers()->set(BX, 0x100);
 
     decoder.set_instruction({ 0x87, 0xff, 0xff });
     decoder.decode();

@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "MockRegisterFile.h"
+#include "RegisterFile.h"
 #include "ModRM.h"
 
 class ModRMDecoderTestBench {
@@ -14,12 +14,12 @@ public:
     virtual uint16_t get_effective_address() const = 0;
     virtual GPR get_register() const = 0;
     virtual GPR get_rm_register() const = 0;
-    MockRegisterFile *get_registers()
+    RegisterFile *get_registers()
     {
         return &regs;
     }
 protected:
-    MockRegisterFile regs;
+    RegisterFile regs;
 };
 
 #endif /* __TESTMODRM_H__ */
