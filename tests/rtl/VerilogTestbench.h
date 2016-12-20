@@ -42,6 +42,7 @@ public:
     {
         return cur_time / 2;
     }
+protected:
     T dut;
 private:
     void run_deferred_events();
