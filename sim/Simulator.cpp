@@ -588,7 +588,8 @@ void Simulator::unsupported_bios_interrupt()
 
 int main(int argc, char **argv)
 {
-    assert(argc >= 3);
+    if (argc < 3)
+        std::cerr << "error: usage: " << argv[0] << " BIOS DISK" << std::endl;
 
     Simulator sim(argv[1], argv[2]);
 
