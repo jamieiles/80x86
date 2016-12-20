@@ -22,7 +22,7 @@ const bool verilator_debug_enabled = false;
 template <typename T, bool debug_enabled=verilator_debug_enabled>
 class VerilogTestbench {
 public:
-    VerilogTestbench(T *dut);
+    VerilogTestbench();
     virtual ~VerilogTestbench();
     void reset();
     void at_cycle(vluint64_t cycle_num,
@@ -42,7 +42,7 @@ public:
     {
         return cur_time / 2;
     }
-    T *dut;
+    T dut;
 private:
     void run_deferred_events();
     void run_edge_events(EdgeType edge_type);
@@ -55,11 +55,10 @@ private:
 };
 
 template <typename T, bool debug_enabled>
-VerilogTestbench<T, debug_enabled>::VerilogTestbench(T *dut)
-    : dut(dut)
+VerilogTestbench<T, debug_enabled>::VerilogTestbench()
 {
-    dut->reset = 0;
-    dut->clk = 0;
+    dut.reset = 0;
+    dut.clk = 0;
     cur_time = 0;
     if (debug_enabled)
         setup_trace();
@@ -90,7 +89,7 @@ void VerilogTestbench<T, debug_enabled>::setup_trace()
 {
     if (debug_enabled) {
         Verilated::traceEverOn(true);
-        tracer_impl<T, debug_enabled>::trace_dut(dut, &tracer);
+        tracer_impl<T, debug_enabled>::trace_dut(&dut, &tracer);
 
         auto test_info = ::testing::UnitTest::GetInstance()->current_test_info();
         tracer.open((boost::format("%s.%s.vcd") % test_info->test_case_name() %
@@ -110,22 +109,22 @@ VerilogTestbench<T, debug_enabled>::~VerilogTestbench()
 {
     if (debug_enabled)
         teardown_trace();
-    dut->final();
+    dut.final();
 }
 
 template <typename T, bool debug_enabled>
 void VerilogTestbench<T, debug_enabled>::reset()
 {
-    dut->reset = 1;
+    dut.reset = 1;
     cycle();
-    dut->reset = 0;
+    dut.reset = 0;
 }
 
 template <typename T, bool debug_enabled>
 void VerilogTestbench<T, debug_enabled>::step()
 {
-    dut->eval();
-    dut->clk = !dut->clk;
+    dut.eval();
+    dut.clk = !dut.clk;
     if (debug_enabled)
         tracer.dump(cur_time);
     cur_time++;

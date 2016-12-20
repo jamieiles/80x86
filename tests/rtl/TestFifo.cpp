@@ -3,121 +3,112 @@
 
 #include "VerilogTestbench.h"
 
-class FifoTestbench : public VerilogTestbench<VFifo> {
+class FifoTestFixture : public VerilogTestbench<VFifo>,
+    public ::testing::Test {
 public:
-    FifoTestbench(VFifo *dut);
+    FifoTestFixture();
     void push(uint32_t val);
     uint32_t pop();
 };
 
-FifoTestbench::FifoTestbench(VFifo *dut)
-    : VerilogTestbench<VFifo>(dut)
+FifoTestFixture::FifoTestFixture()
 {
-    dut->wr_en = 0;
-    dut->wr_data = 0LU;
-    dut->rd_en = 0;
+    dut.wr_en = 0;
+    dut.wr_data = 0LU;
+    dut.rd_en = 0;
 }
 
-void FifoTestbench::push(uint32_t val)
+void FifoTestFixture::push(uint32_t val)
 {
-    dut->wr_data = val;
-    dut->wr_en = 1;
+    dut.wr_data = val;
+    dut.wr_en = 1;
     cycle();
-    dut->wr_en = 0;
+    dut.wr_en = 0;
 }
 
-uint32_t FifoTestbench::pop()
+uint32_t FifoTestFixture::pop()
 {
-    dut->rd_en = 1;
+    dut.rd_en = 1;
     cycle();
-    dut->rd_en = 0;
+    dut.rd_en = 0;
 
-    return dut->rd_data;
+    return dut.rd_data;
 }
-
-class FifoTestFixture : public ::testing::Test {
-public:
-    FifoTestFixture()
-        : tb(&fifo) {}
-protected:
-    VFifo fifo;
-    FifoTestbench tb;
-};
 
 TEST_F(FifoTestFixture, empty_fifo_not_full)
 {
-    ASSERT_TRUE(tb.dut->empty);
-    ASSERT_FALSE(tb.dut->full);
+    ASSERT_TRUE(dut.empty);
+    ASSERT_FALSE(dut.full);
 }
 
 TEST_F(FifoTestFixture, one_push_not_empty)
 {
-    ASSERT_TRUE(tb.dut->empty);
-    tb.push(0xdeadbeef);
-    ASSERT_FALSE(tb.dut->empty);
+    ASSERT_TRUE(dut.empty);
+    push(0xdeadbeef);
+    ASSERT_FALSE(dut.empty);
 }
 
 TEST_F(FifoTestFixture, one_push_one_pop)
 {
-    ASSERT_TRUE(tb.dut->empty);
-    ASSERT_EQ(tb.dut->rd_data, 0LU);
+    ASSERT_TRUE(dut.empty);
+    ASSERT_EQ(dut.rd_data, 0LU);
 
-    tb.push(0xdeadbeef);
-    ASSERT_FALSE(tb.dut->empty);
+    push(0xdeadbeef);
+    ASSERT_FALSE(dut.empty);
 
-    auto v = tb.pop();
-    ASSERT_TRUE(tb.dut->empty);
+    auto v = pop();
+    ASSERT_TRUE(dut.empty);
     ASSERT_EQ(v, 0xdeadbeef);
 }
 
 TEST_F(FifoTestFixture, push3pop3)
 {
     for (uint32_t m = 0; m < 3; ++m)
-        tb.push(m << 16);
+        push(m << 16);
 
-    ASSERT_FALSE(tb.dut->empty);
-    ASSERT_FALSE(tb.dut->full);
+    ASSERT_FALSE(dut.empty);
+    ASSERT_FALSE(dut.full);
 
     for (uint32_t m = 0; m < 3; ++m)
-        ASSERT_EQ(tb.pop(), m << 16);
+        ASSERT_EQ(pop(), m << 16);
 
-    ASSERT_TRUE(tb.dut->empty);
+    ASSERT_TRUE(dut.empty);
 }
 
 TEST_F(FifoTestFixture, underflow_still_empty)
 {
-    ASSERT_TRUE(tb.dut->empty);
-    tb.pop();
-    ASSERT_TRUE(tb.dut->empty);
+    ASSERT_TRUE(dut.empty);
+    pop();
+    ASSERT_TRUE(dut.empty);
 }
 
 TEST_F(FifoTestFixture, overflow_no_corrupt)
 {
     for (uint32_t m = 0; m < 10; ++m)
-        tb.push(m);
+        push(m);
 
-    ASSERT_TRUE(tb.dut->full);
-    ASSERT_FALSE(tb.dut->empty);
+    ASSERT_TRUE(dut.full);
+    ASSERT_FALSE(dut.empty);
 
     for (uint32_t m = 0; m < 8; ++m)
-        ASSERT_EQ(tb.pop(), m);
-    ASSERT_TRUE(tb.dut->empty);
-    ASSERT_FALSE(tb.dut->full);
+        ASSERT_EQ(pop(), m);
+    ASSERT_TRUE(dut.empty);
+    ASSERT_FALSE(dut.full);
 }
 
 TEST_F(FifoTestFixture, read_during_write)
 {
-    tb.push(0x1234);
+    push(0x1234);
 
-    tb.dut->wr_en = 1;
-    tb.dut->wr_data = 0xaa55;
-    tb.dut->rd_en = 1;
-    tb.cycle();
-    tb.dut->wr_en = 0;
+    dut.wr_en = 1;
+    dut.wr_data = 0xaa55;
+    dut.rd_en = 1;
+    cycle();
+    dut.wr_en = 0;
 
-    ASSERT_EQ(tb.dut->rd_data, 0x1234LU);
-    tb.cycle();
-    ASSERT_EQ(tb.pop(), 0xaa55LU);
+    ASSERT_EQ(dut.rd_data, 0x1234LU);
+    cycle();
+    ASSERT_EQ(pop(), 0xaa55LU);
 }
 
 TEST_F(FifoTestFixture, fill_at_threshold)
@@ -125,8 +116,8 @@ TEST_F(FifoTestFixture, fill_at_threshold)
     int pushed = 0;
 
     for (;;) {
-        tb.push(1);
-        if (tb.dut->nearly_full)
+        push(1);
+        if (dut.nearly_full)
             break;
         ++pushed;
     }
@@ -137,9 +128,9 @@ TEST_F(FifoTestFixture, fill_at_threshold)
 TEST_F(FifoTestFixture, reset_empties)
 {
     for (uint32_t m = 0; m < 4; ++m)
-        tb.push(m);
+        push(m);
 
-    ASSERT_FALSE(tb.dut->empty);
-    tb.reset();
-    ASSERT_TRUE(tb.dut->empty);
+    ASSERT_FALSE(dut.empty);
+    reset();
+    ASSERT_TRUE(dut.empty);
 }
