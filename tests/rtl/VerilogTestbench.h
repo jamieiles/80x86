@@ -13,7 +13,13 @@ enum EdgeType {
     NegEdge,
 };
 
-template <typename T>
+#ifdef DEBUG
+const bool verilator_debug_enabled = true;
+#else
+const bool verilator_debug_enabled = false;
+#endif
+
+template <typename T, bool debug_enabled=verilator_debug_enabled>
 class VerilogTestbench {
 public:
     VerilogTestbench(T *dut);
@@ -40,78 +46,93 @@ public:
 private:
     void run_deferred_events();
     void run_edge_events(EdgeType edge_type);
-#ifdef DEBUG
     void setup_trace();
     void teardown_trace();
     VerilatedVcdC tracer;
-#endif
     vluint64_t cur_time;
     std::map<vluint64_t, std::vector<std::function<void()>>> deferred_events;
     std::map<EdgeType, vector<std::function<void()>>> edge_events;
 };
 
-template <typename T>
-VerilogTestbench<T>::VerilogTestbench(T *dut)
+template <typename T, bool debug_enabled>
+VerilogTestbench<T, debug_enabled>::VerilogTestbench(T *dut)
     : dut(dut)
 {
     dut->reset = 0;
     dut->clk = 0;
     cur_time = 0;
-#ifdef DEBUG
-    setup_trace();
-#endif
+    if (debug_enabled)
+        setup_trace();
     reset();
 }
 
-#ifdef DEBUG
-template <typename T>
-void VerilogTestbench<T>::setup_trace()
-{
-    Verilated::traceEverOn(true);
-    dut->trace(&tracer, 99);
+template <typename T, bool debug_enabled>
+struct tracer_impl {
+};
 
-    auto test_info = ::testing::UnitTest::GetInstance()->current_test_info();
-    tracer.open((boost::format("%s.%s.vcd") % test_info->test_case_name() %
-                 test_info->name()).str().c_str());
+template <typename T>
+struct tracer_impl<T, true> {
+    static void trace_dut(T *dut, VerilatedVcdC *tracer)
+    {
+        dut->trace(tracer, 99);
+    }
+};
+
+template <typename T>
+struct tracer_impl<T, false> {
+    static void trace_dut(T *, VerilatedVcdC *)
+    {
+    }
+};
+
+template <typename T, bool debug_enabled>
+void VerilogTestbench<T, debug_enabled>::setup_trace()
+{
+    if (debug_enabled) {
+        Verilated::traceEverOn(true);
+        tracer_impl<T, debug_enabled>::trace_dut(dut, &tracer);
+
+        auto test_info = ::testing::UnitTest::GetInstance()->current_test_info();
+        tracer.open((boost::format("%s.%s.vcd") % test_info->test_case_name() %
+                     test_info->name()).str().c_str());
+    }
 }
 
-template <typename T>
-void VerilogTestbench<T>::teardown_trace()
+template <typename T, bool debug_enabled>
+void VerilogTestbench<T, debug_enabled>::teardown_trace()
 {
-    tracer.close();
+    if (debug_enabled)
+        tracer.close();
 }
-#endif
 
-template <typename T>
-VerilogTestbench<T>::~VerilogTestbench()
+template <typename T, bool debug_enabled>
+VerilogTestbench<T, debug_enabled>::~VerilogTestbench()
 {
-#ifdef DEBUG
-    teardown_trace();
-#endif
+    if (debug_enabled)
+        teardown_trace();
     dut->final();
 }
 
-template <typename T>
-void VerilogTestbench<T>::reset()
+template <typename T, bool debug_enabled>
+void VerilogTestbench<T, debug_enabled>::reset()
 {
     dut->reset = 1;
     cycle();
     dut->reset = 0;
 }
 
-template <typename T>
-void VerilogTestbench<T>::step()
+template <typename T, bool debug_enabled>
+void VerilogTestbench<T, debug_enabled>::step()
 {
     dut->eval();
     dut->clk = !dut->clk;
-#ifdef DEBUG
-    tracer.dump(cur_time);
-#endif
+    if (debug_enabled)
+        tracer.dump(cur_time);
     cur_time++;
 }
 
-template <typename T>
-void VerilogTestbench<T>::cycle(int count)
+template <typename T, bool debug_enabled>
+void VerilogTestbench<T, debug_enabled>::cycle(int count)
 {
     for (int i = 0; i < count; ++i) {
         run_deferred_events();
@@ -124,15 +145,15 @@ void VerilogTestbench<T>::cycle(int count)
     }
 }
 
-template <typename T>
-void VerilogTestbench<T>::run_edge_events(EdgeType edge_type)
+template <typename T, bool debug_enabled>
+void VerilogTestbench<T, debug_enabled>::run_edge_events(EdgeType edge_type)
 {
     for (auto &e: edge_events[edge_type])
         e();
 }
 
-template <typename T>
-void VerilogTestbench<T>::run_deferred_events()
+template <typename T, bool debug_enabled>
+void VerilogTestbench<T, debug_enabled>::run_deferred_events()
 {
     auto cycle = cur_time / 2;
 
@@ -140,8 +161,8 @@ void VerilogTestbench<T>::run_deferred_events()
         e();
 }
 
-template <typename T>
-void VerilogTestbench<T>::at_cycle(vluint64_t cycle_num,
+template <typename T, bool debug_enabled>
+void VerilogTestbench<T, debug_enabled>::at_cycle(vluint64_t cycle_num,
                                    std::function<void()> cb)
 {
     assert(cycle_num >= cur_time / 2);
