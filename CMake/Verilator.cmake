@@ -10,7 +10,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Coverage")
 endif()
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(VERILATOR_TRACE_FLAGS "--trace")
+    set(VERILATOR_TRACE_FLAGS --trace --trace-underscore)
 endif()
 
 function(verilate toplevel sources)
