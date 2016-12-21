@@ -1,0 +1,97 @@
+#include <gtest/gtest.h>
+#include <VModRMDecode.h>
+#include <deque>
+#include <memory>
+
+#include "VerilogTestbench.h"
+#include "TestModRM.h"
+#include "../common/TestModRM.cpp"
+
+class RTLModRMDecoderTestbench : public VerilogTestbench<VModRMDecode>,
+    public ModRMDecoderTestBench {
+public:
+    RTLModRMDecoderTestbench();
+
+    void set_instruction(const std::vector<uint8_t> bytes)
+    {
+        stream.insert(stream.end(), bytes.begin(), bytes.end());
+    }
+
+    void set_width(OperandWidth width)
+    {
+        is_8bit = width == OP_WIDTH_8;
+    }
+
+    void decode()
+    {
+        dut.start = 1;
+        cycle();
+        dut.start = 0;
+
+        for (auto i = 0; i < 1000; ++i) {
+            cycle();
+            if (dut.complete) {
+                cycle(2);
+                return;
+            }
+        }
+    }
+
+    OperandType get_rm_type() const
+    {
+        return dut.rm_is_reg ? OP_REG : OP_MEM;
+    }
+
+    uint16_t get_effective_address() const
+    {
+        return dut.effective_address;
+    }
+
+    GPR get_register() const
+    {
+        return is_8bit ? static_cast<GPR>(dut.regnum + static_cast<int>(AL)) :
+            static_cast<GPR>(dut.regnum);
+    }
+
+    GPR get_rm_register() const
+    {
+        return is_8bit ? static_cast<GPR>(dut.rm_regnum + static_cast<int>(AL)) :
+            static_cast<GPR>(dut.rm_regnum);
+    }
+private:
+    std::deque<uint8_t> stream;
+    bool is_8bit;
+};
+
+RTLModRMDecoderTestbench::RTLModRMDecoderTestbench()
+    : is_8bit(false)
+{
+    dut.reset = 0;
+    dut.start = 0;
+    dut.fifo_rd_en = 0;
+    dut.bx = dut.bp = dut.si = dut.di = 0;
+    reset();
+
+    at_edge(NegEdge, [&]{
+        this->dut.fifo_empty = this->stream.size() == 0;
+        if (!this->dut.reset && this->dut.fifo_rd_en &&
+            this->stream.size() == 0)
+            FAIL() << "fifo underflow" << std::endl;
+
+        if (!this->dut.reset && this->dut.fifo_rd_en &&
+            this->stream.size() > 0) {
+            this->dut.fifo_rd_data = this->stream[0];
+            this->stream.pop_front();
+        }
+    });
+
+    at_edge(NegEdge, [&]{
+        this->dut.bx = regs.get(BX);
+        this->dut.bp = regs.get(BP);
+        this->dut.si = regs.get(SI);
+        this->dut.di = regs.get(DI);
+    });
+}
+
+typedef ::testing::Types<RTLModRMDecoderTestbench> ModRMImplTypes;
+INSTANTIATE_TYPED_TEST_CASE_P(RTL, ModRMTestFixture, ModRMImplTypes);

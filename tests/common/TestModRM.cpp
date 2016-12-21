@@ -371,10 +371,10 @@ TYPED_TEST_P(ModRMTestFixture, Mod10RM111)
 
     decoder.get_registers()->set(BX, 0x100);
 
-    decoder.set_instruction({ 0x87, 0xff, 0xff });
+    decoder.set_instruction({ 0x87, 0x78, 0x20 });
     decoder.decode();
 
-    TestFixture::validate_effective_address(decoder, 0xff);
+    TestFixture::validate_effective_address(decoder, 0x2178);
 }
 
 REGISTER_TYPED_TEST_CASE_P(ModRMTestFixture,
