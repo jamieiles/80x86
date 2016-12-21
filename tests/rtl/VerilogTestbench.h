@@ -3,6 +3,7 @@
 
 #include <verilated_vcd_c.h>
 
+#include <boost/algorithm/string/replace.hpp>
 #include <boost/format.hpp>
 #include <functional>
 #include <map>
@@ -93,8 +94,10 @@ void VerilogTestbench<T, debug_enabled>::setup_trace()
         tracer_impl<T, debug_enabled>::trace_dut(&dut, &tracer);
 
         auto test_info = ::testing::UnitTest::GetInstance()->current_test_info();
-        tracer.open((boost::format("%s.%s.vcd") % test_info->test_case_name() %
-                     test_info->name()).str().c_str());
+        auto filename = (boost::format("%s.%s.vcd") % test_info->test_case_name() %
+                         test_info->name()).str();
+        boost::replace_all(filename, "/", "_");
+        tracer.open(filename.c_str());
     }
 }
 
