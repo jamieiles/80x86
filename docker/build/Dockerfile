@@ -15,7 +15,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         lcov \
         ccache \
         ruby \
-        ruby-dev
+        ruby-dev \
+        python-lxml
 RUN gem install --no-ri --pre asciidoctor-pdf coderay pygments.rb
 RUN mkdir -p /build
 WORKDIR /build
