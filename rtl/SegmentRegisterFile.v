@@ -1,13 +1,13 @@
 module SegmentRegisterFile(input logic clk,
                            input logic reset,
-                           /* Read port. */
+                           // Read port.
                            input logic [1:0] rd_sel,
                            output logic [15:0] rd_val,
-                           /* Write port. */
+                           // Write port.
                            input logic wr_en,
                            input logic [1:0] wr_sel,
                            input logic [15:0] wr_val,
-                           /* CS port. */
+                           // CS port.
                            output logic [15:0] cs);
 
 typedef enum bit [1:0] {

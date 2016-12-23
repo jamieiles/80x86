@@ -1,10 +1,10 @@
 module RegisterFile(input logic clk,
                     input logic reset,
                     input logic is_8_bit,
-                    /* Read port. */
+                    // Read port.
                     input logic [2:0] rd_sel[2],
                     output logic [15:0] rd_val[2],
-                    /* Write port. */
+                    // Write port.
                     input logic [2:0] wr_sel,
                     input logic [15:0] wr_val,
                     input logic wr_en);

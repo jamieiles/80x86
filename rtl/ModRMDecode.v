@@ -1,19 +1,19 @@
 module ModRMDecode(input logic clk,
                    input logic reset,
-                   /* Control. */
+                   // Control.
                    input logic start,
                    output logic complete,
-                   /* Results */
+                   // Results
                    output logic [15:0] effective_address,
                    output logic [2:0] regnum,
                    output logic rm_is_reg,
                    output logic [2:0] rm_regnum,
-                   /* Registers. */
+                   // Registers.
                    input logic [15:0] bx,
                    input logic [15:0] bp,
                    input logic [15:0] si,
                    input logic [15:0] di,
-                   /* Fifo Read Port. */
+                   // Fifo Read Port.
                    output logic fifo_rd_en,
                    input logic [7:0] fifo_rd_data,
                    input logic fifo_empty);

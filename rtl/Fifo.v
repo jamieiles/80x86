@@ -1,9 +1,9 @@
 module Fifo(input logic clk,
             input logic reset,
-            /* Write port */
+            // Write port
             input logic wr_en,
             input logic [data_width-1:0] wr_data,
-            /* Read port */
+            // Read port
             input logic rd_en,
             output logic [data_width-1:0] rd_data,
             output logic empty,

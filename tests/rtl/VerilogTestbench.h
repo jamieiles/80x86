@@ -139,10 +139,10 @@ void VerilogTestbench<T, debug_enabled>::cycle(int count)
 {
     for (int i = 0; i < count; ++i) {
         run_deferred_events();
-        /* High clock edge. */
+        // High clock edge.
         step();
         run_edge_events(PosEdge);
-        /* Low clock edge. */
+        // Low clock edge.
         step();
         run_edge_events(NegEdge);
     }
