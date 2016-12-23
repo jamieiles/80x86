@@ -1,5 +1,4 @@
-#ifndef __TESTMODRM_H__
-#define __TESTMODRM_H__
+#pragma once
 
 #include <vector>
 
@@ -21,5 +20,3 @@ public:
 protected:
     RegisterFile regs;
 };
-
-#endif /* __TESTMODRM_H__ */

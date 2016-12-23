@@ -1,5 +1,4 @@
-#ifndef __MODRM_H__
-#define __MODRM_H__
+#pragma once
 
 #include <stdint.h>
 #include <functional>
@@ -44,5 +43,3 @@ private:
     bool addr_is_cached;
     bool is_decoded;
 };
-
-#endif /* __MODRM_H__ */

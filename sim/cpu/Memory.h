@@ -1,5 +1,4 @@
-#ifndef __MEMORY_H__
-#define __MEMORY_H__
+#pragma once
 
 #include <sys/types.h>
 #include <stdint.h>
@@ -20,5 +19,3 @@ private:
     uint8_t mem[MEMORY_SIZE];
     bool written;
 };
-
-#endif /* __MEMORY_H__ */

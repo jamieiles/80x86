@@ -1,5 +1,4 @@
-#ifndef __EMULATEFIXTURE_H__
-#define __EMULATEFIXTURE_H__
+#pragma once
 
 #include <memory>
 #include <vector>
@@ -123,5 +122,3 @@ protected:
     size_t instr_len;
     std::unique_ptr<CPU> cpu;
 };
-
-#endif /* __EMULATEFIXTURE_H__ */

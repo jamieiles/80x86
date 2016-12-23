@@ -1,5 +1,4 @@
-#ifndef __DISPLAY_H__
-#define __DISPLAY_H__
+#pragma once
 
 #include <memory>
 #include <string>
@@ -33,5 +32,3 @@ private:
     Cursor cursor;
     std::unique_ptr<char[]> characters;
 };
-
-#endif // __DISPLAY_H__

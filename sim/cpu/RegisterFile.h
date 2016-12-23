@@ -1,5 +1,4 @@
-#ifndef __REGISTERFILE_H__
-#define __REGISTERFILE_H__
+#pragma once
 
 #include <stdint.h>
 
@@ -72,5 +71,3 @@ private:
     uint16_t flags;
     bool written;
 };
-
-#endif /* __REGISTERFILE_H__ */

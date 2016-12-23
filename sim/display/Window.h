@@ -1,5 +1,4 @@
-#ifndef __WINDOW_H__
-#define __WINDOW_H__
+#pragma once
 
 #include <SDL.h>
 #include <stdexcept>
@@ -46,5 +45,3 @@ private:
     int height;
     SDL_Window *window;
 };
-
-#endif // __WINDOW_H__

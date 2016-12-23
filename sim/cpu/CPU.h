@@ -1,5 +1,4 @@
-#ifndef __CPU_H__
-#define __CPU_H__
+#pragma once
 
 #include "Emulate.h"
 #include "Memory.h"
@@ -114,5 +113,3 @@ private:
     RegisterFile registers;
     Emulator emulator;
 };
-
-#endif /* __CPU_H__ */

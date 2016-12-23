@@ -1,5 +1,4 @@
-#ifndef __FONT_H__
-#define __FONT_H__
+#pragma once
 
 #include <SDL_ttf.h>
 
@@ -41,5 +40,3 @@ public:
 private:
     TTF_Font *font;
 };
-
-#endif // __FONT_H__

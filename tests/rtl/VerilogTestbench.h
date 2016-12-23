@@ -1,5 +1,4 @@
-#ifndef __VERILOGTESTBENCH_H__
-#define __VERILOGTESTBENCH_H__
+#pragma once
 
 #include <verilated_vcd_c.h>
 
@@ -172,5 +171,3 @@ void VerilogTestbench<T, debug_enabled>::at_cycle(vluint64_t cycle_num,
 
     deferred_events[cycle_num].push_back(cb);
 }
-
-#endif // __VERILOGTESTBENCH_H__

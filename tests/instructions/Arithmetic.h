@@ -1,5 +1,4 @@
-#ifndef __ARITHMETIC_H__
-#define __ARITHMETIC_H__
+#pragma once
 
 #include <gtest/gtest.h>
 
@@ -111,5 +110,3 @@ class ArithmeticAlImmedTest : public EmulateFixture,
 class ArithmeticAxImmedTest : public EmulateFixture,
     public ::testing::WithParamInterface<ArithImmed16Params> {
 };
-
-#endif /* __ARITHMETIC_H__ */

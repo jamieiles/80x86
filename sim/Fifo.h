@@ -1,5 +1,4 @@
-#ifndef __FIFO_H__
-#define __FIFO_H__
+#pragma once
 
 #include <stdexcept>
 #include <vector>
@@ -37,5 +36,3 @@ private:
     const unsigned int max_depth;
     std::vector<T> entries;
 };
-
-#endif /* __FIFO_H__ */

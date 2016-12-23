@@ -1,5 +1,4 @@
-#ifndef __EMULATE_H__
-#define __EMULATE_H__
+#pragma once
 
 #include <stddef.h>
 #include <stdint.h>
@@ -40,5 +39,3 @@ public:
 private:
     std::unique_ptr<EmulatorPimpl> pimpl;
 };
-
-#endif /* __EMULATE_H__ */

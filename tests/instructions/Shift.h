@@ -1,5 +1,4 @@
-#ifndef __SHIFT_H__
-#define __SHIFT_H__
+#pragma once
 
 #include <vector>
 #include <gtest/gtest.h>
@@ -44,5 +43,3 @@ struct ShiftCLTestParams {
 class ShiftCLTest : public EmulateFixture,
     public ::testing::WithParamInterface<ShiftCLTestParams> {
 };
-
-#endif /* __SHIFT_H__ */
