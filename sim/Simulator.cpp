@@ -114,7 +114,7 @@ private:
     void clear_keypress(const SDL_Event &e);
     void return_keypress(bool block);
 
-    CPU cpu;
+    SoftwareCPU cpu;
     Display display;
     std::ifstream disk_image;
     std::chrono::time_point<std::chrono::system_clock> start_time;
