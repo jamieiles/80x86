@@ -32,7 +32,8 @@ public:
     {
         int maxx;
 
-        if (TTF_GlyphMetrics(font, 'x', NULL, &maxx, NULL, NULL, NULL))
+        if (TTF_GlyphMetrics(font, 'x', nullptr, &maxx, nullptr, nullptr,
+                             nullptr))
             throw std::runtime_error("unable to get font metrics");
 
         return static_cast<size_t>(maxx);

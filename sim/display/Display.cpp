@@ -84,7 +84,7 @@ void Display::refresh()
 {
     SDL_Color fg{255, 255, 255, 128};
 
-    SDL_FillRect(window->surface(), NULL, 0);
+    SDL_FillRect(window->surface(), nullptr, 0);
 
     for (int row = 0; row < num_rows; ++row) {
         auto text_surface = TTF_RenderText_Solid(font->get(),
@@ -92,7 +92,7 @@ void Display::refresh()
                                                  fg);
         SDL_Rect render_pos = {0, row * font_size + 1, window->get_width(),
             window->get_height()};
-        SDL_BlitSurface(text_surface, NULL, window->surface(), &render_pos);
+        SDL_BlitSurface(text_surface, nullptr, window->surface(), &render_pos);
         SDL_FreeSurface(text_surface);
     }
 
