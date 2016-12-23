@@ -1,6 +1,7 @@
 #pragma once
 
 #include <verilated_vcd_c.h>
+#include <verilated_cov.h>
 
 #include <boost/algorithm/string/replace.hpp>
 #include <boost/format.hpp>
@@ -17,6 +18,12 @@ enum EdgeType {
 const bool verilator_debug_enabled = true;
 #else
 const bool verilator_debug_enabled = false;
+#endif
+
+#ifdef VM_COVERAGE
+const bool verilator_coverage_enabled = true;
+#else
+const bool verilator_coverage_enabled = false;
 #endif
 
 template <typename T, bool debug_enabled=verilator_debug_enabled>
@@ -112,7 +119,17 @@ VerilogTestbench<T, debug_enabled>::~VerilogTestbench()
 {
     if (debug_enabled)
         teardown_trace();
+
     dut.final();
+
+    if (verilator_coverage_enabled) {
+        auto test_info = ::testing::UnitTest::GetInstance()->current_test_info();
+        auto filename = (boost::format("%s.%s.dat") % test_info->test_case_name() %
+                         test_info->name()).str();
+        boost::replace_all(filename, "/", "_");
+        VerilatedCov::write(("coverage/" + filename).c_str());
+        VerilatedCov::clear();
+    }
 }
 
 template <typename T, bool debug_enabled>
