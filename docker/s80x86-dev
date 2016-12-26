@@ -1,3 +1,3 @@
 #!/bin/bash
 DOCKER_INTERACTIVE_FLAGS="-it -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=unix$DISPLAY"
-docker run -w $(pwd) --rm $DOCKER_INTERACTIVE_FLAGS -v /home:/home -e S80X86_DEV_USER=$(id -u -n) -e S80X86_DEV_UID=$(id -u) -e S80X86_DEV_GID=$(id -g) s80x86-dev:latest /bin/bash
+docker run -w $(pwd) --rm $DOCKER_INTERACTIVE_FLAGS -v /etc/machine-id:/etc/machine-id -v /home:/home -e S80X86_DEV_USER=$(id -u -n) -e S80X86_DEV_UID=$(id -u) -e S80X86_DEV_GID=$(id -g) s80x86-dev:latest /bin/bash
