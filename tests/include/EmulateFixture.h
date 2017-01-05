@@ -12,7 +12,7 @@ extern std::unique_ptr<CPU> get_cpu();
 class EmulateFixture : public ::testing::Test {
 public:
     EmulateFixture()
-        : cpu(std::move(get_cpu()))
+        : cpu(get_cpu())
     {
         // Doesn't need to model the reset vector of FFF0:0000 otherwise we
         // need to handle wrapping around to 0.  Just start off away from the
