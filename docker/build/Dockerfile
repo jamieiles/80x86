@@ -11,12 +11,24 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         g++ \
         libboost-python-dev \
         python-dev \
-        verilator \
         lcov \
         ccache \
         ruby \
         ruby-dev \
-        python-lxml
+        python-lxml \
+        wget \
+        flex \
+        bison \
+        clang
+RUN cd /tmp && \
+        wget https://www.veripool.org/ftp/verilator-3.888.tgz && \
+        tar xf verilator-3.888.tgz && \
+        cd verilator-3.888 && \
+        ./configure && \
+        make -j4 && \
+        make install && \
+        cd /tmp && \
+        rm verilator* -rf
 RUN gem install --no-ri --pre asciidoctor-pdf coderay pygments.rb
 RUN mkdir -p /build
 WORKDIR /build
