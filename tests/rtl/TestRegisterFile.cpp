@@ -10,45 +10,58 @@ public:
     void write16(uint8_t reg, uint16_t v);
     void trigger_read8(int port, uint8_t reg);
     void trigger_read16(int port, uint8_t reg);
-    uint16_t get_value(int port) const;
+    uint16_t get_value(int port);
 };
 
 void RegisterFileTestFixture::write8(uint8_t reg, uint8_t v)
 {
-    dut.wr_sel = reg;
-    dut.wr_val = v;
-    dut.wr_en = 1;
-    dut.is_8_bit = 1;
+    after_n_cycles(0, [&]{
+        this->dut.wr_sel = reg;
+        this->dut.wr_val = v;
+        this->dut.wr_en = 1;
+        this->dut.is_8_bit = 1;
+        after_n_cycles(1, [&]{
+            dut.wr_en = 0;
+        });
+    });
     cycle();
-    dut.wr_en = 0;
 }
 
 void RegisterFileTestFixture::write16(uint8_t reg, uint16_t v)
 {
-    dut.wr_sel = reg;
-    dut.wr_val = v;
-    dut.wr_en = 1;
-    dut.is_8_bit = 0;
+    after_n_cycles(0, [&]{
+        this->dut.wr_sel = reg;
+        this->dut.wr_val = v;
+        this->dut.wr_en = 1;
+        this->dut.is_8_bit = 0;
+        after_n_cycles(1, [&]{
+            dut.wr_en = 0;
+        });
+    });
     cycle();
-    dut.wr_en = 0;
 }
 
 void RegisterFileTestFixture::trigger_read8(int port, uint8_t reg)
 {
-    dut.rd_sel[port] = reg;
-    dut.is_8_bit = 1;
+    after_n_cycles(0, [&]{
+        dut.rd_sel[port] = reg;
+        dut.is_8_bit = 1;
+    });
     cycle();
 }
 
 void RegisterFileTestFixture::trigger_read16(int port, uint8_t reg)
 {
-    dut.rd_sel[port] = reg;
-    dut.is_8_bit = 0;
+    after_n_cycles(0, [&]{
+        dut.rd_sel[port] = reg;
+        dut.is_8_bit = 0;
+    });
     cycle();
 }
 
-uint16_t RegisterFileTestFixture::get_value(int port) const
+uint16_t RegisterFileTestFixture::get_value(int port)
 {
+    cycle();
     return dut.rd_val[port];
 }
 

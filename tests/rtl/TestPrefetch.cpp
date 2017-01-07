@@ -28,13 +28,11 @@ PrefetchTestFixture::PrefetchTestFixture()
     dut.mem_ack = 0;
     dut.mem_data = 0;
 
-    at_edge(PosEdge, [&]{
+    periodic(ClockCapture, [&]{
         if (!this->dut.reset && this->dut.fifo_wr_en)
             fifo_bytes.push_back(this->dut.fifo_wr_data & 0xff);
     });
-    at_edge(NegEdge, [&]{
-        this->dut.mem_ack = 0;
-        this->dut.mem_data = 0;
+    periodic(ClockSetup, [&]{
         if (!this->dut.reset && this->dut.mem_access && !reading) {
             reading = true;
             if (memory.find(this->dut.mem_address) == memory.end())
@@ -86,7 +84,7 @@ TEST_F(PrefetchTestFixture, update_ip_resets_fifo)
     dut.load_new_ip = 0;
     ASSERT_TRUE(dut.fifo_reset);
     ASSERT_EQ(dut.mem_address, 0x100LU);
-    cycle(4);
+    cycle(2);
     ASSERT_EQ(fifo_bytes, std::vector<uint8_t>{0x12});
 }
 
@@ -99,7 +97,7 @@ TEST_F(PrefetchTestFixture, odd_fetch_address_writes_one)
     dut.load_new_ip = 1;
     cycle();
     dut.load_new_ip = 0;
-    cycle(4);
+    cycle(2);
 
     ASSERT_EQ(fifo_bytes, std::vector<uint8_t>{0x12});
 }
@@ -116,7 +114,7 @@ TEST_F(PrefetchTestFixture, back_to_back_reads)
     dut.load_new_ip = 0;
     // Start fetching from the new address, this should do back to back reads,
     // so 6 cycles to write the 3 bytes.
-    cycle(6);
+    cycle(4);
 
     ASSERT_EQ(fifo_bytes, (std::vector<uint8_t>{0x12, 0x34, 0x56}));
 }

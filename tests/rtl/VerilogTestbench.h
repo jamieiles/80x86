@@ -9,10 +9,21 @@
 #include <map>
 #include <vector>
 
-enum EdgeType {
-    PosEdge,
-    NegEdge,
+enum PeriodicEventType {
+    // Run at the end of the cycle once the DUT has been clocked and
+    // evaluated.  Signals should be stable and ready for capturing by the
+    // test driver.
+    ClockCapture,
+    // Run immediately before the positive clock edge, any changed signals
+    // will be delivered on the clock edge and not evaluated before.  Use this
+    // when sending data into the DUT that would normally be registered in the
+    // real system.
+    ClockSetup,
 };
+
+const int evals_per_cycle = 100;
+
+static_assert(evals_per_cycle % 2 == 0, "evals_per_cycle must be divisible by 2");
 
 #ifdef DEBUG
 const bool verilator_debug_enabled = true;
@@ -32,38 +43,38 @@ public:
     VerilogTestbench();
     virtual ~VerilogTestbench();
     void reset();
-    void at_cycle(vluint64_t cycle_num,
-                  std::function<void()> cb);
     void after_n_cycles(vluint64_t delta,
                         std::function<void()> cb)
     {
-        at_cycle((cur_time / 2) + delta, cb);
+        at_cycle(cycle_num + delta, cb);
     }
-    void at_edge(EdgeType edge_type, std::function<void()> fn)
+    void periodic(PeriodicEventType edge_type, std::function<void()> fn)
     {
-        edge_events[edge_type].push_back(fn);
+        periodic_events[edge_type].push_back(fn);
     }
-    virtual void step();
     virtual void cycle(int count=1);
     vluint64_t cur_cycle() const
     {
-        return cur_time / 2;
+        return cycle_num;
     }
 protected:
     T dut;
 private:
+    void at_cycle(vluint64_t cycle_num, std::function<void()> cb);
     void run_deferred_events();
-    void run_edge_events(EdgeType edge_type);
+    void run_periodic_events(PeriodicEventType edge_type);
     void setup_trace();
     void teardown_trace();
     VerilatedVcdC tracer;
     vluint64_t cur_time;
+    vluint64_t cycle_num;
     std::map<vluint64_t, std::vector<std::function<void()>>> deferred_events;
-    std::map<EdgeType, vector<std::function<void()>>> edge_events;
+    std::map<PeriodicEventType, vector<std::function<void()>>> periodic_events;
 };
 
 template <typename T, bool debug_enabled>
 VerilogTestbench<T, debug_enabled>::VerilogTestbench()
+    : cycle_num(0)
 {
     dut.reset = 0;
     dut.clk = 0;
@@ -141,50 +152,52 @@ void VerilogTestbench<T, debug_enabled>::reset()
 }
 
 template <typename T, bool debug_enabled>
-void VerilogTestbench<T, debug_enabled>::step()
-{
-    dut.eval();
-    dut.clk = !dut.clk;
-    if (debug_enabled)
-        tracer.dump(cur_time);
-    cur_time++;
-}
-
-template <typename T, bool debug_enabled>
 void VerilogTestbench<T, debug_enabled>::cycle(int count)
 {
     for (int i = 0; i < count; ++i) {
-        run_deferred_events();
-        // High clock edge.
-        step();
-        run_edge_events(PosEdge);
-        // Low clock edge.
-        step();
-        run_edge_events(NegEdge);
+        for (auto j = 0; j < evals_per_cycle; ++j) {
+
+            if (debug_enabled)
+                tracer.dump(cur_time);
+            if (j == 0) {
+                run_periodic_events(ClockSetup);
+                dut.clk = !dut.clk;
+                dut.eval();
+                run_deferred_events();
+                dut.eval();
+                run_periodic_events(ClockCapture);
+            } else if (j == evals_per_cycle / 2) {
+                dut.clk = !dut.clk;
+                dut.eval();
+            } else {
+                dut.eval();
+            }
+            ++cur_time;
+        }
+
+        ++cycle_num;
     }
 }
 
 template <typename T, bool debug_enabled>
-void VerilogTestbench<T, debug_enabled>::run_edge_events(EdgeType edge_type)
+void VerilogTestbench<T, debug_enabled>::run_periodic_events(PeriodicEventType edge_type)
 {
-    for (auto &e: edge_events[edge_type])
+    for (auto &e: periodic_events[edge_type])
         e();
 }
 
 template <typename T, bool debug_enabled>
 void VerilogTestbench<T, debug_enabled>::run_deferred_events()
 {
-    auto cycle = cur_time / 2;
-
-    for (auto &e: deferred_events[cycle])
+    for (auto &e: deferred_events[cycle_num])
         e();
 }
 
 template <typename T, bool debug_enabled>
-void VerilogTestbench<T, debug_enabled>::at_cycle(vluint64_t cycle_num,
+void VerilogTestbench<T, debug_enabled>::at_cycle(vluint64_t target_cycle_num,
                                    std::function<void()> cb)
 {
-    assert(cycle_num >= cur_time / 2);
+    assert(target_cycle_num >= cycle_num);
 
-    deferred_events[cycle_num].push_back(cb);
+    deferred_events[target_cycle_num].push_back(cb);
 }

@@ -74,20 +74,22 @@ RTLModRMDecoderTestbench::RTLModRMDecoderTestbench()
     dut.bx = dut.bp = dut.si = dut.di = 0;
     reset();
 
-    at_edge(NegEdge, [&]{
-        this->dut.fifo_empty = this->stream.size() == 0;
+    periodic(ClockSetup, [&]{
+        if (!this->dut.reset && this->dut.fifo_rd_en &&
+            this->stream.size() > 0) {
+            after_n_cycles(0, [&]{
+                this->dut.fifo_empty = this->stream.size() == 0;
+                this->dut.fifo_rd_data = this->stream.size() > 0 ?
+                    this->stream[0] : 0;
+                this->stream.pop_front();
+            });
+        }
         if (!this->dut.reset && this->dut.fifo_rd_en &&
             this->stream.size() == 0)
             FAIL() << "fifo underflow" << std::endl;
-
-        if (!this->dut.reset && this->dut.fifo_rd_en &&
-            this->stream.size() > 0) {
-            this->dut.fifo_rd_data = this->stream[0];
-            this->stream.pop_front();
-        }
     });
 
-    at_edge(NegEdge, [&]{
+    periodic(ClockSetup, [&]{
         this->dut.bx = regs.get(BX);
         this->dut.bp = regs.get(BP);
         this->dut.si = regs.get(SI);
