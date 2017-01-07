@@ -35,6 +35,8 @@ public:
                 return;
             }
         }
+
+        FAIL() << "failed to complete decode" << std::endl;
     }
 
     OperandType get_rm_type() const
