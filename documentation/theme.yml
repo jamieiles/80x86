@@ -163,7 +163,7 @@ footer:
   vertical_align: top
   recto:
     right:
-      content: s80x86 Development Guide | © Jamie Iles 2016 | '{page-number}'
+      content: s80x86 Development Guide | © Jamie Iles 2017 | '{page-number}'
   verso:
     left:
-      content: s80x86 Development Guide | © Jamie Iles 2016 | '{page-number}'
+      content: s80x86 Development Guide | © Jamie Iles 2017 | '{page-number}'
