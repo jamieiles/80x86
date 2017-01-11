@@ -8,16 +8,18 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/coverage)
 
 add_executable(rtl-unittest
                TestFifo.cpp
+               TestImmediateReader.cpp
+               TestModRMDecode.cpp
                TestModRMDecode.cpp
                TestPrefetch.cpp
                TestRegisterFile.cpp
                TestSegmentRegisterFile.cpp
-               TestModRMDecode.cpp
                ../../sim/cpu/RegisterFile.cpp
                main.cpp)
 
 target_link_libraries(rtl-unittest
                       VFifo
+                      VImmediateReader
                       VModRMDecode
                       VPrefetch
                       VRegisterFile
