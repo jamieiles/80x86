@@ -30,10 +30,8 @@ public:
 
         for (auto i = 0; i < 1000; ++i) {
             cycle();
-            if (dut.complete) {
-                cycle(2);
+            if (dut.complete)
                 return;
-            }
         }
 
         FAIL() << "failed to complete decode" << std::endl;

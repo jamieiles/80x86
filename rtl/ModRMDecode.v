@@ -31,11 +31,11 @@ reg _popped;
 reg _fetch_busy;
 wire _fetching = _fetch_busy & ~complete;
 
-wire [1:0] _mod = _bytes_read == 2'd0 && _popped ? fifo_rd_data[7:6] : _modrm[7:6];
-wire [2:0] _reg = _bytes_read == 2'd0 && _popped ? fifo_rd_data[5:3] : _modrm[5:3];
-wire [2:0] _rm  = _bytes_read == 2'd0 && _popped ? fifo_rd_data[2:0] : _modrm[2:0];
+wire [1:0] _mod = _bytes_read == 2'd1 && _popped ? fifo_rd_data[7:6] : _modrm[7:6];
+wire [2:0] _reg = _bytes_read == 2'd1 && _popped ? fifo_rd_data[5:3] : _modrm[5:3];
+wire [2:0] _rm  = _bytes_read == 2'd1 && _popped ? fifo_rd_data[2:0] : _modrm[2:0];
 
-assign complete = reset ? 1'b0 : _bytes_read == _num_bytes - 1'b1 && _popped;
+assign complete = reset ? 1'b0 : _bytes_read == _num_bytes && _popped;
 
 always_ff @(posedge clk or posedge reset)
     if (reset || complete)
@@ -44,9 +44,9 @@ always_ff @(posedge clk or posedge reset)
         _fetch_busy <= 1'b1;
 
 always_comb begin
-    if (_bytes_read == 2'd1 && _popped)
+    if (_bytes_read == 2'd2 && _popped)
         _immediate = {{8{fifo_rd_data[7]}}, fifo_rd_data[7:0]};
-    else if (_bytes_read == 2'd2 && _popped && _num_bytes == 2'd3)
+    else if (_bytes_read == 2'd3 && _popped && _num_bytes == 2'd3)
         _immediate = {fifo_rd_data, _immediate_buf[7:0]};
     else
         _immediate = _immediate_buf;
@@ -101,7 +101,7 @@ end
 always_ff @(posedge clk or posedge reset) begin
     if (reset || start)
         _bytes_read <= 2'd0;
-    else if (_popped && _bytes_read != _num_bytes)
+    else if (fifo_rd_en && _bytes_read != _num_bytes)
         _bytes_read <= _bytes_read + 1'b1;
 end
 
@@ -114,13 +114,13 @@ always_ff @(posedge clk or posedge reset) begin
         _immediate_buf <= 16'b0;
     end
 
-    if (_popped && _bytes_read == 2'd0)
+    if (_popped && _bytes_read == 2'd1)
         _modrm <= fifo_rd_data;
-    else if (_popped && _bytes_read == 2'd1)
+    else if (_popped && _bytes_read == 2'd2)
         _immediate_buf[7:0] <= fifo_rd_data;
         if (_num_bytes == 2'd2)
             _immediate_buf[15:8] <= {8{fifo_rd_data[7]}};
-    else if (_popped && _bytes_read == 2'd2)
+    else if (_popped && _bytes_read == 2'd3)
         _immediate_buf[15:8] <= fifo_rd_data;
 end
 
