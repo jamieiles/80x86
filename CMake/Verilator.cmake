@@ -14,13 +14,13 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif()
 
 function(verilate toplevel sources)
+    set(sources ${sources} ${ARGN})
     separate_arguments(sources)
     set(generated
         ${CMAKE_CURRENT_BINARY_DIR}/V${toplevel}.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/V${toplevel}.h
         ${CMAKE_CURRENT_BINARY_DIR}/V${toplevel}__Syms.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/V${toplevel}__Syms.h)
-    list(APPEND generated ${ARGV2})
     if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         list(APPEND generated
              ${CMAKE_CURRENT_BINARY_DIR}/V${toplevel}__Trace.cpp
