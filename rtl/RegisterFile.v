@@ -1,3 +1,5 @@
+`include "RegisterEnum.v"
+
 module RegisterFile(input logic clk,
                     input logic reset,
                     input logic is_8_bit,
@@ -8,28 +10,6 @@ module RegisterFile(input logic clk,
                     input logic [2:0] wr_sel,
                     input logic [15:0] wr_val,
                     input logic wr_en);
-
-typedef enum bit [2:0] {
-    AX,
-    CX,
-    DX,
-    BX,
-    SP,
-    BP,
-    SI,
-    DI
-} GPR16_t;
-
-typedef enum bit [2:0] {
-    AL,
-    CL,
-    DL,
-    BL,
-    AH,
-    CH,
-    DH,
-    BH
-} GPR8_t;
 
 reg [15:0] gprs[8];
 

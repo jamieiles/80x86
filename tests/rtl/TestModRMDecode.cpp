@@ -69,7 +69,6 @@ RTLModRMDecoderTestbench::RTLModRMDecoderTestbench()
     dut.reset = 0;
     dut.start = 0;
     dut.fifo_rd_en = 0;
-    dut.bx = dut.bp = dut.si = dut.di = 0;
     reset();
 
     periodic(ClockSetup, [&]{
@@ -88,10 +87,10 @@ RTLModRMDecoderTestbench::RTLModRMDecoderTestbench()
     });
 
     periodic(ClockSetup, [&]{
-        this->dut.bx = regs.get(BX);
-        this->dut.bp = regs.get(BP);
-        this->dut.si = regs.get(SI);
-        this->dut.di = regs.get(DI);
+        after_n_cycles(0, [&]{
+            this->dut.regs[0] = regs.get(static_cast<GPR>(this->dut.reg_sel[0]));
+            this->dut.regs[1] = regs.get(static_cast<GPR>(this->dut.reg_sel[1]));
+        });
     });
 }
 

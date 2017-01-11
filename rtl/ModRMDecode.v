@@ -1,3 +1,5 @@
+`include "RegisterEnum.v"
+
 module ModRMDecode(input logic clk,
                    input logic reset,
                    // Control.
@@ -9,10 +11,8 @@ module ModRMDecode(input logic clk,
                    output logic rm_is_reg,
                    output logic [2:0] rm_regnum,
                    // Registers.
-                   input logic [15:0] bx,
-                   input logic [15:0] bp,
-                   input logic [15:0] si,
-                   input logic [15:0] di,
+                   output logic [2:0] reg_sel[2],
+                   input logic [15:0] regs[2],
                    // Fifo Read Port.
                    output logic fifo_rd_en,
                    input logic [7:0] fifo_rd_data,
@@ -35,13 +35,23 @@ wire [1:0] _mod = _bytes_read == 2'd1 && _popped ? fifo_rd_data[7:6] : _modrm[7:
 wire [2:0] _reg = _bytes_read == 2'd1 && _popped ? fifo_rd_data[5:3] : _modrm[5:3];
 wire [2:0] _rm  = _bytes_read == 2'd1 && _popped ? fifo_rd_data[2:0] : _modrm[2:0];
 
-assign complete = reset ? 1'b0 : _bytes_read == _num_bytes && _popped;
+wire _has_address = _mod != 2'b11;
+
+assign complete = reset ? 1'b0 : _bytes_read == _num_bytes && (!_has_address || _registers_fetched);
+
+reg _registers_fetched;
 
 always_ff @(posedge clk or posedge reset)
     if (reset || complete)
         _fetch_busy <= 1'b0;
     else if (start)
         _fetch_busy <= 1'b1;
+
+always_ff @(posedge clk or posedge reset)
+    if (reset || complete)
+        _registers_fetched <= 1'b0;
+    else if (_bytes_read == 2'd1)
+        _registers_fetched <= 1'b1;
 
 always_comb begin
     if (_bytes_read == 2'd2 && _popped)
@@ -62,6 +72,21 @@ always_comb begin
 end
 
 always_comb begin
+    case (_rm)
+    3'b000, 3'b001, 3'b111: reg_sel[0] = BX;
+    3'b010, 3'b011, 3'b110: reg_sel[0] = BP;
+    3'b100: reg_sel[0] = SI;
+    3'b101: reg_sel[0] = DI;
+    endcase
+
+    case (_rm)
+    3'b000, 3'b010: reg_sel[1] = SI;
+    3'b001, 3'b011: reg_sel[1] = DI;
+    default: reg_sel[1] = 0;
+    endcase
+end
+
+always_comb begin
     regnum = _reg;
     rm_regnum = _rm;
     rm_is_reg = 1'b0;
@@ -69,26 +94,15 @@ always_comb begin
     case (_mod)
     2'b00: begin
         case (_rm)
-        3'b000: effective_address = bx + si;
-        3'b001: effective_address = bx + di;
-        3'b010: effective_address = bp + si;
-        3'b011: effective_address = bp + di;
-        3'b100: effective_address = si;
-        3'b101: effective_address = di;
+        3'b000, 3'b001, 3'b010, 3'b011: effective_address = regs[0] + regs[1];
+        3'b100, 3'b101, 3'b111: effective_address = regs[0];
         3'b110: effective_address = _immediate;
-        3'b111: effective_address = bx;
         endcase
     end
     2'b01, 2'b10: begin
         case (_rm)
-        3'b000: effective_address = bx + si + _immediate;
-        3'b001: effective_address = bx + di + _immediate;
-        3'b010: effective_address = bp + si + _immediate;
-        3'b011: effective_address = bp + di + _immediate;
-        3'b100: effective_address = si + _immediate;
-        3'b101: effective_address = di + _immediate;
-        3'b110: effective_address = bp + _immediate;
-        3'b111: effective_address = bx + _immediate;
+        3'b000, 3'b001, 3'b010, 3'b011: effective_address = regs[0] + regs[1] + _immediate;
+        3'b100, 3'b101, 3'b110, 3'b111: effective_address = regs[0] + _immediate;
         endcase
     end
     2'b11: begin
