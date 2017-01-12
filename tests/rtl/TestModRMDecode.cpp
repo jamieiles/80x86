@@ -1,5 +1,5 @@
 #include <gtest/gtest.h>
-#include <VModRMDecode.h>
+#include <VModRMTestbench.h>
 #include <deque>
 #include <memory>
 
@@ -7,7 +7,7 @@
 #include "TestModRM.h"
 #include "../common/TestModRM.cpp"
 
-class RTLModRMDecoderTestbench : public VerilogTestbench<VModRMDecode>,
+class RTLModRMDecoderTestbench : public VerilogTestbench<VModRMTestbench>,
     public ModRMDecoderTestBench {
 public:
     RTLModRMDecoderTestbench();

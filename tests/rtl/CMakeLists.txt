@@ -6,6 +6,10 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/coverage)
 
+verilate(ModRMTestbench ${CMAKE_CURRENT_SOURCE_DIR}/ModRMTestbench.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/ModRMDecode.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/ImmediateReader.v)
+
 add_executable(rtl-unittest
                TestFifo.cpp
                TestImmediateReader.cpp
@@ -20,7 +24,7 @@ add_executable(rtl-unittest
 target_link_libraries(rtl-unittest
                       VFifo
                       VImmediateReader
-                      VModRMDecode
+                      VModRMTestbench
                       VPrefetch
                       VRegisterFile
                       VSegmentRegisterFile
