@@ -54,11 +54,11 @@ always_ff @(posedge clk or posedge reset) begin
         _immediate_buf <= 16'b0;
     end
 
-    if (_bytes_read == 2'b1)
+    if (_bytes_read == 2'b1 && _popped) begin
         _immediate_buf[7:0] <= fifo_rd_data;
         if (is_8bit)
             _immediate_buf[15:8] <= {8{fifo_rd_data[7]}};
-    else if (_bytes_read == 2'd2)
+    end else if (_bytes_read == 2'd2 && _popped)
         _immediate_buf[15:8] <= fifo_rd_data;
 end
 

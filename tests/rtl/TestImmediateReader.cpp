@@ -76,3 +76,16 @@ TEST_F(ImmediateReaderTestbench, Immed16PopsTwo)
 
     ASSERT_EQ(dut.immediate, 0x55aaLU);
 }
+
+TEST_F(ImmediateReaderTestbench, ImmedPersistsAfterCompletion)
+{
+    add_bytes({ 0xaa, 0x55 });
+    dut.is_8bit = 0;
+
+    fetch();
+    cycle(2);
+    dut.fifo_rd_data = 0;
+    cycle(2);
+
+    ASSERT_EQ(dut.immediate, 0x55aaLU);
+}
