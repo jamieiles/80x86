@@ -67,6 +67,16 @@ TEST_F(ImmediateReaderTestbench, Immed8PopsOne)
     ASSERT_EQ(dut.immediate, 0xff80LU);
 }
 
+TEST_F(ImmediateReaderTestbench, Immed8SignExtendPositive)
+{
+    add_bytes({ 0x7f });
+    dut.is_8bit = 1;
+
+    fetch();
+
+    ASSERT_EQ(dut.immediate, 0x007f);
+}
+
 TEST_F(ImmediateReaderTestbench, Immed16PopsTwo)
 {
     add_bytes({ 0xaa, 0x55 });
