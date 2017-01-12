@@ -36,4 +36,22 @@ end
 always_ff @(posedge clk)
     rd_val <= rd_bypass ? wr_val : registers[rd_sel];
 
+`ifdef verilator
+export "DPI-C" function get_sr;
+
+function [15:0] get_sr;
+    input int regnum;
+    get_sr = registers[regnum];
+endfunction
+
+export "DPI-C" function set_sr;
+
+function [15:0] set_sr;
+    input int regnum;
+    input int val;
+    registers[regnum] = val[15:0];
+    set_sr = 16'b0;
+endfunction
+`endif
+
 endmodule
