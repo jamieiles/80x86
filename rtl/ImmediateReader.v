@@ -42,7 +42,7 @@ always_ff @(posedge clk or posedge reset)
 always_ff @(posedge clk or posedge reset) begin
     if (reset || start)
         _bytes_read <= 2'b0;
-    if (fifo_rd_en && _bytes_read != _num_bytes)
+    if (fifo_rd_en)
         _bytes_read <= _bytes_read + 2'b1;
 end
 
