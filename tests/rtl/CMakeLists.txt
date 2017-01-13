@@ -13,6 +13,8 @@ verilate(ModRMTestbench ${CMAKE_CURRENT_SOURCE_DIR}/ModRMTestbench.v
 add_executable(rtl-unittest
                TestFifo.cpp
                TestImmediateReader.cpp
+               TestImmediateReader.cpp
+               TestLoadStore.cpp
                TestModRMDecode.cpp
                TestModRMDecode.cpp
                TestPrefetch.cpp
@@ -24,6 +26,7 @@ add_executable(rtl-unittest
 target_link_libraries(rtl-unittest
                       VFifo
                       VImmediateReader
+                      VLoadStore
                       VModRMTestbench
                       VPrefetch
                       VRegisterFile
