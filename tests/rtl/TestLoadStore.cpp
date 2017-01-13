@@ -83,11 +83,31 @@ void LoadStoreTestbench::add_memory(physaddr start,
         mem_bytes[addr++] = b;
 }
 
+TEST_F(LoadStoreTestbench, SegmentCalculation)
+{
+    this->dut.segment = 0x800;
+    write_mar(0x100);
+
+    cycle();
+
+    ASSERT_EQ(this->dut.m_addr, ((0x800 << 4) + 0x100LU) >> 1);
+}
+
 TEST_F(LoadStoreTestbench, Load16)
 {
     add_memory(0x100, {0x55, 0xaa});
 
     write_mar(0x100);
+    access();
+
+    ASSERT_EQ(get_read_values(), std::vector<uint16_t>{0xaa55});
+}
+
+TEST_F(LoadStoreTestbench, Unaligned16Bit)
+{
+    add_memory(0x100, {0x00, 0x55, 0xaa});
+
+    write_mar(0x101);
     access();
 
     ASSERT_EQ(get_read_values(), std::vector<uint16_t>{0xaa55});
