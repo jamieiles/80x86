@@ -28,9 +28,14 @@ public:
         });
         cycle();
     }
-    void access()
+    enum MemWidth {
+        WIDTH_8,
+        WIDTH_16
+    };
+    void access(MemWidth width)
     {
         after_n_cycles(0, [&]{
+            this->dut.is_8bit = width == WIDTH_8;
             this->dut.start = 1;
             after_n_cycles(1, [&]{
                 this->dut.start = 0;
@@ -102,7 +107,7 @@ TEST_F(LoadStoreTestbench, Load16)
     add_memory(0x100, {0x55, 0xaa});
 
     write_mar(0x100);
-    access();
+    access(WIDTH_16);
 
     ASSERT_EQ(get_read_values(), std::vector<uint16_t>{0xaa55});
 }
@@ -112,7 +117,27 @@ TEST_F(LoadStoreTestbench, Unaligned16Bit)
     add_memory(0x100, {0x00, 0x55, 0xaa});
 
     write_mar(0x101);
-    access();
+    access(WIDTH_16);
 
     ASSERT_EQ(get_read_values(), std::vector<uint16_t>{0xaa55});
+}
+
+TEST_F(LoadStoreTestbench, Even8Bit)
+{
+    add_memory(0x0ff, {0xff, 0x55, 0xff});
+
+    write_mar(0x100);
+    access(WIDTH_8);
+
+    ASSERT_EQ(get_read_values(), std::vector<uint16_t>{0x55});
+}
+
+TEST_F(LoadStoreTestbench, Odd8Bit)
+{
+    add_memory(0x100, {0xff, 0x55, 0xff});
+
+    write_mar(0x101);
+    access(WIDTH_8);
+
+    ASSERT_EQ(get_read_values(), std::vector<uint16_t>{0x55});
 }

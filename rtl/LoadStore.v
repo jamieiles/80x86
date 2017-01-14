@@ -13,6 +13,7 @@ module LoadStore(input logic clk,
                  input logic m_ack,
                  // Control
                  input logic start,
+                 input logic is_8bit,
                  output logic complete
                  );
 
@@ -38,7 +39,7 @@ always_ff @(posedge clk or posedge reset)
         write_mar ? mar_in : mar;
 
 always_ff @(posedge clk)
-    complete <= m_ack && ((unaligned && fetch_second) || !unaligned);
+    complete <= m_ack && (is_8bit || (unaligned && fetch_second) || !unaligned);
 
 always_ff @(posedge clk or posedge reset)
     if (reset)
@@ -47,7 +48,7 @@ always_ff @(posedge clk or posedge reset)
         unaligned <= mar[0];
 
 always_ff @(posedge clk or posedge reset)
-    if (m_ack && unaligned && !fetch_second)
+    if (m_ack && unaligned && !fetch_second && !is_8bit)
         fetch_second <= 1'b1;
     else if (reset || (start && !fetching) || complete)
         fetch_second <= 1'b0;
@@ -56,7 +57,7 @@ always_ff @(posedge clk or posedge reset) begin
     if (reset || (start && !fetching)) begin
         mdr <= 16'b0;
     end else if (m_ack && !unaligned) begin
-        mdr <= m_data_in;
+        mdr <= is_8bit ? {8'b0, m_data_in[7:0]} : m_data_in;
     end else if (m_ack && unaligned && !fetch_second) begin
         mdr[7:0] <= unaligned ? m_data_in[15:8] : m_data_in[7:0];
     end else if (m_ack && unaligned && fetch_second) begin
