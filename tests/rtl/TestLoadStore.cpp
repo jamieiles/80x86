@@ -47,9 +47,11 @@ public:
 private:
     std::map<physaddr, uint8_t> mem_bytes;
     std::vector<uint16_t> read_values;
+    bool reading;
 };
 
 LoadStoreTestbench::LoadStoreTestbench()
+    : reading(false)
 {
     reset();
 
@@ -58,16 +60,18 @@ LoadStoreTestbench::LoadStoreTestbench()
             read_values.push_back(this->dut.mdr_out);
     });
     periodic(ClockSetup, [&]{
-        if (!this->dut.reset && this->dut.m_access) {
+        if (!this->dut.reset && this->dut.m_access && !reading) {
+            reading = true;
             if (mem_bytes.find(this->dut.m_addr << 1) == mem_bytes.end())
                 FAIL() << "no memory at 0x" << std::hex << this->dut.m_addr;
-            after_n_cycles(0, [&]{
+            after_n_cycles(4, [&]{
                 this->dut.m_data_in =
                     mem_bytes[this->dut.m_addr << 1] |
                     (mem_bytes[(this->dut.m_addr << 1) + 1] << 8);
                 this->dut.m_ack = 1;
                 after_n_cycles(1, [&]{
                     this->dut.m_ack = 0;
+                    reading = false;
                 });
             });
         }

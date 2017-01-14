@@ -21,51 +21,45 @@ reg [15:0] mar;
 // verilator lint_on UNUSED
 reg [15:0] mdr;
 
-assign m_access = (start | fetch_second) & ~complete & ~m_ack;
-assign m_addr = {segment, 3'b0} + {3'b0, mar[15:1]} + {18'b0, fetch_second};
+assign m_access = (start | fetching | fetch_second) & ~complete & ~m_ack;
+assign m_addr = {segment, 3'b0} + {3'b0, mar[15:1]};
 assign mdr_out = mdr;
 
-wire unaligned = mar[0];
+reg unaligned;
 reg fetching;
 reg fetch_second;
 
-always_ff @(posedge clk or posedge reset) begin
-    if (reset)
-        fetching <= 1'b0;
-    else if (m_ack)
-        fetching <= 1'b0;
-    else if (start)
-        fetching <= 1'b1;
-end
+always_ff @(posedge clk or posedge reset)
+    fetching <= start ? 1'b1 : reset || complete ? 1'b0 : fetching;
 
-always_ff @(posedge clk or posedge reset) begin
-    if (reset)
-        mar <= 16'b0;
-    else if (write_mar)
-        mar <= mar_in;
-end
+always_ff @(posedge clk or posedge reset)
+    mar <= reset ? 16'b0 :
+        m_ack ? mar + 16'b1 :
+        write_mar ? mar_in : mar;
 
-always_ff @(posedge clk) begin
-    if (unaligned && m_ack && fetch_second)
-        complete <= 1'b1;
-    else if (!unaligned && m_ack)
-        complete <= 1'b1;
-    else
-        complete <= 1'b0;
-end
+always_ff @(posedge clk)
+    complete <= m_ack && ((unaligned && fetch_second) || !unaligned);
+
+always_ff @(posedge clk or posedge reset)
+    if (reset)
+        unaligned <= 1'b0;
+    else if (start && !fetching)
+        unaligned <= mar[0];
+
+always_ff @(posedge clk or posedge reset)
+    if (m_ack && unaligned && !fetch_second)
+        fetch_second <= 1'b1;
+    else if (reset || (start && !fetching) || complete)
+        fetch_second <= 1'b0;
 
 always_ff @(posedge clk or posedge reset) begin
     if (reset || (start && !fetching)) begin
-        fetch_second <= 1'b0;
         mdr <= 16'b0;
     end else if (m_ack && !unaligned) begin
-        fetch_second <= 1'b0;
         mdr <= m_data_in;
     end else if (m_ack && unaligned && !fetch_second) begin
-        fetch_second <= 1'b1;
         mdr[7:0] <= unaligned ? m_data_in[15:8] : m_data_in[7:0];
     end else if (m_ack && unaligned && fetch_second) begin
-        fetch_second <= 1'b0;
         mdr[15:8] <= unaligned ? m_data_in[7:0] : m_data_in[15:8];
     end
 end
