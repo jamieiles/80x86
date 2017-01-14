@@ -102,42 +102,31 @@ TEST_F(LoadStoreTestbench, SegmentCalculation)
     ASSERT_EQ(this->dut.m_addr, ((0x800 << 4) + 0x100LU) >> 1);
 }
 
-TEST_F(LoadStoreTestbench, Load16)
+struct LoadParams {
+    physaddr mar_value;
+    LoadStoreTestbench::MemWidth width;
+    std::vector<uint16_t> values;
+};
+
+class LoadTest : public LoadStoreTestbench,
+    public ::testing::WithParamInterface<LoadParams> {
+};
+
+TEST_P(LoadTest, LoadMemory)
 {
-    add_memory(0x100, {0x55, 0xaa});
+    auto params = GetParam();
 
-    write_mar(0x100);
-    access(WIDTH_16);
+    add_memory(0xff, {0xff, 0x55, 0xaa, 0xff});
 
-    ASSERT_EQ(get_read_values(), std::vector<uint16_t>{0xaa55});
+    write_mar(params.mar_value);
+    access(params.width);
+
+    ASSERT_EQ(get_read_values(), params.values);
 }
-
-TEST_F(LoadStoreTestbench, Unaligned16Bit)
-{
-    add_memory(0x100, {0x00, 0x55, 0xaa});
-
-    write_mar(0x101);
-    access(WIDTH_16);
-
-    ASSERT_EQ(get_read_values(), std::vector<uint16_t>{0xaa55});
-}
-
-TEST_F(LoadStoreTestbench, Even8Bit)
-{
-    add_memory(0x0ff, {0xff, 0x55, 0xff});
-
-    write_mar(0x100);
-    access(WIDTH_8);
-
-    ASSERT_EQ(get_read_values(), std::vector<uint16_t>{0x55});
-}
-
-TEST_F(LoadStoreTestbench, Odd8Bit)
-{
-    add_memory(0x100, {0xff, 0x55, 0xff});
-
-    write_mar(0x101);
-    access(WIDTH_8);
-
-    ASSERT_EQ(get_read_values(), std::vector<uint16_t>{0x55});
-}
+INSTANTIATE_TEST_CASE_P(Load, LoadTest,
+    ::testing::Values(
+        LoadParams{0x100U, LoadStoreTestbench::MemWidth::WIDTH_16, {0xaa55}},
+        LoadParams{0x101U, LoadStoreTestbench::MemWidth::WIDTH_16, {0xffaa}},
+        LoadParams{0x100U, LoadStoreTestbench::MemWidth::WIDTH_8, {0x55}},
+        LoadParams{0x101U, LoadStoreTestbench::MemWidth::WIDTH_8, {0xaa}}
+    ));
