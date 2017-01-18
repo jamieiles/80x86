@@ -2,9 +2,10 @@
 set -e
 /usr/sbin/addgroup --quiet --gid $S80X86_DEV_GID $S80X86_DEV_USER
 /usr/sbin/adduser --quiet --home /home/$S80X86_DEV_USER --disabled-password --gecos $S80X86_DEV_USER --uid $S80X86_DEV_UID --gid $S80X86_DEV_GID --no-create-home $S80X86_DEV_USER
-/usr/sbin/usermod --groups $S80X86_DEV_USER,adm $S80X86_DEV_USER
+/usr/sbin/usermod --groups $S80X86_DEV_USER,adm,sudo $S80X86_DEV_USER
+echo "%sudo   ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
 if [ "$#" -ge 1 ]; then
     HOME=/home/$S80X86_DEV_USER exec /usr/bin/chpst -u :$S80X86_DEV_UID:$S80X86_DEV_GID /bin/bash -c "$*"
 else
-    HOME=/home/$S80X86_DEV_USER exec /usr/bin/chpst -u :$S80X86_DEV_UID:$S80X86_DEV_GID /bin/bash
+    HOME=/home/$S80X86_DEV_USER exec /usr/bin/chpst -u ${S80X86_DEV_USER}:${S80X86_DEV_USER}:adm:sudo /bin/bash
 fi
