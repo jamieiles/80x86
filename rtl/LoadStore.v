@@ -22,13 +22,11 @@ module LoadStore(input logic clk,
                  input logic wr_en,
                  output logic complete);
 
-// verilator lint_off UNUSED
 reg [15:0] mar;
-// verilator lint_on UNUSED
 reg [15:0] mdr;
 
 assign m_access = (start | fetching | second_byte) & ~complete & ~m_ack;
-assign m_addr = {segment, 3'b0} + {3'b0, mar[15:1]};
+assign m_addr = {segment, 3'b0} + {3'b0, mar[15:1]} + {18'b0, second_byte};
 assign m_wr_en = wr_en;
 assign mdr_out = mdr;
 
@@ -59,7 +57,6 @@ always_ff @(posedge clk or posedge reset)
 
 always_ff @(posedge clk or posedge reset)
     mar <= reset ? 16'b0 :
-        m_ack ? mar + 16'b1 :
         write_mar ? mar_in : mar;
 
 always_ff @(posedge clk)
