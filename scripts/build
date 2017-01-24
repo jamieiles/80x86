@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 ./docker/build-all
-git submodule update --init
+[ -d .git ] && git submodule update --init
 [ -d _build/.ccache ] || mkdir -p _build/.ccache
 [ -d _build/build ] || mkdir -p _build/build
 DOCKER_NONINTERACTIVE=1 ./docker/s80x86-build -e -c 'cd _build/build; \
