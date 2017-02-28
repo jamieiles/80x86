@@ -34,6 +34,7 @@ function(verilate toplevel sources)
     endforeach(incdir)
     separate_arguments(VERILATOR_INCLUDE_ARGS)
     add_custom_command(OUTPUT ${generated}
+                       COMMAND rm -f ${generated}
                        COMMAND verilator -sv -O3 ${sources}
                             -Wall -Wwarn-lint -Wwarn-style
                             -I${CMAKE_CURRENT_SOURCE_DIR} ${VERILATOR_TRACE_FLAGS} ${VERILATOR_COVERAGE_FLAGS}
