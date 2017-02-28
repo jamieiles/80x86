@@ -44,12 +44,12 @@ PrefetchTestFixture::PrefetchTestFixture()
             });
         }
     });
-    reset();
 }
 
 TEST_F(PrefetchTestFixture, full_fifo_no_fetch)
 {
     dut.fifo_full = 1;
+    reset();
     cycle();
     ASSERT_FALSE(dut.mem_access);
 }

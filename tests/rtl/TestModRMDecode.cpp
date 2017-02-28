@@ -69,7 +69,6 @@ RTLModRMDecoderTestbench::RTLModRMDecoderTestbench()
     dut.reset = 0;
     dut.start = 0;
     dut.fifo_rd_en = 0;
-    reset();
 
     periodic(ClockSetup, [&]{
         if (!this->dut.reset && this->dut.fifo_rd_en &&

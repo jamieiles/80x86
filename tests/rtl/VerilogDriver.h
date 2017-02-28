@@ -152,9 +152,13 @@ VerilogDriver<T, debug_enabled>::~VerilogDriver()
 template <typename T, bool debug_enabled>
 void VerilogDriver<T, debug_enabled>::reset()
 {
-    dut.reset = 1;
-    cycle();
-    dut.reset = 0;
+    this->dut.reset = 1;
+    after_n_cycles(2, [&]{
+        this->dut.reset = 0;
+    });
+    do {
+        cycle();
+    } while (dut.reset);
 }
 
 template <typename T, bool debug_enabled>
