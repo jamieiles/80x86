@@ -37,7 +37,9 @@ function(verilate toplevel sources)
                        COMMAND rm -f ${generated}
                        COMMAND verilator -sv -O3 ${sources}
                             -Wall -Wwarn-lint -Wwarn-style
-                            -I${CMAKE_CURRENT_SOURCE_DIR} ${VERILATOR_TRACE_FLAGS} ${VERILATOR_COVERAGE_FLAGS}
+                            -I${CMAKE_CURRENT_SOURCE_DIR}
+                            -I${CMAKE_CURRENT_BINARY_DIR}
+                            ${VERILATOR_TRACE_FLAGS} ${VERILATOR_COVERAGE_FLAGS}
                             --cc --top-module ${toplevel}
                             --Mdir ${CMAKE_CURRENT_BINARY_DIR}
                             ${VERILATOR_INCLUDE_ARGS}
