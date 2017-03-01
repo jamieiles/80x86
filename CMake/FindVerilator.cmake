@@ -16,6 +16,9 @@ find_file(VERILATED_COV_CPP verilated_cov.cpp
 find_file(VERILATED_VCD_CPP verilated_vcd_c.cpp
           HINTS /usr/share/verilator/include
           /usr/local/share/verilator/include)
+find_file(VERILATED_DPI_CPP verilated_dpi.cpp
+          HINTS /usr/share/verilator/include
+          /usr/local/share/verilator/include)
 
 if (VERILATOR_INCLUDE_DIR AND EXISTS "${VERILATOR_INCLUDE_DIR}/verilated_config.h")
     file(STRINGS "${VERILATOR_INCLUDE_DIR}/verilated_config.h" VERILATOR_VERSION_STRING_LINE REGEX "^#define[ \t]+VERILATOR_VERSION[ \t]+\".*\"$")
@@ -23,7 +26,7 @@ if (VERILATOR_INCLUDE_DIR AND EXISTS "${VERILATOR_INCLUDE_DIR}/verilated_config.
 endif ()
 
 set(VERILATOR_INCLUDE_DIRS ${VERILATOR_INCLUDE_DIR} ${VERILATOR_VPI_INCLUDE_DIR} ${VERILATOR_VCD_INCLUDE_DIR})
-set(VERILATOR_LIB_SOURCES ${VERILATED_CPP} ${VERILATED_COV_CPP} ${VERILATED_VCD_CPP})
+set(VERILATOR_LIB_SOURCES ${VERILATED_CPP} ${VERILATED_COV_CPP} ${VERILATED_VCD_CPP} ${VERILATED_DPI_CPP})
 
 include(FindPackageHandleStandardArgs)
 
