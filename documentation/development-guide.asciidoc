@@ -68,7 +68,7 @@ unit tests, producing JUnit XML suitable for importing into the CI test runner
 history.
 
 *scripts/ci/coverage* builds the project and runs all of the tests, with the
-addition of generating coverage information for all of the C++ code in the
+addition of generating coverage information for all of the {cpp} code in the
 simulator, and generates HTML with lcov.  Running `scripts/view-coverage` will
 display the coverage report in a browser.
 
@@ -84,15 +84,15 @@ can be selected by passing `-DCMAKE_BUILD_TYPE=`'CONFIGURATION' to `cmake`.
 
 *Release* is optimized for performance, no debug information.
 
-*Debug* enables debug information in all C/C++ executables, and tracing of
+*Debug* enables debug information in all C/{cpp} executables, and tracing of
 Verilog models which will write VCD files for each test run.
 
-*Coverage* builds everything for coverage including C++ and Verilog.
+*Coverage* builds everything for coverage including {cpp} and Verilog.
 
 RTL Tests
 ---------
 
-The RTL tests are written in C++, using Verilator to create C++ models of the
+The RTL tests are written in {cpp}, using Verilator to create {cpp} models of the
 Verilog.  For example, given a synchronous Fifo, the Verilator model can be
 created using the Verilator CMake package:
 
