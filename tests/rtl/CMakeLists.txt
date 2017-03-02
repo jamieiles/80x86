@@ -10,11 +10,25 @@ verilate(ModRMTestbench ${CMAKE_CURRENT_SOURCE_DIR}/ModRMTestbench.v
          ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/ModRMDecode.v
          ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/ImmediateReader.v)
 
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/microcode.bin
+                          ${CMAKE_CURRENT_BINARY_DIR}/Microcode.v
+                          ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.v
+                   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/microassembler/uasm
+                           ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/microcode/microcode.us
+                           ${CMAKE_CURRENT_BINARY_DIR}/microcode.bin
+                           ${CMAKE_CURRENT_BINARY_DIR}/Microcode.v
+                           ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.v
+                   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/microcode/microcode.us
+                           ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/microcode/Microcode.v.templ
+                           ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/microcode/MicrocodeTypes.v.templ)
+verilate(Microcode ${CMAKE_CURRENT_BINARY_DIR}/Microcode.v)
+
 add_executable(rtl-unittest
                TestFifo.cpp
                TestImmediateReader.cpp
                TestImmediateReader.cpp
                TestLoadStore.cpp
+               TestMicrocode.cpp
                TestModRMDecode.cpp
                TestModRMDecode.cpp
                TestPrefetch.cpp
@@ -27,6 +41,7 @@ target_link_libraries(rtl-unittest
                       VFifo
                       VImmediateReader
                       VLoadStore
+                      VMicrocode
                       VModRMTestbench
                       VPrefetch
                       VRegisterFile
