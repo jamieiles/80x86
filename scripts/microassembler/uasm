@@ -1,0 +1,297 @@
+#!/usr/bin/env python3
+import argparse
+import math
+import textx
+import os
+import pystache
+
+from functools import partial
+from textx.metamodel import metamodel_from_file
+
+from microasm.types import (
+    GPR,
+    SR,
+    ADriver,
+    BDriver,
+    QDriver,
+    ALUOp,
+    UpdateFlags,
+    JumpType
+)
+
+HERE = os.path.dirname(__file__)
+GRAMMAR = os.path.join(HERE, 'microcode_grammar.g')
+TEMPLATE = os.path.join(HERE, '..', '..', 'rtl', 'microcode', 'Microcode.v.templ')
+ENUM_TEMPLATE = os.path.join(HERE, '..', '..', 'rtl', 'microcode', 'MicrocodeTypes.v.templ')
+mm = metamodel_from_file(GRAMMAR, skipws='\s\t\n\\', debug=False)
+
+pystache.defaults.DELIMITERS = (u'<%', u'%>')
+
+def num_bits(max_val):
+    if max_val == 0:
+        return 1
+    return int(math.ceil(math.log(max_val, 2)))
+
+def token_type(t):
+    return t.__class__.__name__
+
+def field_type(size):
+    if size == 1:
+        return ''
+    return '[{0}:0] '.format(size - 1)
+
+class MicroAssembler(object):
+    def __init__(self, infile, microcode_output, verilog_output,
+                 types_output):
+        self._infile = infile
+        self._output = microcode_output
+        self._verilog_output = verilog_output
+        self._types_output = types_output
+
+    def _build_microcode(self, filename):
+        label_map = {}
+        instructions = []
+
+        def assign_addresses():
+            assigned_addresses = {}
+            last_addr = max([i.address if i.address else 0 for i in instructions])
+            for instr in instructions:
+                if instr.address is None:
+                    instr.address = last_addr + 1
+                    last_addr += 1
+                if instr.address in assigned_addresses:
+                    raise ValueError('Duplicate instruction at address {0:h}'.format(instr.address))
+                assigned_addresses[instr.address] = instr
+
+        def resolve_labels():
+            for instr in instructions:
+                if instr.next_label:
+                    instr.next = label_map[instr.next_label].address
+                else:
+                    instr.next = instr.address + 1
+
+        with open(filename) as f:
+            model = mm.model_from_str(f.read())
+            current_label = None
+            current_address = None
+
+            for d in model.lines:
+                if token_type(d) == 'LabelAnchor':
+                    current_label = d.label
+                    if current_label in label_map:
+                        raise KeyError('Duplicate label "{0}"'.format(current_label))
+                elif token_type(d) == 'Directive':
+                    if d.directive == 'at':
+                        current_address = int(d.arguments[0].value, 0)
+                    elif d.directive == 'auto_address':
+                        current_address = None
+                elif token_type(d) == 'MicroInstruction':
+                    instr = MicroInstruction(current_address)
+                    instructions.append(instr)
+                    self._current_instr = instr
+
+                    self._parse(d.fields)
+
+                    if current_label:
+                        label_map[current_label] = instr
+                    current_address = None
+                    current_label = None
+                else:
+                    raise ValueError('Unexpected token type {0}'.format(token_type(d)))
+
+        assign_addresses()
+        resolve_labels()
+
+        return sorted(instructions, key=lambda i: i.address)
+
+    def _write_microcode(self, filename, instructions):
+        with open(filename, 'w') as f:
+            f.write(self.field_comment())
+            for instr in instructions:
+                f.write('@ {0:x}\n'.format(instr.address))
+                f.write('%s\n' % (instr.encode(num_bits(instructions[-1].address)),))
+
+    def _write_microcode_verilog(self, filename, instructions):
+        data = {
+            'fields': MicroAssembler.bitfields(num_bits(instructions[-1].address)),
+            'exported_fields': MicroAssembler.exported_fields(),
+            'num_instructions': 2**(instructions[-1].address-1).bit_length(),
+            'addr_bits': num_bits(instructions[-1].address),
+        }
+        with open(TEMPLATE) as f:
+            template = f.read()
+        with open(filename, 'w') as outfile:
+            outfile.write(pystache.render(template, data))
+
+    def _write_types(self, filename, instructions):
+        with open(ENUM_TEMPLATE) as f:
+            template = f.read()
+        with open(filename, 'w') as f:
+            f.write('`ifndef MICROCODE_TYPES\n')
+            f.write('`define MICROCODE_TYPES\n\n')
+            for cls in [ADriver, BDriver, QDriver, ALUOp]:
+                items = []
+                for idx, e in enumerate(cls.__members__):
+                    name = '%s_%s' % (cls.__name__, e)
+                    value = '%d%s' % (cls[e].value, ',' if idx != len(cls.__members__) - 1 else '')
+                    items.append({'name': name, 'value': value})
+
+                type_data = {
+                    'high_bit': num_bits(len(cls)) - 1,
+                    'name': 'MC_%s_t' % (cls.__name__,),
+                    'items': items,
+                }
+                f.write(pystache.render(template, type_data))
+            f.write('`endif // MICROCODE_TYPES\n')
+
+    def _enumerated_field(self, field, enum_class=None):
+        val = enum_class[field.arguments[0]].value
+        self._current_instr.present_fields[field.name] = val
+
+    def _boolean(self, field):
+        self._current_instr.present_fields[field.name] = 1
+
+    def _update_flags(self, field):
+        flags = 0
+        for arg in field.arguments:
+            flags |= (1 << UpdateFlags[arg].value)
+        self._current_instr.present_fields['update_flags'] = flags
+
+    def _jump(self, field, jump_type=None):
+        if jump_type != JumpType.OPCODE:
+            self._current_instr.next_label = field.arguments[0]
+        self._current_instr._has_jump = True
+        self._current_instr.present_fields['jump_type'] = jump_type.value
+
+    def _reserved(self, field):
+        raise ValueError('Reserved keyword {0}'.format(field.name))
+
+    def _parse(self, fields):
+        for field in fields:
+            handler = self.microcode_fields[field.name][1]
+            handler(self, field)
+
+    """List of microcode fields:
+      (number of bits, handler, exported to pipeline boolean.
+    """
+    microcode_fields = {
+        'ra_sel': (num_bits(len(GPR)), partial(_enumerated_field, enum_class=GPR), True),
+        'rb_sel': (num_bits(len(GPR)), partial(_enumerated_field, enum_class=GPR), True),
+        'rd_sel': (num_bits(len(GPR)), partial(_enumerated_field, enum_class=GPR), True),
+        'clear_prefixes': (1, _boolean, True),
+        'mar_wr_sel': (1, _boolean, True),
+        'mar_write': (1, _boolean, True),
+        'mdr_write': (1, _boolean, True),
+        'mem_read': (1, _boolean, True),
+        'mem_write': (1, _boolean, True),
+        'sr_wr_sel': (num_bits(len(SR)), partial(_enumerated_field, enum_class=SR), True),
+        'segment': (num_bits(len(SR)), partial(_enumerated_field, enum_class=SR), True),
+        'segment_override': (1, _boolean, True),
+        'a_sel': (num_bits(len(ADriver)), partial(_enumerated_field, enum_class=ADriver), True),
+        'b_sel': (num_bits(len(BDriver)), partial(_enumerated_field, enum_class=BDriver), True),
+        'q_sel': (num_bits(len(QDriver)), partial(_enumerated_field, enum_class=QDriver), True),
+        'alu_op': (num_bits(len(ALUOp)), partial(_enumerated_field, enum_class=ALUOp), True),
+        'update_flags': (len(UpdateFlags), _update_flags, True),
+        'fifo_pop': (1, _boolean, True),
+        'modrm_start': (1, _boolean, True),
+        'ra_modrm_rm_reg': (1, _boolean, True),
+        'rb_modrm_reg': (1, _boolean, True),
+        'rd_modrm_reg': (1, _boolean, True),
+        'reg_wr_en': (1, _boolean, True),
+        'width': (1, _boolean, True),
+        # Internal keywords, generated from others
+        'jump_type': (num_bits(len(JumpType)), _reserved, False),
+        # Populated once we know how many address bits required
+        'jump_target': (0, _reserved, False),
+        # Keywords only, internally mapped to other microcode fields
+        'jmp_opcode': (0, partial(_jump, jump_type=JumpType.OPCODE), False),
+        'jmp_if_not_mem': (0, partial(_jump, jump_type=JumpType.IF_NOT_MEM), False),
+        'jmp': (0, partial(_jump, jump_type=JumpType.UNCONDITIONAL), False),
+    }
+
+    @staticmethod
+    def sorted_field_keys():
+        return sorted(MicroAssembler.microcode_fields.keys())
+
+    @staticmethod
+    def exported_field_keys():
+        return sorted(filter(lambda f: MicroAssembler.microcode_fields[f][2],
+                             MicroAssembler.microcode_fields.keys()))
+
+    @staticmethod
+    def field_comment():
+        fields = list(filter(lambda f: MicroAssembler.microcode_fields[f][0] > 0,
+                             MicroAssembler.sorted_field_keys()))
+        return '//' + ' '.join(['next'] + fields) + '\n'
+
+    @staticmethod
+    def bitfields(address_bits):
+        fields = []
+        fields.append({
+            'type': lambda: field_type(address_bits),
+            'name': 'next'
+        })
+        for name in MicroAssembler.sorted_field_keys():
+            size = MicroAssembler.microcode_fields[name][0]
+            if size != 0:
+                fields.append({
+                    'type': partial(field_type, size),
+                    'name': name
+                })
+        return fields
+
+    @staticmethod
+    def exported_fields():
+        fields = []
+        for name in MicroAssembler.exported_field_keys():
+            size = MicroAssembler.microcode_fields[name][0]
+            if size != 0:
+                fields.append({
+                    'type': partial(field_type, size),
+                    'name': name
+                })
+        return fields
+
+    def assemble(self):
+        instructions = self._build_microcode(self._infile)
+        self._write_microcode(self._output, instructions)
+        self._write_microcode_verilog(self._verilog_output, instructions)
+        self._write_types(self._types_output, instructions)
+
+class MicroInstruction(object):
+    def __init__(self, address=None):
+        self.next = None
+        self.next_label = None
+        self.address = address
+        self._has_jump = False
+        self.present_fields = {}
+
+    def encode(self, address_bits):
+        for name, value in self.present_fields.items():
+            assert num_bits(value) <= MicroAssembler.microcode_fields[name][0]
+
+        if self._has_jump:
+            self.present_fields['jump_target'] = self.next
+
+        field_values = []
+        field_values.append('{0:0{width}b}'.format(self.next, width=address_bits))
+
+        for name in MicroAssembler.sorted_field_keys():
+            width, _, _ = MicroAssembler.microcode_fields[name]
+            if width == 0:
+                continue
+
+            value = self.present_fields.get(name, 0)
+            field_values.append('{0:0{width}b}'.format(value, width=width))
+        return '_'.join(field_values)
+
+parser = argparse.ArgumentParser()
+parser.add_argument('input')
+parser.add_argument('microcode_output')
+parser.add_argument('verilog_output')
+parser.add_argument('types_output')
+args = parser.parse_args()
+
+assembler = MicroAssembler(args.input, args.microcode_output, args.verilog_output,
+                   args.types_output)
+assembler.assemble()

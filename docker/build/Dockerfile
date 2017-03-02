@@ -15,11 +15,12 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         ccache \
         ruby \
         ruby-dev \
+        python3 \
+        python3-pip \
         python-lxml \
         wget \
         flex \
-        bison \
-        clang
+        bison
 RUN cd /tmp && \
         wget https://www.veripool.org/ftp/verilator-3.888.tgz && \
         tar xf verilator-3.888.tgz && \
@@ -32,3 +33,5 @@ RUN cd /tmp && \
 RUN gem install --no-ri --pre asciidoctor-pdf coderay pygments.rb
 RUN mkdir -p /build
 WORKDIR /build
+RUN apt-get install -y python3-setuptools
+RUN pip3 install textX
