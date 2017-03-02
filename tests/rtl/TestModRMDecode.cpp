@@ -66,7 +66,8 @@ private:
 RTLModRMDecoderTestbench::RTLModRMDecoderTestbench()
     : is_8bit(false)
 {
-    dut.reset = 0;
+    reset();
+
     dut.start = 0;
     dut.fifo_rd_en = 0;
 

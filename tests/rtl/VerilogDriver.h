@@ -91,7 +91,6 @@ VerilogDriver<T, debug_enabled>::VerilogDriver(const std::string &instance_name)
     cur_time = 0;
     if (debug_enabled)
         setup_trace();
-    reset();
 }
 
 template <typename T, bool debug_enabled>

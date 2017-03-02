@@ -19,7 +19,8 @@ private:
 PrefetchTestFixture::PrefetchTestFixture()
     : mem_latency(0), reading(false)
 {
-    dut.reset = 0;
+    reset();
+
     dut.cs = 0;
     dut.new_ip = 0;
     dut.load_new_ip = 0;

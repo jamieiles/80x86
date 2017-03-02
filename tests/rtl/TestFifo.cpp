@@ -16,6 +16,8 @@ FifoTestFixture::FifoTestFixture()
     dut.wr_en = 0;
     dut.wr_data = 0LU;
     dut.rd_en = 0;
+
+    reset();
 }
 
 void FifoTestFixture::push(uint32_t val)
