@@ -1,4 +1,9 @@
+// vi: ft=systemverilog
 `include "MicrocodeTypes.v"
+
+`ifndef MICROCODE_ROM_PATH
+`define MICROCODE_ROM_PATH "."
+`endif
 
 module Microcode(input logic clk,
                  input logic reset,
@@ -41,7 +46,7 @@ int i;
 initial begin
     for (i = 0; i < num_instructions; i = i + 1)
         mem[i] = 0;
-    $readmemb("microcode.bin", mem);
+    $readmemb({{`MICROCODE_ROM_PATH, "/microcode.bin"}}, mem);
 end
 
 always_ff @(posedge clk or posedge reset)

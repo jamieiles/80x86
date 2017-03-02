@@ -21,6 +21,8 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/microcode.bin
                    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/microcode/microcode.us
                            ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/microcode/Microcode.v.templ
                            ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/microcode/MicrocodeTypes.v.templ)
+set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/Microcode.v PROPERTIES
+                            COMPILE_FLAGS "-DMICROCODE_ROM_PATH=\\\"${CMAKE_CURRENT_BINARY_DIR}\\\"")
 verilate(Microcode ${CMAKE_CURRENT_BINARY_DIR}/Microcode.v)
 
 add_executable(rtl-unittest
