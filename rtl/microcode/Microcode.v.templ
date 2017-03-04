@@ -7,6 +7,7 @@
 
 module Microcode(input logic clk,
                  input logic reset,
+                 input logic stall,
                  // Microinstruction fields.
                  <%#exported_fields%>
                  output logic <%type%><%name%>,
@@ -38,7 +39,7 @@ assign <%name%> = current.<%name%>;
 <%/exported_fields%>
 
 assign fifo_rd_en = ~reset & current.fifo_pop & ~opcode_popped & ~fifo_empty;
-wire stall = fifo_rd_en | (current.fifo_pop & fifo_empty);
+wire do_stall = stall | fifo_rd_en | (current.fifo_pop & fifo_empty);
 
 reg opcode_popped;
 
@@ -57,7 +58,7 @@ always_ff @(posedge clk or posedge reset) begin
         addr <= reset_address;
     end else if (opcode_popped)
         addr <= {{addr_bits-8{1'b0}}, fifo_rd_data};
-    else if (!stall)
+    else if (!do_stall)
         addr <= current.next;
 end
 

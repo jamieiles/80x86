@@ -28,6 +28,7 @@ MicrocodeTestbench::MicrocodeTestbench()
     : underflowed(false), stream({})
 {
     dut.fifo_empty = stream.size() == 0;
+    dut.stall = 0;
 
     reset();
 
@@ -76,4 +77,19 @@ TEST_F(MicrocodeTestbench, Stall)
     }
 
     ASSERT_FALSE(underflowed);
+}
+
+TEST_F(MicrocodeTestbench, ExternalStall)
+{
+    set_instruction({0x30});
+
+    while (current_address() != 0x30)
+        cycle();
+
+    this->dut.stall = 1;
+
+    for (int i = 0; i < 16; ++i) {
+        ASSERT_EQ(current_address(), 0x30);
+        cycle();
+    }
 }
