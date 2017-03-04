@@ -30,8 +30,12 @@ public:
 
         for (auto i = 0; i < 1000; ++i) {
             cycle();
-            if (dut.complete)
+            if (!dut.complete) {
+                ASSERT_TRUE(dut.busy);
+            } else {
+                ASSERT_FALSE(dut.busy);
                 return;
+            }
         }
 
         FAIL() << "failed to complete decode" << std::endl;

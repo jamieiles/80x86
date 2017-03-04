@@ -4,6 +4,7 @@ module ModRMDecode(input logic clk,
                    input logic reset,
                    // Control.
                    input logic start,
+                   output logic busy,
                    output logic complete,
                    // Results
                    output logic [15:0] effective_address,
@@ -35,6 +36,10 @@ wire [1:0] _mod = _popped ? fifo_rd_data[7:6] : _modrm[7:6];
 wire [2:0] _reg = _popped ? fifo_rd_data[5:3] : _modrm[5:3];
 wire [2:0] _rm  = _popped ? fifo_rd_data[2:0] : _modrm[2:0];
 
+reg _started;
+
+assign busy = start | (_started & ~complete);
+
 wire _has_address = _mod != 2'b11;
 
 assign complete = reset ? 1'b0 :
@@ -45,6 +50,15 @@ assign immed_start = _has_immediate && _popped;
 assign immed_is_8bit = _mod == 2'b01;
 
 reg _registers_fetched;
+
+always_ff @(posedge clk or posedge reset) begin
+    if (reset)
+        _started <= 1'b0;
+    else if (complete)
+        _started <= 1'b0;
+    else if (start)
+        _started <= 1'b1;
+end
 
 always_ff @(posedge clk or posedge reset)
     if (reset || complete)
