@@ -29,6 +29,9 @@ assign fifo_rd_en = immed_fifo_rd_en | modrm_fifo_rd_en;
 ImmediateReader ir(.clk(clk),
                    .reset(reset),
                    .start(immed_start),
+                   // verilator lint_off PINCONNECTEMPTY
+                   .busy(),
+                   // verilator lint_on PINCONNECTEMPTY
                    .complete(immed_complete),
                    .is_8bit(immed_is_8bit),
                    .immediate(immediate),

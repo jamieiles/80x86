@@ -2,6 +2,7 @@ module ImmediateReader(input logic clk,
                        input logic reset,
                        // Control.
                        input logic start,
+                       output logic busy,
                        output logic complete,
                        input logic is_8bit,
                        // Result.
@@ -23,6 +24,19 @@ reg _fetch_busy;
 wire _fetching = _fetch_busy & ~complete;
 
 assign complete = reset ? 1'b0 : _bytes_read == _num_bytes && _popped;
+
+reg _started;
+
+assign busy = start | (_started & ~complete);
+
+always_ff @(posedge clk or posedge reset) begin
+    if (reset)
+        _started <= 1'b0;
+    else if (complete)
+        _started <= 1'b0;
+    else if (start)
+        _started <= 1'b1;
+end
 
 always_comb begin
     if (_bytes_read == 2'd1 && _popped)
