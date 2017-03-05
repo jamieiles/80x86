@@ -87,9 +87,17 @@ TEST_F(MicrocodeTestbench, ExternalStall)
         cycle();
 
     this->dut.stall = 1;
+    cycle();
+
+    auto held_address = current_address();
+    ASSERT_NE(held_address, 0x30);
 
     for (int i = 0; i < 16; ++i) {
-        ASSERT_EQ(current_address(), 0x30);
+        EXPECT_EQ(current_address(), held_address);
         cycle();
     }
+
+    this->dut.stall = 0;
+    cycle(2);
+    ASSERT_NE(current_address(), held_address);
 }
