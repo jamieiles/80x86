@@ -56,7 +56,7 @@ always_ff @(posedge clk or posedge reset)
 always_ff @(posedge clk or posedge reset) begin
     if (reset) begin
         addr <= reset_address;
-    end else if (opcode_popped)
+    end else if (!do_stall && current.jump_type == JumpType_OPCODE)
         addr <= {{addr_bits-8{1'b0}}, fifo_rd_data};
     else if (!do_stall)
         addr <= current.next;
