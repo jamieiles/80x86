@@ -30,8 +30,6 @@ MicrocodeTestbench::MicrocodeTestbench()
     dut.fifo_empty = stream.size() == 0;
     dut.stall = 0;
 
-    reset();
-
     svSetScope(svGetScopeFromName("TOP.Microcode"));
 
     periodic(ClockSetup, [&]{
@@ -48,6 +46,8 @@ MicrocodeTestbench::MicrocodeTestbench()
             this->stream.size() == 0)
             underflowed = true;
     });
+
+    reset();
 }
 
 TEST_F(MicrocodeTestbench, JumpOpcode)
