@@ -5,6 +5,7 @@ module LoadStore(input logic clk,
                  input logic [15:0] segment,
                  input [15:0] mar_in,
                  // Memory Data Register
+                 output [15:0] mar_out,
                  output [15:0] mdr_out,
                  input logic write_mdr,
                  input [15:0] mdr_in,
@@ -29,6 +30,7 @@ assign m_access = (start | fetching | second_byte) & ~complete & ~m_ack;
 assign m_addr = {segment, 3'b0} + {3'b0, mar[15:1]} + {18'b0, second_byte};
 assign m_wr_en = wr_en;
 assign mdr_out = mdr;
+assign mar_out = mar;
 
 always_comb begin
     if (unaligned && !second_byte)
