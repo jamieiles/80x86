@@ -5,7 +5,7 @@ include_directories(../sim)
 include_directories(include)
 
 add_executable(unittest
-               main.cpp
+               SimMain.cpp
 	       $<TARGET_OBJECTS:instructions>
 	       $<TARGET_OBJECTS:simtests>)
 target_link_libraries(unittest
