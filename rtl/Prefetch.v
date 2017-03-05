@@ -20,7 +20,7 @@ module Prefetch(input logic clk,
                 // Memory port.
                 output logic mem_access,
                 input logic mem_ack,
-                output logic [19:0] mem_address,
+                output logic [19:1] mem_address,
                 input logic [15:0] mem_data);
 
 reg [15:0] fetch_address;
@@ -33,7 +33,7 @@ reg abort_cur;
 wire [15:0] next_address = mem_ack && !abort_cur ? fetch_address + 1'b1 : fetch_address;
 // verilator lint_on UNUSED
 
-assign mem_address = {cs, 4'b0} + {4'b0, next_address[15:1], 1'b0};
+assign mem_address = {cs, 3'b0} + {4'b0, next_address[15:1]};
 assign mem_access = !reset && !fifo_full && !mem_ack && !write_second;
 
 assign fifo_wr_en = !abort_cur && !load_new_ip && (mem_ack || write_second);

@@ -36,10 +36,10 @@ PrefetchTestFixture::PrefetchTestFixture()
     periodic(ClockSetup, [&]{
         if (!this->dut.reset && this->dut.mem_access && !reading) {
             reading = true;
-            if (memory.find(this->dut.mem_address) == memory.end())
-                FAIL() << "no memory at 0x" << std::hex << this->dut.mem_address;
+            if (memory.find(this->dut.mem_address << 1) == memory.end())
+                FAIL() << "no memory at 0x" << std::hex << (this->dut.mem_address << 1);
             after_n_cycles(mem_latency, [&]{
-                this->dut.mem_data = memory[this->dut.mem_address];
+                this->dut.mem_data = memory[this->dut.mem_address << 1];
                 this->dut.mem_ack = 1;
                 after_n_cycles(1, [&]{ this->dut.mem_ack = 0; reading = false; });
             });
@@ -84,7 +84,7 @@ TEST_F(PrefetchTestFixture, update_ip_resets_fifo)
     cycle();
     dut.load_new_ip = 0;
     ASSERT_TRUE(dut.fifo_reset);
-    ASSERT_EQ(dut.mem_address, 0x100LU);
+    ASSERT_EQ(dut.mem_address << 1, 0x100LU);
     cycle(2);
     ASSERT_EQ(fifo_bytes, std::vector<uint8_t>{0x12});
 }
@@ -127,7 +127,7 @@ TEST_F(PrefetchTestFixture, address_generation)
     dut.new_ip = 0x8;
     dut.load_new_ip = 1;
     cycle();
-    ASSERT_EQ(dut.mem_address, 0xdead8LU);
+    ASSERT_EQ(dut.mem_address << 1, 0xdead8LU);
 }
 
 TEST_F(PrefetchTestFixture, new_ip_discards_current_fetch)
