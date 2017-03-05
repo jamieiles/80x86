@@ -22,7 +22,7 @@ class Runner(object):
                 self.int3_hook()
                 self.validate_result()
                 return
-            self.cpu.cycle()
+            self.cpu.step()
 
         raise Exception('Test timed out')
 

@@ -100,7 +100,7 @@ public:
         assert(count > 0);
         size_t len = 0;
         for (auto i = 0; i < count; ++i)
-             len += cpu->cycle();
+             len += cpu->step();
         ASSERT_EQ(len, instr_len);
     }
 

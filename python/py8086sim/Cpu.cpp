@@ -23,7 +23,7 @@ BOOST_PYTHON_MODULE(Cpu)
         .def("read_io16", &SoftwareCPU::read_io<uint16_t>)
         .def("read_flags", &SoftwareCPU::read_flags)
         .def("write_flags", &SoftwareCPU::write_flags)
-        .def("cycle", &SoftwareCPU::cycle)
+        .def("step", &SoftwareCPU::step)
         .def("has_trapped", &SoftwareCPU::has_trapped);
     enum_<GPR>("GPR")
         .value("AX", AX)

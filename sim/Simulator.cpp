@@ -154,7 +154,7 @@ void Simulator::run()
             process_events();
         }
         handle_vectors();
-        cpu.cycle();
+        cpu.step();
     }
 }
 

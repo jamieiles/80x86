@@ -8,7 +8,7 @@ class CPU {
 public:
     virtual void write_reg(GPR regnum, uint16_t val) = 0;
     virtual uint16_t read_reg(GPR regnum) = 0;
-    virtual size_t cycle() = 0;
+    virtual size_t step() = 0;
     virtual void write_flags(uint16_t val) = 0;
     virtual uint16_t read_flags() = 0;
     virtual bool has_trapped() const = 0;
@@ -72,7 +72,7 @@ public:
         return registers.get(regnum);
     }
 
-    size_t cycle()
+    size_t step()
     {
         return emulator.emulate();
     }
