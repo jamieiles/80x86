@@ -52,3 +52,4 @@ target_link_libraries(rtl-unittest
 		      gmock
                       verilator)
 add_test(rtl-unittest rtl-unittest)
+set_tests_properties(rtl-unittest PROPERTIES TIMEOUT 5)

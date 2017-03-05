@@ -14,7 +14,7 @@ target_link_libraries(unittest
 		      gmock)
 
 add_test(unittest ./unittest --gtest_color=yes)
-
+set_tests_properties(unittest PROPERTIES TIMEOUT 5)
 add_subdirectory(programs)
 add_subdirectory(instructions)
 add_subdirectory(integration)
