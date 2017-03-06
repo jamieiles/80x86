@@ -90,9 +90,6 @@ wire [15:0] mar;
 wire [15:0] mdr;
 wire write_mdr;
 wire write_mar;
-// verilator lint_off UNDRIVEN
-wire [15:0] mdr_in;
-// verilator lint_on UNDRIVEN
 wire mem_read;
 wire mem_write;
 wire ra_modrm_rm_reg;
@@ -201,7 +198,7 @@ LoadStore       loadstore(.clk(clk),
                           .mar_out(mar),
                           .mdr_out(mdr),
                           .write_mdr(write_mdr),
-                          .mdr_in(mdr_in),
+                          .mdr_in(q_bus),
                           // Memory bus
                           .m_addr(data_m_addr),
                           .m_data_in(data_m_data_in),
