@@ -24,6 +24,7 @@ add_executable(rtl-unittest
                TestSegmentRegisterFile.cpp
                ../../sim/cpu/RegisterFile.cpp
                ../../sim/cpu/Memory.cpp
+	       $<TARGET_OBJECTS:instructions>
                main.cpp)
 
 target_link_libraries(rtl-unittest
