@@ -27,6 +27,7 @@ verilate(Core ${CMAKE_CURRENT_SOURCE_DIR}/Core.v
          ${CMAKE_CURRENT_BINARY_DIR}/Microcode.v)
 verilate(Fifo ${CMAKE_CURRENT_SOURCE_DIR}/Fifo.v)
 verilate(ImmediateReader ${CMAKE_CURRENT_SOURCE_DIR}/ImmediateReader.v)
+verilate(IP ${CMAKE_CURRENT_SOURCE_DIR}/IP.v)
 verilate(LoadStore ${CMAKE_CURRENT_SOURCE_DIR}/LoadStore.v)
 verilate(Microcode ${CMAKE_CURRENT_BINARY_DIR}/Microcode.v)
 verilate(ModRMDecode ${CMAKE_CURRENT_SOURCE_DIR}/ModRMDecode.v)

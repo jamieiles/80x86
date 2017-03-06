@@ -15,6 +15,7 @@ add_executable(rtl-unittest
                TestFifo.cpp
                TestImmediateReader.cpp
                TestImmediateReader.cpp
+               TestIP.cpp
                TestLoadStore.cpp
                TestMicrocode.cpp
                TestModRMDecode.cpp
@@ -31,6 +32,7 @@ target_link_libraries(rtl-unittest
                       VCore
                       VFifo
                       VImmediateReader
+                      VIP
                       VLoadStore
                       VMicrocode
                       VModRMTestbench
