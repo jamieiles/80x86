@@ -1,11 +1,21 @@
 #pragma once
 
+#include <string>
+
 #include "Emulate.h"
 #include "Memory.h"
 #include "RegisterFile.h"
 
 class CPU {
 public:
+    CPU()
+        : CPU("default")
+    {
+    }
+    CPU(const std::string &name)
+    {
+        (void)name;
+    }
     virtual ~CPU() {};
     virtual void write_reg(GPR regnum, uint16_t val) = 0;
     virtual uint16_t read_reg(GPR regnum) = 0;
@@ -57,8 +67,14 @@ protected:
 class SoftwareCPU : public CPU {
 public:
     SoftwareCPU()
+        : SoftwareCPU("default")
+    {
+    }
+    SoftwareCPU(const std::string &name)
         : CPU(), emulator(&registers)
     {
+        (void)name;
+
         emulator.set_memory(&mem);
         emulator.set_io(&io);
     }

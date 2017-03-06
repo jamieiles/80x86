@@ -17,8 +17,8 @@ union reg_converter {
 static const int max_cycles_per_step = 1000;
 
 template <bool debug_enabled>
-RTLCPU<debug_enabled>::RTLCPU()
-    : VerilogDriver<VCore, debug_enabled>("core"),
+RTLCPU<debug_enabled>::RTLCPU(const std::string &test_name)
+    : VerilogDriver<VCore, debug_enabled>(test_name),
     i_in_progress(false),
     d_in_progress(false),
     mem_latency(0)
@@ -223,4 +223,4 @@ uint16_t RTLCPU<debug_enabled>::get_microcode_address()
     return this->dut.get_microcode_address();
 }
 
-template RTLCPU<verilator_debug_enabled>::RTLCPU();
+template RTLCPU<verilator_debug_enabled>::RTLCPU(const std::string &);

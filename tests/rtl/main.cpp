@@ -5,9 +5,9 @@
 
 #include "RTLCPU.h"
 
-std::unique_ptr<CPU> get_cpu()
+std::unique_ptr<CPU> get_cpu(const std::string &test_name)
 {
-    return std::make_unique<RTLCPU<>>();
+    return std::make_unique<RTLCPU<>>(test_name);
 }
 
 int main(int argc, char *argv[])

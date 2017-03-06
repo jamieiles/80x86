@@ -6,13 +6,14 @@
 
 #include <cassert>
 #include "CPU.h"
+#include "TestUtils.h"
 
-extern std::unique_ptr<CPU> get_cpu();
+extern std::unique_ptr<CPU> get_cpu(const std::string &test_name);
 
 class EmulateFixture : public ::testing::Test {
 public:
     EmulateFixture()
-        : cpu(get_cpu())
+        : cpu(get_cpu(current_test_name()))
     {
         // Doesn't need to model the reset vector of FFF0:0000 otherwise we
         // need to handle wrapping around to 0.  Just start off away from the

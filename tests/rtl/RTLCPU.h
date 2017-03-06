@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include <VCore.h>
 #include <VerilogDriver.h>
 
@@ -10,7 +12,7 @@ template <bool debug_enabled=verilator_debug_enabled>
 class RTLCPU : public VerilogDriver<VCore, debug_enabled>,
     public CPU {
 public:
-    RTLCPU();
+    RTLCPU(const std::string &test_name);
     void reset();
     void write_reg(GPR regnum, uint16_t val);
     uint16_t read_reg(GPR regnum);

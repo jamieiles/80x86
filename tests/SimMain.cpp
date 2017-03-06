@@ -3,9 +3,9 @@
 
 #include "CPU.h"
 
-std::unique_ptr<CPU> get_cpu()
+std::unique_ptr<CPU> get_cpu(const std::string &test_name)
 {
-    return std::make_unique<SoftwareCPU>();
+    return std::make_unique<SoftwareCPU>(test_name);
 }
 
 int main(int argc, char *argv[])
