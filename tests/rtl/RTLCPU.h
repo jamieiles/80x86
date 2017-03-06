@@ -19,6 +19,7 @@ public:
     uint16_t read_flags();
     bool has_trapped() const;
 private:
+    uint16_t get_microcode_address();
     void data_access();
     void instruction_access();
     uint16_t read_ip();

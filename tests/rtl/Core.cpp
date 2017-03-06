@@ -122,7 +122,22 @@ uint16_t RTLCPU<debug_enabled>::read_sr(GPR regnum)
 template <bool debug_enabled>
 size_t RTLCPU<debug_enabled>::step()
 {
-    return 0;
+    auto prev_ip = this->read_ip();
+
+    // Wait for opcode dispatch
+    while (this->get_microcode_address() != 0x100)
+        this->cycle();
+
+    // Wait for opcode dispatch to start
+    do {
+        this->cycle();
+    } while (this->get_microcode_address() == 0x100);
+
+    // Return to opcode dispatch
+    while (this->get_microcode_address() != 0x100)
+        this->cycle();
+
+    return this->read_ip() - prev_ip;
 }
 
 template <bool debug_enabled>
@@ -187,6 +202,14 @@ void RTLCPU<debug_enabled>::instruction_access()
             d_in_progress = false;
         });
     });
+}
+
+template <bool debug_enabled>
+uint16_t RTLCPU<debug_enabled>::get_microcode_address()
+{
+    svSetScope(svGetScopeFromName("TOP.Core.microcode"));
+
+    return this->dut.get_microcode_address();
 }
 
 template RTLCPU<verilator_debug_enabled>::RTLCPU();
