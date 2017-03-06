@@ -22,9 +22,9 @@ private:
     uint16_t get_microcode_address();
     void data_access();
     void instruction_access();
-    uint16_t read_ip();
-    uint16_t read_sr(GPR regnum);
-    uint16_t read_gpr(GPR regnum);
+    uint16_t read_ip() const;
+    uint16_t read_sr(GPR regnum) const;
+    uint16_t read_gpr(GPR regnum) const;
     void write_ip(uint16_t v);
     void write_sr(GPR regnum, uint16_t v);
     void write_gpr(GPR regnum, uint16_t v);

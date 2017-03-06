@@ -90,7 +90,7 @@ uint16_t RTLCPU<debug_enabled>::read_reg(GPR regnum)
 }
 
 template <bool debug_enabled>
-uint16_t RTLCPU<debug_enabled>::read_ip()
+uint16_t RTLCPU<debug_enabled>::read_ip() const
 {
     svSetScope(svGetScopeFromName("TOP.Core.ip"));
 
@@ -98,7 +98,7 @@ uint16_t RTLCPU<debug_enabled>::read_ip()
 }
 
 template <bool debug_enabled>
-uint16_t RTLCPU<debug_enabled>::read_gpr(GPR regnum)
+uint16_t RTLCPU<debug_enabled>::read_gpr(GPR regnum) const
 {
     svSetScope(svGetScopeFromName("TOP.Core.regfile"));
 
@@ -113,7 +113,7 @@ uint16_t RTLCPU<debug_enabled>::read_gpr(GPR regnum)
 }
 
 template <bool debug_enabled>
-uint16_t RTLCPU<debug_enabled>::read_sr(GPR regnum)
+uint16_t RTLCPU<debug_enabled>::read_sr(GPR regnum) const
 {
     svSetScope(svGetScopeFromName("TOP.Core.segregs"));
     return this->dut.get_sr(regnum);
@@ -155,7 +155,10 @@ uint16_t RTLCPU<debug_enabled>::read_flags()
 template <bool debug_enabled>
 bool RTLCPU<debug_enabled>::has_trapped() const
 {
-    return false;
+    auto int_cs = this->mem.template read<uint16_t>(VEC_INT + 2);
+    auto int_ip = this->mem.template read<uint16_t>(VEC_INT + 0);
+
+    return read_sr(CS) == int_cs && read_gpr(IP) == int_ip;
 }
 
 template <bool debug_enabled>
