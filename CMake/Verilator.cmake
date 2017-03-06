@@ -29,7 +29,7 @@ function(verilate toplevel sources)
     foreach(source ${sources})
         get_source_file_property(res ${source} COMPILE_FLAGS)
         if(NOT res STREQUAL "NOTFOUND")
-            set(extra_compile_flags ${res})
+            list(APPEND extra_compile_flags ${res})
         endif()
     endforeach(source)
     set(VERILATED_HEADERS "${VERILATED_HEADERS} ${CMAKE_CURRENT_BINARY_DIR}/V${toplevel}.h" )
@@ -46,9 +46,9 @@ function(verilate toplevel sources)
                             -I${CMAKE_CURRENT_SOURCE_DIR}
                             -I${CMAKE_CURRENT_BINARY_DIR}
                             ${VERILATOR_TRACE_FLAGS} ${VERILATOR_COVERAGE_FLAGS}
-                            --cc --top-module ${toplevel}
+                            ${extra_compile_flags} --cc --top-module ${toplevel}
                             --Mdir ${CMAKE_CURRENT_BINARY_DIR}
-                            ${VERILATOR_INCLUDE_ARGS} ${extra_compile_flags}
+                            ${VERILATOR_INCLUDE_ARGS}
                        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
                        DEPENDS ${sources})
     add_library(V${toplevel} STATIC ${generated})
