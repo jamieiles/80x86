@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include <VCore.h>
 #include <VerilogDriver.h>
 
@@ -12,6 +13,8 @@ union reg_converter {
     uint16_t v16;
     uint8_t v8[2];
 };
+
+static const int max_cycles_per_step = 1000;
 
 template <bool debug_enabled>
 RTLCPU<debug_enabled>::RTLCPU()
@@ -134,8 +137,13 @@ size_t RTLCPU<debug_enabled>::step()
     } while (this->get_microcode_address() == 0x100);
 
     // Return to opcode dispatch
-    while (this->get_microcode_address() != 0x100)
+    int cycle_count = 0;
+    while (this->get_microcode_address() != 0x100 &&
+           cycle_count++ < max_cycles_per_step)
         this->cycle();
+
+    if (cycle_count >= max_cycles_per_step)
+        throw std::runtime_error("execution timeout");
 
     return this->read_ip() - prev_ip;
 }
