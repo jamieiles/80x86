@@ -23,11 +23,13 @@ module Prefetch(input logic clk,
                 output logic [19:1] mem_address,
                 input logic [15:0] mem_data);
 
+// verilator lint_off BLKANDNBLK
 reg [15:0] fetch_address;
+reg abort_cur;
+// verilator lint_on BLKANDNBLK
 reg [7:0] fetched_high_byte;
 reg write_second;
 wire should_write_second_byte = mem_ack && !abort_cur && !fetch_address[0];
-reg abort_cur;
 
 // verilator lint_off UNUSED
 wire [15:0] next_address = mem_ack && !abort_cur ? fetch_address + 1'b1 : fetch_address;
@@ -63,5 +65,16 @@ end
 always_ff @(posedge clk)
     if (mem_ack)
         fetched_high_byte <= mem_data[15:8];
+
+`ifdef verilator
+export "DPI-C" function set_ip;
+
+function set_ip;
+    input int new_val;
+    fetch_address = new_val[15:0];
+    abort_cur = 1'b1;
+    set_ip = 0;
+endfunction
+`endif
 
 endmodule
