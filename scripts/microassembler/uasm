@@ -200,6 +200,7 @@ class MicroAssembler(object):
         'rd_modrm_reg': (1, _boolean, True),
         'reg_wr_en': (1, _boolean, True),
         'width': (1, _boolean, True),
+        'load_ip': (1, _boolean, True),
         # Internal keywords, generated from others
         'jump_type': (num_bits(len(JumpType)), _reserved, False),
         # Populated once we know how many address bits required

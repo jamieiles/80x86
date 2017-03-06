@@ -19,6 +19,7 @@ set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/Microcode.v PROPERTIES
 
 verilate(Core ${CMAKE_CURRENT_SOURCE_DIR}/Core.v
          ${CMAKE_CURRENT_SOURCE_DIR}/Fifo.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/IP.v
          ${CMAKE_CURRENT_SOURCE_DIR}/LoadStore.v
          ${CMAKE_CURRENT_SOURCE_DIR}/ModRMDecode.v
          ${CMAKE_CURRENT_SOURCE_DIR}/Prefetch.v

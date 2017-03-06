@@ -58,10 +58,14 @@ wire [2:0] regnum;
 wire rm_is_reg;
 wire [2:0] rm_regnum;
 
+wire ip_inc = fifo_rd_en & ~fifo_empty;
+wire ip_wr_en;
+wire [15:0] ip_current;
+
 assign a_bus =
     a_sel == ADriver_TEMP ? 16'b0 :
     a_sel == ADriver_RA ? reg_rd_val[0] :
-    a_sel == ADriver_IP ? 16'b0 : q_bus;
+    a_sel == ADriver_IP ? ip_current : q_bus;
 
 assign b_bus =
     b_sel == BDriver_RB ? reg_rd_val[1] :
@@ -138,8 +142,8 @@ Fifo            #(.data_width(8),
 Prefetch        prefetch(.clk(clk),
                          .reset(reset),
                          .cs(cs),
-                         .new_ip(16'b0),
-                         .load_new_ip(1'b0),
+                         .new_ip(q_bus),
+                         .load_new_ip(ip_wr_en),
                          .fifo_wr_en(fifo_wr_en),
                          .fifo_wr_data(fifo_wr_data),
                          .fifo_reset(fifo_reset),
@@ -220,6 +224,7 @@ Microcode       microcode(.clk(clk),
                           .b_sel(b_sel),
                           .clear_prefixes(clear_prefixes),
                           .fifo_pop(microcode_fifo_pop),
+                          .load_ip(ip_wr_en),
                           .mar_wr_sel(mar_wr_sel),
                           .mar_write(write_mar),
                           .mdr_write(write_mdr),
@@ -243,5 +248,12 @@ Microcode       microcode(.clk(clk),
                           .fifo_rd_en(microcode_fifo_rd_en),
                           .fifo_rd_data(fifo_rd_data),
                           .fifo_empty(fifo_empty));
+
+IP              ip(.clk(clk),
+                   .reset(reset),
+                   .inc(ip_inc),
+                   .wr_en(ip_wr_en),
+                   .wr_val(q_bus),
+                   .val(ip_current));
 
 endmodule
