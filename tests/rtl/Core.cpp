@@ -35,6 +35,34 @@ void RTLCPU<debug_enabled>::reset()
 template <bool debug_enabled>
 void RTLCPU<debug_enabled>::write_reg(GPR regnum, uint16_t val)
 {
+    if (regnum == IP)
+        write_ip(val);
+    else if (regnum >= ES && regnum <= DS)
+        write_sr(regnum, val);
+    else
+        write_gpr(regnum, val);
+}
+
+template <bool debug_enabled>
+void RTLCPU<debug_enabled>::write_sr(GPR regnum, uint16_t val)
+{
+    svSetScope(svGetScopeFromName("TOP.Core.segregs"));
+    this->dut.set_sr(regnum, val);
+}
+
+template <bool debug_enabled>
+void RTLCPU<debug_enabled>::write_ip(uint16_t val)
+{
+    svSetScope(svGetScopeFromName("TOP.Core.ip"));
+    this->dut.set_ip(val);
+
+    svSetScope(svGetScopeFromName("TOP.Core.prefetch"));
+    this->dut.set_ip(val);
+}
+
+template <bool debug_enabled>
+void RTLCPU<debug_enabled>::write_gpr(GPR regnum, uint16_t val)
+{
     svSetScope(svGetScopeFromName("TOP.Core.regfile"));
 
     if (regnum < NUM_16BIT_REGS) {
@@ -53,6 +81,25 @@ void RTLCPU<debug_enabled>::write_reg(GPR regnum, uint16_t val)
 template <bool debug_enabled>
 uint16_t RTLCPU<debug_enabled>::read_reg(GPR regnum)
 {
+    if (regnum == IP)
+        return read_ip();
+    else if (regnum >= ES && regnum <= DS)
+        return read_sr(regnum);
+    else
+        return read_gpr(regnum);
+}
+
+template <bool debug_enabled>
+uint16_t RTLCPU<debug_enabled>::read_ip()
+{
+    svSetScope(svGetScopeFromName("TOP.Core.ip"));
+
+    return this->dut.get_ip();
+}
+
+template <bool debug_enabled>
+uint16_t RTLCPU<debug_enabled>::read_gpr(GPR regnum)
+{
     svSetScope(svGetScopeFromName("TOP.Core.regfile"));
 
     if (regnum < NUM_16BIT_REGS)
@@ -63,6 +110,13 @@ uint16_t RTLCPU<debug_enabled>::read_reg(GPR regnum)
     conv.v16 = this->dut.get_gpr(regsel);
 
     return conv.v8[regnum >= AH];
+}
+
+template <bool debug_enabled>
+uint16_t RTLCPU<debug_enabled>::read_sr(GPR regnum)
+{
+    svSetScope(svGetScopeFromName("TOP.Core.segregs"));
+    return this->dut.get_sr(regnum);
 }
 
 template <bool debug_enabled>

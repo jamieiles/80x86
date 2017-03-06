@@ -21,6 +21,12 @@ public:
 private:
     void data_access();
     void instruction_access();
+    uint16_t read_ip();
+    uint16_t read_sr(GPR regnum);
+    uint16_t read_gpr(GPR regnum);
+    void write_ip(uint16_t v);
+    void write_sr(GPR regnum, uint16_t v);
+    void write_gpr(GPR regnum, uint16_t v);
 
     bool i_in_progress;
     bool d_in_progress;
