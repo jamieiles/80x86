@@ -17,14 +17,6 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/microcode.bin
 set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/Microcode.v PROPERTIES
                             COMPILE_FLAGS "-DMICROCODE_ROM_PATH=\\\"${CMAKE_CURRENT_BINARY_DIR}\\\"")
 
-verilate(Fifo ${CMAKE_CURRENT_SOURCE_DIR}/Fifo.v)
-verilate(Prefetch ${CMAKE_CURRENT_SOURCE_DIR}/Prefetch.v)
-verilate(RegisterFile ${CMAKE_CURRENT_SOURCE_DIR}/RegisterFile.v)
-verilate(SegmentRegisterFile ${CMAKE_CURRENT_SOURCE_DIR}/SegmentRegisterFile.v)
-verilate(ModRMDecode ${CMAKE_CURRENT_SOURCE_DIR}/ModRMDecode.v)
-verilate(ImmediateReader ${CMAKE_CURRENT_SOURCE_DIR}/ImmediateReader.v)
-verilate(LoadStore ${CMAKE_CURRENT_SOURCE_DIR}/LoadStore.v)
-verilate(Microcode ${CMAKE_CURRENT_BINARY_DIR}/Microcode.v)
 verilate(Core ${CMAKE_CURRENT_SOURCE_DIR}/Core.v
          ${CMAKE_CURRENT_SOURCE_DIR}/Fifo.v
          ${CMAKE_CURRENT_SOURCE_DIR}/LoadStore.v
@@ -33,3 +25,11 @@ verilate(Core ${CMAKE_CURRENT_SOURCE_DIR}/Core.v
          ${CMAKE_CURRENT_SOURCE_DIR}/RegisterFile.v
          ${CMAKE_CURRENT_SOURCE_DIR}/SegmentRegisterFile.v
          ${CMAKE_CURRENT_BINARY_DIR}/Microcode.v)
+verilate(Fifo ${CMAKE_CURRENT_SOURCE_DIR}/Fifo.v)
+verilate(ImmediateReader ${CMAKE_CURRENT_SOURCE_DIR}/ImmediateReader.v)
+verilate(LoadStore ${CMAKE_CURRENT_SOURCE_DIR}/LoadStore.v)
+verilate(Microcode ${CMAKE_CURRENT_BINARY_DIR}/Microcode.v)
+verilate(ModRMDecode ${CMAKE_CURRENT_SOURCE_DIR}/ModRMDecode.v)
+verilate(Prefetch ${CMAKE_CURRENT_SOURCE_DIR}/Prefetch.v)
+verilate(RegisterFile ${CMAKE_CURRENT_SOURCE_DIR}/RegisterFile.v)
+verilate(SegmentRegisterFile ${CMAKE_CURRENT_SOURCE_DIR}/SegmentRegisterFile.v)
