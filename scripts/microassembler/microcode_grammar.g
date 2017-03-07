@@ -3,7 +3,7 @@ Microcode:
 ;
 
 Comment:
-  /#.*$/
+  /\/\/.*$/
 ;
 
 Line:

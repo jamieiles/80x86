@@ -1,18 +1,18 @@
-# XOR 0x30 r/m := r XOR r/m
+// XOR 0x30 r/m := r XOR r/m
 .at 0x30;
-    # Start the ModRM decode
-    # Block in this state until modrm is complete, if there is a memory
-    # operand then it will be written to the MAR.  The register fetch is
-    # started on modrm completion and transition to the next instruction.
+    // Start the ModRM decode
+    // Block in this state until modrm is complete, if there is a memory
+    // operand then it will be written to the MAR.  The register fetch is
+    // started on modrm completion and transition to the next instruction.
     modrm_start, mar_write, mar_wr_sel EA, ra_modrm_rm_reg, rb_modrm_reg, jmp_if_not_mem xor_reg;
 .auto_address;
 xor_mem:
-    # Start memory fetch
-    # Blocking in this state until memory fetch completes
+    // Start memory fetch
+    // Blocking in this state until memory fetch completes
     mem_read, width 8, segment DS, rb_modrm_reg;
-    # Perform the calculation, update the flags and write the MDR
+    // Perform the calculation, update the flags and write the MDR
     q_sel MDR, a_sel Q, b_sel RB, alu_op XOR, q_sel ALU, update_flags OF SF ZF CF PF, mdr_write;
-    # Write the result back to memory, jump to the next dispatch
+    // Write the result back to memory, jump to the next dispatch
     mem_write, width 8, segment DS, jmp opcode_fetch, clear_prefixes;
 xor_reg:
     a_sel RA, b_sel RB, alu_op XOR, q_sel ALU, update_flags OF SF ZF CF PF, rd_modrm_reg, reg_wr_en, jmp opcode_fetch, clear_prefixes;
