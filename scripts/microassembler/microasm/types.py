@@ -58,5 +58,5 @@ class UpdateFlags(Enum):
 
 class JumpType(Enum):
     UNCONDITIONAL = 0
-    IF_NOT_MEM = 1
+    RM_REG_MEM = 1
     OPCODE = 2

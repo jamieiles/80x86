@@ -1,19 +1,15 @@
-s80x86 Core Development Guide
-=============================
+= s80x86 Core Development Guide
 Jamie Iles <jamie@jamieiles.com>
 
 :source-highlighter: coderay
 
-Building
---------
+== Building
 
-System Requirements
-~~~~~~~~~~~~~~~~~~~
+=== System Requirements
 
 - Docker, tested with version 1.12.1.
 
-Quick Start Build
-~~~~~~~~~~~~~~~~~
+=== Quick Start Build
 
 The `scripts/build` script provides everything that is needed to quickly build
 and test the project.  On the first run, the script will build the required
@@ -25,8 +21,7 @@ and run all of the built-in tests.
 ./scripts/build
 ----
 
-Build Environments
-~~~~~~~~~~~~~~~~~~
+=== Build Environments
 
 The s80x86 project uses Docker to provide convenient build environments.  This
 means that it is possible to build and test the design on any Linux system
@@ -57,8 +52,7 @@ viewing waveforms.  It is recommended to use the Docker build environments for
 all builds and developments as those are used for the baseline development and
 verification.
 
-CI Build Scripts
-~~~~~~~~~~~~~~~~
+=== CI Build Scripts
 
 Several build scripts are included suitable for use in a continuous
 integration environment.
@@ -76,8 +70,7 @@ display the coverage report in a browser.
 but produces Cobertura compatible coverage information that can be read into
 Jenkins or other CI systems supporting this format.
 
-Build Configurations
-~~~~~~~~~~~~~~~~~~~~
+=== Build Configurations
 
 The CMake based build system supports the following build configurations and
 can be selected by passing `-DCMAKE_BUILD_TYPE=`'CONFIGURATION' to `cmake`.
@@ -89,8 +82,7 @@ Verilog models which will write VCD files for each test run.
 
 *Coverage* builds everything for coverage including {cpp} and Verilog.
 
-RTL Tests
----------
+== RTL Tests
 
 The RTL tests are written in {cpp}, using Verilator to create {cpp} models of the
 Verilog.  For example, given a synchronous Fifo, the Verilator model can be
@@ -174,3 +166,48 @@ be written by adding events on positive+negative clock edges and running after
 a number of cycles.  `tests/rtl/TestPrefetch.cpp` uses a number of these
 concepts.  With the right abstractions it can be possible to type-parameterize
 these test cases to run against pure software simulations and Verilog models.
+
+== Microcode
+
+The microcode is stored in `rtl/microcode` where microcode files have the
+`.us` suffix.  The microassembler first passes these files through the C
+preprocessor to allow inclusion of other files and creating macros.
+
+=== Directives
+
+Directives are used to provide information to the microassembler about
+microcode layout without actually generating microinstructions.
+
+==== .opcode NUM
+
+The `.opcode NUM` directive tells the microassembler to insert the next
+microinstruction at address `NUM` in the microprogram.  This is used for the
+first 256 opcodes so that efficient dispatch can be performed by jumping to
+the address corresponding to the value of the opcode.
+
+==== .auto_address
+
+Returns the address assignment to automatically assigned addresses after using
+the `.opcode` directive.
+
+=== Microinstruction Fields
+
+==== jmp_rm_reg_mem
+
+`jmp_rm_reg_mem LABEL` tells the microassembler to generate a jump that will
+jump to the label if the Mod R/M decoder indicates a register operand in the
+R/M field and the label + 1 if the R/M field encodes a memory operand.  For
+example:
+
+[source,asm]
+----
+    jmp_rm_reg_mem foo_reg;
+foo_reg:
+    jmp opcode_fetch, clear_prefixes;
+foo_mem:
+    jmp opcode_fetch, clear_prefixes;
+----
+
+will jump to `foo_reg` if the R/M operand is a register operand and `foo_mem`
+if the R/M operand is a memory operand.  The two microinstructions must be
+adjacent with the register based instruction appearing first.

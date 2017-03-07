@@ -189,7 +189,6 @@ EmulateFixture.MovRegMem16:\
 EmulateFixture.MovRegMem8:\
 EmulateFixture.MovRegReg16:\
 EmulateFixture.MovRegReg16_8b:\
-EmulateFixture.MovRegReg8:\
 EmulateFixture.MovRegReg8_8a:\
 EmulateFixture.MovRegSR:\
 EmulateFixture.MovSRInvalidSR:\

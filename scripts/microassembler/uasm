@@ -210,7 +210,7 @@ class MicroAssembler(object):
         'jump_target': (0, _reserved, False),
         # Keywords only, internally mapped to other microcode fields
         'jmp_opcode': (0, partial(_jump, jump_type=JumpType.OPCODE), False),
-        'jmp_if_not_mem': (0, partial(_jump, jump_type=JumpType.IF_NOT_MEM), False),
+        'jmp_rm_reg_mem': (0, partial(_jump, jump_type=JumpType.RM_REG_MEM), False),
         'jmp': (0, partial(_jump, jump_type=JumpType.UNCONDITIONAL), False),
     }
 

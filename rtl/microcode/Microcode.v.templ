@@ -8,6 +8,7 @@
 module Microcode(input logic clk,
                  input logic reset,
                  input logic stall,
+                 input logic rm_is_reg,
                  // Microinstruction fields.
                  <%#exported_fields%>
                  output logic <%type%><%name%>,
@@ -54,9 +55,11 @@ always_ff @(posedge clk or posedge reset)
     opcode_popped <= reset ? 1'b0 : fifo_rd_en && !fifo_empty && !opcode_popped;
 
 always_ff @(posedge clk or posedge reset) begin
-    if (reset) begin
+    if (reset)
         addr <= reset_address;
-    end else if (!do_stall && current.jump_type == JumpType_OPCODE)
+    else if (!do_stall && current.jump_type == JumpType_RM_REG_MEM)
+        addr <= current.next + {{addr_bits-1{1'b0}}, ~rm_is_reg};
+    else if (!do_stall && current.jump_type == JumpType_OPCODE)
         addr <= {{addr_bits-8{1'b0}}, fifo_rd_data};
     else if (!do_stall)
         addr <= current.next;
