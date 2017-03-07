@@ -100,3 +100,27 @@ RTLModRMDecoderTestbench::RTLModRMDecoderTestbench()
 
 typedef ::testing::Types<RTLModRMDecoderTestbench> ModRMImplTypes;
 INSTANTIATE_TYPED_TEST_CASE_P(RTL, ModRMTestFixture, ModRMImplTypes);
+
+class ModRMFixture : public RTLModRMDecoderTestbench,
+    public ::testing::Test {
+};
+
+TEST_F(ModRMFixture, StartHeldDoesntClearModrm)
+{
+    set_instruction({ 0xd8, 0xff });
+
+    dut.start = 1;
+    cycle();
+
+    after_n_cycles(0, [&]{
+        this->dut.start = 1;
+        after_n_cycles(1, [&]{
+            this->dut.start = 0;
+            this->dut.fifo_rd_data = 0;
+            after_n_cycles(1, [&]{ this->dut.fifo_rd_data = 0; });
+        });
+    });
+    cycle(3);
+
+    ASSERT_EQ(this->dut.regnum, 0x3);
+}

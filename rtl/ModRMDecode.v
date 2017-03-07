@@ -24,7 +24,7 @@ module ModRMDecode(input logic clk,
                    output logic immed_is_8bit,
                    input logic [15:0] immediate);
 
-assign fifo_rd_en = ~fifo_empty & start & ~_popped;
+assign fifo_rd_en = ~fifo_empty & start & ~_popped & ~complete;
 
 reg [7:0] _modrm;
 
@@ -120,7 +120,7 @@ always_ff @(posedge clk or posedge reset)
     _popped <= reset ? 1'b0 : fifo_rd_en;
 
 always_ff @(posedge clk or posedge reset)
-    if (reset || start)
+    if (reset)
         _modrm <= 8'b0;
     else if (_popped)
         _modrm <= fifo_rd_data;
