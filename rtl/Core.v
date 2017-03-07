@@ -20,7 +20,11 @@ wire [15:0] b_bus;
 wire [15:0] q_bus;
 
 wire [2:0] reg_rd_sel[2];
-assign reg_rd_sel = modrm_start ? modrm_reg_rd_sel : microcode_reg_rd_sel;
+assign reg_rd_sel[0] = modrm_start ? modrm_reg_rd_sel[0] :
+    ra_modrm_rm_reg ? rm_regnum : microcode_reg_rd_sel[0];
+assign reg_rd_sel[1] = modrm_start ? modrm_reg_rd_sel[1] :
+    rb_modrm_reg ? regnum : microcode_reg_rd_sel[1];
+
 wire [2:0] modrm_reg_rd_sel[2];
 wire [2:0] microcode_reg_rd_sel[2];
 wire modrm_start;
