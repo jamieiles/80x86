@@ -12,6 +12,8 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/microcode.bin
                            ${CMAKE_CURRENT_BINARY_DIR}/Microcode.v
                            ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.v
                    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/microcode/microcode.us
+                           ${CMAKE_CURRENT_SOURCE_DIR}/microcode/mov.us
+                           ${CMAKE_CURRENT_SOURCE_DIR}/microcode/xor.us
                            ${CMAKE_CURRENT_SOURCE_DIR}/microcode/Microcode.v.templ
                            ${CMAKE_CURRENT_SOURCE_DIR}/microcode/MicrocodeTypes.v.templ)
 set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/Microcode.v PROPERTIES
