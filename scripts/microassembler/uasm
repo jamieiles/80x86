@@ -3,6 +3,7 @@ import argparse
 import math
 import textx
 import os
+import subprocess
 import pystache
 
 from functools import partial
@@ -70,34 +71,36 @@ class MicroAssembler(object):
                 else:
                     instr.next = instr.address + 1
 
-        with open(filename) as f:
-            model = mm.model_from_str(f.read())
-            current_label = None
-            current_address = None
+        def preprocess(filename):
+            return subprocess.check_output(['cpp', filename, '-o', '-']).decode('utf-8')
 
-            for d in model.lines:
-                if token_type(d) == 'LabelAnchor':
-                    current_label = d.label
-                    if current_label in label_map:
-                        raise KeyError('Duplicate label "{0}"'.format(current_label))
-                elif token_type(d) == 'Directive':
-                    if d.directive == 'at':
-                        current_address = int(d.arguments[0].value, 0)
-                    elif d.directive == 'auto_address':
-                        current_address = None
-                elif token_type(d) == 'MicroInstruction':
-                    instr = MicroInstruction(current_address)
-                    instructions.append(instr)
-                    self._current_instr = instr
+        model = mm.model_from_str(preprocess(filename))
+        current_label = None
+        current_address = None
 
-                    self._parse(d.fields)
-
-                    if current_label:
-                        label_map[current_label] = instr
+        for d in model.lines:
+            if token_type(d) == 'LabelAnchor':
+                current_label = d.label
+                if current_label in label_map:
+                    raise KeyError('Duplicate label "{0}"'.format(current_label))
+            elif token_type(d) == 'Directive':
+                if d.directive == 'at':
+                    current_address = int(d.arguments[0].value, 0)
+                elif d.directive == 'auto_address':
                     current_address = None
-                    current_label = None
-                else:
-                    raise ValueError('Unexpected token type {0}'.format(token_type(d)))
+            elif token_type(d) == 'MicroInstruction':
+                instr = MicroInstruction(current_address)
+                instructions.append(instr)
+                self._current_instr = instr
+
+                self._parse(d.fields)
+
+                if current_label:
+                    label_map[current_label] = instr
+                current_address = None
+                current_label = None
+            else:
+                raise ValueError('Unexpected token type {0}'.format(token_type(d)))
 
         assign_addresses()
         resolve_labels()
@@ -295,5 +298,5 @@ parser.add_argument('types_output')
 args = parser.parse_args()
 
 assembler = MicroAssembler(args.input, args.microcode_output, args.verilog_output,
-                   args.types_output)
+                           args.types_output)
 assembler.assemble()

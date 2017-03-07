@@ -1,0 +1,7 @@
+// MOV 0x88
+.at 0x88;
+    modrm_start, mar_write, mar_wr_sel EA, ra_modrm_rm_reg, rb_modrm_reg,
+        jmp_if_not_mem mov_reg;
+    jmp opcode_fetch, clear_prefixes;
+mov_reg:
+    a_sel RA, jmp opcode_fetch, clear_prefixes;
