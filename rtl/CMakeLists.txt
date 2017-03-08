@@ -21,7 +21,11 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/microcode.bin
 set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/Microcode.v PROPERTIES
                             COMPILE_FLAGS "-DMICROCODE_ROM_PATH=\\\"${CMAKE_CURRENT_BINARY_DIR}\\\"")
 
-verilate(Core ${CMAKE_CURRENT_SOURCE_DIR}/Core.v
+verilate(ALU ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/ALU.v)
+verilate(Core ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/ALU.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/Core.v
          ${CMAKE_CURRENT_SOURCE_DIR}/Fifo.v
          ${CMAKE_CURRENT_SOURCE_DIR}/IP.v
          ${CMAKE_CURRENT_SOURCE_DIR}/LoadStore.v

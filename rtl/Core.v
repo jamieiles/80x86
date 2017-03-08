@@ -18,6 +18,7 @@ module Core(input logic clk,
 wire [15:0] a_bus;
 wire [15:0] b_bus;
 wire [15:0] q_bus;
+wire [15:0] q_bus_minus_alu;
 
 wire [2:0] reg_rd_sel[2];
 assign reg_rd_sel[0] = modrm_start ? modrm_reg_rd_sel[0] :
@@ -46,7 +47,8 @@ wire microcode_fifo_rd_en;
 wire [1:0] a_sel;
 wire [1:0] b_sel;
 wire [1:0] q_sel;
-wire alu_op;
+wire [`MC_ALUOp_t_BITS-1:0] alu_op;
+wire [15:0] alu_out;
 wire clear_prefixes;
 wire mar_wr_sel;
 wire microcode_fifo_pop;
@@ -70,17 +72,22 @@ wire [15:0] ip_current;
 assign a_bus =
     a_sel == ADriver_TEMP ? 16'b0 :
     a_sel == ADriver_RA ? reg_rd_val[0] :
-    a_sel == ADriver_IP ? ip_current : q_bus;
+    a_sel == ADriver_IP ? ip_current : q_bus_minus_alu;
 
 assign b_bus =
     b_sel == BDriver_RB ? reg_rd_val[1] :
     b_sel == BDriver_IMMEDIATE ? immediate :
-    b_sel == BDriver_SR ? seg_rd_val : q_bus;
+    b_sel == BDriver_SR ? seg_rd_val : q_bus_minus_alu;
 
-assign q_bus =
+// The Q bus is tapped off before the ALU so that the MAR/MDR can be fed back
+// into the A/B busses, but without introducing a combinational loop through
+// A/B into the ALU and back out.  Therefore it is not legal to have A/B
+// driven from Q and for Q to be driven from the ALU.
+assign q_bus_minus_alu =
     q_sel == QDriver_MAR ? mar :
-    q_sel == QDriver_MDR ? mdr :
-    q_sel == QDriver_ALU ? 16'b0 : 16'b0;
+    q_sel == QDriver_MDR ? mdr : 16'b0;
+assign q_bus =
+    q_sel == QDriver_ALU ? alu_out : q_bus_minus_alu;
 
 wire immed_start;
 wire immed_busy;
@@ -258,5 +265,10 @@ IP              ip(.clk(clk),
                    .wr_en(ip_wr_en),
                    .wr_val(q_bus),
                    .val(ip_current));
+
+ALU             alu(.a(a_bus),
+                    .b(b_bus),
+                    .out(alu_out),
+                    .op(alu_op));
 
 endmodule

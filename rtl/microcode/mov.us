@@ -4,7 +4,8 @@
         jmp_rm_reg_mem mov88_reg;
 .auto_address;
 mov88_reg:
-    a_sel RA, rd_modrm_reg, reg_wr_en, width 8, jmp opcode_fetch,
-        clear_prefixes;
+    a_sel RA, q_sel ALU, alu_op SELA, rd_modrm_reg, reg_wr_en, width 8, jmp
+        opcode_fetch, clear_prefixes;
 mov88_mem:
-    jmp opcode_fetch, clear_prefixes;
+    b_sel RB, q_sel ALU, alu_op SELB, mdr_write;
+    b_sel RB, rb_modrm_reg, width 8, mem_write, jmp opcode_fetch;
