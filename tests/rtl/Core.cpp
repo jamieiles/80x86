@@ -27,6 +27,16 @@ RTLCPU<debug_enabled>::RTLCPU(const std::string &test_name)
 
     this->periodic(ClockSetup, [&]{ this->data_access(); });
     this->periodic(ClockSetup, [&]{ this->instruction_access(); });
+    this->periodic(ClockCapture, [&]{
+        if (this->dut.data_m_access && this->dut.data_m_wr_en) {
+            if (this->dut.data_m_bytesel & (1 << 0))
+                this->mem.template write<uint8_t>(this->dut.data_m_addr << 1,
+                                                  this->dut.data_m_data_out & 0xff);
+            if (this->dut.data_m_bytesel & (1 << 1))
+                this->mem.template write<uint8_t>((this->dut.data_m_addr << 1) + 1,
+                                                  (this->dut.data_m_data_out >> 8) & 0xff);
+        }
+    });
 }
 
 template <bool debug_enabled>
@@ -170,7 +180,7 @@ bool RTLCPU<debug_enabled>::has_trapped() const
 }
 
 template <bool debug_enabled>
-void RTLCPU<debug_enabled>::data_access()
+void RTLCPU<debug_enabled>::instruction_access()
 {
     if (this->dut.reset || !this->dut.instr_m_access || i_in_progress)
         return;
@@ -188,7 +198,7 @@ void RTLCPU<debug_enabled>::data_access()
 }
 
 template <bool debug_enabled>
-void RTLCPU<debug_enabled>::instruction_access()
+void RTLCPU<debug_enabled>::data_access()
 {
     if (this->dut.reset || !this->dut.data_m_access || d_in_progress)
         return;
@@ -197,16 +207,7 @@ void RTLCPU<debug_enabled>::instruction_access()
     this->after_n_cycles(mem_latency, [&]{
         auto v =
             this->mem.template read<uint16_t>(this->dut.data_m_addr << 1);
-        if (this->dut.data_m_wr_en) {
-            if (this->dut.data_m_bytesel & (1 << 0))
-                this->mem.template write<uint8_t>(this->dut.data_m_addr << 1,
-                                                    this->dut.data_m_data_out & 0xff);
-            if (this->dut.data_m_bytesel & (1 << 1))
-                this->mem.template write<uint8_t>((this->dut.data_m_addr << 1) + 1,
-                                                    (this->dut.data_m_data_out >> 8) & 0xff);
-        } else {
-            this->dut.data_m_data_in = v;
-        }
+        this->dut.data_m_data_in = v;
         this->dut.data_m_ack = 1;
         this->after_n_cycles(1, [&]{
             this->dut.data_m_ack = 0;
