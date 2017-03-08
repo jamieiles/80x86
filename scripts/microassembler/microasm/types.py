@@ -58,6 +58,11 @@ class UpdateFlags(Enum):
     DF = 7
     OF = 8
 
+class RDSelSource(Enum):
+    MODRM_REG = 0
+    MODRM_RM_REG = 1
+    MICROCODE_RD_SEL = 2
+
 class JumpType(Enum):
     UNCONDITIONAL = 0
     RM_REG_MEM = 1

@@ -21,19 +21,19 @@ wire [15:0] q_bus;
 wire [15:0] q_bus_minus_alu;
 
 wire [2:0] reg_rd_sel[2];
-assign reg_rd_sel[0] = modrm_start ? modrm_reg_rd_sel[0] :
+wire modrm_complete;
+assign reg_rd_sel[0] = modrm_start && ~modrm_complete ? modrm_reg_rd_sel[0] :
     ra_modrm_rm_reg ? rm_regnum : microcode_reg_rd_sel[0];
-assign reg_rd_sel[1] = modrm_start ? modrm_reg_rd_sel[1] :
+assign reg_rd_sel[1] = modrm_start && ~modrm_complete ? modrm_reg_rd_sel[1] :
     rb_modrm_reg ? regnum : microcode_reg_rd_sel[1];
 
 wire [2:0] modrm_reg_rd_sel[2];
 wire [2:0] microcode_reg_rd_sel[2];
 wire modrm_start;
 wire modrm_busy;
-wire modrm_complete;
 
 wire [15:0] reg_rd_val[2];
-wire [2:0] reg_wr_sel;
+wire [2:0] microcode_reg_wr_sel;
 wire [15:0] reg_wr_val = q_bus;
 wire reg_wr_en;
 wire [1:0] seg_wr_sel;
@@ -106,8 +106,13 @@ wire mem_read;
 wire mem_write;
 wire ra_modrm_rm_reg;
 wire rb_modrm_reg;
-wire rd_modrm_reg;
 wire loadstore_start = mem_read | mem_write;
+wire [`MC_RDSelSource_t_BITS-1:0] rd_sel_source;
+wire [2:0] reg_wr_sel =
+    rd_sel_source == RDSelSource_MODRM_REG ? regnum :
+    rd_sel_source == RDSelSource_MODRM_RM_REG ? rm_regnum :
+    microcode_reg_wr_sel;
+
 wire loadstore_is_store = mem_write;
 wire loadstore_complete;
 wire [1:0] segment;
@@ -246,8 +251,8 @@ Microcode       microcode(.clk(clk),
                           .ra_sel(microcode_reg_rd_sel[0]),
                           .rb_modrm_reg(rb_modrm_reg),
                           .rb_sel(microcode_reg_rd_sel[1]),
-                          .rd_modrm_reg(rd_modrm_reg),
-                          .rd_sel(reg_wr_sel),
+                          .rd_sel_source(rd_sel_source),
+                          .rd_sel(microcode_reg_wr_sel),
                           .reg_wr_en(reg_wr_en),
                           .segment(segment),
                           .segment_override(segment_override),

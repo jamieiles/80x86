@@ -1,4 +1,4 @@
-// MOV 0x88
+// MOV 0x88     r/m := r (8-bit)
 .at 0x88;
     modrm_start, mar_write, mar_wr_sel EA, ra_modrm_rm_reg, width 8,
         jmp_rm_reg_mem mov88_reg;

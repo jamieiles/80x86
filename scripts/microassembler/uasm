@@ -16,6 +16,7 @@ from microasm.types import (
     BDriver,
     QDriver,
     ALUOp,
+    RDSelSource,
     UpdateFlags,
     JumpType
 )
@@ -132,7 +133,7 @@ class MicroAssembler(object):
         with open(filename, 'w') as f:
             f.write('`ifndef MICROCODE_TYPES\n')
             f.write('`define MICROCODE_TYPES\n\n')
-            for cls in [ADriver, BDriver, QDriver, ALUOp, JumpType]:
+            for cls in [ADriver, BDriver, QDriver, ALUOp, JumpType, RDSelSource]:
                 items = []
                 for idx, e in enumerate(cls.__members__):
                     name = '%s_%s' % (cls.__name__, e)
@@ -201,7 +202,7 @@ class MicroAssembler(object):
         'modrm_start': (1, _boolean, True),
         'ra_modrm_rm_reg': (1, _boolean, True),
         'rb_modrm_reg': (1, _boolean, True),
-        'rd_modrm_reg': (1, _boolean, True),
+        'rd_sel_source': (num_bits(len(RDSelSource)), partial(_enumerated_field, enum_class=RDSelSource), True),
         'reg_wr_en': (1, _boolean, True),
         'width': (1, _boolean, True),
         'load_ip': (1, _boolean, True),
