@@ -96,7 +96,8 @@ wire immed_is_8bit;
 wire [15:0] immediate;
 
 wire microcode_stall = (modrm_busy & ~modrm_complete) |
-    (immed_busy & ~immed_complete);
+    (immed_busy & ~immed_complete) |
+    loadstore_busy;
 
 wire [15:0] mar;
 wire [15:0] mdr;
@@ -106,15 +107,16 @@ wire mem_read;
 wire mem_write;
 wire ra_modrm_rm_reg;
 wire rb_modrm_reg;
-wire loadstore_start = mem_read | mem_write;
 wire [`MC_RDSelSource_t_BITS-1:0] rd_sel_source;
 wire [2:0] reg_wr_sel =
     rd_sel_source == RDSelSource_MODRM_REG ? regnum :
     rd_sel_source == RDSelSource_MODRM_RM_REG ? rm_regnum :
     microcode_reg_wr_sel;
 
+wire loadstore_start = (mem_read | mem_write) & ~loadstore_complete;
 wire loadstore_is_store = mem_write;
 wire loadstore_complete;
+wire loadstore_busy;
 wire [1:0] segment;
 wire segment_override;
 wire segment_wr_en;
@@ -228,6 +230,7 @@ LoadStore       loadstore(.clk(clk),
                           .start(loadstore_start),
                           .is_8bit(is_8_bit),
                           .wr_en(loadstore_is_store),
+                          .busy(loadstore_busy),
                           .complete(loadstore_complete));
 
 Microcode       microcode(.clk(clk),
