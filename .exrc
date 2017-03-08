@@ -9,3 +9,4 @@ set makeprg=./docker/s80x86-dev\ \"ninja\ -C\ _build/dev\"
 map <Leader>m :Make<cr>
 map <Leader>M :Make!<cr>
 map <Leader>c :Copen<cr>
+au BufNewFile,BufRead *.us set filetype=asm
