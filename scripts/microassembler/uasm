@@ -130,24 +130,24 @@ class MicroAssembler(object):
     def _write_types(self, filename, instructions):
         with open(ENUM_TEMPLATE) as f:
             template = f.read()
-        with open(filename, 'w') as f:
-            f.write('`ifndef MICROCODE_TYPES\n')
-            f.write('`define MICROCODE_TYPES\n\n')
-            for cls in [ADriver, BDriver, QDriver, ALUOp, JumpType, RDSelSource]:
-                items = []
-                for idx, e in enumerate(cls.__members__):
-                    name = '%s_%s' % (cls.__name__, e)
-                    value = '%d%s' % (cls[e].value, ',' if idx != len(cls.__members__) - 1 else '')
-                    items.append({'name': name, 'value': value})
 
-                type_data = {
-                    'high_bit': num_bits(len(cls)) - 1,
-                    'name': 'MC_%s_t' % (cls.__name__,),
-                    'items': items,
-                    'num_bits': num_bits(len(cls)),
-                }
-                f.write(pystache.render(template, type_data))
-            f.write('`endif // MICROCODE_TYPES\n')
+        enums = []
+        for cls in [ADriver, BDriver, QDriver, ALUOp, JumpType, RDSelSource]:
+            items = []
+            for idx, e in enumerate(cls.__members__):
+                name = '%s_%s' % (cls.__name__, e)
+                value = '%d%s' % (cls[e].value, ',' if idx != len(cls.__members__) - 1 else '')
+                items.append({'name': name, 'value': value})
+
+            type_data = {
+                'high_bit': num_bits(len(cls)) - 1,
+                'name': 'MC_%s_t' % (cls.__name__,),
+                'items': items,
+                'num_bits': num_bits(len(cls)),
+            }
+            enums.append(type_data)
+        with open(filename, 'w') as f:
+            f.write(pystache.render(template, {'enums': enums}))
 
     def _enumerated_field(self, field, enum_class=None):
         val = enum_class[field.arguments[0]].value

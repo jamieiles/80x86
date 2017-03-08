@@ -1,3 +1,7 @@
+`ifndef MICROCODE_TYPES
+`define MICROCODE_TYPES
+
+<%#enums%>
 typedef enum bit [<%high_bit%>:0] {
 <%#items%>
     <%name%> = <%value%>
@@ -5,3 +9,5 @@ typedef enum bit [<%high_bit%>:0] {
 } <%name%>;
 `define <%name%>_BITS <%num_bits%>
 
+<%/enums%>
+`endif // MICROCODE_TYPES
