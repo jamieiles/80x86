@@ -57,6 +57,7 @@ wire fifo_empty;
 wire fifo_full;
 wire fifo_reset;
 wire is_8_bit;
+wire reg_is_8_bit = modrm_start ? 1'b0 : is_8_bit;
 wire [15:0] effective_address;
 wire [2:0] regnum;
 wire rm_is_reg;
@@ -109,7 +110,7 @@ wire [8:0] update_flags;
 
 RegisterFile    regfile(.clk(clk),
                         .reset(reset),
-                        .is_8_bit(is_8_bit),
+                        .is_8_bit(reg_is_8_bit),
                         .rd_sel(reg_rd_sel),
                         .rd_val(reg_rd_val),
                         .wr_sel(reg_wr_sel),
