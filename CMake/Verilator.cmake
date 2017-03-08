@@ -42,7 +42,7 @@ function(verilate toplevel sources)
     add_custom_command(OUTPUT ${generated}
                        COMMAND rm -f ${generated}
                        COMMAND verilator -sv -O3 ${sources}
-                            -Wall -Wwarn-lint -Wwarn-style
+                            -Wall -Wwarn-lint -Wwarn-style --assert
                             -I${CMAKE_CURRENT_SOURCE_DIR}
                             -I${CMAKE_CURRENT_BINARY_DIR}
                             ${VERILATOR_TRACE_FLAGS} ${VERILATOR_COVERAGE_FLAGS}

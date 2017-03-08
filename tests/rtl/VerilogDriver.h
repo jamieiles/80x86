@@ -24,6 +24,9 @@ enum PeriodicEventType {
 
 const int evals_per_cycle = 100;
 
+extern double sc_time_stamp();
+extern double cur_time_stamp;
+
 static_assert(evals_per_cycle % 2 == 0, "evals_per_cycle must be divisible by 2");
 
 #ifdef DEBUG
@@ -89,6 +92,7 @@ VerilogDriver<T, debug_enabled>::VerilogDriver(const std::string &instance_name)
     dut.reset = 0;
     dut.clk = 0;
     cur_time = 0;
+    cur_time_stamp = 0;
     if (debug_enabled)
         setup_trace();
 }
@@ -185,6 +189,7 @@ void VerilogDriver<T, debug_enabled>::cycle(int count)
         }
 
         ++cycle_num;
+        ++cur_time_stamp;
     }
 }
 
