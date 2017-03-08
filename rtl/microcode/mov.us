@@ -1,11 +1,52 @@
 // MOV 0x88     r/m := r (8-bit)
 .at 0x88;
-    modrm_start, mar_write, mar_wr_sel EA, ra_modrm_rm_reg, width 8,
+    modrm_start, mar_write, mar_wr_sel EA, rb_modrm_reg, width 8,
         jmp_rm_reg_mem mov88_reg;
 .auto_address;
 mov88_reg:
-    a_sel RA, q_sel ALU, alu_op SELA, rd_modrm_reg, reg_wr_en, width 8, jmp
-        opcode_fetch, clear_prefixes;
+    b_sel RB, q_sel ALU, alu_op SELB, rd_sel_source MODRM_RM_REG, reg_wr_en,
+        width 8, jmp opcode_fetch, clear_prefixes;
 mov88_mem:
-    b_sel RB, q_sel ALU, alu_op SELB, mdr_write;
+    b_sel RB, rb_modrm_reg, q_sel ALU, alu_op SELB, mdr_write;
     b_sel RB, rb_modrm_reg, width 8, mem_write, jmp opcode_fetch;
+
+// MOV 0x89     r/m := r (16-bit)
+.at 0x89;
+    modrm_start, mar_write, mar_wr_sel EA, rb_modrm_reg,
+        jmp_rm_reg_mem mov89_reg;
+.auto_address;
+mov89_reg:
+    b_sel RB, rb_modrm_reg, q_sel ALU, alu_op SELB,
+        rd_sel_source MODRM_RM_REG, reg_wr_en,
+        jmp opcode_fetch, clear_prefixes;
+mov89_mem:
+    b_sel RB, rb_modrm_reg, q_sel ALU, alu_op SELB, mdr_write;
+    b_sel RB, rb_modrm_reg, mem_write, jmp opcode_fetch;
+
+// MOV 0x8a     r := r/m (8-bit)
+.at 0x8a;
+    modrm_start, mar_write, mar_wr_sel EA, ra_modrm_rm_reg, width 8,
+        jmp_rm_reg_mem mov8a_reg, a_sel RA;
+.auto_address;
+mov8a_reg:
+    a_sel RA, ra_modrm_rm_reg, q_sel ALU, alu_op SELA,
+        rd_sel_source MODRM_REG, reg_wr_en, width 8,
+        jmp opcode_fetch, clear_prefixes;
+mov8a_mem:
+    mem_read, width 8;
+    rd_sel_source MODRM_REG, reg_wr_en, q_sel MDR, width 8,
+        jmp opcode_fetch, clear_prefixes;
+
+// MOV 0x8b     r := r/m (16-bit)
+.at 0x8b;
+    modrm_start, mar_write, mar_wr_sel EA, ra_modrm_rm_reg,
+        jmp_rm_reg_mem mov8b_reg, a_sel RA;
+.auto_address;
+mov8b_reg:
+    a_sel RA, ra_modrm_rm_reg, q_sel ALU, alu_op SELA,
+        rd_sel_source MODRM_REG, reg_wr_en,
+        jmp opcode_fetch, clear_prefixes;
+mov8b_mem:
+    mem_read;
+    rd_sel_source MODRM_REG, reg_wr_en, q_sel MDR,
+        jmp opcode_fetch, clear_prefixes;
