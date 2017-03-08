@@ -6,16 +6,19 @@ add_library(verilator STATIC ${VERILATOR_LIB_SOURCES})
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/microcode.bin
                           ${CMAKE_CURRENT_BINARY_DIR}/Microcode.v
                           ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.v
+                          ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.h
                    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/microassembler/uasm
                            ${CMAKE_CURRENT_SOURCE_DIR}/microcode/microcode.us
                            ${CMAKE_CURRENT_BINARY_DIR}/microcode.bin
                            ${CMAKE_CURRENT_BINARY_DIR}/Microcode.v
                            ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.v
+                           ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.h
                    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/microcode/microcode.us
                            ${CMAKE_CURRENT_SOURCE_DIR}/microcode/mov.us
                            ${CMAKE_CURRENT_SOURCE_DIR}/microcode/xor.us
                            ${CMAKE_CURRENT_SOURCE_DIR}/microcode/Microcode.v.templ
                            ${CMAKE_CURRENT_SOURCE_DIR}/microcode/MicrocodeTypes.v.templ
+                           ${CMAKE_CURRENT_SOURCE_DIR}/microcode/MicrocodeTypes.h.templ
                            ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/microassembler/uasm
                            ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/microassembler/microasm/types.py)
 set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/Microcode.v PROPERTIES
