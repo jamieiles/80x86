@@ -143,6 +143,7 @@ class MicroAssembler(object):
                     'high_bit': num_bits(len(cls)) - 1,
                     'name': 'MC_%s_t' % (cls.__name__,),
                     'items': items,
+                    'num_bits': num_bits(len(cls)),
                 }
                 f.write(pystache.render(template, type_data))
             f.write('`endif // MICROCODE_TYPES\n')
