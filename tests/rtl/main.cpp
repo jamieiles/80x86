@@ -184,7 +184,6 @@ EmulateFixture.MovC6RegImmediate:\
 EmulateFixture.MovC7MemImmediate:\
 EmulateFixture.MovC7RegImmediate:\
 EmulateFixture.MovMemReg16:\
-EmulateFixture.MovMemReg8:\
 EmulateFixture.MovMemSR:\
 EmulateFixture.MovMemoryAccumulator16:\
 EmulateFixture.MovMemoryAccumulator8:\
