@@ -8,7 +8,7 @@ mov88_reg:
         width 8, jmp opcode_fetch, clear_prefixes;
 mov88_mem:
     b_sel RB, rb_modrm_reg, q_sel ALU, alu_op SELB, mdr_write;
-    b_sel RB, rb_modrm_reg, width 8, mem_write, jmp opcode_fetch;
+    width 8, mem_write, jmp opcode_fetch, clear_prefixes;
 
 // MOV 0x89     r/m := r (16-bit)
 .at 0x89;
@@ -21,7 +21,7 @@ mov89_reg:
         jmp opcode_fetch, clear_prefixes;
 mov89_mem:
     b_sel RB, rb_modrm_reg, q_sel ALU, alu_op SELB, mdr_write;
-    b_sel RB, rb_modrm_reg, mem_write, jmp opcode_fetch;
+    mem_write, jmp opcode_fetch, clear_prefixes;
 
 // MOV 0x8a     r := r/m (8-bit)
 .at 0x8a;
@@ -50,3 +50,45 @@ mov8b_mem:
     mem_read;
     rd_sel_source MODRM_REG, reg_wr_en, q_sel MDR,
         jmp opcode_fetch, clear_prefixes;
+
+// MOV 0xc6     r/m := immed8
+.at 0xc6;
+    modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg c6_dispatch;
+.auto_address;
+c6_dispatch:
+    read_immed, width 8, jmp_rm_reg_mem movc6_reg; // reg == 0
+    jmp opcode_fetch, clear_prefixes; // reg == 1
+    jmp opcode_fetch, clear_prefixes; // reg == 2
+    jmp opcode_fetch, clear_prefixes; // reg == 3
+    jmp opcode_fetch, clear_prefixes; // reg == 4
+    jmp opcode_fetch, clear_prefixes; // reg == 5
+    jmp opcode_fetch, clear_prefixes; // reg == 6
+    jmp opcode_fetch, clear_prefixes; // reg == 7
+movc6_reg:
+    b_sel IMMEDIATE, q_sel ALU, alu_op SELB,
+        rd_sel_source MODRM_RM_REG, reg_wr_en, width 8,
+        jmp opcode_fetch, clear_prefixes;
+movc6_mem:
+    b_sel IMMEDIATE, q_sel ALU, alu_op SELB, mdr_write;
+    mem_write, width 8, jmp opcode_fetch, clear_prefixes;
+
+// MOV 0xc7     r/m := immed16
+.at 0xc7;
+    modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg c7_dispatch;
+.auto_address;
+c7_dispatch:
+    read_immed, jmp_rm_reg_mem movc7_reg; // reg == 0
+    jmp opcode_fetch, clear_prefixes; // reg == 1
+    jmp opcode_fetch, clear_prefixes; // reg == 2
+    jmp opcode_fetch, clear_prefixes; // reg == 3
+    jmp opcode_fetch, clear_prefixes; // reg == 4
+    jmp opcode_fetch, clear_prefixes; // reg == 5
+    jmp opcode_fetch, clear_prefixes; // reg == 6
+    jmp opcode_fetch, clear_prefixes; // reg == 7
+movc7_reg:
+    b_sel IMMEDIATE, q_sel ALU, alu_op SELB,
+        rd_sel_source MODRM_RM_REG, reg_wr_en,
+        jmp opcode_fetch, clear_prefixes;
+movc7_mem:
+    b_sel IMMEDIATE, q_sel ALU, alu_op SELB, mdr_write;
+    mem_write, jmp opcode_fetch, clear_prefixes;

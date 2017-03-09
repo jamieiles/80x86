@@ -178,11 +178,6 @@ EmulateFixture.LoopnzNotTakenNonZero:\
 EmulateFixture.LoopnzTaken:\
 EmulateFixture.MovAccumulatorMemory16:\
 EmulateFixture.MovAccumulatorMemory8:\
-EmulateFixture.MovC6C7RegNot0IsNop:\
-EmulateFixture.MovC6MemImmediate:\
-EmulateFixture.MovC6RegImmediate:\
-EmulateFixture.MovC7MemImmediate:\
-EmulateFixture.MovC7RegImmediate:\
 EmulateFixture.MovMemSR:\
 EmulateFixture.MovMemoryAccumulator16:\
 EmulateFixture.MovMemoryAccumulator8:\

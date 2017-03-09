@@ -118,6 +118,9 @@ TEST_F(EmulateFixture, MovC6C7RegNot0IsNop)
 {
     set_instruction({ 0xc6, 0xff });
     emulate();
+    ASSERT_EQ(2LU, instr_len);
+
+    reset();
 
     set_instruction({ 0xc7, 0xff });
     emulate();
