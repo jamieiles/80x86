@@ -89,10 +89,13 @@ assign q_bus_minus_alu =
 assign q_bus =
     q_sel == QDriver_ALU ? alu_out : q_bus_minus_alu;
 
-wire immed_start;
+wire modrm_immed_start;
+wire microcode_immed_start;
+wire immed_start = (modrm_immed_start | microcode_immed_start) & ~immed_complete;
 wire immed_busy;
 wire immed_complete;
-wire immed_is_8bit;
+wire modrm_immed_is_8bit;
+wire immed_is_8bit = modrm_immed_start ? modrm_immed_is_8bit : is_8_bit;
 wire [15:0] immediate;
 
 wire microcode_stall = (modrm_busy & ~modrm_complete) |
@@ -202,9 +205,9 @@ ModRMDecode     modrmdecode(.clk(clk),
                             .fifo_rd_data(fifo_rd_data),
                             .fifo_empty(fifo_empty),
                             // Immediates
-                            .immed_start(immed_start),
+                            .immed_start(modrm_immed_start),
                             .immed_complete(immed_complete),
-                            .immed_is_8bit(immed_is_8bit),
+                            .immed_is_8bit(modrm_immed_is_8bit),
                             .immediate(immediate));
 
 LoadStore       loadstore(.clk(clk),
@@ -243,6 +246,7 @@ Microcode       microcode(.clk(clk),
                           .b_sel(b_sel),
                           .clear_prefixes(clear_prefixes),
                           .fifo_pop(microcode_fifo_pop),
+                          .read_immed(microcode_immed_start),
                           .load_ip(ip_wr_en),
                           .mar_wr_sel(mar_wr_sel),
                           .mar_write(write_mar),
