@@ -15,6 +15,12 @@ public:
     EmulateFixture()
         : cpu(get_cpu(current_test_name()))
     {
+        reset();
+    }
+
+    void reset()
+    {
+        cpu->reset();
         // Doesn't need to model the reset vector of FFF0:0000 otherwise we
         // need to handle wrapping around to 0.  Just start off away from the
         // interrupt vector table so we can easily detect interrupts.
