@@ -225,6 +225,7 @@ class MicroAssembler(object):
         # Keywords only, internally mapped to other microcode fields
         'jmp_opcode': (0, partial(_jump, jump_type=JumpType.OPCODE), False),
         'jmp_rm_reg_mem': (0, partial(_jump, jump_type=JumpType.RM_REG_MEM), False),
+        'jmp_dispatch_reg': (0, partial(_jump, jump_type=JumpType.DISPATCH_REG), False),
         'jmp': (0, partial(_jump, jump_type=JumpType.UNCONDITIONAL), False),
     }
 

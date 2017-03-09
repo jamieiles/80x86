@@ -67,3 +67,4 @@ class JumpType(Enum):
     UNCONDITIONAL = 0
     RM_REG_MEM = 1
     OPCODE = 2
+    DISPATCH_REG = 3
