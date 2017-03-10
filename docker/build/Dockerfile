@@ -26,7 +26,7 @@ RUN cd /tmp && \
         wget https://www.veripool.org/ftp/verilator-3.888.tgz && \
         tar xf verilator-3.888.tgz && \
         cd verilator-3.888 && \
-        ./configure && \
+        ./configure --prefix=/usr && \
         make -j4 && \
         make install && \
         cd /tmp && \
