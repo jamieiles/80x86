@@ -169,6 +169,8 @@ TEST_F(EmulateFixture, MovRegImmediate8)
 {
     // mov al, 0xaa
     for (uint8_t i = 0; i < 8; ++i) {
+        reset();
+
         auto reg = static_cast<GPR>(static_cast<int>(AL) + i);
         write_reg(reg, 0);
 
@@ -183,6 +185,8 @@ TEST_F(EmulateFixture, MovRegImmediate16)
 {
     // mov al, 0xaa55
     for (uint8_t i = 0; i < 8; ++i) {
+        reset();
+
         auto reg = static_cast<GPR>(static_cast<int>(AX) + i);
         write_reg(reg, 0);
 

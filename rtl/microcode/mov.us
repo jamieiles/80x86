@@ -92,3 +92,39 @@ movc7_reg:
 movc7_mem:
     b_sel IMMEDIATE, q_sel ALU, alu_op SELB, mdr_write;
     mem_write, jmp opcode_fetch, clear_prefixes;
+
+#define MOV_REG_IMMED8(opcode, reg) \
+    .at opcode; \
+        read_immed, width 8, jmp mov_ ## reg ## _immed8; \
+    .auto_address; \
+    mov_ ## reg ## _immed8: \
+        rd_sel_source MICROCODE_RD_SEL, rd_sel reg, reg_wr_en, q_sel ALU, \
+            alu_op SELB, b_sel IMMEDIATE, width 8, clear_prefixes, \
+            jmp opcode_fetch;
+
+MOV_REG_IMMED8(0xb0, AL)
+MOV_REG_IMMED8(0xb1, CL)
+MOV_REG_IMMED8(0xb2, DL)
+MOV_REG_IMMED8(0xb3, BL)
+MOV_REG_IMMED8(0xb4, AH)
+MOV_REG_IMMED8(0xb5, CH)
+MOV_REG_IMMED8(0xb6, DH)
+MOV_REG_IMMED8(0xb7, BH)
+
+#define MOV_REG_IMMED16(opcode, reg) \
+    .at opcode; \
+        read_immed, jmp mov_ ## reg ## _immed16; \
+    .auto_address; \
+    mov_ ## reg ## _immed16: \
+        rd_sel_source MICROCODE_RD_SEL, rd_sel reg, reg_wr_en, q_sel ALU, \
+            alu_op SELB, b_sel IMMEDIATE, clear_prefixes, \
+            jmp opcode_fetch;
+
+MOV_REG_IMMED16(0xb8, AX)
+MOV_REG_IMMED16(0xb9, CX)
+MOV_REG_IMMED16(0xba, DX)
+MOV_REG_IMMED16(0xbb, BX)
+MOV_REG_IMMED16(0xbc, SP)
+MOV_REG_IMMED16(0xbd, BP)
+MOV_REG_IMMED16(0xbe, SI)
+MOV_REG_IMMED16(0xbf, DI)

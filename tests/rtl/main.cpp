@@ -181,8 +181,6 @@ EmulateFixture.MovAccumulatorMemory8:\
 EmulateFixture.MovMemSR:\
 EmulateFixture.MovMemoryAccumulator16:\
 EmulateFixture.MovMemoryAccumulator8:\
-EmulateFixture.MovRegImmediate16:\
-EmulateFixture.MovRegImmediate8:\
 EmulateFixture.MovRegInvalidSR:\
 EmulateFixture.MovRegSR:\
 EmulateFixture.MovSRInvalidSR:\
