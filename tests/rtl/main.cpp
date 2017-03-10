@@ -176,11 +176,7 @@ EmulateFixture.LoopeTaken:\
 EmulateFixture.LoopnzNotTaken:\
 EmulateFixture.LoopnzNotTakenNonZero:\
 EmulateFixture.LoopnzTaken:\
-EmulateFixture.MovAccumulatorMemory16:\
-EmulateFixture.MovAccumulatorMemory8:\
 EmulateFixture.MovMemSR:\
-EmulateFixture.MovMemoryAccumulator16:\
-EmulateFixture.MovMemoryAccumulator8:\
 EmulateFixture.MovRegInvalidSR:\
 EmulateFixture.MovRegSR:\
 EmulateFixture.MovSRInvalidSR:\

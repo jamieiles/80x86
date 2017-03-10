@@ -128,3 +128,41 @@ MOV_REG_IMMED16(0xbc, SP)
 MOV_REG_IMMED16(0xbd, BP)
 MOV_REG_IMMED16(0xbe, SI)
 MOV_REG_IMMED16(0xbf, DI)
+
+// MOV 0xa0     al := m[immed16]
+.at 0xa0;
+    read_immed, mar_write, mar_wr_sel Q, q_sel ALU, b_sel IMMEDIATE,
+        alu_op SELB, jmp mova0;
+.auto_address;
+mova0:
+    segment DS, width 8, mem_read;
+    rd_sel_source MICROCODE_RD_SEL, rd_sel AL, width 8, reg_wr_en,
+        q_sel MDR, clear_prefixes, jmp opcode_fetch;
+
+// MOV 0xa1     ax := m[immed16]
+.at 0xa1;
+    read_immed, mar_write, mar_wr_sel Q, q_sel ALU, b_sel IMMEDIATE,
+        alu_op SELB, jmp mova1;
+.auto_address;
+mova1:
+    segment DS, mem_read;
+    rd_sel_source MICROCODE_RD_SEL, rd_sel AX, reg_wr_en,
+        q_sel MDR, clear_prefixes, jmp opcode_fetch;
+
+// MOV 0xa2     m[immed16] := al
+.at 0xa2;
+    read_immed, mar_write, mar_wr_sel Q, q_sel ALU, b_sel IMMEDIATE,
+        alu_op SELB, jmp mova2, ra_sel AL;
+.auto_address;
+mova2:
+    a_sel RA, q_sel ALU, alu_op SELA, mdr_write;
+    segment DS, width 8, mem_write, clear_prefixes, jmp opcode_fetch;
+
+// MOV 0xa3     m[immed16] := al
+.at 0xa3;
+    read_immed, mar_write, mar_wr_sel Q, q_sel ALU, b_sel IMMEDIATE,
+        alu_op SELB, jmp mova3, ra_sel AL;
+.auto_address;
+mova3:
+    a_sel RA, q_sel ALU, alu_op SELA, mdr_write;
+    segment DS, mem_write, clear_prefixes, jmp opcode_fetch;
