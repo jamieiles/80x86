@@ -30,10 +30,8 @@ typedef struct packed {
 } microcode_instruction;
 
 microcode_instruction mem[num_instructions];
-// verilator lint_off UNUSED
 microcode_instruction current;
-// verilator lint_on UNUSED
-reg [addr_bits-1:0] addr /* verilator public_flat_rd */;
+reg [addr_bits-1:0] addr;
 assign current = mem[addr];
 
 <%#exported_fields%>
