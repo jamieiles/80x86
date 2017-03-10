@@ -68,3 +68,7 @@ class JumpType(Enum):
     RM_REG_MEM = 1
     OPCODE = 2
     DISPATCH_REG = 3
+
+class MARWrSel(Enum):
+    EA = 0
+    Q = 1

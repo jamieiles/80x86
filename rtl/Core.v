@@ -64,6 +64,8 @@ wire [15:0] effective_address;
 wire [2:0] regnum;
 wire rm_is_reg;
 wire [2:0] rm_regnum;
+wire [15:0] mar_wr_val;
+assign mar_wr_val = mar_wr_sel == MARWrSel_EA ? effective_address : q_bus;
 
 wire ip_inc = fifo_rd_en & ~fifo_empty;
 wire ip_wr_en;
@@ -215,7 +217,7 @@ LoadStore       loadstore(.clk(clk),
                           // MAR
                           .write_mar(write_mar),
                           .segment(seg_rd_val),
-                          .mar_in(effective_address),
+                          .mar_in(mar_wr_val),
                           // MDR
                           .mar_out(mar),
                           .mdr_out(mdr),

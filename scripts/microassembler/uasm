@@ -18,7 +18,8 @@ from microasm.types import (
     ALUOp,
     RDSelSource,
     UpdateFlags,
-    JumpType
+    JumpType,
+    MARWrSel
 )
 
 HERE = os.path.dirname(__file__)
@@ -145,7 +146,8 @@ class MicroAssembler(object):
     @staticmethod
     def _gather_enums():
         enums = []
-        for cls in [ADriver, BDriver, QDriver, ALUOp, JumpType, RDSelSource]:
+        for cls in [ADriver, BDriver, QDriver, ALUOp, JumpType, RDSelSource,
+                    MARWrSel]:
             items = []
             for idx, e in enumerate(cls.__members__):
                 name = '%s_%s' % (cls.__name__, e)
@@ -196,7 +198,7 @@ class MicroAssembler(object):
         'rb_sel': (num_bits(len(GPR)), partial(_enumerated_field, enum_class=GPR), True),
         'rd_sel': (num_bits(len(GPR)), partial(_enumerated_field, enum_class=GPR), True),
         'clear_prefixes': (1, _boolean, True),
-        'mar_wr_sel': (1, _boolean, True),
+        'mar_wr_sel': (num_bits(len(MARWrSel)), partial(_enumerated_field, enum_class=MARWrSel), True),
         'mar_write': (1, _boolean, True),
         'mdr_write': (1, _boolean, True),
         'mem_read': (1, _boolean, True),
