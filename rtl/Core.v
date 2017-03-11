@@ -129,6 +129,8 @@ wire [1:0] segment;
 wire segment_override;
 wire segment_wr_en;
 wire [8:0] update_flags;
+wire [15:0] flags;
+wire [15:0] alu_flags_out;
 
 RegisterFile    regfile(.clk(clk),
                         .reset(reset),
@@ -215,6 +217,12 @@ ModRMDecode     modrmdecode(.clk(clk),
                             .immed_is_8bit(modrm_immed_is_8bit),
                             .immediate(immediate));
 
+Flags           flags_reg(.clk(clk),
+                          .reset(reset),
+                          .flags_in(alu_flags_out),
+                          .flags_out(flags),
+                          .update_flags(update_flags));
+
 LoadStore       loadstore(.clk(clk),
                           .reset(reset),
                           // MAR
@@ -287,6 +295,8 @@ IP              ip(.clk(clk),
 ALU             alu(.a(a_bus),
                     .b(b_bus),
                     .out(alu_out),
-                    .op(alu_op));
+                    .op(alu_op),
+                    .flags_in(flags),
+                    .flags_out(alu_flags_out));
 
 endmodule
