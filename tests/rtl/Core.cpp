@@ -60,7 +60,7 @@ template <bool debug_enabled>
 void RTLCPU<debug_enabled>::write_sr(GPR regnum, uint16_t val)
 {
     svSetScope(svGetScopeFromName("TOP.Core.segregs"));
-    this->dut.set_sr(regnum, val);
+    this->dut.set_sr(regnum - ES, val);
 }
 
 template <bool debug_enabled>
@@ -129,7 +129,7 @@ template <bool debug_enabled>
 uint16_t RTLCPU<debug_enabled>::read_sr(GPR regnum) const
 {
     svSetScope(svGetScopeFromName("TOP.Core.segregs"));
-    return this->dut.get_sr(regnum);
+    return this->dut.get_sr(regnum - ES);
 }
 
 template <bool debug_enabled>
