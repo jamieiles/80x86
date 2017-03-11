@@ -1,5 +1,4 @@
 #include "mov.us"
-#include "xor.us"
 
 .at 0x100;
 opcode_fetch:

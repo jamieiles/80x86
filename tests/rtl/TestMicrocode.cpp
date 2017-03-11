@@ -52,19 +52,19 @@ MicrocodeTestbench::MicrocodeTestbench()
 
 TEST_F(MicrocodeTestbench, JumpOpcode)
 {
-    set_instruction({0x30});
+    set_instruction({0x88});
 
     ASSERT_EQ(current_address(), 0x100);
 
     for (int i = 0; i < 16; ++i) {
         if (underflowed)
             FAIL() << "fifo underflow" << std::endl;
-        if (current_address() == 0x30)
+        if (current_address() == 0x88)
             return;
         cycle();
     }
 
-    FAIL() << "Didn't hit 0x30 opcode" << std::endl;
+    FAIL() << "Didn't hit 0x88 opcode" << std::endl;
 }
 
 TEST_F(MicrocodeTestbench, Stall)
@@ -81,16 +81,16 @@ TEST_F(MicrocodeTestbench, Stall)
 
 TEST_F(MicrocodeTestbench, ExternalStall)
 {
-    set_instruction({0x30});
+    set_instruction({0x88});
 
-    while (current_address() != 0x30)
+    while (current_address() != 0x88)
         cycle();
 
     this->dut.stall = 1;
     cycle();
 
     auto held_address = current_address();
-    ASSERT_NE(held_address, 0x30);
+    ASSERT_NE(held_address, 0x88);
 
     for (int i = 0; i < 16; ++i) {
         EXPECT_EQ(current_address(), held_address);

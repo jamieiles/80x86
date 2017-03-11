@@ -42,10 +42,8 @@ class QDriver(Enum):
     ALU = 2
 
 class ALUOp(Enum):
-    XOR = 0
-    ADD = 1
-    SELA = 2
-    SELB = 3
+    SELA = 0
+    SELB = 1
 
 class UpdateFlags(Enum):
     CF = 0

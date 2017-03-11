@@ -5,8 +5,6 @@ module ALU(input logic [15:0] a,
 
 always_comb begin
     case (op)
-    ALUOp_XOR: out = a ^ b;
-    ALUOp_ADD: out = a + b;
     ALUOp_SELA: out = a;
     ALUOp_SELB: out = b;
     default: begin
