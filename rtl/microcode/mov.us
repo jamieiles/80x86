@@ -166,3 +166,46 @@ mova2:
 mova3:
     a_sel RA, q_sel ALU, alu_op SELA, mdr_write;
     segment DS, mem_write, clear_prefixes, jmp opcode_fetch;
+
+// MOV 0x8e     sr := reg/mem
+.at 0x8e;
+    modrm_start, mar_write, mar_wr_sel EA, ra_modrm_rm_reg,
+        jmp_dispatch_reg dispatch_8e;
+.auto_address;
+dispatch_8e:
+    ra_modrm_rm_reg, jmp_rm_reg_mem mov8e_reg;
+    ra_modrm_rm_reg, jmp_rm_reg_mem mov8e_reg;
+    ra_modrm_rm_reg, jmp_rm_reg_mem mov8e_reg;
+    ra_modrm_rm_reg, jmp_rm_reg_mem mov8e_reg;
+    jmp opcode_fetch, clear_prefixes; // reg == 4
+    jmp opcode_fetch, clear_prefixes; // reg == 5
+    jmp opcode_fetch, clear_prefixes; // reg == 6
+    jmp opcode_fetch, clear_prefixes; // reg == 7
+mov8e_reg:
+    segment_wr_en, rd_sel_source MODRM_REG, a_sel RA, alu_op SELA, q_sel ALU,
+        clear_prefixes, jmp opcode_fetch;
+mov8e_mem:
+    segment DS, mem_read;
+    rd_sel_source MODRM_REG, segment_wr_en, q_sel MDR,
+        jmp opcode_fetch, clear_prefixes;
+
+// MOV 0x8c     reg/mem := sr
+.at 0x8c;
+    modrm_start, mar_write, mar_wr_sel EA, rb_modrm_reg,
+        jmp_dispatch_reg dispatch_8c;
+.auto_address;
+dispatch_8c:
+    segment ES, jmp_rm_reg_mem mov8c_reg;
+    segment CS, jmp_rm_reg_mem mov8c_reg;
+    segment SS, jmp_rm_reg_mem mov8c_reg;
+    segment DS, jmp_rm_reg_mem mov8c_reg;
+    jmp opcode_fetch, clear_prefixes; // reg == 4
+    jmp opcode_fetch, clear_prefixes; // reg == 5
+    jmp opcode_fetch, clear_prefixes; // reg == 6
+    jmp opcode_fetch, clear_prefixes; // reg == 7
+mov8c_reg:
+    reg_wr_en, rd_sel_source MODRM_RM_REG, b_sel SR, alu_op SELB, q_sel ALU,
+        clear_prefixes, jmp opcode_fetch;
+mov8c_mem:
+    b_sel SR, rb_modrm_reg, q_sel ALU, alu_op SELB, mdr_write;
+    segment DS, mem_write, rb_modrm_reg, jmp opcode_fetch, clear_prefixes;
