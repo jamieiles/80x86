@@ -147,7 +147,7 @@ class MicroAssembler(object):
     def _gather_enums():
         enums = []
         for cls in [ADriver, BDriver, QDriver, ALUOp, JumpType, RDSelSource,
-                    MARWrSel]:
+                    MARWrSel, UpdateFlags]:
             items = []
             for idx, e in enumerate(cls.__members__):
                 name = '%s_%s' % (cls.__name__, e)

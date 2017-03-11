@@ -14,6 +14,7 @@ add_executable(rtl-unittest
                Core.cpp
                TestALU.cpp
                TestFifo.cpp
+               TestFlags.cpp
                TestImmediateReader.cpp
                TestImmediateReader.cpp
                TestIP.cpp
@@ -33,6 +34,7 @@ target_link_libraries(rtl-unittest
                       VALU
                       VCore
                       VFifo
+                      VFlags
                       VImmediateReader
                       VIP
                       VLoadStore
