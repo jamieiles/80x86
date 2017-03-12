@@ -296,6 +296,7 @@ ALU             alu(.a(a_bus),
                     .b(b_bus),
                     .out(alu_out),
                     .op(alu_op),
+                    .is_8_bit(is_8_bit),
                     .flags_in(flags),
                     .flags_out(alu_flags_out));
 

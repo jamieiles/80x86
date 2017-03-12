@@ -26,7 +26,6 @@ Adc/ArithmeticMemImmed16Test.*:\
 Adc/ArithmeticMemImmed16TestExtend.*:\
 Adc/ArithmeticMemImmed8Test.*:\
 Adc/ArithmeticMemReg16TestReversed.*:\
-Adc/ArithmeticMemReg8Test.*:\
 Adc/ArithmeticMemReg8TestReversed.*:\
 Adc/ArithmeticRegImmed16Test.*:\
 Adc/ArithmeticRegImmed16TestExtend.*:\
@@ -34,7 +33,6 @@ Adc/ArithmeticRegImmed8Test.*:\
 Adc/ArithmeticRegMem16Test.*:\
 Adc/ArithmeticRegReg16Test.*:\
 Adc/ArithmeticRegReg16TestReversed.*:\
-Adc/ArithmeticRegReg8Test.*:\
 Adc/ArithmeticRegReg8TestReversed.*:\
 Add/ArithmeticAlImmedTest.*:\
 Add/ArithmeticAxImmedTest.*:\
@@ -42,15 +40,11 @@ Add/ArithmeticMemImmed16Test.*:\
 Add/ArithmeticMemImmed16TestExtend.*:\
 Add/ArithmeticMemImmed8Test.*:\
 Add/ArithmeticMemReg16TestReversed.*:\
-Add/ArithmeticMemReg8Test.*:\
 Add/ArithmeticMemReg8TestReversed.*:\
 Add/ArithmeticRegImmed16Test.*:\
 Add/ArithmeticRegImmed16TestExtend.*:\
 Add/ArithmeticRegImmed8Test.*:\
-Add/ArithmeticRegMem16Test.*:\
-Add/ArithmeticRegReg16Test.*:\
 Add/ArithmeticRegReg16TestReversed.*:\
-Add/ArithmeticRegReg8Test.*:\
 Add/ArithmeticRegReg8TestReversed.*:\
 And/ArithmeticAlImmedTest.*:\
 And/ArithmeticAxImmedTest.*:\

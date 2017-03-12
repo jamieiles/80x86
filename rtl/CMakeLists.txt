@@ -14,6 +14,8 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/microcode.bin
                            ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.v
                            ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.h
                    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/microcode/microcode.us
+                           ${CMAKE_CURRENT_SOURCE_DIR}/microcode/adc.us
+                           ${CMAKE_CURRENT_SOURCE_DIR}/microcode/add.us
                            ${CMAKE_CURRENT_SOURCE_DIR}/microcode/mov.us
                            ${CMAKE_CURRENT_SOURCE_DIR}/microcode/Microcode.v.templ
                            ${CMAKE_CURRENT_SOURCE_DIR}/microcode/MicrocodeTypes.v.templ
@@ -24,6 +26,7 @@ set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/Microcode.v PROPERTIES
                             COMPILE_FLAGS "-DMICROCODE_ROM_PATH=\\\"${CMAKE_CURRENT_BINARY_DIR}\\\"")
 
 verilate(ALU ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/FlagsEnum.v
          ${CMAKE_CURRENT_SOURCE_DIR}/ALU.v)
 verilate(Core ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.v
          ${CMAKE_CURRENT_SOURCE_DIR}/ALU.v
