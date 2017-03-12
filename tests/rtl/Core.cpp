@@ -161,13 +161,15 @@ size_t RTLCPU<debug_enabled>::step()
 template <bool debug_enabled>
 void RTLCPU<debug_enabled>::write_flags(uint16_t val)
 {
-    (void)val;
+    svSetScope(svGetScopeFromName("TOP.Core.flags_reg"));
+    this->dut.set_flags(val);
 }
 
 template <bool debug_enabled>
 uint16_t RTLCPU<debug_enabled>::read_flags()
 {
-    return 0;
+    svSetScope(svGetScopeFromName("TOP.Core.flags_reg"));
+    return this->dut.get_flags();
 }
 
 template <bool debug_enabled>
