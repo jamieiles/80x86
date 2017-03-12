@@ -25,16 +25,16 @@ class SR(Enum):
     DS = 3
 
 class ADriver(Enum):
-    TEMP = 0
-    RA = 1
-    IP = 2
-    Q = 3
+    RA = 0
+    IP = 1
+    MAR = 2
+    MDR = 3
 
 class BDriver(Enum):
     RB = 0
     IMMEDIATE = 1
     SR = 2
-    Q = 3
+    TEMP = 3
 
 class QDriver(Enum):
     MAR = 0

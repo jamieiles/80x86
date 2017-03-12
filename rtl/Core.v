@@ -75,14 +75,14 @@ wire ip_wr_en;
 wire [15:0] ip_current;
 
 assign a_bus =
-    a_sel == ADriver_TEMP ? 16'b0 :
     a_sel == ADriver_RA ? reg_rd_val[0] :
-    a_sel == ADriver_IP ? ip_current : q_bus_minus_alu;
+    a_sel == ADriver_IP ? ip_current :
+    a_sel == ADriver_MAR ? mar : mdr;
 
 assign b_bus =
     b_sel == BDriver_RB ? reg_rd_val[1] :
     b_sel == BDriver_IMMEDIATE ? immediate :
-    b_sel == BDriver_SR ? seg_rd_val : q_bus_minus_alu;
+    b_sel == BDriver_SR ? seg_rd_val : 16'b0;
 
 // The Q bus is tapped off before the ALU so that the MAR/MDR can be fed back
 // into the A/B busses, but without introducing a combinational loop through
