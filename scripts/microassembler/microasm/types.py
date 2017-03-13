@@ -49,6 +49,8 @@ class ALUOp(Enum):
     AND = 4
     XOR = 5
     OR = 6
+    SUB = 7
+    SUBREV = 8
 
 class UpdateFlags(Enum):
     CF = 0

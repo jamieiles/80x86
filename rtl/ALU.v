@@ -31,6 +31,22 @@ begin
 end
 endtask
 
+task do_sub;
+input [15:0] _a;
+input [15:0] _b;
+input _carry_in;
+begin
+    if (!is_8_bit) begin
+        {flags_out[CF_IDX], out} = _a - _b - {15'b0, _carry_in};
+        flags_out[OF_IDX] = (_a[15] ^ _b[15]) & (out[15] ^ _a[15]);
+    end else begin
+        out = _a - _b - {15'b0, _carry_in};
+        flags_out[CF_IDX] = _a[8] ^ _b[8] ^ out[8];
+        flags_out[OF_IDX] = (_a[7] ^ _b[7]) & (out[7] ^ _a[7]);
+    end
+end
+endtask
+
 task do_and;
 input [15:0] _a;
 input [15:0] _b;
@@ -67,6 +83,8 @@ always_comb begin
     ALUOp_AND: do_and(a, b);
     ALUOp_XOR: do_xor(a, b);
     ALUOp_OR: do_or(a, b);
+    ALUOp_SUB: do_sub(a, b, 1'b0);
+    ALUOp_SUBREV: do_sub(b, a, 1'b0);
     // verilator coverage_off
     default: begin
 `ifdef verilator

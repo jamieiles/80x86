@@ -20,6 +20,7 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/microcode.bin
                            ${CMAKE_CURRENT_SOURCE_DIR}/microcode/arithmetic.us
                            ${CMAKE_CURRENT_SOURCE_DIR}/microcode/mov.us
                            ${CMAKE_CURRENT_SOURCE_DIR}/microcode/or.us
+                           ${CMAKE_CURRENT_SOURCE_DIR}/microcode/sub.us
                            ${CMAKE_CURRENT_SOURCE_DIR}/microcode/xor.us
                            ${CMAKE_CURRENT_SOURCE_DIR}/microcode/Microcode.v.templ
                            ${CMAKE_CURRENT_SOURCE_DIR}/microcode/MicrocodeTypes.v.templ
