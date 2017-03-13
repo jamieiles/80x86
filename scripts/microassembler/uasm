@@ -116,14 +116,14 @@ class MicroAssembler(object):
             f.write(self.field_comment())
             for instr in instructions:
                 f.write('@ {0:x}\n'.format(instr.address))
-                f.write('%s\n' % (instr.encode(num_bits(instructions[-1].address)),))
+                f.write('%s\n' % (instr.encode(num_bits(instructions[-1].address + 1)),))
 
     def _write_microcode_verilog(self, filename, instructions):
         data = {
-            'fields': MicroAssembler.bitfields(num_bits(instructions[-1].address)),
+            'fields': MicroAssembler.bitfields(num_bits(instructions[-1].address + 1)),
             'exported_fields': MicroAssembler.exported_fields(),
-            'num_instructions': 2**(instructions[-1].address-1).bit_length(),
-            'addr_bits': num_bits(instructions[-1].address),
+            'num_instructions': 2**(instructions[-1].address).bit_length(),
+            'addr_bits': num_bits(instructions[-1].address + 1),
         }
         with open(TEMPLATE) as f:
             template = f.read()
