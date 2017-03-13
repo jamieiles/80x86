@@ -63,10 +63,10 @@ dispatch_82:
 .auto_address;
 dispatch_83:
     width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem ADD83_reg; // reg == 0
-    width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem OR83_reg; // reg == 1
+    jmp opcode_fetch, clear_prefixes; // reg == 1
     width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem ADC83_reg; // reg == 2
     width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem SBB83_reg; // reg == 3
-    width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem AND83_reg; // reg == 4
+    jmp opcode_fetch, clear_prefixes; // reg == 4
     width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem SUB83_reg; // reg == 5
     jmp opcode_fetch, clear_prefixes; // reg == 6
     jmp opcode_fetch, clear_prefixes; // reg == 7
