@@ -105,4 +105,22 @@ comp ## alufunc ## 83_mem:                                                      
     a_sel MDR, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                      \
         update_flags flags, jmp opcode_fetch, clear_prefixes;
 
+#define COMP_F6(alufunc, flags)                                                 \
+comp ## alufunc ## f6_reg:                                                      \
+    a_sel RA, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                       \
+        update_flags flags, jmp opcode_fetch, clear_prefixes;                   \
+comp ## alufunc ## f6_mem:                                                      \
+    segment DS, mem_read, width 8, rb_modrm_reg;                                \
+    a_sel MDR, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                      \
+        update_flags flags, jmp opcode_fetch, clear_prefixes;
+
+#define COMP_F7(alufunc, flags)                                                 \
+comp ## alufunc ## f7_reg:                                                      \
+    a_sel RA, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                       \
+        update_flags flags, jmp opcode_fetch, clear_prefixes;                   \
+comp ## alufunc ## f7_mem:                                                      \
+    segment DS, mem_read, rb_modrm_reg;                                         \
+    a_sel MDR, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                      \
+        update_flags flags, jmp opcode_fetch, clear_prefixes;
+
 #endif // COMPARISON_US

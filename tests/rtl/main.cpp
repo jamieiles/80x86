@@ -251,17 +251,7 @@ ShrCL/ShiftCLTest.*:\
 ShrN/ShiftMem16Test.*:\
 ShrN/ShiftMem8Test.*:\
 ShrN/ShiftReg16Test.*:\
-ShrN/ShiftReg8Test.*:\
-Test/ArithmeticAlImmedTest.*:\
-Test/ArithmeticAxImmedTest.*:\
-Test/ArithmeticMemImmed16Test.*:\
-Test/ArithmeticMemImmed8Test.*:\
-Test/ArithmeticMemReg8Test.*:\
-Test/ArithmeticRegImmed16Test.*:\
-Test/ArithmeticRegImmed8Test.*:\
-Test/ArithmeticRegMem16Test.*:\
-Test/ArithmeticRegReg16Test.*:\
-Test/ArithmeticRegReg8Test.*";
+ShrN/ShiftReg8Test.*";
 
     return RUN_ALL_TESTS();
 }
