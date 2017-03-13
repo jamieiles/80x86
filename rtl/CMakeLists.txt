@@ -8,11 +8,11 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/microcode.bin
                           ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.v
                           ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.h
                    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/microassembler/uasm
-                           ${CMAKE_CURRENT_SOURCE_DIR}/microcode/microcode.us
                            ${CMAKE_CURRENT_BINARY_DIR}/microcode.bin
                            ${CMAKE_CURRENT_BINARY_DIR}/Microcode.v
                            ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.v
                            ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.h
+                           ${CMAKE_CURRENT_SOURCE_DIR}/microcode/microcode.us
                    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/microcode/microcode.us
                            ${CMAKE_CURRENT_SOURCE_DIR}/microcode/adc.us
                            ${CMAKE_CURRENT_SOURCE_DIR}/microcode/add.us
