@@ -20,23 +20,7 @@ int main(int argc, char *argv[])
 {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::GTEST_FLAG(filter) = "\
--And/ArithmeticAlImmedTest.*:\
-And/ArithmeticAxImmedTest.*:\
-And/ArithmeticMemImmed16Test.*:\
-And/ArithmeticMemImmed16TestExtend.*:\
-And/ArithmeticMemImmed8Test.*:\
-And/ArithmeticMemReg16TestReversed.*:\
-And/ArithmeticMemReg8Test.*:\
-And/ArithmeticMemReg8TestReversed.*:\
-And/ArithmeticRegImmed16Test.*:\
-And/ArithmeticRegImmed16TestExtend.*:\
-And/ArithmeticRegImmed8Test.*:\
-And/ArithmeticRegMem16Test.*:\
-And/ArithmeticRegReg16Test.*:\
-And/ArithmeticRegReg16TestReversed.*:\
-And/ArithmeticRegReg8Test.*:\
-And/ArithmeticRegReg8TestReversed.*:\
-Cmp/ArithmeticAlImmedTest.*:\
+-Cmp/ArithmeticAlImmedTest.*:\
 Cmp/ArithmeticAxImmedTest.*:\
 Cmp/ArithmeticMemImmed16Test.*:\
 Cmp/ArithmeticMemImmed16TestExtend.*:\

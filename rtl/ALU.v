@@ -15,7 +15,7 @@ assign flags_out[AF_IDX] = a[4] ^ b[4] ^ out[4];
 assign flags_out[SF_IDX] = out[is_8_bit ? 7 : 15];
 assign flags_out[ZF_IDX] = is_8_bit ? ~|out[7:0] : ~|out;
 
-task add;
+task do_add;
 input [15:0] _a;
 input [15:0] _b;
 input _carry_in;
@@ -31,12 +31,22 @@ begin
 end
 endtask
 
+task do_and;
+input [15:0] _a;
+input [15:0] _b;
+begin
+    out = _a & _b;
+    flags_out[CF_IDX] = 1'b0;
+end
+endtask
+
 always_comb begin
     case (op)
     ALUOp_SELA: out = a;
     ALUOp_SELB: out = b;
-    ALUOp_ADD: add(a, b, 1'b0);
-    ALUOp_ADC: add(a, b, flags_in[CF_IDX]);
+    ALUOp_ADD: do_add(a, b, 1'b0);
+    ALUOp_ADC: do_add(a, b, flags_in[CF_IDX]);
+    ALUOp_AND: do_and(a, b);
     default: begin
 `ifdef verilator
         invalid_opcode_assertion: assert(0) begin

@@ -16,6 +16,7 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/microcode.bin
                    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/microcode/microcode.us
                            ${CMAKE_CURRENT_SOURCE_DIR}/microcode/adc.us
                            ${CMAKE_CURRENT_SOURCE_DIR}/microcode/add.us
+                           ${CMAKE_CURRENT_SOURCE_DIR}/microcode/and.us
                            ${CMAKE_CURRENT_SOURCE_DIR}/microcode/arithmetic.us
                            ${CMAKE_CURRENT_SOURCE_DIR}/microcode/mov.us
                            ${CMAKE_CURRENT_SOURCE_DIR}/microcode/Microcode.v.templ
