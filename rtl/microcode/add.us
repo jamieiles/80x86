@@ -77,3 +77,33 @@ add05:
         rd_sel_source MICROCODE_RD_SEL, rd_sel AX,
         update_flags OF SF ZF AF CF PF, reg_wr_en,
         jmp opcode_fetch, clear_prefixes;
+
+add80_reg:
+    a_sel RA, b_sel IMMEDIATE, q_sel ALU, alu_op ADD,
+        rd_sel_source MODRM_RM_REG, reg_wr_en,
+        update_flags OF SF ZF AF CF PF, jmp opcode_fetch, clear_prefixes;
+add80_mem:
+    segment DS, mem_read, width 8, rb_modrm_reg;
+    a_sel MDR, b_sel IMMEDIATE, q_sel ALU, alu_op ADD,
+        mdr_write, update_flags OF SF ZF AF CF PF;
+    mem_write, jmp opcode_fetch, clear_prefixes;
+
+add81_reg:
+    a_sel RA, b_sel IMMEDIATE, q_sel ALU, alu_op ADD,
+        rd_sel_source MODRM_RM_REG, reg_wr_en,
+        update_flags OF SF ZF AF CF PF, jmp opcode_fetch, clear_prefixes;
+add81_mem:
+    segment DS, mem_read, rb_modrm_reg;
+    a_sel MDR, b_sel IMMEDIATE, q_sel ALU, alu_op ADD,
+        mdr_write, update_flags OF SF ZF AF CF PF;
+    mem_write, jmp opcode_fetch, clear_prefixes;
+
+add82_reg:
+    a_sel RA, b_sel IMMEDIATE, q_sel ALU, alu_op ADD,
+        rd_sel_source MODRM_RM_REG, reg_wr_en,
+        update_flags OF SF ZF AF CF PF, jmp opcode_fetch, clear_prefixes;
+add82_mem:
+    segment DS, mem_read, rb_modrm_reg;
+    a_sel MDR, b_sel IMMEDIATE, q_sel ALU, alu_op ADD,
+        mdr_write, update_flags OF SF ZF AF CF PF;
+    mem_write, jmp opcode_fetch, clear_prefixes;
