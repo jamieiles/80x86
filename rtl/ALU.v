@@ -49,6 +49,15 @@ begin
 end
 endtask
 
+task do_or;
+input [15:0] _a;
+input [15:0] _b;
+begin
+    out = _a | _b;
+    {flags_out[CF_IDX], flags_out[OF_IDX]} = 2'b0;
+end
+endtask
+
 always_comb begin
     case (op)
     ALUOp_SELA: out = a;
@@ -57,6 +66,7 @@ always_comb begin
     ALUOp_ADC: do_add(a, b, flags_in[CF_IDX]);
     ALUOp_AND: do_and(a, b);
     ALUOp_XOR: do_xor(a, b);
+    ALUOp_OR: do_or(a, b);
     // verilator coverage_off
     default: begin
 `ifdef verilator

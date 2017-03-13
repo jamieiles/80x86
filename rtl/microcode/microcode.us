@@ -3,6 +3,7 @@
 #include "adc.us"
 #include "and.us"
 #include "xor.us"
+#include "or.us"
 
 .at 0x100;
 opcode_fetch:
@@ -15,7 +16,7 @@ opcode_fetch:
 .auto_address;
 dispatch_80:
     width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem ADD80_reg; // reg == 0
-    jmp opcode_fetch, clear_prefixes; // reg == 1
+    width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem OR80_reg; // reg == 1
     width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem ADC80_reg; // reg == 2
     jmp opcode_fetch, clear_prefixes; // reg == 3
     width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem AND80_reg; // reg == 4
@@ -30,7 +31,7 @@ dispatch_80:
 .auto_address;
 dispatch_81:
     read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem ADD81_reg; // reg == 0
-    jmp opcode_fetch, clear_prefixes; // reg == 1
+    read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem OR81_reg; // reg == 1
     read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem ADC81_reg; // reg == 2
     jmp opcode_fetch, clear_prefixes; // reg == 3
     read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem AND81_reg; // reg == 4
@@ -60,7 +61,7 @@ dispatch_82:
 .auto_address;
 dispatch_83:
     width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem ADD83_reg; // reg == 0
-    jmp opcode_fetch, clear_prefixes; // reg == 1
+    width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem OR83_reg; // reg == 1
     width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem ADC83_reg; // reg == 2
     jmp opcode_fetch, clear_prefixes; // reg == 3
     width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem AND83_reg; // reg == 4
