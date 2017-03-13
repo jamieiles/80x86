@@ -54,7 +54,7 @@ always_ff @(posedge clk or posedge reset)
         _fetch_busy <= 1'b1;
 
 always_ff @(posedge clk or posedge reset) begin
-    if (reset || start)
+    if (reset || start || complete)
         _bytes_read <= 2'b0;
     if (fifo_rd_en)
         _bytes_read <= _bytes_read + 2'b1;
