@@ -325,21 +325,7 @@ Test/ArithmeticRegImmed16Test.*:\
 Test/ArithmeticRegImmed8Test.*:\
 Test/ArithmeticRegMem16Test.*:\
 Test/ArithmeticRegReg16Test.*:\
-Test/ArithmeticRegReg8Test.*:\
-Xor/ArithmeticAlImmedTest.*:\
-Xor/ArithmeticAxImmedTest.*:\
-Xor/ArithmeticMemImmed16Test.*:\
-Xor/ArithmeticMemImmed8Test.*:\
-Xor/ArithmeticMemReg16TestReversed.*:\
-Xor/ArithmeticMemReg8Test.*:\
-Xor/ArithmeticMemReg8TestReversed.*:\
-Xor/ArithmeticRegImmed16Test.*:\
-Xor/ArithmeticRegImmed8Test.*:\
-Xor/ArithmeticRegMem16Test.*:\
-Xor/ArithmeticRegReg16Test.*:\
-Xor/ArithmeticRegReg16TestReversed.*:\
-Xor/ArithmeticRegReg8Test.*:\
-Xor/ArithmeticRegReg8TestReversed.*";
+Test/ArithmeticRegReg8Test.*";
 
     return RUN_ALL_TESTS();
 }

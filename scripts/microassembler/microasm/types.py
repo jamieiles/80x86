@@ -47,6 +47,7 @@ class ALUOp(Enum):
     ADD = 2
     ADC = 3
     AND = 4
+    XOR = 5
 
 class UpdateFlags(Enum):
     CF = 0

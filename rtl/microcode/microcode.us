@@ -2,6 +2,7 @@
 #include "add.us"
 #include "adc.us"
 #include "and.us"
+#include "xor.us"
 
 .at 0x100;
 opcode_fetch:
@@ -19,7 +20,7 @@ dispatch_80:
     jmp opcode_fetch, clear_prefixes; // reg == 3
     width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem AND80_reg; // reg == 4
     jmp opcode_fetch, clear_prefixes; // reg == 5
-    jmp opcode_fetch, clear_prefixes; // reg == 6
+    width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem XOR80_reg; // reg == 6
     jmp opcode_fetch, clear_prefixes; // reg == 7
 
 // Multiplexed add/adc/sub/sbb/cmp/xor/or/and
@@ -34,7 +35,7 @@ dispatch_81:
     jmp opcode_fetch, clear_prefixes; // reg == 3
     read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem AND81_reg; // reg == 4
     jmp opcode_fetch, clear_prefixes; // reg == 5
-    jmp opcode_fetch, clear_prefixes; // reg == 6
+    read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem XOR81_reg; // reg == 6
     jmp opcode_fetch, clear_prefixes; // reg == 7
 
 // Multiplexed add/adc/sub/sbb/cmp

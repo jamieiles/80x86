@@ -36,8 +36,16 @@ input [15:0] _a;
 input [15:0] _b;
 begin
     out = _a & _b;
-    flags_out[CF_IDX] = 1'b0;
-    flags_out[OF_IDX] = 1'b0;
+    {flags_out[CF_IDX], flags_out[OF_IDX]} = 2'b0;
+end
+endtask
+
+task do_xor;
+input [15:0] _a;
+input [15:0] _b;
+begin
+    out = _a ^ _b;
+    {flags_out[CF_IDX], flags_out[OF_IDX]} = 2'b0;
 end
 endtask
 
@@ -48,6 +56,7 @@ always_comb begin
     ALUOp_ADD: do_add(a, b, 1'b0);
     ALUOp_ADC: do_add(a, b, flags_in[CF_IDX]);
     ALUOp_AND: do_and(a, b);
+    ALUOp_XOR: do_xor(a, b);
     // verilator coverage_off
     default: begin
 `ifdef verilator
