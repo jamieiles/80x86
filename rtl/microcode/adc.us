@@ -1,29 +1,12 @@
-// ADC 0x10     r/m := r/m + r
-.at 0x10;
-    modrm_start, mar_write, mar_wr_sel EA, rb_modrm_reg, width 8,
-        ra_modrm_rm_reg, jmp_rm_reg_mem adc00_reg;
-.auto_address;
-adc00_reg:
-    a_sel RA, b_sel RB, q_sel ALU, alu_op ADC, rd_sel_source MODRM_RM_REG,
-        update_flags OF SF ZF AF CF PF, reg_wr_en, width 8,
-        jmp opcode_fetch, clear_prefixes;
-adc00_mem:
-    segment DS, mem_read, width 8, rb_modrm_reg;
-    a_sel MDR, b_sel RB, q_sel ALU, alu_op ADC, mdr_write,
-        update_flags OF SF ZF AF CF PF, width 8;
-    width 8, segment DS, mem_write, jmp opcode_fetch, clear_prefixes;
+#include "arithmetic.us"
 
-// ADC 0x11     r/m := r/m + r
-.at 0x11;
-    modrm_start, mar_write, mar_wr_sel EA, rb_modrm_reg,
-        ra_modrm_rm_reg, jmp_rm_reg_mem adc01_reg;
-.auto_address;
-adc01_reg:
-    a_sel RA, b_sel RB, q_sel ALU, alu_op ADC, rd_sel_source MODRM_RM_REG,
-        update_flags OF SF ZF AF CF PF, reg_wr_en,
-        jmp opcode_fetch, clear_prefixes;
-adc01_mem:
-    segment DS, mem_read, rb_modrm_reg;
-    a_sel MDR, b_sel RB, q_sel ALU, alu_op ADC, mdr_write,
-        update_flags OF SF ZF AF CF PF;
-    segment DS, mem_write, jmp opcode_fetch, clear_prefixes;
+ARITH_REGMEM_REG_8(0x10, ADC, OF SF ZF AF CF PF)
+ARITH_REGMEM_REG_16(0x11, ADC, OF SF ZF AF CF PF)
+ARITH_REG_REGMEM_8(0x12, ADC, OF SF ZF AF CF PF)
+ARITH_REG_REGMEM_16(0x13, ADC, OF SF ZF AF CF PF)
+ARITH_REGMEM_AL_8(0x14, ADC, OF SF ZF AF CF PF)
+ARITH_REGMEM_AX_16(0x15, ADC, OF SF ZF AF CF PF)
+ARITH_80(ADC, OF SF ZF AF CF PF)
+ARITH_81(ADC, OF SF ZF AF CF PF)
+ARITH_82(ADC, OF SF ZF AF CF PF)
+ARITH_83(ADC, OF SF ZF AF CF PF)

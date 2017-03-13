@@ -14,7 +14,7 @@ opcode_fetch:
 dispatch_80:
     width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem ADD80_reg; // reg == 0
     jmp opcode_fetch, clear_prefixes; // reg == 1
-    jmp opcode_fetch, clear_prefixes; // reg == 2
+    width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem ADC80_reg; // reg == 2
     jmp opcode_fetch, clear_prefixes; // reg == 3
     jmp opcode_fetch, clear_prefixes; // reg == 4
     jmp opcode_fetch, clear_prefixes; // reg == 5
@@ -29,7 +29,7 @@ dispatch_80:
 dispatch_81:
     read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem ADD81_reg; // reg == 0
     jmp opcode_fetch, clear_prefixes; // reg == 1
-    jmp opcode_fetch, clear_prefixes; // reg == 2
+    read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem ADC81_reg; // reg == 2
     jmp opcode_fetch, clear_prefixes; // reg == 3
     jmp opcode_fetch, clear_prefixes; // reg == 4
     jmp opcode_fetch, clear_prefixes; // reg == 5
@@ -44,7 +44,7 @@ dispatch_81:
 dispatch_82:
     width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem ADD82_reg; // reg == 0
     jmp opcode_fetch, clear_prefixes; // reg == 1
-    jmp opcode_fetch, clear_prefixes; // reg == 2
+    width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem ADC82_reg; // reg == 2
     jmp opcode_fetch, clear_prefixes; // reg == 3
     jmp opcode_fetch, clear_prefixes; // reg == 4
     jmp opcode_fetch, clear_prefixes; // reg == 5
@@ -59,6 +59,7 @@ dispatch_82:
 dispatch_83:
     width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem ADD83_reg; // reg == 0
     jmp opcode_fetch, clear_prefixes; // reg == 1
+    width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem ADC83_reg; // reg == 2
     jmp opcode_fetch, clear_prefixes; // reg == 2
     jmp opcode_fetch, clear_prefixes; // reg == 3
     jmp opcode_fetch, clear_prefixes; // reg == 4
