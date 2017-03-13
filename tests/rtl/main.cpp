@@ -34,18 +34,12 @@ Adc/ArithmeticRegMem16Test.*:\
 Adc/ArithmeticRegReg16Test.*:\
 Adc/ArithmeticRegReg16TestReversed.*:\
 Adc/ArithmeticRegReg8TestReversed.*:\
-Add/ArithmeticAlImmedTest.*:\
-Add/ArithmeticAxImmedTest.*:\
 Add/ArithmeticMemImmed16Test.*:\
 Add/ArithmeticMemImmed16TestExtend.*:\
 Add/ArithmeticMemImmed8Test.*:\
-Add/ArithmeticMemReg16TestReversed.*:\
-Add/ArithmeticMemReg8TestReversed.*:\
 Add/ArithmeticRegImmed16Test.*:\
 Add/ArithmeticRegImmed16TestExtend.*:\
 Add/ArithmeticRegImmed8Test.*:\
-Add/ArithmeticRegReg16TestReversed.*:\
-Add/ArithmeticRegReg8TestReversed.*:\
 And/ArithmeticAlImmedTest.*:\
 And/ArithmeticAxImmedTest.*:\
 And/ArithmeticMemImmed16Test.*:\
@@ -174,7 +168,6 @@ EmulateFixture.MovsbDec:\
 EmulateFixture.MovsbInc:\
 EmulateFixture.MovswDec:\
 EmulateFixture.MovswInc:\
-EmulateFixture.MultipleAdd:\
 EmulateFixture.Neg16Mem:\
 EmulateFixture.Neg16Reg:\
 EmulateFixture.Neg8Mem:\

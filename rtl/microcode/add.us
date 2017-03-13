@@ -1,4 +1,4 @@
-// ADD 0x00     r/m := r/m + r
+// ADD 0x00     r/m := r/m + r 8 bit
 .at 0x00;
     modrm_start, mar_write, mar_wr_sel EA, rb_modrm_reg, width 8,
         ra_modrm_rm_reg, jmp_rm_reg_mem add00_reg;
@@ -13,7 +13,7 @@ add00_mem:
         update_flags OF SF ZF AF CF PF, width 8;
     width 8, segment DS, mem_write, jmp opcode_fetch, clear_prefixes;
 
-// ADD 0x01     r/m := r/m + r
+// ADD 0x01     r/m := r/m + r 16 bit
 .at 0x01;
     modrm_start, mar_write, mar_wr_sel EA, rb_modrm_reg,
         ra_modrm_rm_reg, jmp_rm_reg_mem add01_reg;
@@ -27,3 +27,53 @@ add01_mem:
     a_sel MDR, b_sel RB, q_sel ALU, alu_op ADD, mdr_write,
         update_flags OF SF ZF AF CF PF;
     segment DS, mem_write, jmp opcode_fetch, clear_prefixes;
+
+// ADD 0x02     r := r/m + r 8 bit
+.at 0x02;
+    modrm_start, mar_write, mar_wr_sel EA, rb_modrm_reg, width 8,
+        ra_modrm_rm_reg, jmp_rm_reg_mem add02_reg;
+.auto_address;
+add02_reg:
+    a_sel RA, b_sel RB, q_sel ALU, alu_op ADD, rd_sel_source MODRM_REG,
+        update_flags OF SF ZF AF CF PF, reg_wr_en, width 8,
+        jmp opcode_fetch, clear_prefixes;
+add02_mem:
+    segment DS, mem_read, width 8, rb_modrm_reg;
+    a_sel MDR, b_sel RB, q_sel ALU, alu_op ADD, rd_sel_source MODRM_REG,
+        update_flags OF SF ZF AF CF PF, reg_wr_en, width 8,
+        jmp opcode_fetch, clear_prefixes;
+
+// ADD 0x03     r := r/m + r 8 bit
+.at 0x03;
+    modrm_start, mar_write, mar_wr_sel EA, rb_modrm_reg,
+        ra_modrm_rm_reg, jmp_rm_reg_mem add03_reg;
+.auto_address;
+add03_reg:
+    a_sel RA, b_sel RB, q_sel ALU, alu_op ADD, rd_sel_source MODRM_REG,
+        update_flags OF SF ZF AF CF PF, reg_wr_en,
+        jmp opcode_fetch, clear_prefixes;
+add03_mem:
+    segment DS, mem_read, rb_modrm_reg;
+    a_sel MDR, b_sel RB, q_sel ALU, alu_op ADD, rd_sel_source MODRM_REG,
+        update_flags OF SF ZF AF CF PF, reg_wr_en,
+        jmp opcode_fetch, clear_prefixes;
+
+// ADD 0x04     r/m := AL + immed 8 bit
+.at 0x04;
+    read_immed, width 8, ra_sel AL, jmp add04;
+.auto_address;
+add04:
+    a_sel RA, b_sel IMMEDIATE, q_sel ALU, alu_op ADD,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel AL,
+        update_flags OF SF ZF AF CF PF, reg_wr_en, width 8,
+        jmp opcode_fetch, clear_prefixes;
+
+// ADD 0x05     r/m := AX + immed 8 bit
+.at 0x05;
+    read_immed, ra_sel AX, jmp add05;
+.auto_address;
+add05:
+    a_sel RA, b_sel IMMEDIATE, q_sel ALU, alu_op ADD,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel AX,
+        update_flags OF SF ZF AF CF PF, reg_wr_en,
+        jmp opcode_fetch, clear_prefixes;
