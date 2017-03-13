@@ -47,6 +47,7 @@ always_comb begin
     ALUOp_ADD: do_add(a, b, 1'b0);
     ALUOp_ADC: do_add(a, b, flags_in[CF_IDX]);
     ALUOp_AND: do_and(a, b);
+    // verilator coverage_off
     default: begin
 `ifdef verilator
         invalid_opcode_assertion: assert(0) begin
@@ -54,6 +55,7 @@ always_comb begin
         end
 `endif // verilator
     end
+    // verilator coverage_on
     endcase
 end
 
