@@ -65,7 +65,7 @@ class MicroAssembler(object):
                     instr.address = last_addr + 1
                     last_addr += 1
                 if instr.address in assigned_addresses:
-                    raise ValueError('Duplicate instruction at address {0:h}'.format(instr.address))
+                    raise ValueError('Duplicate instruction at address {0:x}'.format(instr.address))
                 assigned_addresses[instr.address] = instr
 
         def resolve_labels():
