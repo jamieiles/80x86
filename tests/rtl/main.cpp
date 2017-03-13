@@ -34,9 +34,6 @@ Adc/ArithmeticRegMem16Test.*:\
 Adc/ArithmeticRegReg16Test.*:\
 Adc/ArithmeticRegReg16TestReversed.*:\
 Adc/ArithmeticRegReg8TestReversed.*:\
-Add/ArithmeticMemImmed16Test.*:\
-Add/ArithmeticMemImmed16TestExtend.*:\
-Add/ArithmeticRegImmed16TestExtend.*:\
 And/ArithmeticAlImmedTest.*:\
 And/ArithmeticAxImmedTest.*:\
 And/ArithmeticMemImmed16Test.*:\

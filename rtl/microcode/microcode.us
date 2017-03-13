@@ -57,7 +57,7 @@ dispatch_82:
     modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_83;
 .auto_address;
 dispatch_83:
-    jmp opcode_fetch, clear_prefixes; // reg == 0
+    width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem add83_reg; // reg == 0
     jmp opcode_fetch, clear_prefixes; // reg == 1
     jmp opcode_fetch, clear_prefixes; // reg == 2
     jmp opcode_fetch, clear_prefixes; // reg == 3
