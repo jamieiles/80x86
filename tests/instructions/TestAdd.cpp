@@ -132,12 +132,12 @@ INSTANTIATE_TEST_CASE_P(Add, ArithmeticMemImmed16TestExtend,
     ::testing::Values(
         // add word [bx], -1
         ArithImmed16Params(
-            std::vector<uint8_t>{ 0x83, 0x10, 0xff },
+            std::vector<uint8_t>{ 0x83, 0x07, 0xff },
             { 2, 1, CF | AF, false }
         ),
         // add word [bx], 1
         ArithImmed16Params(
-            std::vector<uint8_t>{ 0x83, 0x10, 0x01 },
+            std::vector<uint8_t>{ 0x83, 0x07, 0x01 },
             { 2, 3, PF, false }
         )
     ));
