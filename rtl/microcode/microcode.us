@@ -1,12 +1,3 @@
-#include "adc.us"
-#include "add.us"
-#include "and.us"
-#include "mov.us"
-#include "or.us"
-#include "sbb.us"
-#include "sub.us"
-#include "xor.us"
-
 .at 0x100;
 opcode_fetch:
     fifo_pop, jmp_opcode;

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ARITHMETIC_US
+#define ARITHMETIC_US
 
 #define ARITH_REGMEM_REG_8(opcode, alufunc, flags)                              \
 .at opcode;                                                                     \
@@ -120,3 +121,5 @@ alufunc ## 83_mem:                                                              
     a_sel MDR, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                      \
         mdr_write, update_flags flags;                                          \
     mem_write, jmp opcode_fetch, clear_prefixes;
+
+#endif // ARITHMETIC_US

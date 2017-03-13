@@ -3,6 +3,18 @@ include(Verilator)
 set_source_files_properties(${VERILATED_DPI_CPP} PROPERTIES COMPILE_FLAGS "-Wno-unused-parameter -Wno-error")
 add_library(verilator STATIC ${VERILATOR_LIB_SOURCES})
 
+set(microprogram_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/adc.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/add.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/and.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/arithmetic.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/mov.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/or.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/sbb.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/sub.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/xor.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/microcode.us)
+
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/microcode.bin
                           ${CMAKE_CURRENT_BINARY_DIR}/Microcode.v
                           ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.v
@@ -12,16 +24,8 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/microcode.bin
                            ${CMAKE_CURRENT_BINARY_DIR}/Microcode.v
                            ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.v
                            ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.h
-                           ${CMAKE_CURRENT_SOURCE_DIR}/microcode/microcode.us
-                   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/microcode/microcode.us
-                           ${CMAKE_CURRENT_SOURCE_DIR}/microcode/adc.us
-                           ${CMAKE_CURRENT_SOURCE_DIR}/microcode/add.us
-                           ${CMAKE_CURRENT_SOURCE_DIR}/microcode/and.us
-                           ${CMAKE_CURRENT_SOURCE_DIR}/microcode/arithmetic.us
-                           ${CMAKE_CURRENT_SOURCE_DIR}/microcode/mov.us
-                           ${CMAKE_CURRENT_SOURCE_DIR}/microcode/or.us
-                           ${CMAKE_CURRENT_SOURCE_DIR}/microcode/sub.us
-                           ${CMAKE_CURRENT_SOURCE_DIR}/microcode/xor.us
+                           ${microprogram_sources}
+                   DEPENDS ${microprogram_sources}
                            ${CMAKE_CURRENT_SOURCE_DIR}/microcode/Microcode.v.templ
                            ${CMAKE_CURRENT_SOURCE_DIR}/microcode/MicrocodeTypes.v.templ
                            ${CMAKE_CURRENT_SOURCE_DIR}/microcode/MicrocodeTypes.h.templ
