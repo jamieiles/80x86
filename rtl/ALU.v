@@ -37,6 +37,7 @@ input [15:0] _b;
 begin
     out = _a & _b;
     flags_out[CF_IDX] = 1'b0;
+    flags_out[OF_IDX] = 1'b0;
 end
 endtask
 
