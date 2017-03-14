@@ -11,6 +11,7 @@ module ModRMDecode(input logic clk,
                    output logic [2:0] regnum,
                    output logic rm_is_reg,
                    output logic [2:0] rm_regnum,
+                   output logic bp_as_base,
                    // Registers.
                    output logic [2:0] reg_sel[2],
                    input logic [15:0] regs[2],
@@ -48,6 +49,8 @@ assign complete = reset ? 1'b0 :
 
 assign immed_start = _has_immediate && _popped;
 assign immed_is_8bit = _mod == 2'b01;
+
+assign bp_as_base = reg_sel[0] == BP;
 
 reg _registers_fetched;
 

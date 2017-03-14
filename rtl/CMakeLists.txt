@@ -62,4 +62,5 @@ verilate(Microcode ${CMAKE_CURRENT_BINARY_DIR}/Microcode.v)
 verilate(ModRMDecode ${CMAKE_CURRENT_SOURCE_DIR}/ModRMDecode.v)
 verilate(Prefetch ${CMAKE_CURRENT_SOURCE_DIR}/Prefetch.v)
 verilate(RegisterFile ${CMAKE_CURRENT_SOURCE_DIR}/RegisterFile.v)
-verilate(SegmentRegisterFile ${CMAKE_CURRENT_SOURCE_DIR}/SegmentRegisterFile.v)
+verilate(SegmentRegisterFile ${CMAKE_CURRENT_SOURCE_DIR}/RegisterEnum.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/SegmentRegisterFile.v)

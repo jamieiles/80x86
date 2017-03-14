@@ -31,6 +31,7 @@ wire [2:0] modrm_reg_rd_sel[2];
 wire [2:0] microcode_reg_rd_sel[2];
 wire modrm_start;
 wire modrm_busy;
+wire modrm_uses_bp_as_base;
 
 wire [15:0] reg_rd_val[2];
 wire [2:0] microcode_reg_wr_sel;
@@ -125,7 +126,9 @@ wire loadstore_start = (mem_read | mem_write) & ~loadstore_complete;
 wire loadstore_is_store = mem_write;
 wire loadstore_complete;
 wire loadstore_busy;
-wire [1:0] segment;
+wire [1:0] microcode_segment;
+wire [1:0] segment = microcode_segment == DS && modrm_uses_bp_as_base ?
+    SS : microcode_segment;
 wire segment_override;
 wire segment_wr_en;
 wire [8:0] update_flags;
@@ -204,6 +207,7 @@ ModRMDecode     modrmdecode(.clk(clk),
                             .regnum(regnum),
                             .rm_is_reg(rm_is_reg),
                             .rm_regnum(rm_regnum),
+                            .bp_as_base(modrm_uses_bp_as_base),
                             // Registers
                             .reg_sel(modrm_reg_rd_sel),
                             .regs(reg_rd_val),
@@ -275,7 +279,7 @@ Microcode       microcode(.clk(clk),
                           .rd_sel_source(rd_sel_source),
                           .rd_sel(microcode_reg_wr_sel),
                           .reg_wr_en(reg_wr_en),
-                          .segment(segment),
+                          .segment(microcode_segment),
                           .segment_override(segment_override),
                           .segment_wr_en(segment_wr_en),
                           .sr_wr_sel(microcode_seg_wr_sel),

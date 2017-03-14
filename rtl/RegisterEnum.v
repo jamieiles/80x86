@@ -23,4 +23,11 @@ typedef enum bit [2:0] {
     BH
 } GPR8_t;
 
+typedef enum bit [1:0] {
+    ES,
+    CS,
+    SS,
+    DS
+} SR_t;
+
 `endif

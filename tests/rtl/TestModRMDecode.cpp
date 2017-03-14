@@ -124,3 +124,21 @@ TEST_F(ModRMFixture, StartHeldDoesntClearModrm)
 
     ASSERT_EQ(this->dut.regnum, 0x3);
 }
+
+TEST_F(ModRMFixture, BPBaseInfersSS)
+{
+    set_instruction({ 0x46, 0x00 });
+
+    decode();
+
+    ASSERT_TRUE(dut.bp_as_base);
+}
+
+TEST_F(ModRMFixture, BXBaseDoesntInferSS)
+{
+    set_instruction({ 0x07 });
+
+    decode();
+
+    ASSERT_FALSE(dut.bp_as_base);
+}

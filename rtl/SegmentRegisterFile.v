@@ -10,13 +10,6 @@ module SegmentRegisterFile(input logic clk,
                            // CS port.
                            output logic [15:0] cs);
 
-typedef enum bit [1:0] {
-    ES,
-    CS,
-    SS,
-    DS
-} SR_t;
-
 reg [15:0] registers[4];
 
 integer i;

@@ -80,8 +80,6 @@ EmulateFixture.InvalidRegD0:\
 EmulateFixture.InvalidRegD1:\
 EmulateFixture.InvalidRegD2:\
 EmulateFixture.InvalidRegD3:\
-EmulateFixture.InvalidRegF6:\
-EmulateFixture.InvalidRegF7:\
 EmulateFixture.InvalidRegFE:\
 EmulateFixture.Iret:\
 EmulateFixture.JcxzNotTaken:\
