@@ -13,6 +13,7 @@ verilate(ModRMTestbench ${CMAKE_CURRENT_SOURCE_DIR}/ModRMTestbench.v
 add_executable(rtl-unittest
                Core.cpp
                TestALU.cpp
+               TestCSIPSync.cpp
                TestFifo.cpp
                TestFlags.cpp
                TestImmediateReader.cpp
@@ -32,6 +33,7 @@ add_executable(rtl-unittest
 
 target_link_libraries(rtl-unittest
                       VALU
+                      VCSIPSync
                       VCore
                       VFifo
                       VFlags

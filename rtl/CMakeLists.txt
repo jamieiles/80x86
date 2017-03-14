@@ -44,6 +44,7 @@ verilate(ALU ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.v
 verilate(Core ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.v
          ${CMAKE_CURRENT_SOURCE_DIR}/ALU.v
          ${CMAKE_CURRENT_SOURCE_DIR}/Core.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/CSIPSync.v
          ${CMAKE_CURRENT_SOURCE_DIR}/Fifo.v
          ${CMAKE_CURRENT_SOURCE_DIR}/Flags.v
          ${CMAKE_CURRENT_SOURCE_DIR}/IP.v
@@ -53,6 +54,7 @@ verilate(Core ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.v
          ${CMAKE_CURRENT_SOURCE_DIR}/RegisterFile.v
          ${CMAKE_CURRENT_SOURCE_DIR}/SegmentRegisterFile.v
          ${CMAKE_CURRENT_BINARY_DIR}/Microcode.v)
+verilate(CSIPSync ${CMAKE_CURRENT_SOURCE_DIR}/CSIPSync.v)
 verilate(Fifo ${CMAKE_CURRENT_SOURCE_DIR}/Fifo.v)
 verilate(Flags ${CMAKE_CURRENT_SOURCE_DIR}/Flags.v
          ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.v)

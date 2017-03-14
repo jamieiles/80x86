@@ -135,6 +135,10 @@ wire [8:0] update_flags;
 wire [15:0] flags;
 wire [15:0] alu_flags_out;
 
+wire cs_updating = seg_wr_sel == CS && segment_wr_en;
+wire prefetch_load_new_ip;
+wire [15:0] prefetch_new_ip;
+
 RegisterFile    regfile(.clk(clk),
                         .reset(reset),
                         .is_8_bit(reg_is_8_bit),
@@ -168,11 +172,21 @@ Fifo            #(.data_width(8),
                               // verilator lint_on PINCONNECTEMPTY
                               );
 
+CSIPSync        ipsync(.clk(clk),
+                       .reset(reset),
+                       .cs_update(cs_updating),
+                       .ip_update(ip_wr_en),
+                       .ip_in(ip_current),
+                       .new_ip(q_bus),
+                       .propagate(next_instruction),
+                       .ip_out(prefetch_new_ip),
+                       .update_out(prefetch_load_new_ip));
+
 Prefetch        prefetch(.clk(clk),
                          .reset(reset),
-                         .cs(cs),
-                         .new_ip(q_bus),
-                         .load_new_ip(ip_wr_en),
+                         .new_cs(cs),
+                         .new_ip(prefetch_new_ip),
+                         .load_new_ip(prefetch_load_new_ip),
                          .fifo_wr_en(fifo_wr_en),
                          .fifo_wr_data(fifo_wr_data),
                          .fifo_reset(fifo_reset),
@@ -292,8 +306,8 @@ Microcode       microcode(.clk(clk),
 IP              ip(.clk(clk),
                    .reset(reset),
                    .inc(ip_inc),
-                   .wr_en(ip_wr_en),
-                   .wr_val(q_bus),
+                   .wr_en(prefetch_load_new_ip),
+                   .wr_val(prefetch_new_ip),
                    .val(ip_current));
 
 ALU             alu(.a(a_bus),

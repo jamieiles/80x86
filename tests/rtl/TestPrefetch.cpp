@@ -21,7 +21,7 @@ PrefetchTestFixture::PrefetchTestFixture()
 {
     reset();
 
-    dut.cs = 0;
+    dut.new_cs = 0;
     dut.new_ip = 0;
     dut.load_new_ip = 0;
     dut.fifo_full = 0;
@@ -123,7 +123,7 @@ TEST_F(PrefetchTestFixture, back_to_back_reads)
 TEST_F(PrefetchTestFixture, address_generation)
 {
     memory[0xdead8] = 0xf00d;
-    dut.cs = 0xdead;
+    dut.new_cs = 0xdead;
     dut.new_ip = 0x8;
     dut.load_new_ip = 1;
     cycle();
@@ -133,11 +133,11 @@ TEST_F(PrefetchTestFixture, address_generation)
 TEST_F(PrefetchTestFixture, new_ip_discards_current_fetch)
 {
     mem_latency = 5;
-    memory[0xdead0] = 0xffff;
+    memory[0x00000] = 0xffff;
     memory[0xdead8] = 0xf00d;
     memory[0xdeada] = 0xface;
     memory[0xdeadc] = 0x5555;
-    dut.cs = 0xdead;
+    dut.new_cs = 0xdead;
     dut.new_ip = 0x8;
     cycle(2);
     dut.load_new_ip = 1;

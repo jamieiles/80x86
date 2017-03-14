@@ -61,6 +61,11 @@ void RTLCPU<debug_enabled>::write_sr(GPR regnum, uint16_t val)
 {
     svSetScope(svGetScopeFromName("TOP.Core.segregs"));
     this->dut.set_sr(regnum - ES, val);
+
+    if (regnum == CS) {
+        svSetScope(svGetScopeFromName("TOP.Core.prefetch"));
+        this->dut.set_cs(val);
+    }
 }
 
 template <bool debug_enabled>

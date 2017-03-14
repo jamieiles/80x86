@@ -9,7 +9,7 @@
 module Prefetch(input logic clk,
                 input logic reset,
                 // Address control.
-                input logic [15:0] cs,
+                input logic [15:0] new_cs,
                 input logic [15:0] new_ip,
                 input logic load_new_ip,
                 // FIFO write port.
@@ -25,6 +25,7 @@ module Prefetch(input logic clk,
 
 // verilator lint_off BLKANDNBLK
 reg [15:0] fetch_address;
+reg [15:0] cs;
 reg abort_cur;
 // verilator lint_on BLKANDNBLK
 reg [7:0] fetched_high_byte;
@@ -53,6 +54,12 @@ end
 always_ff @(posedge clk or posedge reset)
     write_second <= reset ? 1'b0 : should_write_second_byte;
 
+always_ff @(posedge clk or posedge reset)
+    if (reset)
+        cs <= 16'b0;
+    else if (load_new_ip)
+        cs <= new_cs;
+
 always_ff @(posedge clk or posedge reset) begin
     if (reset)
         fetch_address <= 16'b0;
@@ -74,6 +81,15 @@ function set_ip;
     fetch_address = new_val[15:0];
     abort_cur = 1'b1;
     set_ip = 0;
+endfunction
+
+export "DPI-C" function set_cs;
+
+function set_cs;
+    input int new_val;
+    cs = new_val[15:0];
+    abort_cur = 1'b1;
+    set_cs = 0;
 endfunction
 `endif
 
