@@ -10,6 +10,7 @@ set(microprogram_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/arithmetic.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/comparison.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/cmp.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/jmp.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/mov.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/or.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/sbb.us

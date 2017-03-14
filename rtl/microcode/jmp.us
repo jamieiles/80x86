@@ -1,0 +1,6 @@
+.at 0xe9;
+    read_immed, jmp jmpe9;
+.auto_address;
+jmpe9:
+    a_sel IP, b_sel IMMEDIATE, alu_op ADD, q_sel ALU, load_ip,
+        next_instruction;
