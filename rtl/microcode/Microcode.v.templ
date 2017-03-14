@@ -56,6 +56,8 @@ always_ff @(posedge clk or posedge reset)
 always_ff @(posedge clk or posedge reset) begin
     if (reset)
         addr <= reset_address;
+    else if (!do_stall && current.next_instruction)
+        addr <= {{addr_bits-9{1'b0}}, 9'h100};
     else if (!do_stall && current.jump_type == JumpType_DISPATCH_REG)
         addr <= current.next + {{addr_bits-3{1'b0}}, modrm_reg};
     else if (!do_stall && current.jump_type == JumpType_RM_REG_MEM)

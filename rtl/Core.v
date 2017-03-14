@@ -53,7 +53,7 @@ wire [1:0] b_sel;
 wire [1:0] q_sel;
 wire [`MC_ALUOp_t_BITS-1:0] alu_op;
 wire [15:0] alu_out;
-wire clear_prefixes;
+wire next_instruction;
 wire mar_wr_sel;
 wire microcode_fifo_pop;
 wire fifo_rd_en = modrm_fifo_rd_en | immed_fifo_rd_en | microcode_fifo_rd_en;
@@ -261,7 +261,7 @@ Microcode       microcode(.clk(clk),
                           .a_sel(a_sel),
                           .alu_op(alu_op),
                           .b_sel(b_sel),
-                          .clear_prefixes(clear_prefixes),
+                          .next_instruction(next_instruction),
                           .fifo_pop(microcode_fifo_pop),
                           .read_immed(microcode_immed_start),
                           .load_ip(ip_wr_en),

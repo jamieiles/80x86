@@ -203,9 +203,9 @@ example:
 ----
     jmp_rm_reg_mem foo_reg;
 foo_reg:
-    jmp opcode_fetch, clear_prefixes;
+    next_instruction;
 foo_mem:
-    jmp opcode_fetch, clear_prefixes;
+    next_instruction;
 ----
 
 will jump to `foo_reg` if the R/M operand is a register operand and `foo_mem`

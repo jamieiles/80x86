@@ -5,10 +5,10 @@
 .auto_address;
 mov88_reg:
     b_sel RB, q_sel ALU, alu_op SELB, rd_sel_source MODRM_RM_REG, reg_wr_en,
-        width 8, jmp opcode_fetch, clear_prefixes;
+        width 8, next_instruction;
 mov88_mem:
     b_sel RB, rb_modrm_reg, q_sel ALU, alu_op SELB, mdr_write;
-    width 8, segment DS, mem_write, jmp opcode_fetch, clear_prefixes;
+    width 8, segment DS, mem_write, next_instruction;
 
 // MOV 0x89     r/m := r (16-bit)
 .at 0x89;
@@ -18,10 +18,10 @@ mov88_mem:
 mov89_reg:
     b_sel RB, rb_modrm_reg, q_sel ALU, alu_op SELB,
         rd_sel_source MODRM_RM_REG, reg_wr_en,
-        jmp opcode_fetch, clear_prefixes;
+        next_instruction;
 mov89_mem:
     b_sel RB, rb_modrm_reg, q_sel ALU, alu_op SELB, mdr_write;
-    segment DS, mem_write, jmp opcode_fetch, clear_prefixes;
+    segment DS, mem_write, next_instruction;
 
 // MOV 0x8a     r := r/m (8-bit)
 .at 0x8a;
@@ -31,11 +31,11 @@ mov89_mem:
 mov8a_reg:
     a_sel RA, ra_modrm_rm_reg, q_sel ALU, alu_op SELA,
         rd_sel_source MODRM_REG, reg_wr_en, width 8,
-        jmp opcode_fetch, clear_prefixes;
+        next_instruction;
 mov8a_mem:
     segment DS, mem_read, width 8;
     rd_sel_source MODRM_REG, reg_wr_en, q_sel MDR, width 8,
-        jmp opcode_fetch, clear_prefixes;
+        next_instruction;
 
 // MOV 0x8b     r := r/m (16-bit)
 .at 0x8b;
@@ -45,11 +45,11 @@ mov8a_mem:
 mov8b_reg:
     a_sel RA, ra_modrm_rm_reg, q_sel ALU, alu_op SELA,
         rd_sel_source MODRM_REG, reg_wr_en,
-        jmp opcode_fetch, clear_prefixes;
+        next_instruction;
 mov8b_mem:
     segment DS, mem_read;
     rd_sel_source MODRM_REG, reg_wr_en, q_sel MDR,
-        jmp opcode_fetch, clear_prefixes;
+        next_instruction;
 
 // MOV 0xc6     r/m := immed8
 .at 0xc6;
@@ -57,20 +57,20 @@ mov8b_mem:
 .auto_address;
 c6_dispatch:
     read_immed, width 8, jmp_rm_reg_mem movc6_reg; // reg == 0
-    jmp opcode_fetch, clear_prefixes; // reg == 1
-    jmp opcode_fetch, clear_prefixes; // reg == 2
-    jmp opcode_fetch, clear_prefixes; // reg == 3
-    jmp opcode_fetch, clear_prefixes; // reg == 4
-    jmp opcode_fetch, clear_prefixes; // reg == 5
-    jmp opcode_fetch, clear_prefixes; // reg == 6
-    jmp opcode_fetch, clear_prefixes; // reg == 7
+    next_instruction; // reg == 1
+    next_instruction; // reg == 2
+    next_instruction; // reg == 3
+    next_instruction; // reg == 4
+    next_instruction; // reg == 5
+    next_instruction; // reg == 6
+    next_instruction; // reg == 7
 movc6_reg:
     b_sel IMMEDIATE, q_sel ALU, alu_op SELB,
         rd_sel_source MODRM_RM_REG, reg_wr_en, width 8,
-        jmp opcode_fetch, clear_prefixes;
+        next_instruction;
 movc6_mem:
     b_sel IMMEDIATE, q_sel ALU, alu_op SELB, mdr_write;
-    segment DS, mem_write, width 8, jmp opcode_fetch, clear_prefixes;
+    segment DS, mem_write, width 8, next_instruction;
 
 // MOV 0xc7     r/m := immed16
 .at 0xc7;
@@ -78,20 +78,20 @@ movc6_mem:
 .auto_address;
 c7_dispatch:
     read_immed, jmp_rm_reg_mem movc7_reg; // reg == 0
-    jmp opcode_fetch, clear_prefixes; // reg == 1
-    jmp opcode_fetch, clear_prefixes; // reg == 2
-    jmp opcode_fetch, clear_prefixes; // reg == 3
-    jmp opcode_fetch, clear_prefixes; // reg == 4
-    jmp opcode_fetch, clear_prefixes; // reg == 5
-    jmp opcode_fetch, clear_prefixes; // reg == 6
-    jmp opcode_fetch, clear_prefixes; // reg == 7
+    next_instruction; // reg == 1
+    next_instruction; // reg == 2
+    next_instruction; // reg == 3
+    next_instruction; // reg == 4
+    next_instruction; // reg == 5
+    next_instruction; // reg == 6
+    next_instruction; // reg == 7
 movc7_reg:
     b_sel IMMEDIATE, q_sel ALU, alu_op SELB,
         rd_sel_source MODRM_RM_REG, reg_wr_en,
-        jmp opcode_fetch, clear_prefixes;
+        next_instruction;
 movc7_mem:
     b_sel IMMEDIATE, q_sel ALU, alu_op SELB, mdr_write;
-    segment DS, mem_write, jmp opcode_fetch, clear_prefixes;
+    segment DS, mem_write, next_instruction;
 
 #define MOV_REG_IMMED8(opcode, reg) \
     .at opcode; \
@@ -99,8 +99,7 @@ movc7_mem:
     .auto_address; \
     mov_ ## reg ## _immed8: \
         rd_sel_source MICROCODE_RD_SEL, rd_sel reg, reg_wr_en, q_sel ALU, \
-            alu_op SELB, b_sel IMMEDIATE, width 8, clear_prefixes, \
-            jmp opcode_fetch;
+            alu_op SELB, b_sel IMMEDIATE, width 8, next_instruction;
 
 MOV_REG_IMMED8(0xb0, AL)
 MOV_REG_IMMED8(0xb1, CL)
@@ -117,8 +116,7 @@ MOV_REG_IMMED8(0xb7, BH)
     .auto_address; \
     mov_ ## reg ## _immed16: \
         rd_sel_source MICROCODE_RD_SEL, rd_sel reg, reg_wr_en, q_sel ALU, \
-            alu_op SELB, b_sel IMMEDIATE, clear_prefixes, \
-            jmp opcode_fetch;
+            alu_op SELB, b_sel IMMEDIATE, next_instruction;
 
 MOV_REG_IMMED16(0xb8, AX)
 MOV_REG_IMMED16(0xb9, CX)
@@ -137,7 +135,7 @@ MOV_REG_IMMED16(0xbf, DI)
 mova0:
     segment DS, width 8, mem_read;
     rd_sel_source MICROCODE_RD_SEL, rd_sel AL, width 8, reg_wr_en,
-        q_sel MDR, clear_prefixes, jmp opcode_fetch;
+        q_sel MDR, next_instruction;
 
 // MOV 0xa1     ax := m[immed16]
 .at 0xa1;
@@ -147,7 +145,7 @@ mova0:
 mova1:
     segment DS, mem_read;
     rd_sel_source MICROCODE_RD_SEL, rd_sel AX, reg_wr_en,
-        q_sel MDR, clear_prefixes, jmp opcode_fetch;
+        q_sel MDR, next_instruction;
 
 // MOV 0xa2     m[immed16] := al
 .at 0xa2;
@@ -156,7 +154,7 @@ mova1:
 .auto_address;
 mova2:
     a_sel RA, q_sel ALU, alu_op SELA, mdr_write;
-    segment DS, width 8, mem_write, clear_prefixes, jmp opcode_fetch;
+    segment DS, width 8, mem_write, next_instruction;
 
 // MOV 0xa3     m[immed16] := al
 .at 0xa3;
@@ -165,7 +163,7 @@ mova2:
 .auto_address;
 mova3:
     a_sel RA, q_sel ALU, alu_op SELA, mdr_write;
-    segment DS, mem_write, clear_prefixes, jmp opcode_fetch;
+    segment DS, mem_write, next_instruction;
 
 // MOV 0x8e     sr := reg/mem
 .at 0x8e;
@@ -177,17 +175,17 @@ dispatch_8e:
     ra_modrm_rm_reg, jmp_rm_reg_mem mov8e_reg;
     ra_modrm_rm_reg, jmp_rm_reg_mem mov8e_reg;
     ra_modrm_rm_reg, jmp_rm_reg_mem mov8e_reg;
-    jmp opcode_fetch, clear_prefixes; // reg == 4
-    jmp opcode_fetch, clear_prefixes; // reg == 5
-    jmp opcode_fetch, clear_prefixes; // reg == 6
-    jmp opcode_fetch, clear_prefixes; // reg == 7
+    next_instruction; // reg == 4
+    next_instruction; // reg == 5
+    next_instruction; // reg == 6
+    next_instruction; // reg == 7
 mov8e_reg:
     segment_wr_en, rd_sel_source MODRM_REG, a_sel RA, alu_op SELA, q_sel ALU,
-        clear_prefixes, jmp opcode_fetch;
+        next_instruction;
 mov8e_mem:
     segment DS, mem_read;
     rd_sel_source MODRM_REG, segment_wr_en, q_sel MDR,
-        jmp opcode_fetch, clear_prefixes;
+        next_instruction;
 
 // MOV 0x8c     reg/mem := sr
 .at 0x8c;
@@ -199,13 +197,13 @@ dispatch_8c:
     segment CS, jmp_rm_reg_mem mov8c_reg;
     segment SS, jmp_rm_reg_mem mov8c_reg;
     segment DS, jmp_rm_reg_mem mov8c_reg;
-    jmp opcode_fetch, clear_prefixes; // reg == 4
-    jmp opcode_fetch, clear_prefixes; // reg == 5
-    jmp opcode_fetch, clear_prefixes; // reg == 6
-    jmp opcode_fetch, clear_prefixes; // reg == 7
+    next_instruction; // reg == 4
+    next_instruction; // reg == 5
+    next_instruction; // reg == 6
+    next_instruction; // reg == 7
 mov8c_reg:
     reg_wr_en, rd_sel_source MODRM_RM_REG, b_sel SR, alu_op SELB, q_sel ALU,
-        clear_prefixes, jmp opcode_fetch;
+        next_instruction;
 mov8c_mem:
     b_sel SR, rb_modrm_reg, q_sel ALU, alu_op SELB, mdr_write;
-    segment DS, mem_write, rb_modrm_reg, jmp opcode_fetch, clear_prefixes;
+    segment DS, mem_write, rb_modrm_reg, next_instruction;

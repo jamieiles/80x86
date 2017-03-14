@@ -198,7 +198,7 @@ class MicroAssembler(object):
         'ra_sel': (num_bits(len(GPR)), partial(_enumerated_field, enum_class=GPR), True),
         'rb_sel': (num_bits(len(GPR)), partial(_enumerated_field, enum_class=GPR), True),
         'rd_sel': (num_bits(len(GPR)), partial(_enumerated_field, enum_class=GPR), True),
-        'clear_prefixes': (1, _boolean, True),
+        'next_instruction': (1, _boolean, True),
         'mar_wr_sel': (num_bits(len(MARWrSel)), partial(_enumerated_field, enum_class=MARWrSel), True),
         'mar_write': (1, _boolean, True),
         'mdr_write': (1, _boolean, True),
