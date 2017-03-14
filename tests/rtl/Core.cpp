@@ -133,9 +133,17 @@ uint16_t RTLCPU<debug_enabled>::read_sr(GPR regnum) const
 }
 
 template <bool debug_enabled>
+size_t RTLCPU<debug_enabled>::get_and_clear_instr_length()
+{
+    svSetScope(svGetScopeFromName("TOP.Core"));
+
+    return static_cast<size_t>(this->dut.get_and_clear_instr_length());
+}
+
+template <bool debug_enabled>
 size_t RTLCPU<debug_enabled>::step()
 {
-    auto prev_ip = this->read_ip();
+    this->get_and_clear_instr_length();
 
     // Wait for opcode dispatch
     while (this->get_microcode_address() != 0x100)
@@ -155,7 +163,7 @@ size_t RTLCPU<debug_enabled>::step()
     if (cycle_count >= max_cycles_per_step)
         throw std::runtime_error("execution timeout");
 
-    return this->read_ip() - prev_ip;
+    return this->get_and_clear_instr_length();
 }
 
 template <bool debug_enabled>

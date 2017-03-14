@@ -30,6 +30,7 @@ private:
     void write_ip(uint16_t v);
     void write_sr(GPR regnum, uint16_t v);
     void write_gpr(GPR regnum, uint16_t v);
+    size_t get_and_clear_instr_length();
 
     bool i_in_progress;
     bool d_in_progress;

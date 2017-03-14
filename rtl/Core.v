@@ -304,4 +304,22 @@ ALU             alu(.a(a_bus),
                     .flags_in(flags),
                     .flags_out(alu_flags_out));
 
+`ifdef verilator
+// verilator lint_off BLKANDNBLK
+int instr_length;
+// verilator lint_on BLKANDNBLK
+
+always @(posedge clk)
+    if (fifo_rd_en & ~fifo_empty)
+        instr_length <= instr_length + 1;
+
+export "DPI-C" function get_and_clear_instr_length;
+
+function int get_and_clear_instr_length;
+    get_and_clear_instr_length = instr_length;
+    instr_length = 0;
+endfunction
+
+`endif
+
 endmodule
