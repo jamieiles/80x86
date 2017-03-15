@@ -62,7 +62,6 @@ EmulateFixture.DSSegmentOverrideIsNop:\
 EmulateFixture.Daa:\
 EmulateFixture.Das:\
 EmulateFixture.DecReg:\
-EmulateFixture.DirectInter:\
 EmulateFixture.EscMem:\
 EmulateFixture.EscReg:\
 EmulateFixture.Hlt:\
