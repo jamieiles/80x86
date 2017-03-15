@@ -229,7 +229,7 @@ class MicroAssembler(object):
         'q_sel': (num_bits(len(QDriver)), partial(_enumerated_field, enum_class=QDriver), True),
         'alu_op': (num_bits(len(ALUOp)), partial(_enumerated_field, enum_class=ALUOp), True),
         'update_flags': (len(UpdateFlags), _update_flags, True),
-        'fifo_pop': (1, _boolean, True),
+        'fifo_pop': (1, _boolean, False),
         'modrm_start': (1, _boolean, True),
         'ra_modrm_rm_reg': (1, _boolean, True),
         'rd_sel_source': (num_bits(len(RDSelSource)), partial(_enumerated_field, enum_class=RDSelSource), True),

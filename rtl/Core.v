@@ -1,4 +1,3 @@
-// verilator lint_off UNUSED
 module Core(input logic clk,
             input logic reset,
             // Instruction bus
@@ -55,7 +54,6 @@ wire [`MC_ALUOp_t_BITS-1:0] alu_op;
 wire [15:0] alu_out;
 wire next_instruction;
 wire mar_wr_sel;
-wire microcode_fifo_pop;
 wire fifo_rd_en = modrm_fifo_rd_en | immed_fifo_rd_en | microcode_fifo_rd_en;
 wire [7:0] fifo_rd_data;
 wire [7:0] fifo_wr_data;
@@ -281,7 +279,6 @@ Microcode       microcode(.clk(clk),
                           .alu_op(alu_op),
                           .b_sel(b_sel),
                           .next_instruction(next_instruction),
-                          .fifo_pop(microcode_fifo_pop),
                           .read_immed(microcode_immed_start),
                           .load_ip(ip_wr_en),
                           .mar_wr_sel(mar_wr_sel),
