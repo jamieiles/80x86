@@ -27,7 +27,7 @@ assign update_out = propagate &
     (ip_updated | cs_updated | cs_update | ip_update);
 
 always @(posedge clk or posedge reset) begin
-    if (reset) begin
+    if (reset || propagate) begin
         ip_updated <= 1'b0;
         cs_updated <= 1'b0;
     end
@@ -39,11 +39,6 @@ always @(posedge clk or posedge reset) begin
 
     if (cs_update)
         cs_updated <= 1'b1;
-
-    if (propagate) begin
-        ip_updated <= 1'b0;
-        cs_updated <= 1'b0;
-    end
 end
 
 endmodule
