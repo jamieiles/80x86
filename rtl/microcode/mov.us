@@ -1,26 +1,26 @@
 // MOV 0x88     r/m := r (8-bit)
 .at 0x88;
-    modrm_start, mar_write, mar_wr_sel EA, rb_modrm_reg, width 8,
+    modrm_start, mar_write, mar_wr_sel EA, width 8,
         jmp_rm_reg_mem mov88_reg;
 .auto_address;
 mov88_reg:
     b_sel RB, q_sel ALU, alu_op SELB, rd_sel_source MODRM_RM_REG, reg_wr_en,
         width 8, next_instruction;
 mov88_mem:
-    b_sel RB, rb_modrm_reg, q_sel ALU, alu_op SELB, mdr_write;
+    b_sel RB, q_sel ALU, alu_op SELB, mdr_write;
     width 8, segment DS, mem_write, next_instruction;
 
 // MOV 0x89     r/m := r (16-bit)
 .at 0x89;
-    modrm_start, mar_write, mar_wr_sel EA, rb_modrm_reg,
+    modrm_start, mar_write, mar_wr_sel EA,
         jmp_rm_reg_mem mov89_reg;
 .auto_address;
 mov89_reg:
-    b_sel RB, rb_modrm_reg, q_sel ALU, alu_op SELB,
+    b_sel RB, q_sel ALU, alu_op SELB,
         rd_sel_source MODRM_RM_REG, reg_wr_en,
         next_instruction;
 mov89_mem:
-    b_sel RB, rb_modrm_reg, q_sel ALU, alu_op SELB, mdr_write;
+    b_sel RB, q_sel ALU, alu_op SELB, mdr_write;
     segment DS, mem_write, next_instruction;
 
 // MOV 0x8a     r := r/m (8-bit)
@@ -189,8 +189,7 @@ mov8e_mem:
 
 // MOV 0x8c     reg/mem := sr
 .at 0x8c;
-    modrm_start, mar_write, mar_wr_sel EA, rb_modrm_reg,
-        jmp_dispatch_reg dispatch_8c;
+    modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_8c;
 .auto_address;
 dispatch_8c:
     segment ES, jmp_rm_reg_mem mov8c_reg;
@@ -205,5 +204,5 @@ mov8c_reg:
     reg_wr_en, rd_sel_source MODRM_RM_REG, b_sel SR, alu_op SELB, q_sel ALU,
         next_instruction;
 mov8c_mem:
-    b_sel SR, rb_modrm_reg, q_sel ALU, alu_op SELB, mdr_write;
-    segment DS, mem_write, rb_modrm_reg, next_instruction;
+    b_sel SR, q_sel ALU, alu_op SELB, mdr_write;
+    segment DS, mem_write, next_instruction;

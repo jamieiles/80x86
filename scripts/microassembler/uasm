@@ -213,7 +213,6 @@ class MicroAssembler(object):
     """
     microcode_fields = {
         'ra_sel': (num_bits(len(GPR)), partial(_enumerated_field, enum_class=GPR), True),
-        'rb_sel': (num_bits(len(GPR)), partial(_enumerated_field, enum_class=GPR), True),
         'rd_sel': (num_bits(len(GPR)), partial(_enumerated_field, enum_class=GPR), True),
         'next_instruction': (1, _boolean, True),
         'mar_wr_sel': (num_bits(len(MARWrSel)), partial(_enumerated_field, enum_class=MARWrSel), True),
@@ -233,7 +232,6 @@ class MicroAssembler(object):
         'fifo_pop': (1, _boolean, True),
         'modrm_start': (1, _boolean, True),
         'ra_modrm_rm_reg': (1, _boolean, True),
-        'rb_modrm_reg': (1, _boolean, True),
         'rd_sel_source': (num_bits(len(RDSelSource)), partial(_enumerated_field, enum_class=RDSelSource), True),
         'reg_wr_en': (1, _boolean, True),
         'width': (1, _boolean, True),

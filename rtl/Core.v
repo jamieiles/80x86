@@ -25,7 +25,7 @@ wire modrm_complete;
 assign reg_rd_sel[0] = modrm_start && ~modrm_complete ? modrm_reg_rd_sel[0] :
     ra_modrm_rm_reg ? rm_regnum : microcode_reg_rd_sel[0];
 assign reg_rd_sel[1] = modrm_start && ~modrm_complete ? modrm_reg_rd_sel[1] :
-    rb_modrm_reg ? regnum : microcode_reg_rd_sel[1];
+    regnum;
 
 wire [2:0] modrm_reg_rd_sel[2];
 wire [2:0] microcode_reg_rd_sel[2];
@@ -119,7 +119,6 @@ wire write_mar;
 wire mem_read;
 wire mem_write;
 wire ra_modrm_rm_reg;
-wire rb_modrm_reg;
 wire [`MC_RDSelSource_t_BITS-1:0] rd_sel_source;
 wire [2:0] reg_wr_sel =
     rd_sel_source == RDSelSource_MODRM_REG ? regnum :
@@ -294,8 +293,6 @@ Microcode       microcode(.clk(clk),
                           .q_sel(q_sel),
                           .ra_modrm_rm_reg(ra_modrm_rm_reg),
                           .ra_sel(microcode_reg_rd_sel[0]),
-                          .rb_modrm_reg(rb_modrm_reg),
-                          .rb_sel(microcode_reg_rd_sel[1]),
                           .rd_sel_source(rd_sel_source),
                           .rd_sel(microcode_reg_wr_sel),
                           .reg_wr_en(reg_wr_en),

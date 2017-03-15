@@ -3,61 +3,61 @@
 
 #define ARITH_REGMEM_REG_8(opcode, alufunc, flags)                              \
 .at opcode;                                                                     \
-    modrm_start, mar_write, mar_wr_sel EA, rb_modrm_reg, width 8,               \
+    modrm_start, mar_write, mar_wr_sel EA, width 8, 				\
         ra_modrm_rm_reg, jmp_rm_reg_mem alufunc ## opcode ##_reg;               \
 .auto_address;                                                                  \
 alufunc ## opcode ## _reg:                                                      \
     a_sel RA, b_sel RB, q_sel ALU, alu_op alufunc,                              \
         rd_sel_source MODRM_RM_REG, update_flags flags, reg_wr_en,              \
-        width 8, next_instruction;                              \
+        width 8, next_instruction;                                              \
 alufunc ## opcode ## _mem:                                                      \
-    segment DS, mem_read, width 8, rb_modrm_reg;                                \
+    segment DS, mem_read, width 8;                                              \
     a_sel MDR, b_sel RB, q_sel ALU, alu_op alufunc, mdr_write,                  \
         update_flags flags, width 8;                                            \
     width 8, segment DS, mem_write, next_instruction;
 
 #define ARITH_REGMEM_REG_16(opcode, alufunc, flags)                             \
 .at opcode;                                                                     \
-    modrm_start, mar_write, mar_wr_sel EA, rb_modrm_reg,                        \
+    modrm_start, mar_write, mar_wr_sel EA,                                      \
         ra_modrm_rm_reg, jmp_rm_reg_mem alufunc ## opcode ## _reg;              \
 .auto_address;                                                                  \
 alufunc ## opcode ## _reg:                                                      \
     a_sel RA, b_sel RB, q_sel ALU, alu_op alufunc,                              \
         rd_sel_source MODRM_RM_REG, update_flags flags, reg_wr_en,              \
-        next_instruction;                                       \
+        next_instruction;                                       		\
 alufunc ## opcode ## _mem:                                                      \
-    segment DS, mem_read, rb_modrm_reg;                                         \
+    segment DS, mem_read;							\
     a_sel MDR, b_sel RB, q_sel ALU, alu_op alufunc, mdr_write,                  \
         update_flags flags;                                                     \
     segment DS, mem_write, next_instruction;
 
 #define ARITH_REG_REGMEM_8(opcode, alufunc, flags)                              \
 .at opcode;                                                                     \
-    modrm_start, mar_write, mar_wr_sel EA, rb_modrm_reg, width 8,               \
+    modrm_start, mar_write, mar_wr_sel EA, width 8,               		\
         ra_modrm_rm_reg, jmp_rm_reg_mem alufunc ## opcode ## _reg;              \
 .auto_address;                                                                  \
 alufunc ## opcode ## _reg:                                                      \
     a_sel RA, b_sel RB, q_sel ALU, alu_op alufunc, rd_sel_source MODRM_REG,     \
         update_flags flags, reg_wr_en, width 8,                                 \
-        next_instruction;                                       \
+        next_instruction;                                       		\
 alufunc ## opcode ## _mem:                                                      \
-    segment DS, mem_read, width 8, rb_modrm_reg;                                \
+    segment DS, mem_read, width 8;						\
     a_sel MDR, b_sel RB, q_sel ALU, alu_op alufunc, rd_sel_source MODRM_REG,    \
         update_flags flags, reg_wr_en, width 8,                                 \
         next_instruction;
 
 #define ARITH_REG_REGMEM_16(opcode, alufunc, flags)                             \
 .at opcode;                                                                     \
-    modrm_start, mar_write, mar_wr_sel EA, rb_modrm_reg,                        \
+    modrm_start, mar_write, mar_wr_sel EA,					\
         ra_modrm_rm_reg, jmp_rm_reg_mem alufunc ## opcode ## _reg;              \
 .auto_address;                                                                  \
 alufunc ## opcode ## _reg:                                                      \
     a_sel RA, b_sel RB, q_sel ALU, alu_op alufunc, rd_sel_source MODRM_REG,     \
-        update_flags flags, reg_wr_en, next_instruction;        \
+        update_flags flags, reg_wr_en, next_instruction;        		\
 alufunc ## opcode ## _mem:                                                      \
-    segment DS, mem_read, rb_modrm_reg;                                         \
+    segment DS, mem_read;							\
     a_sel MDR, b_sel RB, q_sel ALU, alu_op alufunc, rd_sel_source MODRM_REG,    \
-        update_flags flags, reg_wr_en, next_instruction;        \
+        update_flags flags, reg_wr_en, next_instruction;
 
 #define ARITH_REGMEM_AL_8(opcode, alufunc, flags)                               \
 .at opcode;                                                                     \
@@ -76,15 +76,15 @@ alufunc ## opcode:                                                              
 alufunc ## opcode:                                                              \
     a_sel RA, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                       \
         rd_sel_source MICROCODE_RD_SEL, rd_sel AX,                              \
-        update_flags flags, reg_wr_en, next_instruction;        \
+        update_flags flags, reg_wr_en, next_instruction;        		\
 
 #define ARITH_80(alufunc, flags)                                                \
 alufunc ## 80_reg:                                                              \
     a_sel RA, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                       \
         rd_sel_source MODRM_RM_REG, reg_wr_en,                                  \
-        update_flags flags, next_instruction;                   \
+        update_flags flags, next_instruction;                   		\
 alufunc ## 80_mem:                                                              \
-    segment DS, mem_read, width 8, rb_modrm_reg;                                \
+    segment DS, mem_read, width 8;						\
     a_sel MDR, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                      \
         mdr_write, update_flags flags;                                          \
     mem_write, next_instruction;
@@ -93,9 +93,9 @@ alufunc ## 80_mem:                                                              
 alufunc ## 81_reg:                                                              \
     a_sel RA, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                       \
         rd_sel_source MODRM_RM_REG, reg_wr_en,                                  \
-        update_flags flags, next_instruction;                   \
+        update_flags flags, next_instruction;                   		\
 alufunc ## 81_mem:                                                              \
-    segment DS, mem_read, rb_modrm_reg;                                         \
+    segment DS, mem_read;							\
     a_sel MDR, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                      \
         mdr_write, update_flags flags;                                          \
     mem_write, next_instruction;
@@ -104,9 +104,9 @@ alufunc ## 81_mem:                                                              
 alufunc ## 82_reg:                                                              \
     a_sel RA, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                       \
         rd_sel_source MODRM_RM_REG, reg_wr_en,                                  \
-        update_flags flags, next_instruction;                   \
+        update_flags flags, next_instruction;                   		\
 alufunc ## 82_mem:                                                              \
-    segment DS, mem_read, rb_modrm_reg;                                         \
+    segment DS, mem_read;							\
     a_sel MDR, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                      \
         mdr_write, update_flags flags;                                          \
     mem_write, next_instruction;
@@ -115,9 +115,9 @@ alufunc ## 82_mem:                                                              
 alufunc ## 83_reg:                                                              \
     a_sel RA, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                       \
         rd_sel_source MODRM_RM_REG, reg_wr_en,                                  \
-        update_flags flags, next_instruction;                   \
+        update_flags flags, next_instruction;                   		\
 alufunc ## 83_mem:                                                              \
-    segment DS, mem_read, rb_modrm_reg;                                         \
+    segment DS, mem_read;							\
     a_sel MDR, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                      \
         mdr_write, update_flags flags;                                          \
     mem_write, next_instruction;

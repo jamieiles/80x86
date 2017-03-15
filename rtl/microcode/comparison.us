@@ -3,53 +3,53 @@
 
 #define COMP_REGMEM_REG_8(opcode, alufunc, flags)                               \
 .at opcode;                                                                     \
-    modrm_start, mar_write, mar_wr_sel EA, rb_modrm_reg, width 8,               \
+    modrm_start, mar_write, mar_wr_sel EA, width 8,                             \
         ra_modrm_rm_reg, jmp_rm_reg_mem comp ## alufunc ## opcode ##_reg;       \
 .auto_address;                                                                  \
 comp ## alufunc ## opcode ## _reg:                                              \
     a_sel RA, b_sel RB, q_sel ALU, alu_op alufunc,                              \
-        update_flags flags, width 8, next_instruction;          \
+        update_flags flags, width 8, next_instruction;                          \
 comp ## alufunc ## opcode ## _mem:                                              \
-    segment DS, mem_read, width 8, rb_modrm_reg;                                \
+    segment DS, mem_read, width 8;                                              \
     a_sel MDR, b_sel RB, q_sel ALU, alu_op alufunc, update_flags flags,         \
         width 8, next_instruction;
 
 #define COMP_REGMEM_REG_16(opcode, alufunc, flags)                              \
 .at opcode;                                                                     \
-    modrm_start, mar_write, mar_wr_sel EA, rb_modrm_reg,                        \
+    modrm_start, mar_write, mar_wr_sel EA,                                      \
         ra_modrm_rm_reg, jmp_rm_reg_mem comp ## alufunc ## opcode ## _reg;      \
 .auto_address;                                                                  \
 comp ## alufunc ## opcode ## _reg:                                              \
     a_sel RA, b_sel RB, q_sel ALU, alu_op alufunc,                              \
-        update_flags flags, next_instruction;                   \
+        update_flags flags, next_instruction;                                   \
 comp ## alufunc ## opcode ## _mem:                                              \
-    segment DS, mem_read, rb_modrm_reg;                                         \
+    segment DS, mem_read;                                                       \
     a_sel MDR, b_sel RB, q_sel ALU, alu_op alufunc, update_flags flags,         \
         next_instruction;
 
 #define COMP_REG_REGMEM_8(opcode, alufunc, flags)                               \
 .at opcode;                                                                     \
-    modrm_start, mar_write, mar_wr_sel EA, rb_modrm_reg, width 8,               \
+    modrm_start, mar_write, mar_wr_sel EA, width 8,                             \
         ra_modrm_rm_reg, jmp_rm_reg_mem comp ## alufunc ## opcode ## _reg;      \
 .auto_address;                                                                  \
 comp ## alufunc ## opcode ## _reg:                                              \
     a_sel RA, b_sel RB, q_sel ALU, alu_op alufunc, update_flags flags, width 8, \
-        next_instruction;                                       \
+        next_instruction;                                                       \
 comp ## alufunc ## opcode ## _mem:                                              \
-    segment DS, mem_read, width 8, rb_modrm_reg;                                \
+    segment DS, mem_read, width 8;                                              \
     a_sel MDR, b_sel RB, q_sel ALU, alu_op alufunc, update_flags flags,         \
         width 8, next_instruction;
 
 #define COMP_REG_REGMEM_16(opcode, alufunc, flags)                              \
 .at opcode;                                                                     \
-    modrm_start, mar_write, mar_wr_sel EA, rb_modrm_reg,                        \
+    modrm_start, mar_write, mar_wr_sel EA,                                      \
         ra_modrm_rm_reg, jmp_rm_reg_mem comp ## alufunc ## opcode ## _reg;      \
 .auto_address;                                                                  \
 comp ## alufunc ## opcode ## _reg:                                              \
     a_sel RA, b_sel RB, q_sel ALU, alu_op alufunc, update_flags flags,          \
-        next_instruction;                                       \
+        next_instruction;                                                       \
 comp ## alufunc ## opcode ## _mem:                                              \
-    segment DS, mem_read, rb_modrm_reg;                                         \
+    segment DS, mem_read;                                                       \
     a_sel MDR, b_sel RB, q_sel ALU, alu_op alufunc, update_flags flags,         \
         next_instruction;
 
@@ -72,54 +72,54 @@ comp ## alufunc ## opcode:                                                      
 #define COMP_80(alufunc, flags)                                                 \
 comp ## alufunc ## 80_reg:                                                      \
     a_sel RA, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                       \
-        update_flags flags, next_instruction;                   \
+        update_flags flags, next_instruction;                                   \
 comp ## alufunc ## 80_mem:                                                      \
-    segment DS, mem_read, width 8, rb_modrm_reg;                                \
+    segment DS, mem_read, width 8;                                              \
     a_sel MDR, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                      \
         update_flags flags, next_instruction;
 
 #define COMP_81(alufunc, flags)                                                 \
 comp ## alufunc ## 81_reg:                                                      \
     a_sel RA, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                       \
-        update_flags flags, next_instruction;                   \
+        update_flags flags, next_instruction;                                   \
 comp ## alufunc ## 81_mem:                                                      \
-    segment DS, mem_read, rb_modrm_reg;                                         \
+    segment DS, mem_read;                                                       \
     a_sel MDR, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                      \
         update_flags flags, next_instruction;
 
 #define COMP_82(alufunc, flags)                                                 \
 comp ## alufunc ## 82_reg:                                                      \
     a_sel RA, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                       \
-        update_flags flags, next_instruction;                   \
+        update_flags flags, next_instruction;                                   \
 comp ## alufunc ## 82_mem:                                                      \
-    segment DS, mem_read, rb_modrm_reg;                                         \
+    segment DS, mem_read;                                                       \
     a_sel MDR, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                      \
         update_flags flags, next_instruction;
 
 #define COMP_83(alufunc, flags)                                                 \
 comp ## alufunc ## 83_reg:                                                      \
     a_sel RA, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                       \
-        update_flags flags, next_instruction;                   \
+        update_flags flags, next_instruction;                                   \
 comp ## alufunc ## 83_mem:                                                      \
-    segment DS, mem_read, rb_modrm_reg;                                         \
+    segment DS, mem_read;                                                       \
     a_sel MDR, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                      \
         update_flags flags, next_instruction;
 
 #define COMP_F6(alufunc, flags)                                                 \
 comp ## alufunc ## f6_reg:                                                      \
     a_sel RA, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                       \
-        update_flags flags, next_instruction;                   \
+        update_flags flags, next_instruction;                                   \
 comp ## alufunc ## f6_mem:                                                      \
-    segment DS, mem_read, width 8, rb_modrm_reg;                                \
+    segment DS, mem_read, width 8;                                              \
     a_sel MDR, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                      \
         update_flags flags, next_instruction;
 
 #define COMP_F7(alufunc, flags)                                                 \
 comp ## alufunc ## f7_reg:                                                      \
     a_sel RA, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                       \
-        update_flags flags, next_instruction;                   \
+        update_flags flags, next_instruction;                                   \
 comp ## alufunc ## f7_mem:                                                      \
-    segment DS, mem_read, rb_modrm_reg;                                         \
+    segment DS, mem_read;                                                       \
     a_sel MDR, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                      \
         update_flags flags, next_instruction;
 
