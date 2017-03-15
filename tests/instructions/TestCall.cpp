@@ -91,6 +91,6 @@ TEST_F(EmulateFixture, CallIndirectInter)
     ASSERT_EQ(0x00fc, read_reg(SP));
     ASSERT_EQ(0x2000, read_mem<uint16_t>(0x00fe));
     ASSERT_EQ(0x0032, read_mem<uint16_t>(0x00fc));
-    ASSERT_EQ(0x8000, read_reg(CS));
-    ASSERT_EQ(0x2010, read_reg(IP));
+    EXPECT_EQ(0x8000, read_reg(CS));
+    EXPECT_EQ(0x2010, read_reg(IP));
 }

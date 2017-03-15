@@ -39,10 +39,6 @@ EmulateFixture.Aam129:\
 EmulateFixture.AamDivByZero:\
 EmulateFixture.AamSigned:\
 EmulateFixture.Aas:\
-EmulateFixture.CallDirectInter:\
-EmulateFixture.CallIndirectInter:\
-EmulateFixture.CallIndirectIntraMem:\
-EmulateFixture.CallIndirectIntraReg:\
 EmulateFixture.CbwNegative:\
 EmulateFixture.CbwPositive:\
 EmulateFixture.ClcClearsCarry:\
