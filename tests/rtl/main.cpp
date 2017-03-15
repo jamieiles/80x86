@@ -40,7 +40,6 @@ EmulateFixture.AamDivByZero:\
 EmulateFixture.AamSigned:\
 EmulateFixture.Aas:\
 EmulateFixture.CallDirectInter:\
-EmulateFixture.CallDirectIntra:\
 EmulateFixture.CallIndirectInter:\
 EmulateFixture.CallIndirectIntraMem:\
 EmulateFixture.CallIndirectIntraReg:\

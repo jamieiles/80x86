@@ -1,0 +1,10 @@
+.at 0xe8;
+    read_immed, jmp calle8, ra_sel SP;
+.auto_address;
+calle8:
+    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
+        q_sel ALU, reg_wr_en, rd_sel_source MICROCODE_RD_SEL;
+    a_sel IP, alu_op SELA, q_sel ALU, mdr_write, ra_sel SP;
+    a_sel RA, alu_op SELA, q_sel ALU, mar_write;
+    mem_write, a_sel IP, b_sel IMMEDIATE, alu_op ADD, q_sel ALU, load_ip;
+    next_instruction;
