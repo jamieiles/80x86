@@ -87,7 +87,7 @@ alufunc ## 80_mem:                                                              
     segment DS, mem_read, width 8;						\
     a_sel MDR, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                      \
         mdr_write, update_flags flags;                                          \
-    mem_write, next_instruction;
+    segment DS, mem_write, next_instruction;
 
 #define ARITH_81(alufunc, flags)                                                \
 alufunc ## 81_reg:                                                              \
@@ -98,7 +98,7 @@ alufunc ## 81_mem:                                                              
     segment DS, mem_read;							\
     a_sel MDR, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                      \
         mdr_write, update_flags flags;                                          \
-    mem_write, next_instruction;
+    segment DS, mem_write, next_instruction;
 
 #define ARITH_82(alufunc, flags)                                                \
 alufunc ## 82_reg:                                                              \
@@ -109,7 +109,7 @@ alufunc ## 82_mem:                                                              
     segment DS, mem_read;							\
     a_sel MDR, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                      \
         mdr_write, update_flags flags;                                          \
-    mem_write, next_instruction;
+    segment DS, mem_write, next_instruction;
 
 #define ARITH_83(alufunc, flags)                                                \
 alufunc ## 83_reg:                                                              \
@@ -120,6 +120,6 @@ alufunc ## 83_mem:                                                              
     segment DS, mem_read;							\
     a_sel MDR, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                      \
         mdr_write, update_flags flags;                                          \
-    mem_write, next_instruction;
+    segment DS, mem_write, next_instruction;
 
 #endif // ARITHMETIC_US
