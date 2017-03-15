@@ -83,11 +83,6 @@ EmulateFixture.InvalidRegFE:\
 EmulateFixture.Iret:\
 EmulateFixture.JcxzNotTaken:\
 EmulateFixture.JcxzTaken:\
-EmulateFixture.JmpDirectIntraShort:\
-EmulateFixture.JmpIndirectInterMem:\
-EmulateFixture.JmpIndirectInterReg:\
-EmulateFixture.JmpIndirectIntraMem:\
-EmulateFixture.JmpIndirectIntraReg:\
 EmulateFixture.Lahf:\
 EmulateFixture.Lds:\
 EmulateFixture.LdsReg:\

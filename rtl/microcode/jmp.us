@@ -16,3 +16,27 @@ jmpea:
     read_immed;
     b_sel IMMEDIATE, alu_op SELB, q_sel ALU, segment_wr_en,
         segment_override, sr_wr_sel CS, next_instruction;
+
+.at 0xeb;
+    width 8, read_immed, jmp jmpeb;
+.auto_address;
+jmpeb:
+    a_sel IP, b_sel IMMEDIATE, alu_op ADD, q_sel ALU, load_ip,
+        next_instruction;
+
+jmpff_indirect_intra_reg:
+    ra_modrm_rm_reg, alu_op SELA, q_sel ALU, load_ip,
+        next_instruction;
+jmpff_indirect_intra_mem:
+    a_sel MDR, alu_op SELA, q_sel ALU, load_ip,
+        next_instruction;
+
+jmpff_indirect_inter_reg:
+    next_instruction;
+jmpff_indirect_inter_mem:
+    a_sel MDR, alu_op SELA, q_sel ALU, load_ip;
+    immediate 0x2, a_sel MAR, b_sel IMMEDIATE, alu_op ADD, q_sel ALU,
+        mar_wr_sel Q, mar_write;
+    mem_read;
+    a_sel MDR, alu_op SELA, q_sel ALU, segment_wr_en,
+        segment_override, sr_wr_sel CS, next_instruction;
