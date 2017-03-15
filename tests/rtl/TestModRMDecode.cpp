@@ -142,3 +142,17 @@ TEST_F(ModRMFixture, BXBaseDoesntInferSS)
 
     ASSERT_FALSE(dut.bp_as_base);
 }
+
+TEST_F(ModRMFixture, EAHeld)
+{
+    regs.set(BX, 0x1234);
+
+    set_instruction({ 0x07 });
+
+    decode();
+
+    ASSERT_EQ(dut.effective_address, 0x1234);
+    regs.set(BX, 0x0000);
+    cycle();
+    ASSERT_EQ(dut.effective_address, 0x1234);
+}

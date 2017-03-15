@@ -54,6 +54,11 @@ assign bp_as_base = reg_sel[0] == BP;
 
 reg _registers_fetched;
 
+reg [15:0] _cached_effective_address;
+reg [15:0] _effective_address;
+
+assign effective_address = complete ? _effective_address : _cached_effective_address;
+
 always_ff @(posedge clk or posedge reset) begin
     if (reset)
         _started <= 1'b0;
@@ -101,15 +106,15 @@ always_comb begin
     case (_mod)
     2'b00: begin
         case (_rm)
-        3'b000, 3'b001, 3'b010, 3'b011: effective_address = regs[0] + regs[1];
-        3'b100, 3'b101, 3'b111: effective_address = regs[0];
-        3'b110: effective_address = immediate;
+        3'b000, 3'b001, 3'b010, 3'b011: _effective_address = regs[0] + regs[1];
+        3'b100, 3'b101, 3'b111: _effective_address = regs[0];
+        3'b110: _effective_address = immediate;
         endcase
     end
     2'b01, 2'b10: begin
         case (_rm)
-        3'b000, 3'b001, 3'b010, 3'b011: effective_address = regs[0] + regs[1] + immediate;
-        3'b100, 3'b101, 3'b110, 3'b111: effective_address = regs[0] + immediate;
+        3'b000, 3'b001, 3'b010, 3'b011: _effective_address = regs[0] + regs[1] + immediate;
+        3'b100, 3'b101, 3'b110, 3'b111: _effective_address = regs[0] + immediate;
         endcase
     end
     2'b11: begin
@@ -118,6 +123,10 @@ always_comb begin
     end
     endcase
 end
+
+always_ff @(posedge clk)
+    if (complete)
+        _cached_effective_address <= _effective_address;
 
 always_ff @(posedge clk or posedge reset)
     _popped <= reset ? 1'b0 : fifo_rd_en;
