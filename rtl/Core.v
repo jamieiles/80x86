@@ -102,11 +102,15 @@ wire immed_busy;
 wire immed_complete;
 wire modrm_immed_is_8bit;
 wire immed_is_8bit = modrm_immed_start ? modrm_immed_is_8bit : is_8_bit;
-wire [15:0] immediate;
+wire [15:0] immediate_reader_immediate;
+wire [15:0] immediate = use_microcode_immediate ? microcode_immediate :
+    immediate_reader_immediate;
 
 wire microcode_stall = (modrm_busy & ~modrm_complete) |
     (immed_busy & ~immed_complete) |
     loadstore_busy;
+wire [15:0] microcode_immediate;
+wire use_microcode_immediate;
 
 wire [15:0] mar;
 wire [15:0] mdr;
@@ -204,7 +208,7 @@ ImmediateReader immedreader(.clk(clk),
                             .complete(immed_complete),
                             .is_8bit(immed_is_8bit),
                             // Result
-                            .immediate(immediate),
+                            .immediate(immediate_reader_immediate),
                             // Fifo read port
                             .fifo_rd_en(immed_fifo_rd_en),
                             .fifo_rd_data(fifo_rd_data),
@@ -233,7 +237,7 @@ ModRMDecode     modrmdecode(.clk(clk),
                             .immed_start(modrm_immed_start),
                             .immed_complete(immed_complete),
                             .immed_is_8bit(modrm_immed_is_8bit),
-                            .immediate(immediate));
+                            .immediate(immediate_reader_immediate));
 
 Flags           flags_reg(.clk(clk),
                           .reset(reset),
@@ -271,6 +275,8 @@ Microcode       microcode(.clk(clk),
                           .reset(reset),
                           .stall(microcode_stall),
                           .modrm_reg(regnum),
+                          .microcode_immediate(microcode_immediate),
+                          .use_microcode_immediate(use_microcode_immediate),
                           .rm_is_reg(rm_is_reg),
                           .a_sel(a_sel),
                           .alu_op(alu_op),

@@ -52,6 +52,7 @@ class MicroAssembler(object):
         self._verilog_output = verilog_output
         self._verilog_types_output = verilog_types_output
         self._cpp_types_output = cpp_types_output
+        self._immediate_pool = []
 
     def _build_microcode(self, files):
         label_map = {}
@@ -109,6 +110,7 @@ class MicroAssembler(object):
 
         assign_addresses()
         resolve_labels()
+        self.finalize_immediates()
 
         return sorted(instructions, key=lambda i: i.address)
 
@@ -125,6 +127,7 @@ class MicroAssembler(object):
             'exported_fields': MicroAssembler.exported_fields(),
             'num_instructions': 2**(instructions[-1].address).bit_length(),
             'addr_bits': num_bits(instructions[-1].address + 1),
+            'immediates': MicroAssembler.get_immediate_dict(),
         }
         with open(TEMPLATE) as f:
             template = f.read()
@@ -191,6 +194,20 @@ class MicroAssembler(object):
             handler = self.microcode_fields[field.name][1]
             handler(self, field)
 
+    def _immediate(self, field):
+        if len(field.arguments) != 1:
+            raise ValueError('Only one immediate value supported')
+        if int(field.arguments[0].value, 16) not in self._immediate_pool:
+            self._immediate_pool.append(int(field.arguments[0].value, 16))
+        self._current_instr.present_fields['immediate'] = int(field.arguments[0].value, 16)
+
+    def finalize_immediates(self):
+        MicroAssembler.immediate_dict = {0: 0}
+        for idx, val in enumerate(self._immediate_pool):
+            MicroAssembler.immediate_dict[val] = idx + 1
+        self.microcode_fields['immediate'] = (num_bits(len(MicroAssembler.immediate_dict.keys())),
+                                              self._immediate, False)
+
     """List of microcode fields:
       (number of bits, handler, exported to pipeline boolean.
     """
@@ -222,6 +239,7 @@ class MicroAssembler(object):
         'width': (1, _boolean, True),
         'load_ip': (1, _boolean, True),
         'read_immed': (1, _boolean, True),
+        'immediate': (0, _immediate, False),
         # Internal keywords, generated from others
         'jump_type': (num_bits(len(JumpType)), _reserved, False),
         # Populated once we know how many address bits required
@@ -265,6 +283,13 @@ class MicroAssembler(object):
         return fields
 
     @staticmethod
+    def get_immediate_dict():
+        d = []
+        for k, v in MicroAssembler.immediate_dict.items():
+            d.append({'idx': v, 'val': '{0:x}'.format(k)})
+        return d
+
+    @staticmethod
     def exported_fields():
         fields = []
         for name in MicroAssembler.exported_field_keys():
@@ -291,6 +316,8 @@ class MicroInstruction(object):
         self.present_fields = {}
 
     def encode(self, address_bits):
+        if 'immediate' in self.present_fields:
+            self.present_fields['immediate'] = MicroAssembler.immediate_dict[self.present_fields['immediate']]
         for name, value in self.present_fields.items():
             assert num_bits(value) <= MicroAssembler.microcode_fields[name][0]
 
