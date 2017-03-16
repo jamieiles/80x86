@@ -15,7 +15,7 @@ jmpea:
     // is asserted and we'll load an invalid IP.
     read_immed;
     b_sel IMMEDIATE, alu_op SELB, q_sel ALU, segment_wr_en,
-        segment_override, sr_wr_sel CS, next_instruction;
+        segment_force, sr_wr_sel CS, next_instruction;
 
 .at 0xeb;
     width 8, read_immed, jmp jmpeb;
@@ -41,4 +41,4 @@ jmpff_indirect_inter_mem:
         mar_wr_sel Q, mar_write, segment DS;
     segment DS, mem_read;
     a_sel MDR, alu_op SELA, q_sel ALU, segment_wr_en,
-        segment_override, sr_wr_sel CS, next_instruction;
+        segment_force, sr_wr_sel CS, next_instruction;

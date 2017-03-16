@@ -46,7 +46,7 @@ call9a:
         mar_wr_sel Q;
     a_sel IP, alu_op SELA, q_sel ALU, mdr_write, segment DS;
     segment DS, mem_write;
-    b_sel IMMEDIATE, alu_op SELB, q_sel ALU, segment_override, sr_wr_sel CS,
+    b_sel IMMEDIATE, alu_op SELB, q_sel ALU, segment_force, sr_wr_sel CS,
         segment_wr_en, next_instruction;
 
 callff_indirect_inter_reg:
@@ -69,4 +69,4 @@ callff_indirect_inter_mem:
         mar_wr_sel Q, mar_write, segment DS;
     segment DS, mem_read;
     a_sel MDR, alu_op SELA, q_sel ALU, segment_wr_en,
-        segment_override, sr_wr_sel CS, next_instruction;
+        segment_force, sr_wr_sel CS, next_instruction;

@@ -38,7 +38,8 @@ wire [15:0] reg_wr_val = q_bus;
 wire reg_wr_en;
 wire [1:0] microcode_seg_wr_sel;
 wire [1:0] seg_wr_sel;
-assign seg_wr_sel = segment_override ? microcode_seg_wr_sel
+wire segment_force;
+assign seg_wr_sel = segment_force ? microcode_seg_wr_sel
     : reg_wr_sel[1:0];
 wire [15:0] seg_rd_val;
 wire [15:0] seg_wr_val = q_bus;
@@ -128,9 +129,12 @@ wire loadstore_is_store = mem_write;
 wire loadstore_complete;
 wire loadstore_busy;
 wire [1:0] microcode_segment;
-wire [1:0] segment = microcode_segment == DS && modrm_uses_bp_as_base ?
-    SS : microcode_segment;
+wire [1:0] segment = segment_force ? microcode_segment :
+    microcode_segment == DS && modrm_uses_bp_as_base ? SS :
+    microcode_segment;
+// verilator lint_off UNUSED
 wire segment_override;
+// verilator lint_on UNUSED
 wire segment_wr_en;
 wire [8:0] update_flags;
 wire [15:0] flags;
@@ -295,6 +299,7 @@ Microcode       microcode(.clk(clk),
                           .reg_wr_en(reg_wr_en),
                           .segment(microcode_segment),
                           .segment_override(segment_override),
+                          .segment_force(segment_force),
                           .segment_wr_en(segment_wr_en),
                           .sr_wr_sel(microcode_seg_wr_sel),
                           .update_flags(update_flags),

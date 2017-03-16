@@ -224,6 +224,7 @@ class MicroAssembler(object):
         'segment': (num_bits(len(SR)), partial(_enumerated_field, enum_class=SR), True),
         'segment_override': (1, _boolean, True),
         'segment_wr_en': (1, _boolean, True),
+        'segment_force': (1, _boolean, True),
         'a_sel': (num_bits(len(ADriver)), partial(_enumerated_field, enum_class=ADriver), True),
         'b_sel': (num_bits(len(BDriver)), partial(_enumerated_field, enum_class=BDriver), True),
         'q_sel': (num_bits(len(QDriver)), partial(_enumerated_field, enum_class=QDriver), True),
