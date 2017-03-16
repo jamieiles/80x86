@@ -1,5 +1,16 @@
 cmake_minimum_required(VERSION 2.8)
-project(8086 CXX)
+project(s80x86 CXX)
+
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+set(CPACK_GENERATOR "DEB")
+set(CPACK_DEBIAN_PACKAGE_NAME "s80x86")
+set(CPACK_PACKAGE_CONTACT "jamie@jamieiles.com")
+set(CPACK_STRIP_FILES ON)
+set(CPACK_DEB_COMPONENT_INSTALL ON)
+set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libsdl2-2.0-0, libboost-python1.58.0 python3")
+include(CPack)
+include(InstallRequiredSystemLibraries)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMake/")
 

@@ -13,3 +13,10 @@ target_link_libraries(simulator
                       8086sim
                       simdisplay)
 nasm_file(bios.asm bios.bin)
+
+install(TARGETS simulator
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        RESOURCE DESTINATION share/s80x86)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/bios.bin
+        DESTINATION share/s80x86)

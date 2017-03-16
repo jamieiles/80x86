@@ -7,3 +7,5 @@ add_library(8086sim SHARED
             ModRM.cpp
             Emulate.h
             Emulate.cpp)
+install(TARGETS 8086sim
+        LIBRARY DESTINATION lib)

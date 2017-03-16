@@ -50,3 +50,6 @@ target_link_libraries(rtl-unittest
                       verilator)
 add_test(rtl-unittest rtl-unittest)
 set_tests_properties(rtl-unittest PROPERTIES TIMEOUT 5)
+
+install(TARGETS rtl-unittest
+        RUNTIME DESTINATION bin)
