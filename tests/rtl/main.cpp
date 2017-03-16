@@ -118,15 +118,9 @@ EmulateFixture.PopMemFF:\
 EmulateFixture.PopMemSegmentOverride:\
 EmulateFixture.PopReg5X:\
 EmulateFixture.PopRegFF:\
-EmulateFixture.PopRegFFInvalidReg:\
 EmulateFixture.PopSR:\
 EmulateFixture.Popf:\
-EmulateFixture.PushMemFF:\
 EmulateFixture.PushMemSegmentOverride:\
-EmulateFixture.PushReg5X:\
-EmulateFixture.PushRegFF:\
-EmulateFixture.PushRegFFInvalidReg:\
-EmulateFixture.PushSR:\
 EmulateFixture.Pushf:\
 EmulateFixture.RetInter:\
 EmulateFixture.RetInterAddSp:\

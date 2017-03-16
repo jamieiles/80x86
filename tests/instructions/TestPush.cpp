@@ -50,6 +50,8 @@ TEST_F(EmulateFixture, PushReg5X)
 {
     // push r
     for (uint8_t i = 0; i < 8; ++i) {
+        reset();
+
         auto reg = static_cast<GPR>(static_cast<int>(AX) + i);
         write_reg(reg, 0x0100 + i);
         write_reg(SP, 0x0100);
@@ -69,6 +71,8 @@ TEST_F(EmulateFixture, PushSR)
 {
     // push sr
     for (uint8_t i = 0; i < 4; ++i) {
+        reset();
+
         write_reg(SS, 0);
         auto reg = static_cast<GPR>(static_cast<int>(ES) + i);
         write_reg(reg, 0x0100 + i);

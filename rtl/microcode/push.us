@@ -1,0 +1,52 @@
+pushff_reg:
+    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
+        q_sel ALU, mar_write, mar_wr_sel Q, jmp pushff_reg_save,
+        ra_modrm_rm_reg;
+pushff_mem:
+    segment DS, mem_read, jmp pushff_mem_save, ra_sel SP;
+pushff_reg_save:
+    a_sel RA, alu_op SELA, q_sel ALU, mdr_write;
+    segment_force, segment SS, mem_write, a_sel MAR, rd_sel SP,
+        rd_sel_source MICROCODE_RD_SEL, reg_wr_en, next_instruction;
+pushff_mem_save:
+    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
+        q_sel ALU, mar_write, mar_wr_sel Q;
+    segment_force, segment SS, mem_write, a_sel MAR, alu_op SELA, q_sel ALU,
+        rd_sel SP, rd_sel_source MICROCODE_RD_SEL, reg_wr_en, next_instruction;
+
+#define PUSH_GPR(opcode, reg)                                           \
+.at opcode;                                                             \
+    ra_sel reg, jmp push_gpr;
+
+#define PUSH_SR(opcode, reg)                                            \
+.at opcode;                                                             \
+    segment_force, segment reg, jmp push_sr;
+
+PUSH_SR(0x06, ES)
+PUSH_SR(0x0e, CS)
+PUSH_SR(0x16, SS)
+PUSH_SR(0x1e, DS)
+
+PUSH_GPR(0x50, AX)
+PUSH_GPR(0x51, CX)
+PUSH_GPR(0x52, DX)
+PUSH_GPR(0x53, BX)
+PUSH_GPR(0x54, SP)
+PUSH_GPR(0x55, BP)
+PUSH_GPR(0x56, SI)
+PUSH_GPR(0x57, DI)
+
+.auto_address;
+push_gpr:
+    a_sel RA, alu_op SELA, q_sel ALU, mdr_write, ra_sel SP;
+    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
+        q_sel ALU, mar_write, mar_wr_sel Q, segment_force, segment SS;
+    segment_force, segment SS, mem_write, a_sel MAR, rd_sel SP,
+        rd_sel_source MICROCODE_RD_SEL, reg_wr_en, next_instruction;
+
+push_sr:
+    b_sel SR, alu_op SELB, q_sel ALU, mdr_write, ra_sel SP;
+    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
+        q_sel ALU, mar_write, mar_wr_sel Q, segment_force, segment SS;
+    segment_force, segment SS, mem_write, a_sel MAR, rd_sel SP,
+        rd_sel_source MICROCODE_RD_SEL, reg_wr_en, next_instruction;

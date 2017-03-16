@@ -101,5 +101,5 @@ dispatch_ff:
     segment CS, jmp_rm_reg_mem callff_indirect_inter_reg; // reg == 3
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem jmpff_indirect_intra_reg; // reg == 4
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem jmpff_indirect_inter_reg; // reg == 5
-    next_instruction; // reg == 6
+    ra_sel SP, segment DS, jmp_rm_reg_mem pushff_reg; // reg == 6
     next_instruction; // reg == 7
