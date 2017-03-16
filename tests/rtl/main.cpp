@@ -19,7 +19,7 @@ std::unique_ptr<CPU> get_cpu(const std::string &test_name)
 int main(int argc, char *argv[])
 {
     ::testing::InitGoogleTest(&argc, argv);
-    ::testing::GTEST_FLAG(filter) = "\
+    ::testing::GTEST_FLAG(filter) += "\
 -CmpsRepe/Cmps16Fixture.*:\
 CmpsRepe/Cmps8Fixture.*:\
 CmpsRepne/Cmps16Fixture.*:\
