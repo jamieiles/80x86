@@ -3,7 +3,7 @@
 
 #define COMP_REGMEM_REG_8(opcode, alufunc, flags)                               \
 .at opcode;                                                                     \
-    modrm_start, mar_write, mar_wr_sel EA, width 8,                             \
+    modrm_start, mar_write, mar_wr_sel EA, width 8, segment DS,                 \
         ra_modrm_rm_reg, jmp_rm_reg_mem comp ## alufunc ## opcode ##_reg;       \
 .auto_address;                                                                  \
 comp ## alufunc ## opcode ## _reg:                                              \
@@ -16,7 +16,7 @@ comp ## alufunc ## opcode ## _mem:                                              
 
 #define COMP_REGMEM_REG_16(opcode, alufunc, flags)                              \
 .at opcode;                                                                     \
-    modrm_start, mar_write, mar_wr_sel EA,                                      \
+    modrm_start, mar_write, mar_wr_sel EA, segment DS,                          \
         ra_modrm_rm_reg, jmp_rm_reg_mem comp ## alufunc ## opcode ## _reg;      \
 .auto_address;                                                                  \
 comp ## alufunc ## opcode ## _reg:                                              \
@@ -29,7 +29,7 @@ comp ## alufunc ## opcode ## _mem:                                              
 
 #define COMP_REG_REGMEM_8(opcode, alufunc, flags)                               \
 .at opcode;                                                                     \
-    modrm_start, mar_write, mar_wr_sel EA, width 8,                             \
+    modrm_start, mar_write, mar_wr_sel EA, width 8, segment DS,                 \
         ra_modrm_rm_reg, jmp_rm_reg_mem comp ## alufunc ## opcode ## _reg;      \
 .auto_address;                                                                  \
 comp ## alufunc ## opcode ## _reg:                                              \
@@ -42,7 +42,7 @@ comp ## alufunc ## opcode ## _mem:                                              
 
 #define COMP_REG_REGMEM_16(opcode, alufunc, flags)                              \
 .at opcode;                                                                     \
-    modrm_start, mar_write, mar_wr_sel EA,                                      \
+    modrm_start, mar_write, mar_wr_sel EA, segment DS,                          \
         ra_modrm_rm_reg, jmp_rm_reg_mem comp ## alufunc ## opcode ## _reg;      \
 .auto_address;                                                                  \
 comp ## alufunc ## opcode ## _reg:                                              \

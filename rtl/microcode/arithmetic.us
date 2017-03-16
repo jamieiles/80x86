@@ -4,7 +4,7 @@
 #define ARITH_REGMEM_REG_8(opcode, alufunc, flags)                              \
 .at opcode;                                                                     \
     modrm_start, mar_write, mar_wr_sel EA, width 8, 				\
-        ra_modrm_rm_reg, jmp_rm_reg_mem alufunc ## opcode ##_reg;               \
+        ra_modrm_rm_reg, jmp_rm_reg_mem alufunc ## opcode ##_reg, segment DS;   \
 .auto_address;                                                                  \
 alufunc ## opcode ## _reg:                                                      \
     a_sel RA, b_sel RB, q_sel ALU, alu_op alufunc,                              \
@@ -13,13 +13,13 @@ alufunc ## opcode ## _reg:                                                      
 alufunc ## opcode ## _mem:                                                      \
     segment DS, mem_read, width 8;                                              \
     a_sel MDR, b_sel RB, q_sel ALU, alu_op alufunc, mdr_write,                  \
-        update_flags flags, width 8;                                            \
+        update_flags flags, width 8, segment DS;                                \
     width 8, segment DS, mem_write, next_instruction;
 
 #define ARITH_REGMEM_REG_16(opcode, alufunc, flags)                             \
 .at opcode;                                                                     \
     modrm_start, mar_write, mar_wr_sel EA,                                      \
-        ra_modrm_rm_reg, jmp_rm_reg_mem alufunc ## opcode ## _reg;              \
+        ra_modrm_rm_reg, jmp_rm_reg_mem alufunc ## opcode ## _reg, segment DS;  \
 .auto_address;                                                                  \
 alufunc ## opcode ## _reg:                                                      \
     a_sel RA, b_sel RB, q_sel ALU, alu_op alufunc,                              \
@@ -28,13 +28,13 @@ alufunc ## opcode ## _reg:                                                      
 alufunc ## opcode ## _mem:                                                      \
     segment DS, mem_read;							\
     a_sel MDR, b_sel RB, q_sel ALU, alu_op alufunc, mdr_write,                  \
-        update_flags flags;                                                     \
+        update_flags flags, segment DS;                                         \
     segment DS, mem_write, next_instruction;
 
 #define ARITH_REG_REGMEM_8(opcode, alufunc, flags)                              \
 .at opcode;                                                                     \
     modrm_start, mar_write, mar_wr_sel EA, width 8,               		\
-        ra_modrm_rm_reg, jmp_rm_reg_mem alufunc ## opcode ## _reg;              \
+        ra_modrm_rm_reg, jmp_rm_reg_mem alufunc ## opcode ## _reg, segment DS;  \
 .auto_address;                                                                  \
 alufunc ## opcode ## _reg:                                                      \
     a_sel RA, b_sel RB, q_sel ALU, alu_op alufunc, rd_sel_source MODRM_REG,     \
@@ -49,7 +49,7 @@ alufunc ## opcode ## _mem:                                                      
 #define ARITH_REG_REGMEM_16(opcode, alufunc, flags)                             \
 .at opcode;                                                                     \
     modrm_start, mar_write, mar_wr_sel EA,					\
-        ra_modrm_rm_reg, jmp_rm_reg_mem alufunc ## opcode ## _reg;              \
+        ra_modrm_rm_reg, jmp_rm_reg_mem alufunc ## opcode ## _reg, segment DS;  \
 .auto_address;                                                                  \
 alufunc ## opcode ## _reg:                                                      \
     a_sel RA, b_sel RB, q_sel ALU, alu_op alufunc, rd_sel_source MODRM_REG,     \
@@ -86,7 +86,7 @@ alufunc ## 80_reg:                                                              
 alufunc ## 80_mem:                                                              \
     segment DS, mem_read, width 8;						\
     a_sel MDR, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                      \
-        mdr_write, update_flags flags;                                          \
+        mdr_write, update_flags flags, segment DS;                              \
     segment DS, mem_write, next_instruction;
 
 #define ARITH_81(alufunc, flags)                                                \
@@ -97,7 +97,7 @@ alufunc ## 81_reg:                                                              
 alufunc ## 81_mem:                                                              \
     segment DS, mem_read;							\
     a_sel MDR, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                      \
-        mdr_write, update_flags flags;                                          \
+        mdr_write, update_flags flags, segment DS;                              \
     segment DS, mem_write, next_instruction;
 
 #define ARITH_82(alufunc, flags)                                                \
@@ -108,7 +108,7 @@ alufunc ## 82_reg:                                                              
 alufunc ## 82_mem:                                                              \
     segment DS, mem_read;							\
     a_sel MDR, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                      \
-        mdr_write, update_flags flags;                                          \
+        mdr_write, update_flags flags, segment DS;                              \
     segment DS, mem_write, next_instruction;
 
 #define ARITH_83(alufunc, flags)                                                \
@@ -119,7 +119,7 @@ alufunc ## 83_reg:                                                              
 alufunc ## 83_mem:                                                              \
     segment DS, mem_read;							\
     a_sel MDR, b_sel IMMEDIATE, q_sel ALU, alu_op alufunc,                      \
-        mdr_write, update_flags flags;                                          \
+        mdr_write, update_flags flags, segment DS;                              \
     segment DS, mem_write, next_instruction;
 
 #endif // ARITHMETIC_US

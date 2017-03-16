@@ -8,14 +8,14 @@ opcode_fetch:
     modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_80;
 .auto_address;
 dispatch_80:
-    width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem ADD80_reg; // reg == 0
-    width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem OR80_reg; // reg == 1
-    width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem ADC80_reg; // reg == 2
-    width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem SBB80_reg; // reg == 3
-    width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem AND80_reg; // reg == 4
-    width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem SUB80_reg; // reg == 5
-    width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem XOR80_reg; // reg == 6
-    width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem compSUB80_reg; // reg == 7
+    width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem ADD80_reg; // reg == 0
+    width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem OR80_reg; // reg == 1
+    width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem ADC80_reg; // reg == 2
+    width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SBB80_reg; // reg == 3
+    width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem AND80_reg; // reg == 4
+    width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SUB80_reg; // reg == 5
+    width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem XOR80_reg; // reg == 6
+    width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem compSUB80_reg; // reg == 7
 
 // Multiplexed add/adc/sub/sbb/cmp/xor/or/and
 // r/m OP immed16
@@ -23,14 +23,14 @@ dispatch_80:
     modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_81;
 .auto_address;
 dispatch_81:
-    read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem ADD81_reg; // reg == 0
-    read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem OR81_reg; // reg == 1
-    read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem ADC81_reg; // reg == 2
-    read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem SBB81_reg; // reg == 3
-    read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem AND81_reg; // reg == 4
-    read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem SUB81_reg; // reg == 5
-    read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem XOR81_reg; // reg == 6
-    read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem compSUB81_reg; // reg == 7
+    read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem ADD81_reg; // reg == 0
+    read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem OR81_reg; // reg == 1
+    read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem ADC81_reg; // reg == 2
+    read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SBB81_reg; // reg == 3
+    read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem AND81_reg; // reg == 4
+    read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SUB81_reg; // reg == 5
+    read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem XOR81_reg; // reg == 6
+    read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem compSUB81_reg; // reg == 7
 
 // Multiplexed add/adc/sub/sbb/cmp
 // r/m OP immed8
@@ -38,14 +38,14 @@ dispatch_81:
     modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_82;
 .auto_address;
 dispatch_82:
-    width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem ADD82_reg; // reg == 0
+    width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem ADD82_reg; // reg == 0
     next_instruction; // reg == 1
-    width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem ADC82_reg; // reg == 2
-    width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem SBB82_reg; // reg == 3
+    width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem ADC82_reg; // reg == 2
+    width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SBB82_reg; // reg == 3
     next_instruction; // reg == 4
-    width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem SUB82_reg; // reg == 5
+    width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SUB82_reg; // reg == 5
     next_instruction; // reg == 6
-    width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem compSUB82_reg; // reg == 7
+    width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem compSUB82_reg; // reg == 7
 
 // Multiplexed add/adc/sub/sbb/cmp/xor/or/and
 // r/m OP immed16
@@ -53,21 +53,21 @@ dispatch_82:
     modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_83;
 .auto_address;
 dispatch_83:
-    width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem ADD83_reg; // reg == 0
+    width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem ADD83_reg; // reg == 0
     next_instruction; // reg == 1
-    width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem ADC83_reg; // reg == 2
-    width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem SBB83_reg; // reg == 3
+    width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem ADC83_reg; // reg == 2
+    width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SBB83_reg; // reg == 3
     next_instruction; // reg == 4
-    width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem SUB83_reg; // reg == 5
+    width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SUB83_reg; // reg == 5
     next_instruction; // reg == 6
-    width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem compSUB83_reg; // reg == 7
+    width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem compSUB83_reg; // reg == 7
 
 // Multiplexed neg/mul/not/test/div 8 bit
 .at 0xf6;
     modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_f6;
 .auto_address;
 dispatch_f6:
-    width 8, read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem compANDf6_reg; // reg == 0
+    width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem compANDf6_reg; // reg == 0
     next_instruction; // reg == 1
     next_instruction; // reg == 2
     next_instruction; // reg == 3
@@ -81,7 +81,7 @@ dispatch_f6:
     modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_f7;
 .auto_address;
 dispatch_f7:
-    read_immed, ra_modrm_rm_reg, jmp_rm_reg_mem compANDf7_reg; // reg == 0
+    read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem compANDf7_reg; // reg == 0
     next_instruction; // reg == 1
     next_instruction; // reg == 2
     next_instruction; // reg == 3
@@ -92,14 +92,14 @@ dispatch_f7:
 
 // Multiplexed push/inc/jmp/call/ff
 .at 0xff;
-    modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_ff;
+    modrm_start, mar_write, mar_wr_sel EA, segment DS, jmp_dispatch_reg dispatch_ff;
 .auto_address;
 dispatch_ff:
     next_instruction; // reg == 0
     next_instruction; // reg == 1
-    ra_modrm_rm_reg, jmp_rm_reg_mem callff_indirect_intra_reg; // reg == 2
+    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem callff_indirect_intra_reg; // reg == 2
     segment CS, jmp_rm_reg_mem callff_indirect_inter_reg; // reg == 3
-    ra_modrm_rm_reg, jmp_rm_reg_mem jmpff_indirect_intra_reg; // reg == 4
-    ra_modrm_rm_reg, jmp_rm_reg_mem jmpff_indirect_inter_reg; // reg == 5
+    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem jmpff_indirect_intra_reg; // reg == 4
+    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem jmpff_indirect_inter_reg; // reg == 5
     next_instruction; // reg == 6
     next_instruction; // reg == 7

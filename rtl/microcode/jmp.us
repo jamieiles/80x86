@@ -38,7 +38,7 @@ jmpff_indirect_inter_mem:
     segment DS, mem_read;
     a_sel MDR, alu_op SELA, q_sel ALU, load_ip;
     immediate 0x2, a_sel MAR, b_sel IMMEDIATE, alu_op ADD, q_sel ALU,
-        mar_wr_sel Q, mar_write;
+        mar_wr_sel Q, mar_write, segment DS;
     segment DS, mem_read;
     a_sel MDR, alu_op SELA, q_sel ALU, segment_wr_en,
         segment_override, sr_wr_sel CS, next_instruction;
