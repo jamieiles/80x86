@@ -25,38 +25,27 @@ module ModRMDecode(input logic clk,
                    output logic immed_is_8bit,
                    input logic [15:0] immediate);
 
-assign fifo_rd_en = ~fifo_empty & start & ~_popped & ~complete;
-
 reg [7:0] _modrm;
-
 wire _has_immediate;
-
-reg _popped;
-
-wire [1:0] _mod = _popped ? fifo_rd_data[7:6] : _modrm[7:6];
-wire [2:0] _reg = _popped ? fifo_rd_data[5:3] : _modrm[5:3];
-wire [2:0] _rm  = _popped ? fifo_rd_data[2:0] : _modrm[2:0];
-
+reg _modrm_byte_read;
+reg _latch_modrm_byte;
 reg _started;
-
-assign busy = start | (_started & ~complete);
-
-wire _has_address = _mod != 2'b11;
-
-assign complete = reset ? 1'b0 :
-    ((_popped && !_has_address) || _registers_fetched) &&
-    (!_has_immediate || immed_complete);
-
-assign immed_start = _has_immediate && _popped;
-assign immed_is_8bit = _mod == 2'b01;
-
-assign bp_as_base = reg_sel[0] == BP;
-
 reg _registers_fetched;
-
 reg [15:0] _cached_effective_address;
 reg [15:0] _effective_address;
+wire _has_address = _mod != 2'b11;
+wire [1:0] _mod = _latch_modrm_byte ? fifo_rd_data[7:6] : _modrm[7:6];
+wire [2:0] _reg = _latch_modrm_byte ? fifo_rd_data[5:3] : _modrm[5:3];
+wire [2:0] _rm  = _latch_modrm_byte ? fifo_rd_data[2:0] : _modrm[2:0];
 
+assign busy = start | (_started & ~complete);
+assign fifo_rd_en = ~fifo_empty & start & ~_modrm_byte_read & ~complete;
+assign complete = reset ? 1'b0 :
+    _modrm_byte_read && (!_has_address || _registers_fetched) &&
+        (!_has_immediate || immed_complete);
+assign immed_start = _has_immediate && _modrm_byte_read;
+assign immed_is_8bit = _mod == 2'b01;
+assign bp_as_base = reg_sel[0] == BP;
 assign effective_address = complete ? _effective_address : _cached_effective_address;
 
 always_ff @(posedge clk or posedge reset) begin
@@ -71,7 +60,7 @@ end
 always_ff @(posedge clk or posedge reset)
     if (reset || complete)
         _registers_fetched <= 1'b0;
-    else if (_popped)
+    else if (_modrm_byte_read)
         _registers_fetched <= 1'b1;
 
 always_comb begin
@@ -129,12 +118,18 @@ always_ff @(posedge clk)
         _cached_effective_address <= _effective_address;
 
 always_ff @(posedge clk or posedge reset)
-    _popped <= reset ? 1'b0 : fifo_rd_en;
+    _latch_modrm_byte <= reset || complete ? 1'b0 : fifo_rd_en;
+
+always_ff @(posedge clk or posedge reset)
+    if (reset || complete)
+        _modrm_byte_read <= 1'b0;
+    else if (fifo_rd_en)
+        _modrm_byte_read <= 1;
 
 always_ff @(posedge clk or posedge reset)
     if (reset)
         _modrm <= 8'b0;
-    else if (_popped)
+    else if (_latch_modrm_byte)
         _modrm <= fifo_rd_data;
 
 endmodule
