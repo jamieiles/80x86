@@ -52,7 +52,7 @@ assign <%name%> = current.<%name%>;
 <%/exported_fields%>
 
 assign fifo_rd_en = ~reset & current.fifo_pop & ~opcode_popped & ~fifo_empty;
-wire do_stall = stall | fifo_rd_en | (current.fifo_pop & fifo_empty);
+wire do_stall = stall | fifo_rd_en | (current.fifo_pop & !opcode_popped);
 
 reg opcode_popped;
 
@@ -64,7 +64,10 @@ initial begin
 end
 
 always_ff @(posedge clk or posedge reset)
-    opcode_popped <= reset ? 1'b0 : fifo_rd_en && !fifo_empty && !opcode_popped;
+    if (reset || current.jump_type != JumpType_OPCODE)
+        opcode_popped <= 1'b0;
+    else if (fifo_rd_en)
+        opcode_popped <= 1'b1;
 
 always_ff @(posedge clk or posedge reset) begin
     if (reset)
