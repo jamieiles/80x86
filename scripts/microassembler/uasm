@@ -205,7 +205,7 @@ class MicroAssembler(object):
         MicroAssembler.immediate_dict = {0: 0}
         for idx, val in enumerate(self._immediate_pool):
             MicroAssembler.immediate_dict[val] = idx + 1
-        self.microcode_fields['immediate'] = (num_bits(len(MicroAssembler.immediate_dict.keys())),
+        self.microcode_fields['immediate'] = (num_bits(len(MicroAssembler.immediate_dict.keys()) + 1),
                                               self._immediate, False)
 
     """List of microcode fields:
