@@ -5,12 +5,6 @@
 
 #include "RTLCPU.h"
 
-double cur_time_stamp = 0;
-double sc_time_stamp()
-{
-    return cur_time_stamp;
-}
-
 std::unique_ptr<CPU> get_cpu(const std::string &test_name)
 {
     return std::make_unique<RTLCPU<>>(test_name);

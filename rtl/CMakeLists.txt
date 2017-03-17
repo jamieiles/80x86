@@ -1,7 +1,7 @@
 include(Verilator)
 
 set_source_files_properties(${VERILATED_DPI_CPP} PROPERTIES COMPILE_FLAGS "-Wno-unused-parameter -Wno-error")
-add_library(verilator STATIC ${VERILATOR_LIB_SOURCES})
+add_library(verilator SHARED ${VERILATOR_LIB_SOURCES})
 
 set(microprogram_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/adc.us
@@ -69,3 +69,6 @@ verilate(Prefetch ${CMAKE_CURRENT_SOURCE_DIR}/Prefetch.v)
 verilate(RegisterFile ${CMAKE_CURRENT_SOURCE_DIR}/RegisterFile.v)
 verilate(SegmentRegisterFile ${CMAKE_CURRENT_SOURCE_DIR}/RegisterEnum.v
          ${CMAKE_CURRENT_SOURCE_DIR}/SegmentRegisterFile.v)
+
+install(TARGETS verilator
+        LIBRARY DESTINATION lib)

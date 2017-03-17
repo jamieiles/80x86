@@ -16,6 +16,12 @@ union reg_converter {
 
 static const int max_cycles_per_step = 1000;
 
+double cur_time_stamp = 0;
+double sc_time_stamp()
+{
+    return cur_time_stamp;
+}
+
 template <bool debug_enabled>
 RTLCPU<debug_enabled>::RTLCPU(const std::string &test_name)
     : VerilogDriver<VCore, debug_enabled>(test_name),

@@ -10,8 +10,16 @@ verilate(ModRMTestbench ${CMAKE_CURRENT_SOURCE_DIR}/ModRMTestbench.v
          ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/ModRMDecode.v
          ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/ImmediateReader.v)
 
+add_library(rtlsim SHARED
+            Core.cpp
+            ../../sim/cpu/RegisterFile.cpp
+            ../../sim/cpu/Memory.cpp)
+target_link_libraries(rtlsim
+                      verilator
+                      VCore)
+set_target_properties(rtlsim PROPERTIES LINK_FLAGS "-Wl,--export-dynamic")
+
 add_executable(rtl-unittest
-               Core.cpp
                TestALU.cpp
                TestCSIPSync.cpp
                TestFifo.cpp
@@ -26,8 +34,6 @@ add_executable(rtl-unittest
                TestPrefetch.cpp
                TestRegisterFile.cpp
                TestSegmentRegisterFile.cpp
-               ../../sim/cpu/RegisterFile.cpp
-               ../../sim/cpu/Memory.cpp
 	       $<TARGET_OBJECTS:instructions>
                main.cpp)
 
@@ -47,9 +53,11 @@ target_link_libraries(rtl-unittest
                       VSegmentRegisterFile
 		      gtest
 		      gmock
-                      verilator)
+                      verilator
+                      rtlsim)
 add_test(rtl-unittest rtl-unittest)
 set_tests_properties(rtl-unittest PROPERTIES TIMEOUT 5)
 
-install(TARGETS rtl-unittest
-        RUNTIME DESTINATION bin)
+install(TARGETS rtl-unittest rtlsim
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib)
