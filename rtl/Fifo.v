@@ -11,7 +11,7 @@ module Fifo(input logic clk,
             output logic full);
 
 parameter data_width = 32;
-parameter depth = 8;
+parameter depth = 6;
 parameter full_threshold = 2; // Number of entries free to be not-full
 
 localparam ptr_bits = $clog2(depth);
@@ -31,6 +31,8 @@ always_ff @(posedge clk or posedge reset) begin
     end else if (wr_en && !full) begin
         mem[wr_ptr] <= wr_data;
         wr_ptr <= wr_ptr + 1'b1;
+        if (wr_ptr == depth[ptr_bits-1:0] - 1'b1)
+            wr_ptr <= {ptr_bits{1'b0}};
     end
 end
 
@@ -41,6 +43,8 @@ always_ff @(posedge clk or posedge reset) begin
     end else if (rd_en && !empty) begin
         rd_data <= mem[rd_ptr];
         rd_ptr <= rd_ptr + 1'b1;
+        if (rd_ptr == depth[ptr_bits-1:0] - 1'b1)
+            rd_ptr <= {ptr_bits{1'b0}};
     end
 end
 

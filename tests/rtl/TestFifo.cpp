@@ -86,13 +86,13 @@ TEST_F(FifoTestFixture, underflow_still_empty)
 
 TEST_F(FifoTestFixture, overflow_no_corrupt)
 {
-    for (uint32_t m = 0; m < 10; ++m)
+    for (uint32_t m = 0; m < 8; ++m)
         push(m);
 
     ASSERT_TRUE(dut.full);
     ASSERT_FALSE(dut.empty);
 
-    for (uint32_t m = 0; m < 8; ++m)
+    for (uint32_t m = 0; m < 6; ++m)
         ASSERT_EQ(pop(), m);
     ASSERT_TRUE(dut.empty);
     ASSERT_FALSE(dut.full);
@@ -124,7 +124,7 @@ TEST_F(FifoTestFixture, fill_at_threshold)
         ++pushed;
     }
 
-    ASSERT_EQ(pushed, 6);
+    ASSERT_EQ(pushed, 4);
 }
 
 TEST_F(FifoTestFixture, reset_empties)
