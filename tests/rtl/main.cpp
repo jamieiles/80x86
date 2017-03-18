@@ -65,8 +65,6 @@ EmulateFixture.JcxzNotTaken:\
 EmulateFixture.JcxzTaken:\
 EmulateFixture.Lds:\
 EmulateFixture.LdsReg:\
-EmulateFixture.LeaAxBx:\
-EmulateFixture.LeaAxBxSiDisplacement:\
 EmulateFixture.Les:\
 EmulateFixture.LesReg:\
 EmulateFixture.Lock:\
