@@ -7,7 +7,7 @@
 
 using namespace boost::python;
 
-typedef RTLCPU<true> rtlcpu;
+typedef RTLCPU<verilator_debug_enabled> rtlcpu;
 
 BOOST_PYTHON_MODULE(Cpu)
 {
