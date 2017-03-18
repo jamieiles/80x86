@@ -8,7 +8,7 @@ DOCKER_NONINTERACTIVE=1 ./docker/s80x86-build -e -c 'cd _build/unittest; \
         cmake ../..; \
         make -j8; \
         [ -d test_results ] || mkdir test_results; \
-        ./tests/unittest --gtest_output=xml:test_results/simulation.xml; \
+        ./tests/simulator/sim-unittest --gtest_output=xml:test_results/simulation.xml; \
         ./tests/rtl/rtl-unittest --gtest_output=xml:test_results/rtl.xml; \
         ../../scripts/prefix-junit Simulation. test_results/simulation.xml test_results/simulation.xml; \
         ../../scripts/prefix-junit RTL. test_results/rtl.xml test_results/rtl.xml; \
