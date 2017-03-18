@@ -1,4 +1,5 @@
 import os
+import sys
 from py8086sim.Cpu import GPR
 
 from Runner import Runner
@@ -14,5 +15,4 @@ class MovesRunner(Runner):
         self.assert_mem_equal(0x007e, 0xabcd, width=16)
         self.assert_reg_equal(GPR.AX, 0xabcd)
 
-r = MovesRunner()
-r.run()
+MovesRunner(sys.argv[1]).run()

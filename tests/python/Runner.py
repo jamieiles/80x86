@@ -1,14 +1,13 @@
 import os
 import sys
 
-from py8086sim.Cpu import Sim
-
 class Runner(object):
     binary = None
     load_address = 0
 
-    def __init__(self):
-        self.cpu = Sim()
+    def __init__(self, simname):
+        simtype = getattr(sys.modules['py8086sim.Cpu'], simname)
+        self.cpu = simtype(self.binary)
 
         with open(os.path.join('${CMAKE_CURRENT_BINARY_DIR}', 'programs', self.binary)) as b:
             for offset, b in enumerate(b.read()):

@@ -11,7 +11,7 @@ typedef RTLCPU<true> rtlcpu;
 
 BOOST_PYTHON_MODULE(Cpu)
 {
-    class_<SoftwareCPU, boost::noncopyable>("Sim", init<>())
+    class_<SoftwareCPU, boost::noncopyable>("Sim", init<const std::string &>())
         .def("write_reg", &SoftwareCPU::write_reg)
         .def("read_reg", &SoftwareCPU::read_reg)
         .def("write_mem8", &SoftwareCPU::write_mem<uint8_t>)
@@ -28,7 +28,7 @@ BOOST_PYTHON_MODULE(Cpu)
         .def("write_flags", &SoftwareCPU::write_flags)
         .def("step", &SoftwareCPU::step)
         .def("has_trapped", &SoftwareCPU::has_trapped);
-    class_<rtlcpu, boost::noncopyable>("RTLCPU", init<const std::string &>("py8086sim-rtl"))
+    class_<rtlcpu, boost::noncopyable>("RTLCPU", init<const std::string &>())
         .def("write_reg", &rtlcpu::write_reg)
         .def("read_reg", &rtlcpu::read_reg)
         .def("write_mem8", &rtlcpu::write_mem<uint8_t>)
