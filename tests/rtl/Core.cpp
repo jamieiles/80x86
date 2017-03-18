@@ -197,7 +197,7 @@ bool RTLCPU<debug_enabled>::has_trapped() const
     auto int_cs = this->mem.template read<uint16_t>(VEC_INT + 2);
     auto int_ip = this->mem.template read<uint16_t>(VEC_INT + 0);
 
-    return read_sr(CS) == int_cs && read_gpr(IP) == int_ip;
+    return read_sr(CS) == int_cs && read_ip() == int_ip;
 }
 
 template <bool debug_enabled>
