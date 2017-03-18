@@ -53,6 +53,8 @@ class ALUOp(Enum):
     SUBREV = 8
     SBB = 9
     SBBREV = 10
+    GETFLAGS = 11
+    SETFLAGSB = 12
 
 class UpdateFlags(Enum):
     CF = 0

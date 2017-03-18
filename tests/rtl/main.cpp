@@ -60,7 +60,6 @@ EmulateFixture.InVariable16:\
 EmulateFixture.InVariable8:\
 EmulateFixture.IncFEInvalidReg:\
 EmulateFixture.IncReg:\
-EmulateFixture.Int3:\
 EmulateFixture.IntN:\
 EmulateFixture.IntoNotTaken:\
 EmulateFixture.IntoTaken:\

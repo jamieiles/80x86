@@ -87,6 +87,8 @@ always_comb begin
     ALUOp_SUBREV: do_sub(b, a, 1'b0);
     ALUOp_SBB: do_sub(a, b, flags_in[CF_IDX]);
     ALUOp_SBBREV: do_sub(b, a, flags_in[CF_IDX]);
+    ALUOp_GETFLAGS: out = flags_in;
+    ALUOp_SETFLAGSB: flags_out = b;
     // verilator coverage_off
     default: begin
 `ifdef verilator
