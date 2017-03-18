@@ -50,3 +50,13 @@ push_sr:
         q_sel ALU, mar_write, mar_wr_sel Q, segment_force, segment SS;
     segment_force, segment SS, mem_write, a_sel MAR, rd_sel SP,
         rd_sel_source MICROCODE_RD_SEL, reg_wr_en, next_instruction;
+
+.at 0x9c;
+    alu_op GETFLAGS, q_sel ALU, mdr_write, ra_sel SP, jmp pushf;
+.auto_address;
+pushf:
+    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, q_sel ALU,
+        mar_wr_sel Q, mar_write, segment_force, segment SS;
+    segment_force, segment SS, mem_write;
+    a_sel MAR, alu_op SELA, q_sel ALU, rd_sel_source MICROCODE_RD_SEL,
+        rd_sel SP, reg_wr_en, next_instruction;
