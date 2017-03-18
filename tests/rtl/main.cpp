@@ -111,7 +111,6 @@ EmulateFixture.StosbDec:\
 EmulateFixture.Stosw:\
 EmulateFixture.StoswDec:\
 EmulateFixture.TrapOnInt3:\
-EmulateFixture.Wait:\
 EmulateFixture.XchgALALNop:\
 EmulateFixture.XchgRegAccumulator:\
 EmulateFixture.XchgRegMem16:\

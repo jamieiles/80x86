@@ -25,6 +25,7 @@ set(microprogram_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/sub.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/test.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/xor.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/wait.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/microcode.us)
 
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/microcode.bin
