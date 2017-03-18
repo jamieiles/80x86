@@ -9,6 +9,6 @@ DOCKER_NONINTERACTIVE=1 ./docker/s80x86-build -e -c 'cd _build/gcov-coverage; \
         make; \
         ctest; \
         ../../scripts/gcovr --delete --output=coverage.xml --exclude="_build/*" --exclude=".*googletest.*" --exclude="tests.*" --root=../.. --xml-pretty --exclude-unreachable-branches .; \
-        verilator_coverage -write rtl-merged-coverage.dat tests/rtl/coverage/*.dat; \
+        verilator_coverage -write rtl-merged-coverage.dat tests/integration/coverage/*.dat tests/rtl/coverage/*.dat; \
         ../../scripts/verilator-cobertura --output=coverage-rtl-unittest.xml --source-root=../.. ./rtl-merged-coverage.dat; \
         rm ../../*.gcov -f'

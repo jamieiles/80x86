@@ -1,3 +1,5 @@
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/coverage)
+
 macro(configure_test test_file)
     configure_file(${test_file} ${CMAKE_CURRENT_BINARY_DIR}/${test_file})
 endmacro(configure_test)
