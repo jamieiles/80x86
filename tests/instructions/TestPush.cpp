@@ -89,7 +89,7 @@ TEST_F(EmulateFixture, PushSR)
     }
 }
 
-TEST_F(EmulateFixture, PopRegFF)
+TEST_F(EmulateFixture, PopReg8F)
 {
     // pop ax
     set_instruction({ 0x8f, 0xc0 });
@@ -103,7 +103,7 @@ TEST_F(EmulateFixture, PopRegFF)
     ASSERT_EQ(0xaa55, read_reg(AX));
 }
 
-TEST_F(EmulateFixture, PopMemFF)
+TEST_F(EmulateFixture, PopMem8F)
 {
     // pop [1234]
     set_instruction({ 0x8f, 0x06, 0x34, 0x12 });
@@ -117,7 +117,7 @@ TEST_F(EmulateFixture, PopMemFF)
     ASSERT_EQ(0xaa55, read_mem<uint16_t>(0x1234));
 }
 
-TEST_F(EmulateFixture, PopRegFFInvalidReg)
+TEST_F(EmulateFixture, PopReg8FInvalidReg)
 {
     // pop ax
     set_instruction({ 0x8f, 0xc8 });
