@@ -94,6 +94,8 @@ class MicroAssembler(object):
                     current_address = int(d.arguments[0].value, 0)
                 elif d.directive == 'auto_address':
                     current_address = None
+                else:
+                    raise ValueError('Invalid directive "{0}"'.format(d.directive))
             elif token_type(d) == 'MicroInstruction':
                 instr = MicroInstruction(current_address)
                 instructions.append(instr)
