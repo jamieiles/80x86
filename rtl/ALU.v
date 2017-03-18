@@ -10,11 +10,6 @@ module ALU(input logic [15:0] a,
            // verilator lint_on UNUSED
            // verilator lint_on UNDRIVEN
 
-assign flags_out[PF_IDX] = ~^out[7:0];
-assign flags_out[AF_IDX] = a[4] ^ b[4] ^ out[4];
-assign flags_out[SF_IDX] = out[is_8_bit ? 7 : 15];
-assign flags_out[ZF_IDX] = is_8_bit ? ~|out[7:0] : ~|out;
-
 task do_add;
 input [15:0] _a;
 input [15:0] _b;
@@ -28,6 +23,10 @@ begin
         flags_out[CF_IDX] = _a[8] ^ _b[8] ^ out[8];
         flags_out[OF_IDX] = ~(_a[7] ^ _b[7]) & (out[7] ^ _b[7]);
     end
+    flags_out[PF_IDX] = ~^out[7:0];
+    flags_out[AF_IDX] = a[4] ^ b[4] ^ out[4];
+    flags_out[SF_IDX] = out[is_8_bit ? 7 : 15];
+    flags_out[ZF_IDX] = is_8_bit ? ~|out[7:0] : ~|out;
 end
 endtask
 
@@ -44,6 +43,10 @@ begin
         flags_out[CF_IDX] = _a[8] ^ _b[8] ^ out[8];
         flags_out[OF_IDX] = (_a[7] ^ _b[7]) & (out[7] ^ _a[7]);
     end
+    flags_out[PF_IDX] = ~^out[7:0];
+    flags_out[AF_IDX] = a[4] ^ b[4] ^ out[4];
+    flags_out[SF_IDX] = out[is_8_bit ? 7 : 15];
+    flags_out[ZF_IDX] = is_8_bit ? ~|out[7:0] : ~|out;
 end
 endtask
 
@@ -53,6 +56,10 @@ input [15:0] _b;
 begin
     out = _a & _b;
     {flags_out[CF_IDX], flags_out[OF_IDX]} = 2'b0;
+    flags_out[PF_IDX] = ~^out[7:0];
+    flags_out[AF_IDX] = a[4] ^ b[4] ^ out[4];
+    flags_out[SF_IDX] = out[is_8_bit ? 7 : 15];
+    flags_out[ZF_IDX] = is_8_bit ? ~|out[7:0] : ~|out;
 end
 endtask
 
@@ -62,6 +69,10 @@ input [15:0] _b;
 begin
     out = _a ^ _b;
     {flags_out[CF_IDX], flags_out[OF_IDX]} = 2'b0;
+    flags_out[PF_IDX] = ~^out[7:0];
+    flags_out[AF_IDX] = a[4] ^ b[4] ^ out[4];
+    flags_out[SF_IDX] = out[is_8_bit ? 7 : 15];
+    flags_out[ZF_IDX] = is_8_bit ? ~|out[7:0] : ~|out;
 end
 endtask
 
@@ -71,6 +82,10 @@ input [15:0] _b;
 begin
     out = _a | _b;
     {flags_out[CF_IDX], flags_out[OF_IDX]} = 2'b0;
+    flags_out[PF_IDX] = ~^out[7:0];
+    flags_out[AF_IDX] = a[4] ^ b[4] ^ out[4];
+    flags_out[SF_IDX] = out[is_8_bit ? 7 : 15];
+    flags_out[ZF_IDX] = is_8_bit ? ~|out[7:0] : ~|out;
 end
 endtask
 
