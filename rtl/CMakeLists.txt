@@ -11,6 +11,7 @@ set(microprogram_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/call.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/comparison.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/cmp.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/esc.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/flags.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/int.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/jmp.us

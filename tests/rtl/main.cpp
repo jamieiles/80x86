@@ -43,8 +43,6 @@ EmulateFixture.DSSegmentOverrideIsNop:\
 EmulateFixture.Daa:\
 EmulateFixture.Das:\
 EmulateFixture.DecReg:\
-EmulateFixture.EscMem:\
-EmulateFixture.EscReg:\
 EmulateFixture.Hlt:\
 EmulateFixture.InFixed16:\
 EmulateFixture.InFixed8:\
