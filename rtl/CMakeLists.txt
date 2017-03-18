@@ -14,7 +14,9 @@ set(microprogram_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/flags.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/int.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/jmp.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/lds.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/lea.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/les.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/mov.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/or.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/push.us

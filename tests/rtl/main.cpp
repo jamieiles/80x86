@@ -63,10 +63,6 @@ EmulateFixture.InvalidRegFE:\
 EmulateFixture.Iret:\
 EmulateFixture.JcxzNotTaken:\
 EmulateFixture.JcxzTaken:\
-EmulateFixture.Lds:\
-EmulateFixture.LdsReg:\
-EmulateFixture.Les:\
-EmulateFixture.LesReg:\
 EmulateFixture.Lock:\
 EmulateFixture.Lodsb:\
 EmulateFixture.LodsbDec:\
