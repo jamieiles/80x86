@@ -8,4 +8,5 @@ add_library(8086sim SHARED
             Emulate.h
             Emulate.cpp)
 install(TARGETS 8086sim
-        LIBRARY DESTINATION lib)
+        LIBRARY DESTINATION lib
+        COMPONENT simulator)

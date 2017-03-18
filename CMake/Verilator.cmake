@@ -54,7 +54,4 @@ function(verilate toplevel sources)
     add_library(V${toplevel} SHARED ${generated})
     include_directories(${CMAKE_CURRENT_BINARY_DIR})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-
-    install(TARGETS V${toplevel}
-            LIBRARY DESTINATION lib)
 endfunction()

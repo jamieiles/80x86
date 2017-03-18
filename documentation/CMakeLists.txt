@@ -5,4 +5,5 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/development-guide.pdf
 add_custom_target(documentation ALL
                   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/development-guide.pdf)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/development-guide.pdf
-        DESTINATION share/doc/s80x86)
+        DESTINATION share/doc/s80x86
+        COMPONENT simulator)

@@ -71,5 +71,6 @@ verilate(RegisterFile ${CMAKE_CURRENT_SOURCE_DIR}/RegisterFile.v)
 verilate(SegmentRegisterFile ${CMAKE_CURRENT_SOURCE_DIR}/RegisterEnum.v
          ${CMAKE_CURRENT_SOURCE_DIR}/SegmentRegisterFile.v)
 
-install(TARGETS verilator
-        LIBRARY DESTINATION lib)
+install(TARGETS verilator VCore
+        LIBRARY DESTINATION lib
+        COMPONENT simulator)
