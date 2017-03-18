@@ -55,6 +55,8 @@ class ALUOp(Enum):
     SBBREV = 10
     GETFLAGS = 11
     SETFLAGSB = 12
+    SETFLAGSA = 13
+    CMC = 14
 
 class UpdateFlags(Enum):
     CF = 0

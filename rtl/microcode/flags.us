@@ -1,0 +1,46 @@
+// CLC
+.at 0xf8;
+    b_sel IMMEDIATE, immediate 0x0, alu_op SETFLAGSB, update_flags CF,
+        next_instruction;
+
+// STC
+.at 0xf9;
+    b_sel IMMEDIATE, immediate 0xffff, alu_op SETFLAGSB, update_flags CF,
+        next_instruction;
+
+// CLI
+.at 0xfa;
+    b_sel IMMEDIATE, immediate 0x0, alu_op SETFLAGSB, update_flags IF,
+        next_instruction;
+
+// STI
+.at 0xfb;
+    // TODO: need to inhibit interrupts for the next instruction.
+    b_sel IMMEDIATE, immediate 0xffff, alu_op SETFLAGSB, update_flags IF,
+        next_instruction;
+
+// CLD
+.at 0xfc;
+    b_sel IMMEDIATE, immediate 0x0, alu_op SETFLAGSB, update_flags DF,
+        next_instruction;
+
+// STD
+.at 0xfd;
+    b_sel IMMEDIATE, immediate 0xffff, alu_op SETFLAGSB, update_flags DF,
+        next_instruction;
+
+// CMC
+.at 0xf5;
+    alu_op CMC, update_flags CF, next_instruction;
+
+// LAHF
+.at 0x9f;
+    alu_op GETFLAGS, q_sel ALU, rd_sel_source MICROCODE_RD_SEL, rd_sel AH,
+        width 8, reg_wr_en, next_instruction;
+
+// SAHF
+.at 0x9e;
+    ra_sel AH, width 8, jmp sahf;
+.auto_address;
+sahf:
+    a_sel RA, alu_op SETFLAGSA, update_flags CF PF AF ZF SF, next_instruction;

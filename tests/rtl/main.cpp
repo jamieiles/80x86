@@ -35,14 +35,6 @@ EmulateFixture.AamSigned:\
 EmulateFixture.Aas:\
 EmulateFixture.CbwNegative:\
 EmulateFixture.CbwPositive:\
-EmulateFixture.ClcClearsCarry:\
-EmulateFixture.ClcDoesntSetCarry:\
-EmulateFixture.CldClearsDirection:\
-EmulateFixture.CldDoesntSetDirection:\
-EmulateFixture.CliClearsInterrupt:\
-EmulateFixture.CliDoesntSetInterrupt:\
-EmulateFixture.CmcInverts0:\
-EmulateFixture.CmcInverts1:\
 EmulateFixture.CmpsbDec:\
 EmulateFixture.CmpswDec:\
 EmulateFixture.CwdNegative:\
@@ -71,7 +63,6 @@ EmulateFixture.InvalidRegFE:\
 EmulateFixture.Iret:\
 EmulateFixture.JcxzNotTaken:\
 EmulateFixture.JcxzTaken:\
-EmulateFixture.Lahf:\
 EmulateFixture.Lds:\
 EmulateFixture.LdsReg:\
 EmulateFixture.LeaAxBx:\
@@ -118,7 +109,6 @@ EmulateFixture.RetInter:\
 EmulateFixture.RetInterAddSp:\
 EmulateFixture.RetIntra:\
 EmulateFixture.RetIntraAddSp:\
-EmulateFixture.Sahf:\
 EmulateFixture.ScasbDec:\
 EmulateFixture.ScasbDecRepe:\
 EmulateFixture.ScasbInc:\
@@ -127,12 +117,6 @@ EmulateFixture.ScaswDec:\
 EmulateFixture.ScaswDecRepe:\
 EmulateFixture.ScaswInc:\
 EmulateFixture.ScaswIncRepe:\
-EmulateFixture.StcDoesntClearCarry:\
-EmulateFixture.StcSetsCarry:\
-EmulateFixture.StdDoesntClearDirection:\
-EmulateFixture.StdSetsDirection:\
-EmulateFixture.StiDoesntClearInterrupt:\
-EmulateFixture.StiSetsInterrupt:\
 EmulateFixture.Stosb:\
 EmulateFixture.StosbDec:\
 EmulateFixture.Stosw:\
