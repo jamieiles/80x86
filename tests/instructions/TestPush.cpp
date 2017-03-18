@@ -137,6 +137,8 @@ TEST_F(EmulateFixture, PopReg5X)
 {
     // pop r
     for (uint8_t i = 0; i < 8; ++i) {
+        reset();
+
         auto reg = static_cast<GPR>(static_cast<int>(AX) + i);
         write_mem<uint16_t>(0x0fe, 0x0100 + i);
         write_reg(SP, 0x0fe);
@@ -145,8 +147,8 @@ TEST_F(EmulateFixture, PopReg5X)
         emulate();
 
         if (reg != SP)
-            ASSERT_EQ(0x100, read_reg(SP));
-        ASSERT_EQ(0x0100 + i, read_reg(reg));
+            EXPECT_EQ(0x100, read_reg(SP));
+        EXPECT_EQ(0x0100 + i, read_reg(reg));
     }
 }
 
@@ -154,6 +156,8 @@ TEST_F(EmulateFixture, PopSR)
 {
     // pop sr
     for (uint8_t i = 0; i < 4; ++i) {
+        reset();
+
         write_reg(SS, 0);
 
         auto reg = static_cast<GPR>(static_cast<int>(ES) + i);

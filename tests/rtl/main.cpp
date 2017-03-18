@@ -92,12 +92,7 @@ EmulateFixture.OutFixed16:\
 EmulateFixture.OutFixed8:\
 EmulateFixture.OutVariable16:\
 EmulateFixture.OutVariable8:\
-EmulateFixture.PopMemFF:\
 EmulateFixture.PopMemSegmentOverride:\
-EmulateFixture.PopReg5X:\
-EmulateFixture.PopRegFF:\
-EmulateFixture.PopSR:\
-EmulateFixture.Popf:\
 EmulateFixture.PushMemSegmentOverride:\
 EmulateFixture.RetInter:\
 EmulateFixture.RetInterAddSp:\
