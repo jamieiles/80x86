@@ -59,6 +59,7 @@ class ALUOp(Enum):
     CMC = 14
     SHR = 15
     SHL = 16
+    SAR = 17
 
 class UpdateFlags(Enum):
     CF = 0

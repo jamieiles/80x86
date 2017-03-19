@@ -23,6 +23,7 @@ set(microprogram_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/or.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/pop.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/push.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/sar.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/sbb.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/shift.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/shl.us
