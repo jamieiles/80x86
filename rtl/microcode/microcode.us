@@ -85,7 +85,7 @@ dispatch_d0:
     next_instruction; // reg == 1
     next_instruction; // reg == 2
     next_instruction; // reg == 3
-    next_instruction; // reg == 4
+    width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHLd0_reg;
     width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHRd0_reg;
     next_instruction; // reg == 6
     next_instruction; // reg == 7
@@ -99,7 +99,7 @@ dispatch_d1:
     next_instruction; // reg == 1
     next_instruction; // reg == 2
     next_instruction; // reg == 3
-    next_instruction; // reg == 4
+    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHLd1_reg;
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHRd1_reg;
     next_instruction; // reg == 6
     next_instruction; // reg == 7
@@ -113,7 +113,7 @@ dispatch_d2:
     next_instruction; // reg == 1
     next_instruction; // reg == 2
     next_instruction; // reg == 3
-    next_instruction; // reg == 4
+    width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem SHLd2_reg;
     width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem SHRd2_reg;
     next_instruction; // reg == 6
     next_instruction; // reg == 7
@@ -127,7 +127,7 @@ dispatch_d3:
     next_instruction; // reg == 1
     next_instruction; // reg == 2
     next_instruction; // reg == 3
-    next_instruction; // reg == 4
+    ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem SHLd3_reg;
     ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem SHRd3_reg;
     next_instruction; // reg == 6
     next_instruction; // reg == 7

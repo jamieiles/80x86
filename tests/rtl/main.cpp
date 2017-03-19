@@ -166,16 +166,7 @@ SarN/ShiftMem16Test.*:\
 SarN/ShiftMem8Test.*:\
 SarN/ShiftReg16Test.*:\
 SarN/ShiftReg8Test.*:\
-SegmentOverride/MovOverride.*:\
-Shl1/ShiftMem16Test.*:\
-Shl1/ShiftMem8Test.*:\
-Shl1/ShiftReg16Test.*:\
-Shl1/ShiftReg8Test.*:\
-ShlCL/ShiftCLTest.*:\
-ShlN/ShiftMem16Test.*:\
-ShlN/ShiftMem8Test.*:\
-ShlN/ShiftReg16Test.*:\
-ShlN/ShiftReg8Test.*";
+SegmentOverride/MovOverride.*";
 
     return RUN_ALL_TESTS();
 }
