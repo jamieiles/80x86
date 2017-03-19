@@ -109,8 +109,8 @@ dispatch_f7:
     modrm_start, mar_write, mar_wr_sel EA, segment DS, jmp_dispatch_reg dispatch_ff;
 .auto_address;
 dispatch_ff:
-    next_instruction; // reg == 0
-    next_instruction; // reg == 1
+    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem inc_ff_reg; // reg == 0
+    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem dec_ff_reg; // reg == 1
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem callff_indirect_intra_reg; // reg == 2
     segment CS, jmp_rm_reg_mem callff_indirect_inter_reg; // reg == 3
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem jmpff_indirect_intra_reg; // reg == 4

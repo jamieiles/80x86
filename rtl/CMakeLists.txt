@@ -13,6 +13,7 @@ set(microprogram_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/cmp.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/esc.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/flags.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/inc.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/int.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/jmp.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/lds.us

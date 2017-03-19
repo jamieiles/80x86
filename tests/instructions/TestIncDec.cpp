@@ -56,6 +56,8 @@ TEST_P(IncReg8Test, ResultAndFlags)
 {
     auto params = GetParam();
     for (auto &t: params.second) {
+        reset();
+
         write_flags(0);
         if (t.carry_set)
             write_flags(CF);
@@ -87,6 +89,8 @@ TEST_P(IncMem8Test, ResultAndFlags)
 {
     auto params = GetParam();
     for (auto &t: params.second) {
+        reset();
+
         write_flags(0);
         if (t.carry_set)
             write_flags(CF);
@@ -130,6 +134,8 @@ TEST_P(IncReg16Test, ResultAndFlags)
 {
     auto params = GetParam();
     for (auto &t: params.second) {
+        reset();
+
         write_flags(0);
         if (t.carry_set)
             write_flags(CF);
@@ -156,6 +162,8 @@ TEST_P(IncMem16Test, ResultAndFlags)
 {
     auto params = GetParam();
     for (auto &t: params.second) {
+        reset();
+
         write_flags(0);
         if (t.carry_set)
             write_flags(CF);
@@ -185,6 +193,8 @@ TEST_F(EmulateFixture, IncReg)
 {
     // inc REG
     for (uint8_t i = 0; i < 8; ++i) {
+        reset();
+
         auto reg = static_cast<GPR>(static_cast<int>(AX) + i);
         write_reg(reg, 0x00ff);
 
@@ -199,6 +209,8 @@ TEST_F(EmulateFixture, DecReg)
 {
     // dec REG
     for (uint8_t i = 0; i < 8; ++i) {
+        reset();
+
         auto reg = static_cast<GPR>(static_cast<int>(AX) + i);
         write_reg(reg, 0x0100);
 

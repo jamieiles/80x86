@@ -18,9 +18,6 @@ int main(int argc, char *argv[])
 CmpsRepe/Cmps8Fixture.*:\
 CmpsRepne/Cmps16Fixture.*:\
 CmpsRepne/Cmps8Fixture.*:\
-Dec/IncMem16Test.*:\
-Dec/IncMem8Test.*:\
-Dec/IncReg8Test.*:\
 Div/DivMem16Test.*:\
 Div/DivMem8Test.*:\
 Div/DivReg16Test.*:\
@@ -42,14 +39,12 @@ EmulateFixture.CwdPositive:\
 EmulateFixture.DSSegmentOverrideIsNop:\
 EmulateFixture.Daa:\
 EmulateFixture.Das:\
-EmulateFixture.DecReg:\
 EmulateFixture.Hlt:\
 EmulateFixture.InFixed16:\
 EmulateFixture.InFixed8:\
 EmulateFixture.InVariable16:\
 EmulateFixture.InVariable8:\
 EmulateFixture.IncFEInvalidReg:\
-EmulateFixture.IncReg:\
 EmulateFixture.IntN:\
 EmulateFixture.IntoNotTaken:\
 EmulateFixture.IntoTaken:\
@@ -120,10 +115,6 @@ IMul/MulMem16Test.*:\
 IMul/MulMem8Test.*:\
 IMul/MulReg16Test.*:\
 IMul/MulReg8Test.*:\
-Inc/IncMem16Test.*:\
-Inc/IncMem8Test.*:\
-Inc/IncReg16Test.*:\
-Inc/IncReg8Test.*:\
 JmpConditional/JmpFixture.*:\
 JmpConditionalAlias/JmpFixture.*:\
 Mul/MulMem16Test.*:\
