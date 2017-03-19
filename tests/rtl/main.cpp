@@ -175,16 +175,7 @@ ShlCL/ShiftCLTest.*:\
 ShlN/ShiftMem16Test.*:\
 ShlN/ShiftMem8Test.*:\
 ShlN/ShiftReg16Test.*:\
-ShlN/ShiftReg8Test.*:\
-Shr1/ShiftMem16Test.*:\
-Shr1/ShiftMem8Test.*:\
-Shr1/ShiftReg16Test.*:\
-Shr1/ShiftReg8Test.*:\
-ShrCL/ShiftCLTest.*:\
-ShrN/ShiftMem16Test.*:\
-ShrN/ShiftMem8Test.*:\
-ShrN/ShiftReg16Test.*:\
-ShrN/ShiftReg8Test.*";
+ShlN/ShiftReg8Test.*";
 
     return RUN_ALL_TESTS();
 }

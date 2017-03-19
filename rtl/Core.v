@@ -21,10 +21,11 @@ wire [15:0] q_bus_minus_alu;
 
 wire [2:0] reg_rd_sel[2];
 wire modrm_complete;
+wire rb_cl;
 assign reg_rd_sel[0] = modrm_start && ~modrm_complete ? modrm_reg_rd_sel[0] :
     ra_modrm_rm_reg ? rm_regnum : microcode_reg_rd_sel[0];
 assign reg_rd_sel[1] = modrm_start && ~modrm_complete ? modrm_reg_rd_sel[1] :
-    regnum;
+    rb_cl ? CL : regnum;
 
 wire [2:0] modrm_reg_rd_sel[2];
 wire [2:0] microcode_reg_rd_sel[2];
@@ -294,6 +295,7 @@ Microcode       microcode(.clk(clk),
                           .q_sel(q_sel),
                           .ra_modrm_rm_reg(ra_modrm_rm_reg),
                           .ra_sel(microcode_reg_rd_sel[0]),
+                          .rb_cl(rb_cl),
                           .rd_sel_source(rd_sel_source),
                           .rd_sel(microcode_reg_wr_sel),
                           .reg_wr_en(reg_wr_en),

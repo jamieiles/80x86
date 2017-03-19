@@ -5,6 +5,8 @@
 TEST_P(ShiftReg8Test, ResultAndFlags)
 {
     for (auto &t: GetParam().second) {
+        reset();
+
         write_flags(t.flags);
         write_reg(CL, t.shift_count);
         SCOPED_TRACE("SHIFT " + std::to_string(static_cast<int>(t.val)) +
@@ -24,6 +26,8 @@ TEST_P(ShiftReg8Test, ResultAndFlags)
 TEST_P(ShiftMem8Test, ResultAndFlags)
 {
     for (auto &t: GetParam().second) {
+        reset();
+
         write_flags(t.flags);
         write_reg(CL, t.shift_count);
         SCOPED_TRACE("SHIFT " + std::to_string(static_cast<int>(t.val)) +
@@ -45,6 +49,8 @@ TEST_P(ShiftReg16Test, ResultAndFlags)
 {
     // shl ax, COUNT
     for (auto &t: GetParam().second) {
+        reset();
+
         write_flags(t.flags);
         write_reg(CL, t.shift_count);
         SCOPED_TRACE("SHIFT " + std::to_string(static_cast<int>(t.val)) +
@@ -64,6 +70,8 @@ TEST_P(ShiftReg16Test, ResultAndFlags)
 TEST_P(ShiftMem16Test, ResultAndFlags)
 {
     for (auto &t: GetParam().second) {
+        reset();
+
         write_flags(t.flags);
         write_reg(CL, t.shift_count);
         SCOPED_TRACE("SHIFT " + std::to_string(static_cast<int>(t.val)) +

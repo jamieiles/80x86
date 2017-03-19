@@ -24,6 +24,8 @@ set(microprogram_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/pop.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/push.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/sbb.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/shift.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/shr.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/sub.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/test.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/xor.us

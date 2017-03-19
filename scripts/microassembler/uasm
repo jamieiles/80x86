@@ -215,6 +215,7 @@ class MicroAssembler(object):
     """
     microcode_fields = {
         'ra_sel': (num_bits(len(GPR)), partial(_enumerated_field, enum_class=GPR), True),
+        'rb_cl': (1, _boolean, True),
         'rd_sel': (num_bits(len(GPR)), partial(_enumerated_field, enum_class=GPR), True),
         'next_instruction': (1, _boolean, True),
         'mar_wr_sel': (num_bits(len(MARWrSel)), partial(_enumerated_field, enum_class=MARWrSel), True),

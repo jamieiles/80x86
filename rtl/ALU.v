@@ -89,6 +89,21 @@ begin
 end
 endtask
 
+task do_shr;
+input [15:0] _a;
+input [4:0] _b;
+begin
+    {out, flags_out[CF_IDX]} = {_a, 1'b0} >> _b[4:0];
+    flags_out[OF_IDX] = _a[is_8_bit ? 7 : 15];
+    flags_out[PF_IDX] = ~^out[7:0];
+    flags_out[SF_IDX] = out[is_8_bit ? 7 : 15];
+    flags_out[ZF_IDX] = is_8_bit ? ~|out[7:0] : ~|out;
+
+    if (~|_b)
+        flags_out = flags_in;
+end
+endtask
+
 always_comb begin
     case (op)
     ALUOp_SELA: out = a;
@@ -106,6 +121,7 @@ always_comb begin
     ALUOp_SETFLAGSA: flags_out = a;
     ALUOp_SETFLAGSB: flags_out = b;
     ALUOp_CMC: flags_out[CF_IDX] = ~flags_in[CF_IDX];
+    ALUOp_SHR: do_shr(a, b[4:0]);
     // verilator coverage_off
     default: begin
 `ifdef verilator

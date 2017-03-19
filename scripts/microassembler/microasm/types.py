@@ -57,6 +57,7 @@ class ALUOp(Enum):
     SETFLAGSB = 12
     SETFLAGSA = 13
     CMC = 14
+    SHR = 15
 
 class UpdateFlags(Enum):
     CF = 0
