@@ -44,15 +44,9 @@ EmulateFixture.InFixed16:\
 EmulateFixture.InFixed8:\
 EmulateFixture.InVariable16:\
 EmulateFixture.InVariable8:\
-EmulateFixture.IncFEInvalidReg:\
 EmulateFixture.IntN:\
 EmulateFixture.IntoNotTaken:\
 EmulateFixture.IntoTaken:\
-EmulateFixture.InvalidRegD0:\
-EmulateFixture.InvalidRegD1:\
-EmulateFixture.InvalidRegD2:\
-EmulateFixture.InvalidRegD3:\
-EmulateFixture.InvalidRegFE:\
 EmulateFixture.Iret:\
 EmulateFixture.JcxzNotTaken:\
 EmulateFixture.JcxzTaken:\
