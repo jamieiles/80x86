@@ -81,7 +81,7 @@ dispatch_8f:
     width 8, modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_d0;
 .auto_address;
 dispatch_d0:
-    next_instruction; // reg == 0
+    width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem ROLd0_reg;
     width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem RORd0_reg;
     next_instruction; // reg == 2
     next_instruction; // reg == 3
@@ -95,7 +95,7 @@ dispatch_d0:
     modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_d1;
 .auto_address;
 dispatch_d1:
-    next_instruction; // reg == 0
+    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem ROLd1_reg;
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem RORd1_reg;
     next_instruction; // reg == 2
     next_instruction; // reg == 3
@@ -109,7 +109,7 @@ dispatch_d1:
     width 8, modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_d2;
 .auto_address;
 dispatch_d2:
-    next_instruction; // reg == 0
+    width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem ROLd2_reg;
     width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem RORd2_reg;
     next_instruction; // reg == 2
     next_instruction; // reg == 3
@@ -123,7 +123,7 @@ dispatch_d2:
     modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_d3;
 .auto_address;
 dispatch_d3:
-    next_instruction; // reg == 0
+    ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem ROLd3_reg;
     ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem RORd3_reg;
     next_instruction; // reg == 2
     next_instruction; // reg == 3

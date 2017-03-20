@@ -1,0 +1,6 @@
+#include "shift.us"
+
+SHIFT1_8(ROL, OF CF)
+SHIFT1_16(ROL, OF CF)
+SHIFTN_8(ROL, CF)
+SHIFTN_16(ROL, CF)

@@ -139,15 +139,6 @@ RcrgN/ShiftMem16Test.*:\
 RcrgN/ShiftMem8Test.*:\
 RcrgN/ShiftReg16Test.*:\
 RcrgN/ShiftReg8Test.*:\
-Rol1/ShiftMem16Test.*:\
-Rol1/ShiftMem8Test.*:\
-Rol1/ShiftReg16Test.*:\
-Rol1/ShiftReg8Test.*:\
-RolCL/ShiftCLTest.*:\
-RolN/ShiftMem16Test.*:\
-RolN/ShiftMem8Test.*:\
-RolN/ShiftReg16Test.*:\
-RolN/ShiftReg8Test.*:\
 SegmentOverride/MovOverride.*";
 
     return RUN_ALL_TESTS();
