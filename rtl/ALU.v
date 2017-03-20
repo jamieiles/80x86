@@ -142,6 +142,35 @@ begin
 end
 endtask
 
+task do_ror;
+input [15:0] _a;
+input [4:0] _b;
+begin
+    if (!is_8_bit) begin
+        reg [4:0] i;
+        out = _a;
+        for (i = 5'b0; i < _b[4:0]; ++i) begin
+            flags_out[CF_IDX] = out[0];
+            out = {out[0], out[15:1]};
+        end
+    end else begin
+        reg [4:0] i;
+        out = {8'b0, _a[7:0]};
+        for (i = 5'b0; i < _b[4:0]; ++i) begin
+            flags_out[CF_IDX] = out[0];
+            out[7:0] = {out[0], out[7:1]};
+        end
+    end
+    flags_out[OF_IDX] = is_8_bit ? _a[7] ^ _a[0] : _a[15] ^ _a[0];
+    flags_out[PF_IDX] = ~^out[7:0];
+    flags_out[SF_IDX] = out[is_8_bit ? 7 : 15];
+    flags_out[ZF_IDX] = is_8_bit ? ~|out[7:0] : ~|out;
+
+    if (~|_b)
+        flags_out = flags_in;
+end
+endtask
+
 always_comb begin
     case (op)
     ALUOp_SELA: out = a;
@@ -162,6 +191,7 @@ always_comb begin
     ALUOp_SHR: do_shr(a, b[4:0]);
     ALUOp_SHL: do_shl(a, b[4:0]);
     ALUOp_SAR: do_sar(a, b[4:0]);
+    ALUOp_ROR: do_ror(a, b[4:0]);
     // verilator coverage_off
     default: begin
 `ifdef verilator

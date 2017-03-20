@@ -60,6 +60,7 @@ class ALUOp(Enum):
     SHR = 15
     SHL = 16
     SAR = 17
+    ROR = 18
 
 class UpdateFlags(Enum):
     CF = 0
