@@ -121,15 +121,6 @@ Mul/MulMem16Test.*:\
 Mul/MulMem8Test.*:\
 Mul/MulReg16Test.*:\
 Mul/MulReg8Test.*:\
-Rcrg1/ShiftMem16Test.*:\
-Rcrg1/ShiftMem8Test.*:\
-Rcrg1/ShiftReg16Test.*:\
-Rcrg1/ShiftReg8Test.*:\
-RcrgCL/ShiftCLTest.*:\
-RcrgN/ShiftMem16Test.*:\
-RcrgN/ShiftMem8Test.*:\
-RcrgN/ShiftReg16Test.*:\
-RcrgN/ShiftReg8Test.*:\
 SegmentOverride/MovOverride.*";
 
     return RUN_ALL_TESTS();

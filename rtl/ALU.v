@@ -228,6 +228,35 @@ begin
 end
 endtask
 
+task do_rcr;
+input [15:0] _a;
+input [4:0] _b;
+begin
+    flags_out[CF_IDX] = flags_in[CF_IDX];
+    if (!is_8_bit) begin
+        reg [4:0] i;
+        out = _a;
+        for (i = 5'b0; i < _b[4:0]; ++i) begin
+            {out, flags_out[CF_IDX]} = {flags_out[CF_IDX], out[15:0]};
+        end
+    end else begin
+        reg [4:0] i;
+        out = {8'b0, _a[7:0]};
+        for (i = 5'b0; i < _b[4:0]; ++i) begin
+            {out[7:0], flags_out[CF_IDX]} = {flags_out[CF_IDX], out[7:0]};
+        end
+    end
+    flags_out[OF_IDX] = is_8_bit ? _a[7] ^ flags_in[CF_IDX] :
+        _a[15] ^ flags_in[CF_IDX];
+    flags_out[PF_IDX] = ~^out[7:0];
+    flags_out[SF_IDX] = out[is_8_bit ? 7 : 15];
+    flags_out[ZF_IDX] = is_8_bit ? ~|out[7:0] : ~|out;
+
+    if (~|_b)
+        flags_out = flags_in;
+end
+endtask
+
 always_comb begin
     case (op)
     ALUOp_SELA: out = a;
@@ -251,6 +280,7 @@ always_comb begin
     ALUOp_ROR: do_ror(a, b[4:0]);
     ALUOp_ROL: do_rol(a, b[4:0]);
     ALUOp_RCL: do_rcl(a, b[4:0]);
+    ALUOp_RCR: do_rcr(a, b[4:0]);
     // verilator coverage_off
     default: begin
 `ifdef verilator

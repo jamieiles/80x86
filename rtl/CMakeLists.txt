@@ -24,6 +24,7 @@ set(microprogram_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/pop.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/push.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/rcl.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/rcr.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/rol.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/ror.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/sar.us
