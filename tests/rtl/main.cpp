@@ -121,15 +121,6 @@ Mul/MulMem16Test.*:\
 Mul/MulMem8Test.*:\
 Mul/MulReg16Test.*:\
 Mul/MulReg8Test.*:\
-Rclg1/ShiftMem16Test.*:\
-Rclg1/ShiftMem8Test.*:\
-Rclg1/ShiftReg16Test.*:\
-Rclg1/ShiftReg8Test.*:\
-RclgCL/ShiftCLTest.*:\
-RclgN/ShiftMem16Test.*:\
-RclgN/ShiftMem8Test.*:\
-RclgN/ShiftReg16Test.*:\
-RclgN/ShiftReg8Test.*:\
 Rcrg1/ShiftMem16Test.*:\
 Rcrg1/ShiftMem8Test.*:\
 Rcrg1/ShiftReg16Test.*:\

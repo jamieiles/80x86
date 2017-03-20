@@ -62,6 +62,7 @@ class ALUOp(Enum):
     SAR = 17
     ROR = 18
     ROL = 19
+    RCL = 20
 
 class UpdateFlags(Enum):
     CF = 0

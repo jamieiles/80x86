@@ -83,7 +83,7 @@ dispatch_8f:
 dispatch_d0:
     width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem ROLd0_reg;
     width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem RORd0_reg;
-    next_instruction; // reg == 2
+    width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem RCLd0_reg;
     next_instruction; // reg == 3
     width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHLd0_reg;
     width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHRd0_reg;
@@ -97,7 +97,7 @@ dispatch_d0:
 dispatch_d1:
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem ROLd1_reg;
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem RORd1_reg;
-    next_instruction; // reg == 2
+    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem RCLd1_reg;
     next_instruction; // reg == 3
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHLd1_reg;
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHRd1_reg;
@@ -111,7 +111,7 @@ dispatch_d1:
 dispatch_d2:
     width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem ROLd2_reg;
     width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem RORd2_reg;
-    next_instruction; // reg == 2
+    width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem RCLd2_reg;
     next_instruction; // reg == 3
     width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem SHLd2_reg;
     width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem SHRd2_reg;
@@ -125,7 +125,7 @@ dispatch_d2:
 dispatch_d3:
     ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem ROLd3_reg;
     ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem RORd3_reg;
-    next_instruction; // reg == 2
+    ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem RCLd3_reg;
     next_instruction; // reg == 3
     ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem SHLd3_reg;
     ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem SHRd3_reg;
