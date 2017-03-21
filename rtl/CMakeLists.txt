@@ -59,9 +59,39 @@ set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/Microcode.v PROPERTIES
 
 verilate(ALU ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.v
          ${CMAKE_CURRENT_SOURCE_DIR}/FlagsEnum.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/ALU.v)
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/adc.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/add.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/and.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/flags.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/or.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/rcl.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/rcr.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/rol.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/ror.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/sar.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/shift_flags.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/shl.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/shr.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/sub.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/xor.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/ALU.v)
 verilate(Core ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/ALU.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/adc.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/add.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/and.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/flags.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/or.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/rcl.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/rcr.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/rol.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/ror.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/sar.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/shift_flags.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/shl.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/shr.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/sub.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/xor.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/ALU.v
          ${CMAKE_CURRENT_SOURCE_DIR}/Core.v
          ${CMAKE_CURRENT_SOURCE_DIR}/CSIPSync.v
          ${CMAKE_CURRENT_SOURCE_DIR}/Fifo.v
