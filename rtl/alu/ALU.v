@@ -27,13 +27,13 @@ always_comb begin
     ALUOp_SETFLAGSA: flags_out = a;
     ALUOp_SETFLAGSB: flags_out = b;
     ALUOp_CMC: flags_out[CF_IDX] = ~flags_in[CF_IDX];
-    ALUOp_SHR: do_shr(out, is_8_bit, b, a, flags_in, flags_out);
-    ALUOp_SHL: do_shl(out, is_8_bit, b, a, flags_in, flags_out);
-    ALUOp_SAR: do_sar(out, is_8_bit, b, a, flags_in, flags_out);
-    ALUOp_ROR: do_ror(out, is_8_bit, b, a, flags_in, flags_out);
-    ALUOp_ROL: do_rol(out, is_8_bit, b, a, flags_in, flags_out);
-    ALUOp_RCL: do_rcl(out, is_8_bit, b, a, flags_in, flags_out);
-    ALUOp_RCR: do_rcr(out, is_8_bit, b, a, flags_in, flags_out);
+    ALUOp_SHR: do_shr(out, is_8_bit, a, b, flags_in, flags_out);
+    ALUOp_SHL: do_shl(out, is_8_bit, a, b, flags_in, flags_out);
+    ALUOp_SAR: do_sar(out, is_8_bit, a, b, flags_in, flags_out);
+    ALUOp_ROR: do_ror(out, is_8_bit, a, b, flags_in, flags_out);
+    ALUOp_ROL: do_rol(out, is_8_bit, a, b, flags_in, flags_out);
+    ALUOp_RCL: do_rcl(out, is_8_bit, a, b, flags_in, flags_out);
+    ALUOp_RCR: do_rcr(out, is_8_bit, a, b, flags_in, flags_out);
     // verilator coverage_off
     default: begin
 `ifdef verilator
