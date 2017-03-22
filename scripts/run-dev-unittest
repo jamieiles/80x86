@@ -1,0 +1,4 @@
+#!/bin/bash
+set -e
+./docker/s80x86-dev "ninja -C _build/dev && (cd _build/dev/tests/simulator; ./sim-unittest $@)"
+./docker/s80x86-dev "ninja -C _build/dev && (cd _build/dev/tests/rtl; ./rtl-unittest $@)"
