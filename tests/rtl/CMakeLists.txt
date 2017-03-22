@@ -6,7 +6,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/coverage)
 
-verilate(ModRMTestbench ${CMAKE_CURRENT_SOURCE_DIR}/ModRMTestbench.v
+verilate(TOPLEVEL ModRMTestbench
+         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/ModRMTestbench.v
          ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/ModRMDecode.v
          ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/ImmediateReader.v)
 
