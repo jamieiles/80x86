@@ -59,47 +59,34 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/microcode.bin
 set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/Microcode.v PROPERTIES
                             COMPILE_FLAGS "-DMICROCODE_ROM_PATH=\\\"${CMAKE_CURRENT_BINARY_DIR}\\\"")
 
+set(ALU_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/alu/adc.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/alu/add.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/alu/and.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/alu/flags.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/alu/or.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/alu/not.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/alu/rcl.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/alu/rcr.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/alu/rol.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/alu/ror.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/alu/sar.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/alu/shift_flags.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/alu/shl.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/alu/shr.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/alu/sub.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/alu/xor.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/alu/ALU.v)
+
 verilate(TOPLEVEL ALU
          VERILOG_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.v
          ${CMAKE_CURRENT_SOURCE_DIR}/FlagsEnum.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/adc.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/add.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/and.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/flags.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/or.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/not.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/rcl.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/rcr.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/rol.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/ror.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/sar.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/shift_flags.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/shl.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/shr.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/sub.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/xor.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/ALU.v
+         ${ALU_SOURCES}
          GENERATED_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/VALU___024unit.cpp
          ${CMAKE_CURRENT_BINARY_DIR}/VALU___024unit.h)
 verilate(TOPLEVEL Core
          VERILOG_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/adc.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/add.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/and.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/flags.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/or.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/not.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/rcl.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/rcr.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/rol.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/ror.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/sar.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/shift_flags.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/shl.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/shr.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/sub.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/xor.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/alu/ALU.v
+         ${ALU_SOURCES}
          ${CMAKE_CURRENT_SOURCE_DIR}/Core.v
          ${CMAKE_CURRENT_SOURCE_DIR}/CSIPSync.v
          ${CMAKE_CURRENT_SOURCE_DIR}/Fifo.v
