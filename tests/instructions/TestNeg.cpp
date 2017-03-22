@@ -40,6 +40,8 @@ TEST_F(EmulateFixture, Neg8Reg)
 {
     // neg al
     for (auto &t: neg8_tests) {
+        reset();
+
         SCOPED_TRACE("neg " + std::to_string(static_cast<int>(t.val)) +
                      " cf=" + std::to_string(static_cast<int>(!!t.carry_set)));
         write_reg(AL, t.val);
@@ -58,6 +60,8 @@ TEST_F(EmulateFixture, Neg8Mem)
 {
     // neg byte [bx]
     for (auto &t: neg8_tests) {
+        reset();
+
         SCOPED_TRACE("neg " + std::to_string(static_cast<int>(t.val)) +
                      " cf=" + std::to_string(static_cast<int>(!!t.carry_set)));
         write_reg(BX, 0x0100);
@@ -77,6 +81,8 @@ TEST_F(EmulateFixture, Neg16Reg)
 {
     // neg ax
     for (auto &t: neg16_tests) {
+        reset();
+
         SCOPED_TRACE("neg " + std::to_string(static_cast<int>(t.val)) +
                      " cf=" + std::to_string(static_cast<int>(!!t.carry_set)));
         write_reg(AX, t.val);
@@ -95,6 +101,8 @@ TEST_F(EmulateFixture, Neg16Mem)
 {
     // neg byte [bx]
     for (auto &t: neg16_tests) {
+        reset();
+
         SCOPED_TRACE("neg " + std::to_string(static_cast<int>(t.val)) +
                      " cf=" + std::to_string(static_cast<int>(!!t.carry_set)));
         write_reg(BX, 0x0100);

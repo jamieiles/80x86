@@ -134,13 +134,13 @@ dispatch_d3:
 
 // Multiplexed neg/mul/not/test/div 8 bit
 .at 0xf6;
-    modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_f6;
+    width 8, modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_f6;
 .auto_address;
 dispatch_f6:
     width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem compANDf6_reg; // reg == 0
     next_instruction; // reg == 1
     next_instruction; // reg == 2
-    next_instruction; // reg == 3
+    width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem negf6_reg; // reg == 3
     next_instruction; // reg == 4
     next_instruction; // reg == 5
     next_instruction; // reg == 6
@@ -154,7 +154,7 @@ dispatch_f7:
     read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem compANDf7_reg; // reg == 0
     next_instruction; // reg == 1
     next_instruction; // reg == 2
-    next_instruction; // reg == 3
+    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem negf7_reg; // reg == 3
     next_instruction; // reg == 4
     next_instruction; // reg == 5
     next_instruction; // reg == 6
