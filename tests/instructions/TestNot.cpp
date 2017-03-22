@@ -33,6 +33,8 @@ TEST_F(EmulateFixture, Not8Reg)
 {
     // not al
     for (auto &t: not8_tests) {
+        reset();
+
         SCOPED_TRACE("not " + std::to_string(static_cast<int>(t.val)));
         write_reg(AL, t.val);
         set_instruction({ 0xf6, 0xd0 });
@@ -47,6 +49,8 @@ TEST_F(EmulateFixture, Not8Mem)
 {
     // not byte [bx]
     for (auto &t: not8_tests) {
+        reset();
+
         SCOPED_TRACE("not " + std::to_string(static_cast<int>(t.val)));
         write_reg(BX, 0x0100);
         write_mem<uint8_t>(0x0100, t.val);
@@ -62,6 +66,8 @@ TEST_F(EmulateFixture, Not16Reg)
 {
     // not ax
     for (auto &t: not16_tests) {
+        reset();
+
         SCOPED_TRACE("not " + std::to_string(static_cast<int>(t.val)));
         write_reg(AX, t.val);
         set_instruction({ 0xf7, 0xd0 });
@@ -76,6 +82,8 @@ TEST_F(EmulateFixture, Not16Mem)
 {
     // not byte [bx]
     for (auto &t: not16_tests) {
+        reset();
+
         SCOPED_TRACE("not " + std::to_string(static_cast<int>(t.val)));
         write_reg(BX, 0x0100);
         write_mem<uint16_t>(0x0100, t.val);

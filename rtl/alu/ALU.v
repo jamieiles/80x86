@@ -34,6 +34,7 @@ always_comb begin
     ALUOp_ROL: do_rol(out, is_8_bit, a, b, flags_in, flags_out);
     ALUOp_RCL: do_rcl(out, is_8_bit, a, b, flags_in, flags_out);
     ALUOp_RCR: do_rcr(out, is_8_bit, a, b, flags_in, flags_out);
+    ALUOp_NOT: do_not(out, a, flags_in, flags_out);
     // verilator coverage_off
     default: begin
 `ifdef verilator

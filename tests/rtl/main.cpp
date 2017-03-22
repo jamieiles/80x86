@@ -67,10 +67,6 @@ EmulateFixture.MovsbDec:\
 EmulateFixture.MovsbInc:\
 EmulateFixture.MovswDec:\
 EmulateFixture.MovswInc:\
-EmulateFixture.Not16Mem:\
-EmulateFixture.Not16Reg:\
-EmulateFixture.Not8Mem:\
-EmulateFixture.Not8Reg:\
 EmulateFixture.OutFixed16:\
 EmulateFixture.OutFixed8:\
 EmulateFixture.OutVariable16:\

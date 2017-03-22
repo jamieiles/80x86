@@ -21,6 +21,7 @@ set(microprogram_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/les.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/mov.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/neg.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/not.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/or.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/pop.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/push.us
@@ -66,6 +67,7 @@ verilate(TOPLEVEL ALU
          ${CMAKE_CURRENT_SOURCE_DIR}/alu/and.v
          ${CMAKE_CURRENT_SOURCE_DIR}/alu/flags.v
          ${CMAKE_CURRENT_SOURCE_DIR}/alu/or.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/not.v
          ${CMAKE_CURRENT_SOURCE_DIR}/alu/rcl.v
          ${CMAKE_CURRENT_SOURCE_DIR}/alu/rcr.v
          ${CMAKE_CURRENT_SOURCE_DIR}/alu/rol.v
@@ -86,6 +88,7 @@ verilate(TOPLEVEL Core
          ${CMAKE_CURRENT_SOURCE_DIR}/alu/and.v
          ${CMAKE_CURRENT_SOURCE_DIR}/alu/flags.v
          ${CMAKE_CURRENT_SOURCE_DIR}/alu/or.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/alu/not.v
          ${CMAKE_CURRENT_SOURCE_DIR}/alu/rcl.v
          ${CMAKE_CURRENT_SOURCE_DIR}/alu/rcr.v
          ${CMAKE_CURRENT_SOURCE_DIR}/alu/rol.v
