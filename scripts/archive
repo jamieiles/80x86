@@ -1,4 +1,16 @@
 #!/bin/bash
 set -e
-tar --exclude=.git* --exclude=.exrc --exclude=.ycm_extra_conf.py --exclude=_build --exclude=*.tar.xz --transform="s|^80x86|80x86-$(date +%Y%m%d)|g" -C .. 80x86 -cJf ../80x86-$(date +%Y%m%d).tar.xz
+tar --exclude=scripts/archive \
+    --exclude=scripts/run-dev-unittest \
+    --exclude=.git* \
+    --exclude=.exrc \
+    --exclude=.ycm_extra_conf.py \
+    --exclude=_build \
+    --exclude=*.tar.xz \
+    --exclude=*.pyc \
+    --exclude=*.pyo \
+    --exclude=__pycache__ \
+    --exclude=.*.swp \
+    --exclude=.*.swo \
+    --transform="s|^80x86|80x86-$(date +%Y%m%d)|g" -C .. 80x86 -cJf ../80x86-$(date +%Y%m%d).tar.xz
 mv ../80x86-$(date +%Y%m%d).tar.xz .
