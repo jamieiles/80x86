@@ -82,10 +82,14 @@ assign a_bus =
     a_sel == ADriver_IP ? ip_current :
     a_sel == ADriver_MAR ? mar : mdr;
 
+// Driving the B bus with RA seems a little odd, but it avoids needing
+// a separate rb_sel, and there are several cases where the MAR needs to be
+// added to both an immediate or a register, and this provides that.  Stack
+// accesses will be MAR +- IMMEDIATE, XLAT uses MAR + RA.
 assign b_bus =
     b_sel == BDriver_RB ? reg_rd_val[1] :
     b_sel == BDriver_IMMEDIATE ? immediate :
-    b_sel == BDriver_SR ? seg_rd_val : 16'b0;
+    b_sel == BDriver_SR ? seg_rd_val : reg_rd_val[0];
 
 assign q_bus = alu_out;
 

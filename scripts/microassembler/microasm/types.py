@@ -34,7 +34,7 @@ class BDriver(Enum):
     RB = 0
     IMMEDIATE = 1
     SR = 2
-    TEMP = 3
+    RA = 3
 
 class ALUOp(Enum):
     SELA = 0

@@ -77,7 +77,6 @@ EmulateFixture.StosbDec:\
 EmulateFixture.Stosw:\
 EmulateFixture.StoswDec:\
 EmulateFixture.TrapOnInt3:\
-EmulateFixture.Xlat:\
 IMul/MulMem16Test.*:\
 IMul/MulMem8Test.*:\
 IMul/MulReg16Test.*:\
