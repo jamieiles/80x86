@@ -47,7 +47,6 @@ EmulateFixture.InVariable8:\
 EmulateFixture.IntN:\
 EmulateFixture.IntoNotTaken:\
 EmulateFixture.IntoTaken:\
-EmulateFixture.Iret:\
 EmulateFixture.JcxzNotTaken:\
 EmulateFixture.JcxzTaken:\
 EmulateFixture.Lock:\
@@ -73,10 +72,6 @@ EmulateFixture.OutVariable16:\
 EmulateFixture.OutVariable8:\
 EmulateFixture.PopMemSegmentOverride:\
 EmulateFixture.PushMemSegmentOverride:\
-EmulateFixture.RetInter:\
-EmulateFixture.RetInterAddSp:\
-EmulateFixture.RetIntra:\
-EmulateFixture.RetIntraAddSp:\
 EmulateFixture.ScasbDec:\
 EmulateFixture.ScasbDecRepe:\
 EmulateFixture.ScasbInc:\
