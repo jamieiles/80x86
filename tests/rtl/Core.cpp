@@ -34,13 +34,14 @@ RTLCPU<debug_enabled>::RTLCPU(const std::string &test_name)
     this->periodic(ClockSetup, [&]{ this->data_access(); });
     this->periodic(ClockSetup, [&]{ this->instruction_access(); });
     this->periodic(ClockCapture, [&]{
+        auto dev = !this->dut.d_io ? &this->mem : &this->io;
         if (this->dut.data_m_access && this->dut.data_m_wr_en) {
             if (this->dut.data_m_bytesel & (1 << 0))
-                this->mem.template write<uint8_t>(this->dut.data_m_addr << 1,
-                                                  this->dut.data_m_data_out & 0xff);
+                dev->template write<uint8_t>(this->dut.data_m_addr << 1,
+                                             this->dut.data_m_data_out & 0xff);
             if (this->dut.data_m_bytesel & (1 << 1))
-                this->mem.template write<uint8_t>((this->dut.data_m_addr << 1) + 1,
-                                                  (this->dut.data_m_data_out >> 8) & 0xff);
+                dev->template write<uint8_t>((this->dut.data_m_addr << 1) + 1,
+                                             (this->dut.data_m_data_out >> 8) & 0xff);
         }
     });
 }
@@ -226,7 +227,8 @@ void RTLCPU<debug_enabled>::data_access()
 
     d_in_progress = true;
     this->after_n_cycles(mem_latency, [&]{
-        auto v =
+        auto v = this->dut.d_io ?
+            this->io.template read<uint16_t>(this->dut.data_m_addr << 1) :
             this->mem.template read<uint16_t>(this->dut.data_m_addr << 1);
         this->dut.data_m_data_in = v;
         this->dut.data_m_ack = 1;

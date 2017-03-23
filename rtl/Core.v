@@ -12,12 +12,16 @@ module Core(input logic clk,
             output logic data_m_access,
             input logic data_m_ack,
             output logic data_m_wr_en,
-            output logic [1:0] data_m_bytesel);
+            output logic [1:0] data_m_bytesel,
+            output logic d_io);
 
 wire [15:0] a_bus;
 wire [15:0] b_bus;
 wire [15:0] q_bus;
 wire [15:0] q_bus_minus_alu;
+
+wire io_operation;
+assign d_io = io_operation;
 
 wire [2:0] reg_rd_sel[2];
 wire modrm_complete;
@@ -271,7 +275,8 @@ LoadStore       loadstore(.clk(clk),
                           .is_8bit(is_8_bit),
                           .wr_en(loadstore_is_store),
                           .busy(loadstore_busy),
-                          .complete(loadstore_complete));
+                          .complete(loadstore_complete),
+                          .io(io_operation));
 
 Microcode       microcode(.clk(clk),
                           .reset(reset),
@@ -283,6 +288,7 @@ Microcode       microcode(.clk(clk),
                           .a_sel(a_sel),
                           .alu_op(alu_op),
                           .b_sel(b_sel),
+                          .io(io_operation),
                           .next_instruction(next_instruction),
                           .read_immed(microcode_immed_start),
                           .load_ip(ip_wr_en),

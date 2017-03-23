@@ -18,6 +18,7 @@ module LoadStore(input logic clk,
                  output logic m_wr_en,
                  output logic [1:0] m_bytesel,
                  // Control
+                 input logic io,
                  input logic start,
                  input logic is_8bit,
                  input logic wr_en,
@@ -29,7 +30,9 @@ reg [15:0] mdr;
 
 assign busy = (start | fetching | second_byte) & ~complete;
 assign m_access = (start | fetching | second_byte) & ~complete & ~m_ack;
-assign m_addr = {segment, 3'b0} + {3'b0, mar[15:1]} + {18'b0, second_byte};
+assign m_addr = !io ?
+    {segment, 3'b0} + {3'b0, mar[15:1]} + {18'b0, second_byte} :
+    {3'b0, mar[15:1]} + {18'b0, second_byte};
 assign m_wr_en = wr_en;
 assign mdr_out = mdr;
 assign mar_out = mar;

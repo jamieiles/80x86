@@ -40,10 +40,6 @@ EmulateFixture.DSSegmentOverrideIsNop:\
 EmulateFixture.Daa:\
 EmulateFixture.Das:\
 EmulateFixture.Hlt:\
-EmulateFixture.InFixed16:\
-EmulateFixture.InFixed8:\
-EmulateFixture.InVariable16:\
-EmulateFixture.InVariable8:\
 EmulateFixture.IntN:\
 EmulateFixture.IntoNotTaken:\
 EmulateFixture.IntoTaken:\
@@ -66,10 +62,6 @@ EmulateFixture.MovsbDec:\
 EmulateFixture.MovsbInc:\
 EmulateFixture.MovswDec:\
 EmulateFixture.MovswInc:\
-EmulateFixture.OutFixed16:\
-EmulateFixture.OutFixed8:\
-EmulateFixture.OutVariable16:\
-EmulateFixture.OutVariable8:\
 EmulateFixture.PopMemSegmentOverride:\
 EmulateFixture.PushMemSegmentOverride:\
 EmulateFixture.ScasbDec:\
