@@ -3,22 +3,22 @@
         ra_modrm_rm_reg, jmp_rm_reg_mem xchg86_reg, segment DS;
 .auto_address;
 xchg86_reg:
-    width 8, a_sel RA, alu_op SELA, q_sel ALU, mar_write, mar_wr_sel Q,
+    width 8, a_sel RA, alu_op SELA, mar_write, mar_wr_sel Q,
         jmp xchg86_reg_store;
 xchg86_mem:
     segment DS, width 8, mem_read;
-    width 8, b_sel RB, alu_op SELB, q_sel ALU, mar_write, mar_wr_sel Q;
+    width 8, b_sel RB, alu_op SELB, mar_write, mar_wr_sel Q;
     // memory value is in MDR, register value is in MAR
-    width 8, a_sel MDR, alu_op SELA, q_sel ALU, rd_sel_source MODRM_REG,
+    width 8, a_sel MDR, alu_op SELA, rd_sel_source MODRM_REG,
         reg_wr_en;
-    width 8, a_sel MAR, alu_op SELA, q_sel ALU, mdr_write, mar_wr_sel EA,
+    width 8, a_sel MAR, alu_op SELA, mdr_write, mar_wr_sel EA,
         mar_write, segment DS;
     width 8, segment DS, mem_write, next_instruction;
 
 xchg86_reg_store:
-    width 8, b_sel RB, alu_op SELB, q_sel ALU, rd_sel_source MODRM_RM_REG,
+    width 8, b_sel RB, alu_op SELB, rd_sel_source MODRM_RM_REG,
         reg_wr_en;
-    width 8, a_sel MAR, alu_op SELA, q_sel ALU, rd_sel_source MODRM_REG, reg_wr_en,
+    width 8, a_sel MAR, alu_op SELA, rd_sel_source MODRM_REG, reg_wr_en,
         next_instruction;
 
 .at 0x87;
@@ -26,22 +26,22 @@ xchg86_reg_store:
         ra_modrm_rm_reg, jmp_rm_reg_mem xchg87_reg, segment DS;
 .auto_address;
 xchg87_reg:
-    a_sel RA, alu_op SELA, q_sel ALU, mar_write, mar_wr_sel Q,
+    a_sel RA, alu_op SELA, mar_write, mar_wr_sel Q,
         jmp xchg87_reg_store;
 xchg87_mem:
     segment DS, mem_read;
-    b_sel RB, alu_op SELB, q_sel ALU, mar_write, mar_wr_sel Q;
+    b_sel RB, alu_op SELB, mar_write, mar_wr_sel Q;
     // memory value is in MDR, register value is in MAR
-    a_sel MDR, alu_op SELA, q_sel ALU, rd_sel_source MODRM_REG,
+    a_sel MDR, alu_op SELA, rd_sel_source MODRM_REG,
         reg_wr_en;
-    a_sel MAR, alu_op SELA, q_sel ALU, mdr_write, mar_wr_sel EA,
+    a_sel MAR, alu_op SELA, mdr_write, mar_wr_sel EA,
         mar_write, segment DS;
     segment DS, mem_write, next_instruction;
 
 xchg87_reg_store:
-    b_sel RB, alu_op SELB, q_sel ALU, rd_sel_source MODRM_RM_REG,
+    b_sel RB, alu_op SELB, rd_sel_source MODRM_RM_REG,
         reg_wr_en;
-    a_sel MAR, alu_op SELA, q_sel ALU, rd_sel_source MODRM_REG, reg_wr_en,
+    a_sel MAR, alu_op SELA, rd_sel_source MODRM_REG, reg_wr_en,
         next_instruction;
 
 #define XCHG_REG(opcode, reg)                                           \
@@ -49,11 +49,11 @@ xchg87_reg_store:
     ra_sel reg, jmp xchg_ ## reg;                                       \
 .auto_address;                                                          \
 xchg_ ## reg:                                                           \
-    a_sel RA, alu_op SELA, q_sel ALU, mar_write, mar_wr_sel Q,          \
+    a_sel RA, alu_op SELA, mar_write, mar_wr_sel Q,          \
         ra_sel AX;                                                      \
-    a_sel RA, alu_op SELA, q_sel ALU, rd_sel_source MICROCODE_RD_SEL,   \
+    a_sel RA, alu_op SELA, rd_sel_source MICROCODE_RD_SEL,   \
         rd_sel reg, reg_wr_en;                                          \
-    a_sel MAR, alu_op SELA, q_sel ALU, rd_sel_source MICROCODE_RD_SEL,  \
+    a_sel MAR, alu_op SELA, rd_sel_source MICROCODE_RD_SEL,  \
         rd_sel AX, reg_wr_en, next_instruction;
 
 // xchg ax, ax

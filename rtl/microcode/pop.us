@@ -1,18 +1,18 @@
 pop8f_reg:
-    a_sel RA, alu_op SELA, q_sel ALU, mar_wr_sel Q, mar_write,
+    a_sel RA, alu_op SELA, mar_wr_sel Q, mar_write,
         segment SS, jmp pop8f_reg_restore;
 pop8f_mem:
-    a_sel RA, alu_op SELA, q_sel ALU, mar_wr_sel Q, mar_write,
+    a_sel RA, alu_op SELA, mar_wr_sel Q, mar_write,
         segment SS, jmp pop8f_mem_restore;
 pop8f_reg_restore:
     segment SS, mem_read, ra_sel SP;
-    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, q_sel ALU,
+    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op ADD,
         rd_sel SP, rd_sel_source MICROCODE_RD_SEL, reg_wr_en;
-    a_sel MDR, alu_op SELA, q_sel ALU, rd_sel_source MODRM_RM_REG,
+    a_sel MDR, alu_op SELA, rd_sel_source MODRM_RM_REG,
         reg_wr_en, next_instruction;
 pop8f_mem_restore:
     segment SS, mem_read, ra_sel SP;
-    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, q_sel ALU,
+    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op ADD,
         rd_sel SP, rd_sel_source MICROCODE_RD_SEL, reg_wr_en;
     mar_write, mar_wr_sel EA, segment DS;
     segment DS, mem_write, next_instruction;
@@ -22,12 +22,12 @@ pop8f_mem_restore:
     ra_sel SP, jmp pop_gpr ## reg;                                      \
 .auto_address;                                                          \
 pop_gpr ## reg:                                                         \
-    a_sel RA, alu_op SELA, q_sel ALU, mar_wr_sel Q, mar_write,          \
+    a_sel RA, alu_op SELA, mar_wr_sel Q, mar_write,          \
         segment_force, segment SS;                                      \
     segment_force, segment SS, mem_read, ra_sel SP;                     \
-    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, q_sel ALU,    \
+    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op ADD,    \
         rd_sel SP, rd_sel_source MICROCODE_RD_SEL, reg_wr_en;           \
-    a_sel MDR, alu_op SELA, q_sel ALU, rd_sel reg,                      \
+    a_sel MDR, alu_op SELA, rd_sel reg,                      \
         rd_sel_source MICROCODE_RD_SEL, reg_wr_en, next_instruction;
 
 #define POP_SR(opcode, reg)                                             \
@@ -35,12 +35,12 @@ pop_gpr ## reg:                                                         \
     ra_sel SP, jmp pop_sr ## reg;                                       \
 .auto_address;                                                          \
 pop_sr ## reg:                                                          \
-    a_sel RA, alu_op SELA, q_sel ALU, mar_wr_sel Q, mar_write,          \
+    a_sel RA, alu_op SELA, mar_wr_sel Q, mar_write,          \
         segment_force, segment SS;                                      \
     segment_force, segment SS, mem_read, ra_sel SP;                     \
-    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, q_sel ALU,    \
+    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op ADD,    \
         rd_sel SP, rd_sel_source MICROCODE_RD_SEL, reg_wr_en;           \
-    a_sel MDR, alu_op SELA, q_sel ALU, segment_force, sr_wr_sel reg,    \
+    a_sel MDR, alu_op SELA, segment_force, sr_wr_sel reg,    \
         segment_wr_en, next_instruction;
 
 POP_SR(0x07, ES)
@@ -61,9 +61,9 @@ POP_GPR(0x5f, DI)
     ra_sel SP, jmp popf;
 .auto_address;
 popf:
-    alu_op SELA, q_sel ALU, mar_wr_sel Q, mar_write, segment_force, segment SS;
+    alu_op SELA, mar_wr_sel Q, mar_write, segment_force, segment SS;
     segment_force, segment SS, mem_read, ra_sel SP;
-    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, q_sel ALU,
+    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op ADD,
         rd_sel SP, rd_sel_source MICROCODE_RD_SEL, reg_wr_en;
     a_sel MDR, alu_op SETFLAGSA, update_flags CF PF AF ZF SF TF IF DF OF,
         next_instruction;

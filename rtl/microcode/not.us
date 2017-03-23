@@ -1,20 +1,20 @@
 notf6_reg:
     a_sel RA, b_sel IMMEDIATE, immediate 0x0, alu_op NOT,
-        q_sel ALU, rd_sel_source MODRM_RM_REG, reg_wr_en,
+        rd_sel_source MODRM_RM_REG, reg_wr_en,
         update_flags OF SF ZF CF PF AF, width 8, next_instruction;
 notf6_mem:
     segment DS, mem_read, ra_modrm_rm_reg;
     a_sel MDR, b_sel IMMEDIATE, immediate 0x0, alu_op NOT,
-        q_sel ALU, mdr_write, update_flags OF SF ZF CF PF AF, width 8,
+        mdr_write, update_flags OF SF ZF CF PF AF, width 8,
         segment DS;
     width 8, mem_write, next_instruction;
 
 notf7_reg:
     a_sel RA, b_sel IMMEDIATE, immediate 0x0, alu_op NOT,
-        q_sel ALU, rd_sel_source MODRM_RM_REG, reg_wr_en,
+        rd_sel_source MODRM_RM_REG, reg_wr_en,
         update_flags OF SF ZF CF PF AF, next_instruction;
 notf7_mem:
     segment DS, mem_read, ra_modrm_rm_reg;
     a_sel MDR, b_sel IMMEDIATE, immediate 0x0, alu_op NOT,
-        q_sel ALU, mdr_write, update_flags OF SF ZF CF PF AF, segment DS;
+        mdr_write, update_flags OF SF ZF CF PF AF, segment DS;
     mem_write, next_instruction;

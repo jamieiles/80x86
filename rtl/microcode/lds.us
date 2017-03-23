@@ -6,10 +6,10 @@ lds_reg:
     next_instruction;
 lds_mem:
     segment DS, mem_read;
-    rd_sel_source MODRM_REG, reg_wr_en, a_sel MDR, q_sel ALU, alu_op SELA,
+    rd_sel_source MODRM_REG, reg_wr_en, a_sel MDR, alu_op SELA,
         segment DS;
-    a_sel MAR, alu_op ADD, b_sel IMMEDIATE, immediate 0x2, q_sel ALU,
+    a_sel MAR, alu_op ADD, b_sel IMMEDIATE, immediate 0x2,
         mar_write, mar_wr_sel Q, segment DS;
     segment DS, mem_read;
-    segment_force, sr_wr_sel DS, segment_wr_en, a_sel MDR, alu_op SELA, q_sel
-        ALU, next_instruction;
+    segment_force, sr_wr_sel DS, segment_wr_en, a_sel MDR, alu_op SELA,
+        next_instruction;

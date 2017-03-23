@@ -14,7 +14,6 @@ from microasm.types import (
     SR,
     ADriver,
     BDriver,
-    QDriver,
     ALUOp,
     RDSelSource,
     UpdateFlags,
@@ -152,7 +151,7 @@ class MicroAssembler(object):
     @staticmethod
     def _gather_enums():
         enums = []
-        for cls in [ADriver, BDriver, QDriver, ALUOp, JumpType, RDSelSource,
+        for cls in [ADriver, BDriver, ALUOp, JumpType, RDSelSource,
                     MARWrSel, UpdateFlags]:
             items = []
             for idx, e in enumerate(cls.__members__):
@@ -230,7 +229,6 @@ class MicroAssembler(object):
         'segment_force': (1, _boolean, True),
         'a_sel': (num_bits(len(ADriver)), partial(_enumerated_field, enum_class=ADriver), True),
         'b_sel': (num_bits(len(BDriver)), partial(_enumerated_field, enum_class=BDriver), True),
-        'q_sel': (num_bits(len(QDriver)), partial(_enumerated_field, enum_class=QDriver), True),
         'alu_op': (num_bits(len(ALUOp)), partial(_enumerated_field, enum_class=ALUOp), True),
         'update_flags': (len(UpdateFlags), _update_flags, True),
         'fifo_pop': (1, _boolean, False),

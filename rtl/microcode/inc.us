@@ -14,42 +14,42 @@ dispatch_fe:
     next_instruction; // reg == 7
 
 inc_fe_reg:
-    a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op ADD, q_sel ALU,
+    a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op ADD,
         rd_sel_source MODRM_RM_REG, reg_wr_en, update_flags OF SF ZF AF PF,
         width 8, next_instruction;
 inc_fe_mem:
     width 8, segment DS, mem_read;
-    a_sel MDR, b_sel IMMEDIATE, immediate 0x1, alu_op ADD, q_sel ALU,
+    a_sel MDR, b_sel IMMEDIATE, immediate 0x1, alu_op ADD,
         mdr_write, update_flags OF SF ZF AF PF, width 8, segment DS;
     segment DS, mem_write, next_instruction;
 
 dec_fe_reg:
-    a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB, q_sel ALU,
+    a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
         rd_sel_source MODRM_RM_REG, reg_wr_en, update_flags OF SF ZF AF PF,
         width 8, next_instruction;
 dec_fe_mem:
     width 8, segment DS, mem_read;
-    a_sel MDR, b_sel IMMEDIATE, immediate 0x1, alu_op SUB, q_sel ALU,
+    a_sel MDR, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
         mdr_write, update_flags OF SF ZF AF PF, width 8, segment DS;
     segment DS, mem_write, next_instruction;
 
 inc_ff_reg:
-    a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op ADD, q_sel ALU,
+    a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op ADD,
         rd_sel_source MODRM_RM_REG, reg_wr_en, update_flags OF SF ZF AF PF,
         next_instruction;
 inc_ff_mem:
     segment DS, mem_read;
-    a_sel MDR, b_sel IMMEDIATE, immediate 0x1, alu_op ADD, q_sel ALU,
+    a_sel MDR, b_sel IMMEDIATE, immediate 0x1, alu_op ADD,
         mdr_write, update_flags OF SF ZF AF PF, segment DS;
     segment DS, mem_write, next_instruction;
 
 dec_ff_reg:
-    a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB, q_sel ALU,
+    a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
         rd_sel_source MODRM_RM_REG, reg_wr_en, update_flags OF SF ZF AF PF,
         next_instruction;
 dec_ff_mem:
     segment DS, mem_read;
-    a_sel MDR, b_sel IMMEDIATE, immediate 0x1, alu_op SUB, q_sel ALU,
+    a_sel MDR, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
         mdr_write, update_flags OF SF ZF AF PF, segment DS;
     segment DS, mem_write, next_instruction;
 
@@ -57,7 +57,7 @@ dec_ff_mem:
 .at opcode;                                                             \
     ra_sel reg, jmp inc ## reg;                                         \
 inc ## reg:                                                             \
-    a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op ADD, q_sel ALU,    \
+    a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op ADD,    \
         rd_sel_source MICROCODE_RD_SEL, rd_sel reg, reg_wr_en,          \
         next_instruction;
 
@@ -65,7 +65,7 @@ inc ## reg:                                                             \
 .at opcode;                                                             \
     ra_sel reg, jmp dec ## reg;                                         \
 dec ## reg:                                                             \
-    a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB, q_sel ALU,    \
+    a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,    \
         rd_sel_source MICROCODE_RD_SEL, rd_sel reg, reg_wr_en,          \
         next_instruction;
 

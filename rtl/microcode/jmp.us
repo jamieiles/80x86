@@ -2,43 +2,43 @@
     read_immed, jmp jmpe9;
 .auto_address;
 jmpe9:
-    a_sel IP, b_sel IMMEDIATE, alu_op ADD, q_sel ALU, load_ip,
+    a_sel IP, b_sel IMMEDIATE, alu_op ADD, load_ip,
         next_instruction;
 
 .at 0xea;
     read_immed, jmp jmpea;
 .auto_address;
 jmpea:
-    b_sel IMMEDIATE, alu_op SELB, q_sel ALU, load_ip;
+    b_sel IMMEDIATE, alu_op SELB, load_ip;
     // read_immed can't be combined in the previous microinstruction as
     // otherwise it will clobber the immediate during stalling whilst load_ip
     // is asserted and we'll load an invalid IP.
     read_immed;
-    b_sel IMMEDIATE, alu_op SELB, q_sel ALU, segment_wr_en,
+    b_sel IMMEDIATE, alu_op SELB, segment_wr_en,
         segment_force, sr_wr_sel CS, next_instruction;
 
 .at 0xeb;
     width 8, read_immed, jmp jmpeb;
 .auto_address;
 jmpeb:
-    a_sel IP, b_sel IMMEDIATE, alu_op ADD, q_sel ALU, load_ip,
+    a_sel IP, b_sel IMMEDIATE, alu_op ADD, load_ip,
         next_instruction;
 
 jmpff_indirect_intra_reg:
-    a_sel RA, alu_op SELA, q_sel ALU, load_ip,
+    a_sel RA, alu_op SELA, load_ip,
         next_instruction;
 jmpff_indirect_intra_mem:
     segment DS, mem_read;
-    a_sel MDR, alu_op SELA, q_sel ALU, load_ip,
+    a_sel MDR, alu_op SELA, load_ip,
         next_instruction;
 
 jmpff_indirect_inter_reg:
     next_instruction;
 jmpff_indirect_inter_mem:
     segment DS, mem_read;
-    a_sel MDR, alu_op SELA, q_sel ALU, load_ip;
-    immediate 0x2, a_sel MAR, b_sel IMMEDIATE, alu_op ADD, q_sel ALU,
+    a_sel MDR, alu_op SELA, load_ip;
+    immediate 0x2, a_sel MAR, b_sel IMMEDIATE, alu_op ADD,
         mar_wr_sel Q, mar_write, segment DS;
     segment DS, mem_read;
-    a_sel MDR, alu_op SELA, q_sel ALU, segment_wr_en,
+    a_sel MDR, alu_op SELA, segment_wr_en,
         segment_force, sr_wr_sel CS, next_instruction;

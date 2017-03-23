@@ -36,11 +36,6 @@ class BDriver(Enum):
     SR = 2
     TEMP = 3
 
-class QDriver(Enum):
-    MAR = 0
-    MDR = 1
-    ALU = 2
-
 class ALUOp(Enum):
     SELA = 0
     SELB = 1

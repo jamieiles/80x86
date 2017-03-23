@@ -4,7 +4,7 @@
 .auto_address;
 lea_reg:
     rd_sel AX, rd_sel_source MICROCODE_RD_SEL, a_sel MAR, alu_op SELA,
-        reg_wr_en, q_sel ALU, next_instruction;
+        reg_wr_en, next_instruction;
 lea_mem:
     rd_sel AX, rd_sel_source MICROCODE_RD_SEL, a_sel MAR, alu_op SELA,
-        reg_wr_en, q_sel ALU, next_instruction;
+        reg_wr_en, next_instruction;

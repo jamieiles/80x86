@@ -1,42 +1,42 @@
 #define SHIFT1_8(alu_func, flags)                                               \
 .auto_address;                                                                  \
 alu_func ## d0_reg:                                                             \
-    a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op alu_func, q_sel ALU,       \
+    a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op alu_func,       \
         rd_sel_source MODRM_RM_REG, update_flags flags,                         \
         reg_wr_en, width 8, next_instruction;                                   \
 alu_func ## d0_mem:                                                             \
     segment DS, mem_read, width 8;                                              \
     width 8, a_sel MDR, b_sel IMMEDIATE, immediate 0x1, alu_op alu_func,        \
-        q_sel ALU, mdr_write, update_flags flags, segment DS;                   \
+        mdr_write, update_flags flags, segment DS;                   \
     segment DS, mem_write, width 8, next_instruction;
 
 #define SHIFT1_16(alu_func, flags)                                              \
 alu_func ## d1_reg:                                                             \
-    a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op alu_func, q_sel ALU,       \
+    a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op alu_func,       \
         rd_sel_source MODRM_RM_REG, update_flags flags,                         \
         reg_wr_en, next_instruction;                                            \
 alu_func ## d1_mem:                                                             \
     segment DS, mem_read;                                                       \
-    a_sel MDR, b_sel IMMEDIATE, immediate 0x1, alu_op alu_func, q_sel ALU,      \
+    a_sel MDR, b_sel IMMEDIATE, immediate 0x1, alu_op alu_func,      \
         mdr_write, update_flags flags, segment DS;                              \
     segment DS, mem_write, next_instruction;
 
 #define SHIFTN_8(alu_func, flags)                                               \
 alu_func ## d2_reg:                                                             \
-    a_sel RA, b_sel RB, alu_op alu_func, q_sel ALU, rd_sel_source MODRM_RM_REG, \
+    a_sel RA, b_sel RB, alu_op alu_func, rd_sel_source MODRM_RM_REG, \
         update_flags flags, reg_wr_en, width 8, next_instruction;               \
 alu_func ## d2_mem:                                                             \
     segment DS, mem_read, width 8, rb_cl;                                       \
-    width 8, a_sel MDR, b_sel RB, alu_op alu_func, q_sel ALU, mdr_write,        \
+    width 8, a_sel MDR, b_sel RB, alu_op alu_func, mdr_write,        \
         update_flags flags, segment DS;                                         \
     segment DS, mem_write, width 8, next_instruction;
 
 #define SHIFTN_16(alu_func, flags)                                              \
 alu_func ## d3_reg:                                                             \
-    a_sel RA, b_sel RB, alu_op alu_func, q_sel ALU, rd_sel_source MODRM_RM_REG, \
+    a_sel RA, b_sel RB, alu_op alu_func, rd_sel_source MODRM_RM_REG, \
         update_flags flags, reg_wr_en, next_instruction;                        \
 alu_func ## d3_mem:                                                             \
     segment DS, mem_read, rb_cl;                                                \
-    a_sel MDR, b_sel RB, alu_op alu_func, q_sel ALU, mdr_write,                 \
+    a_sel MDR, b_sel RB, alu_op alu_func, mdr_write,                 \
         update_flags flags, segment DS;                                         \
     segment DS, mem_write, next_instruction;

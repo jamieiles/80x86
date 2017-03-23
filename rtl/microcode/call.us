@@ -3,29 +3,29 @@
 .auto_address;
 calle8:
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
-        q_sel ALU, reg_wr_en, rd_sel_source MICROCODE_RD_SEL, mar_write,
+        reg_wr_en, rd_sel_source MICROCODE_RD_SEL, mar_write,
         mar_wr_sel Q;
-    a_sel IP, alu_op SELA, q_sel ALU, mdr_write, ra_sel SP, segment DS;
-    segment DS, mem_write, a_sel IP, b_sel IMMEDIATE, alu_op ADD, q_sel ALU,
+    a_sel IP, alu_op SELA, mdr_write, ra_sel SP, segment DS;
+    segment DS, mem_write, a_sel IP, b_sel IMMEDIATE, alu_op ADD,
         load_ip;
     next_instruction;
 
 callff_indirect_intra_reg:
-    a_sel RA, alu_op SELA, q_sel ALU, load_ip, jmp callff_indirect_intra_save,
+    a_sel RA, alu_op SELA, load_ip, jmp callff_indirect_intra_save,
         ra_sel SP;
 callff_indirect_intra_mem:
     segment DS, mem_read;
-    a_sel MDR, alu_op SELA, q_sel ALU, load_ip, jmp callff_indirect_intra_save,
+    a_sel MDR, alu_op SELA, load_ip, jmp callff_indirect_intra_save,
         ra_sel SP;
 callff_indirect_intra_save:
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
-        q_sel ALU, reg_wr_en, rd_sel_source MICROCODE_RD_SEL, mar_write,
+        reg_wr_en, rd_sel_source MICROCODE_RD_SEL, mar_write,
         mar_wr_sel Q;
-    a_sel IP, alu_op SELA, q_sel ALU, mdr_write, ra_sel SP, segment DS;
+    a_sel IP, alu_op SELA, mdr_write, ra_sel SP, segment DS;
     segment DS, mem_write, next_instruction;
 
 .at 0x9a;
-    jmp call9a, read_immed, mdr_write, b_sel IMMEDIATE, alu_op SELB, q_sel ALU;
+    jmp call9a, read_immed, mdr_write, b_sel IMMEDIATE, alu_op SELB;
 .auto_address;
 call9a:
     read_immed;
@@ -35,38 +35,38 @@ call9a:
     // both immediates before performing any stack accesses so that IP is
     // correct in case of any kind of fault rather than being in the middle of
     // the instruction stream.
-    a_sel MDR, alu_op SELA, q_sel ALU, load_ip, segment CS;
-    b_sel SR, alu_op SELB, q_sel ALU, mdr_write, ra_sel SP;
+    a_sel MDR, alu_op SELA, load_ip, segment CS;
+    b_sel SR, alu_op SELB, mdr_write, ra_sel SP;
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
-        q_sel ALU, reg_wr_en, rd_sel_source MICROCODE_RD_SEL, mar_write,
+        reg_wr_en, rd_sel_source MICROCODE_RD_SEL, mar_write,
         mar_wr_sel Q, segment DS;
     segment DS, mem_write, ra_sel SP;
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
-        q_sel ALU, reg_wr_en, rd_sel_source MICROCODE_RD_SEL, mar_write,
+        reg_wr_en, rd_sel_source MICROCODE_RD_SEL, mar_write,
         mar_wr_sel Q;
-    a_sel IP, alu_op SELA, q_sel ALU, mdr_write, segment DS;
+    a_sel IP, alu_op SELA, mdr_write, segment DS;
     segment DS, mem_write;
-    b_sel IMMEDIATE, alu_op SELB, q_sel ALU, segment_force, sr_wr_sel CS,
+    b_sel IMMEDIATE, alu_op SELB, segment_force, sr_wr_sel CS,
         segment_wr_en, next_instruction;
 
 callff_indirect_inter_reg:
     next_instruction;
 callff_indirect_inter_mem:
-    b_sel SR, alu_op SELB, q_sel ALU, mdr_write, ra_sel SP;
+    b_sel SR, alu_op SELB, mdr_write, ra_sel SP;
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
-        q_sel ALU, reg_wr_en, rd_sel_source MICROCODE_RD_SEL, mar_write,
+        reg_wr_en, rd_sel_source MICROCODE_RD_SEL, mar_write,
         mar_wr_sel Q, segment DS;
     segment DS, mem_write, ra_sel SP;
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
-        q_sel ALU, reg_wr_en, rd_sel_source MICROCODE_RD_SEL, mar_write,
+        reg_wr_en, rd_sel_source MICROCODE_RD_SEL, mar_write,
         mar_wr_sel Q;
-    a_sel IP, alu_op SELA, q_sel ALU, mdr_write, segment DS;
+    a_sel IP, alu_op SELA, mdr_write, segment DS;
     segment DS, mem_write;
     mar_wr_sel EA, mar_write, segment DS;
     segment DS, mem_read;
-    a_sel MDR, alu_op SELA, q_sel ALU, load_ip;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, q_sel ALU,
+    a_sel MDR, alu_op SELA, load_ip;
+    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD,
         mar_wr_sel Q, mar_write, segment DS;
     segment DS, mem_read;
-    a_sel MDR, alu_op SELA, q_sel ALU, segment_wr_en,
+    a_sel MDR, alu_op SELA, segment_wr_en,
         segment_force, sr_wr_sel CS, next_instruction;

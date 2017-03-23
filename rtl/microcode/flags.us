@@ -35,7 +35,7 @@
 
 // LAHF
 .at 0x9f;
-    alu_op GETFLAGS, q_sel ALU, rd_sel_source MICROCODE_RD_SEL, rd_sel AH,
+    alu_op GETFLAGS, rd_sel_source MICROCODE_RD_SEL, rd_sel AH,
         width 8, reg_wr_en, next_instruction;
 
 // SAHF

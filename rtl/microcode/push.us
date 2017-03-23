@@ -1,17 +1,17 @@
 pushff_reg:
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
-        q_sel ALU, mar_write, mar_wr_sel Q, jmp pushff_reg_save,
+        mar_write, mar_wr_sel Q, jmp pushff_reg_save,
         ra_modrm_rm_reg;
 pushff_mem:
     segment DS, mem_read, jmp pushff_mem_save, ra_sel SP;
 pushff_reg_save:
-    a_sel RA, alu_op SELA, q_sel ALU, mdr_write;
+    a_sel RA, alu_op SELA, mdr_write;
     segment_force, segment SS, mem_write, a_sel MAR, rd_sel SP,
         rd_sel_source MICROCODE_RD_SEL, reg_wr_en, next_instruction;
 pushff_mem_save:
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
-        q_sel ALU, mar_write, mar_wr_sel Q;
-    segment_force, segment SS, mem_write, a_sel MAR, alu_op SELA, q_sel ALU,
+        mar_write, mar_wr_sel Q;
+    segment_force, segment SS, mem_write, a_sel MAR, alu_op SELA,
         rd_sel SP, rd_sel_source MICROCODE_RD_SEL, reg_wr_en, next_instruction;
 
 #define PUSH_GPR(opcode, reg)                                           \
@@ -38,25 +38,25 @@ PUSH_GPR(0x57, DI)
 
 .auto_address;
 push_gpr:
-    a_sel RA, alu_op SELA, q_sel ALU, mdr_write, ra_sel SP;
+    a_sel RA, alu_op SELA, mdr_write, ra_sel SP;
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
-        q_sel ALU, mar_write, mar_wr_sel Q, segment_force, segment SS;
+        mar_write, mar_wr_sel Q, segment_force, segment SS;
     segment_force, segment SS, mem_write, a_sel MAR, rd_sel SP,
         rd_sel_source MICROCODE_RD_SEL, reg_wr_en, next_instruction;
 
 push_sr:
-    b_sel SR, alu_op SELB, q_sel ALU, mdr_write, ra_sel SP;
+    b_sel SR, alu_op SELB, mdr_write, ra_sel SP;
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
-        q_sel ALU, mar_write, mar_wr_sel Q, segment_force, segment SS;
+        mar_write, mar_wr_sel Q, segment_force, segment SS;
     segment_force, segment SS, mem_write, a_sel MAR, rd_sel SP,
         rd_sel_source MICROCODE_RD_SEL, reg_wr_en, next_instruction;
 
 .at 0x9c;
-    alu_op GETFLAGS, q_sel ALU, mdr_write, ra_sel SP, jmp pushf;
+    alu_op GETFLAGS, mdr_write, ra_sel SP, jmp pushf;
 .auto_address;
 pushf:
-    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, q_sel ALU,
+    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB,
         mar_wr_sel Q, mar_write, segment_force, segment SS;
     segment_force, segment SS, mem_write;
-    a_sel MAR, alu_op SELA, q_sel ALU, rd_sel_source MICROCODE_RD_SEL,
+    a_sel MAR, alu_op SELA, rd_sel_source MICROCODE_RD_SEL,
         rd_sel SP, reg_wr_en, next_instruction;

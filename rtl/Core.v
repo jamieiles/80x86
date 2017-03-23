@@ -18,7 +18,6 @@ module Core(input logic clk,
 wire [15:0] a_bus;
 wire [15:0] b_bus;
 wire [15:0] q_bus;
-wire [15:0] q_bus_minus_alu;
 
 wire io_operation;
 assign d_io = io_operation;
@@ -55,7 +54,6 @@ wire immed_fifo_rd_en;
 wire microcode_fifo_rd_en;
 wire [1:0] a_sel;
 wire [1:0] b_sel;
-wire [1:0] q_sel;
 wire [`MC_ALUOp_t_BITS-1:0] alu_op;
 wire [15:0] alu_out;
 wire next_instruction;
@@ -89,15 +87,7 @@ assign b_bus =
     b_sel == BDriver_IMMEDIATE ? immediate :
     b_sel == BDriver_SR ? seg_rd_val : 16'b0;
 
-// The Q bus is tapped off before the ALU so that the MAR/MDR can be fed back
-// into the A/B busses, but without introducing a combinational loop through
-// A/B into the ALU and back out.  Therefore it is not legal to have A/B
-// driven from Q and for Q to be driven from the ALU.
-assign q_bus_minus_alu =
-    q_sel == QDriver_MAR ? mar :
-    q_sel == QDriver_MDR ? mdr : 16'b0;
-assign q_bus =
-    q_sel == QDriver_ALU ? alu_out : q_bus_minus_alu;
+assign q_bus = alu_out;
 
 wire modrm_immed_start;
 wire microcode_immed_start;
@@ -298,7 +288,6 @@ Microcode       microcode(.clk(clk),
                           .mem_read(mem_read),
                           .mem_write(mem_write),
                           .modrm_start(modrm_start),
-                          .q_sel(q_sel),
                           .ra_modrm_rm_reg(ra_modrm_rm_reg),
                           .ra_sel(microcode_reg_rd_sel[0]),
                           .rb_cl(rb_cl),
