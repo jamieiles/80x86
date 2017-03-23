@@ -32,12 +32,12 @@ always @(posedge clk or posedge reset) begin
         cs_updated <= 1'b0;
     end
 
-    if (ip_update && !ip_updated) begin
+    if (ip_update && !ip_updated && !propagate) begin
         ip <= new_ip;
         ip_updated <= 1'b1;
     end
 
-    if (cs_update)
+    if (cs_update && !propagate)
         cs_updated <= 1'b1;
 end
 

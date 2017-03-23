@@ -92,3 +92,22 @@ TEST_F(CSIPSyncTestFixture, CSPropagateDelayed)
 
     cycle();
 }
+
+TEST_F(CSIPSyncTestFixture, SimultaneousUpdatePropagateDoesntLatch)
+{
+    after_n_cycles(0, [&]{
+        this->dut.new_ip = 0xf00f;
+        this->dut.propagate = 1;
+        this->dut.ip_update = 1;
+        after_n_cycles(1, [&]{
+            this->dut.propagate = 0;
+            this->dut.ip_in = 0x1001;
+            this->dut.new_ip = 0x1001;
+        });
+    });
+    cycle(1);
+    ASSERT_EQ(this->dut.ip_out, 0xf00f);
+
+    propagate();
+    ASSERT_EQ(this->dut.ip_out, 0x1001);
+}
