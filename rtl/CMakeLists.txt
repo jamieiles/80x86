@@ -37,6 +37,7 @@ set(microprogram_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/shr.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/sub.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/test.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/xchg.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/xor.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/wait.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/microcode.us)

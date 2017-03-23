@@ -85,12 +85,6 @@ EmulateFixture.StosbDec:\
 EmulateFixture.Stosw:\
 EmulateFixture.StoswDec:\
 EmulateFixture.TrapOnInt3:\
-EmulateFixture.XchgALALNop:\
-EmulateFixture.XchgRegAccumulator:\
-EmulateFixture.XchgRegMem16:\
-EmulateFixture.XchgRegMem8:\
-EmulateFixture.XchgRegReg16:\
-EmulateFixture.XchgRegReg8:\
 EmulateFixture.Xlat:\
 IMul/MulMem16Test.*:\
 IMul/MulMem8Test.*:\
