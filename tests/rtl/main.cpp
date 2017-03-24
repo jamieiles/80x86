@@ -30,12 +30,8 @@ EmulateFixture.Aam129:\
 EmulateFixture.AamDivByZero:\
 EmulateFixture.AamSigned:\
 EmulateFixture.Aas:\
-EmulateFixture.CbwNegative:\
-EmulateFixture.CbwPositive:\
 EmulateFixture.CmpsbDec:\
 EmulateFixture.CmpswDec:\
-EmulateFixture.CwdNegative:\
-EmulateFixture.CwdPositive:\
 EmulateFixture.DSSegmentOverrideIsNop:\
 EmulateFixture.Daa:\
 EmulateFixture.Das:\

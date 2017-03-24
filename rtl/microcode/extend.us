@@ -1,0 +1,15 @@
+.at 0x98;
+    width 8, ra_sel AL, jmp cbw;
+.auto_address;
+cbw:
+    width 8, a_sel RA, b_sel IMMEDIATE, immediate 0x8, alu_op SAR,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel AH, reg_wr_en,
+        next_instruction;
+
+.at 0x99;
+    ra_sel AX, jmp cwd;
+.auto_address;
+cwd:
+    a_sel RA, b_sel IMMEDIATE, immediate 0x10, alu_op SAR,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel DX, reg_wr_en,
+        next_instruction;
