@@ -14,6 +14,7 @@ public:
 
     void set_instruction(const std::vector<uint8_t> bytes)
     {
+        stream.clear();
         stream.insert(stream.end(), bytes.begin(), bytes.end());
     }
 
@@ -155,4 +156,26 @@ TEST_F(ModRMFixture, EAHeld)
     regs.set(BX, 0x0000);
     cycle();
     ASSERT_EQ(dut.effective_address, 0x1234);
+}
+
+TEST_F(ModRMFixture, BPAsBase)
+{
+    for (uint8_t mod = 0; mod < 4; ++mod) {
+        for (uint8_t rm = 0; rm < 8; ++rm) {
+            reset();
+
+            set_instruction({ static_cast<uint8_t>((mod << 6) | rm),
+                              0xff, 0xff  });
+            decode();
+
+            if (mod == 0)
+                EXPECT_TRUE(this->dut.bp_as_base ==
+                            (rm == 2 || rm == 3));
+            else if (mod == 1 || mod == 2)
+                EXPECT_TRUE(this->dut.bp_as_base ==
+                            (rm == 2 || rm == 3 || rm == 6));
+            else
+                EXPECT_FALSE(this->dut.bp_as_base);
+        }
+    }
 }

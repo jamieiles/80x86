@@ -45,8 +45,16 @@ assign complete = reset ? 1'b0 :
         (!_has_immediate || immed_complete);
 assign immed_start = _has_immediate && _modrm_byte_read;
 assign immed_is_8bit = _mod == 2'b01;
-assign bp_as_base = reg_sel[0] == BP;
 assign effective_address = complete ? _effective_address : _cached_effective_address;
+
+always_comb begin
+    case (_mod)
+    2'b00: bp_as_base = (_rm == 3'b010 || _rm == 3'b011);
+    2'b01: bp_as_base = (_rm == 3'b010 || _rm == 3'b011 || _rm == 3'b110);
+    2'b10: bp_as_base = (_rm == 3'b010 || _rm == 3'b011 || _rm == 3'b110);
+    default: bp_as_base = 1'b0;
+    endcase
+end
 
 always_ff @(posedge clk or posedge reset) begin
     if (reset)
