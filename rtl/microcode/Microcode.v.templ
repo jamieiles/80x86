@@ -64,7 +64,7 @@ initial begin
 end
 
 always_ff @(posedge clk or posedge reset)
-    if (reset || current.jump_type != JumpType_OPCODE)
+    if (reset || !do_stall)
         opcode_popped <= 1'b0;
     else if (fifo_rd_en)
         opcode_popped <= 1'b1;
