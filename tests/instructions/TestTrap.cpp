@@ -13,6 +13,8 @@ TEST_F(EmulateFixture, TrapOnInt3)
 
     ASSERT_FALSE(cpu->has_trapped());
 
+    reset();
+
     set_instruction({ 0xcc });
     emulate();
 

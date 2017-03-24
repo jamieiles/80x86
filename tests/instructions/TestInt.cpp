@@ -46,16 +46,16 @@ TEST_F(EmulateFixture, IntN)
     set_instruction({ 0xcd, 0x03 });
     emulate();
 
-    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
                         FLAGS_STUCK_BITS | CF);
-    ASSERT_EQ(read_reg(CS), 0x8000);
-    ASSERT_EQ(read_reg(IP), 0x0100);
-    ASSERT_EQ(read_reg(SP), 0x0100 - 6);
+    EXPECT_EQ(read_reg(CS), 0x8000);
+    EXPECT_EQ(read_reg(IP), 0x0100);
+    EXPECT_EQ(read_reg(SP), 0x0100 - 6);
 
-    ASSERT_EQ(read_mem<uint16_t>(0x100 - 2), FLAGS_STUCK_BITS | CF | IF | TF);
-    ASSERT_EQ(read_mem<uint16_t>(0x100 - 4), 0x7c00);
+    EXPECT_EQ(read_mem<uint16_t>(0x100 - 2), FLAGS_STUCK_BITS | CF | IF | TF);
+    EXPECT_EQ(read_mem<uint16_t>(0x100 - 4), 0x7c00);
     // Return to the following instruction
-    ASSERT_EQ(read_mem<uint16_t>(0x100 - 6), 0x0003);
+    EXPECT_EQ(read_mem<uint16_t>(0x100 - 6), 0x0003);
 }
 
 TEST_F(EmulateFixture, IntoNotTaken)

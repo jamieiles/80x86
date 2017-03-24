@@ -40,7 +40,6 @@ EmulateFixture.DSSegmentOverrideIsNop:\
 EmulateFixture.Daa:\
 EmulateFixture.Das:\
 EmulateFixture.Hlt:\
-EmulateFixture.IntN:\
 EmulateFixture.IntoNotTaken:\
 EmulateFixture.IntoTaken:\
 EmulateFixture.JcxzNotTaken:\
@@ -76,7 +75,6 @@ EmulateFixture.Stosb:\
 EmulateFixture.StosbDec:\
 EmulateFixture.Stosw:\
 EmulateFixture.StoswDec:\
-EmulateFixture.TrapOnInt3:\
 IMul/MulMem16Test.*:\
 IMul/MulMem8Test.*:\
 IMul/MulReg16Test.*:\
