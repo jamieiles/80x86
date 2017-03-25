@@ -86,3 +86,7 @@ class JumpType(Enum):
 class MARWrSel(Enum):
     EA = 0
     Q = 1
+
+class PrefixType(Enum):
+    NONE = 0
+    SEGMENT_OVERRIDE = 1

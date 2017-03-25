@@ -12,6 +12,7 @@ module Microcode(input logic clk,
                  input logic [2:0] modrm_reg,
                  output logic [15:0] microcode_immediate,
                  output logic use_microcode_immediate,
+                 output logic segment_override,
                  // Microinstruction fields.
                  <%#exported_fields%>
                  output logic <%type%><%name%>,
@@ -31,6 +32,7 @@ typedef struct packed {
 <%/fields%>
 } microcode_instruction;
 
+assign segment_override = current.prefix_type == PrefixType_SEGMENT_OVERRIDE;
 assign use_microcode_immediate = |current.immediate;
 
 always_comb begin

@@ -1,15 +1,15 @@
 // ES segment override
 .at 0x26;
-    segment ES, segment_override, fifo_pop, jmp_opcode;
+    segment ES, prefix_type SEGMENT_OVERRIDE, fifo_pop, jmp_opcode;
 
 // CS segment override
 .at 0x2e;
-    segment CS, segment_override, fifo_pop, jmp_opcode;
+    segment CS, prefix_type SEGMENT_OVERRIDE, fifo_pop, jmp_opcode;
 
 // SS segment override
 .at 0x36;
-    segment SS, segment_override, fifo_pop, jmp_opcode;
+    segment SS, prefix_type SEGMENT_OVERRIDE, fifo_pop, jmp_opcode;
 
 // DS segment override
 .at 0x3e;
-    segment DS, segment_override, fifo_pop, jmp_opcode;
+    segment DS, prefix_type SEGMENT_OVERRIDE, fifo_pop, jmp_opcode;
