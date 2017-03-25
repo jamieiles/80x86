@@ -6,13 +6,12 @@
 class SegmentOverrideTestFixture : public VerilogTestbench<VSegmentOverride>,
     public ::testing::Test {
 public:
-    void add_override(int segnum)
+    void add_override(uint8_t segnum)
     {
-        after_n_cycles(0, [&]{
+        after_n_cycles(0, [segnum, this]{
             this->dut.microcode_sr_rd_sel = segnum;
             this->dut.segment_override = 1;
             after_n_cycles(1, [&]{
-                this->dut.microcode_sr_rd_sel = 0;
                 this->dut.segment_override = 0;
             });
         });
