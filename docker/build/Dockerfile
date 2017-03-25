@@ -31,7 +31,11 @@ RUN cd /tmp && \
         make install && \
         cd /tmp && \
         rm verilator* -rf
-RUN gem install --no-ri --pre asciidoctor-pdf coderay pygments.rb
+RUN gem install --no-ri --pre prawn --version 2.1.0
+RUN gem install --no-ri --pre \
+        asciidoctor-pdf \
+        coderay \
+        pygments.rb
 RUN mkdir -p /build
 WORKDIR /build
 RUN apt-get install -y python3-setuptools
