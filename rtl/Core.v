@@ -104,9 +104,10 @@ wire [15:0] immediate_reader_immediate;
 wire [15:0] immediate = use_microcode_immediate ? microcode_immediate :
     immediate_reader_immediate;
 
-wire microcode_stall = (modrm_busy & ~modrm_complete) |
+wire do_stall = (modrm_busy & ~modrm_complete) |
     (immed_busy & ~immed_complete) |
     loadstore_busy;
+wire do_next_instruction = next_instruction & ~do_stall;
 wire [15:0] microcode_immediate;
 wire use_microcode_immediate;
 
@@ -128,13 +129,10 @@ wire loadstore_is_store = mem_write;
 wire loadstore_complete;
 wire loadstore_busy;
 wire [1:0] microcode_segment;
-wire [1:0] segment = segment_force ? microcode_segment :
-    microcode_segment == DS && modrm_uses_bp_as_base ? SS :
-    microcode_segment;
-// verilator lint_off UNUSED
+wire [1:0] segment;
 wire segment_override;
-// verilator lint_on UNUSED
 wire segment_wr_en;
+
 wire [8:0] update_flags;
 wire [15:0] flags;
 wire [15:0] alu_flags_out;
@@ -151,6 +149,15 @@ RegisterFile    regfile(.clk(clk),
                         .wr_sel(reg_wr_sel),
                         .wr_val(reg_wr_val),
                         .wr_en(reg_wr_en));
+
+SegmentOverride SegmentOverride(.clk(clk),
+                                .reset(reset),
+                                .next_instruction(do_next_instruction),
+                                .force_segment(segment_force),
+                                .bp_is_base(modrm_uses_bp_as_base),
+                                .segment_override(segment_override),
+                                .microcode_sr_rd_sel(microcode_segment),
+                                .sr_rd_sel(segment));
 
 SegmentRegisterFile segregs(.clk(clk),
                             .reset(reset),
@@ -182,7 +189,7 @@ CSIPSync        ipsync(.clk(clk),
                        .ip_update(ip_wr_en),
                        .ip_in(ip_current),
                        .new_ip(q_bus),
-                       .propagate(next_instruction),
+                       .propagate(do_next_instruction),
                        .ip_out(prefetch_new_ip),
                        .update_out(prefetch_load_new_ip));
 
@@ -274,7 +281,7 @@ LoadStore       loadstore(.clk(clk),
 
 Microcode       microcode(.clk(clk),
                           .reset(reset),
-                          .stall(microcode_stall),
+                          .stall(do_stall),
                           .modrm_reg(regnum),
                           .microcode_immediate(microcode_immediate),
                           .use_microcode_immediate(use_microcode_immediate),

@@ -34,6 +34,7 @@ add_executable(rtl-unittest
                TestModRMDecode.cpp
                TestPrefetch.cpp
                TestRegisterFile.cpp
+               TestSegmentOverride.cpp
                TestSegmentRegisterFile.cpp
 	       $<TARGET_OBJECTS:instructions>
                main.cpp)
@@ -51,6 +52,7 @@ target_link_libraries(rtl-unittest
                       VModRMTestbench
                       VPrefetch
                       VRegisterFile
+                      VSegmentOverride
                       VSegmentRegisterFile
 		      gtest
 		      gmock

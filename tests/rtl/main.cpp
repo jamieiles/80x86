@@ -32,7 +32,6 @@ EmulateFixture.AamSigned:\
 EmulateFixture.Aas:\
 EmulateFixture.CmpsbDec:\
 EmulateFixture.CmpswDec:\
-EmulateFixture.DSSegmentOverrideIsNop:\
 EmulateFixture.Daa:\
 EmulateFixture.Das:\
 EmulateFixture.Hlt:\
@@ -57,8 +56,6 @@ EmulateFixture.MovsbDec:\
 EmulateFixture.MovsbInc:\
 EmulateFixture.MovswDec:\
 EmulateFixture.MovswInc:\
-EmulateFixture.PopMemSegmentOverride:\
-EmulateFixture.PushMemSegmentOverride:\
 EmulateFixture.ScasbDec:\
 EmulateFixture.ScasbDecRepe:\
 EmulateFixture.ScasbInc:\
@@ -80,8 +77,7 @@ JmpConditionalAlias/JmpFixture.*:\
 Mul/MulMem16Test.*:\
 Mul/MulMem8Test.*:\
 Mul/MulReg16Test.*:\
-Mul/MulReg8Test.*:\
-SegmentOverride/MovOverride.*";
+Mul/MulReg8Test.*";
 
     return RUN_ALL_TESTS();
 }

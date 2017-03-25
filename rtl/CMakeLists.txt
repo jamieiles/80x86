@@ -26,6 +26,7 @@ set(microprogram_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/not.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/or.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/pop.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/prefixes.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/push.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/rcl.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/rcr.us
@@ -101,6 +102,7 @@ verilate(TOPLEVEL Core
          ${CMAKE_CURRENT_SOURCE_DIR}/ModRMDecode.v
          ${CMAKE_CURRENT_SOURCE_DIR}/Prefetch.v
          ${CMAKE_CURRENT_SOURCE_DIR}/RegisterFile.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/SegmentOverride.v
          ${CMAKE_CURRENT_SOURCE_DIR}/SegmentRegisterFile.v
          ${CMAKE_CURRENT_BINARY_DIR}/Microcode.v
          GENERATED_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/VCore___024unit.cpp
@@ -126,6 +128,9 @@ verilate(TOPLEVEL Prefetch
          VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Prefetch.v)
 verilate(TOPLEVEL RegisterFile
          VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/RegisterFile.v)
+verilate(TOPLEVEL SegmentOverride
+         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/RegisterEnum.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/SegmentOverride.v)
 verilate(TOPLEVEL SegmentRegisterFile
          VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/RegisterEnum.v
          ${CMAKE_CURRENT_SOURCE_DIR}/SegmentRegisterFile.v)
