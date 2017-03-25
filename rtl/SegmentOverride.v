@@ -24,6 +24,7 @@ end
 always_ff @(posedge clk or posedge reset) begin
     if (reset || next_instruction) begin
         override_active <= 1'b0;
+        override <= 2'b00;
     end else if (segment_override) begin
         override <= microcode_sr_rd_sel;
         override_active <= 1'b1;
