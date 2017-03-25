@@ -23,9 +23,9 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         flex \
         bison
 RUN cd /tmp && \
-        wget https://www.veripool.org/ftp/verilator-3.888.tgz && \
-        tar xf verilator-3.888.tgz && \
-        cd verilator-3.888 && \
+        wget https://www.veripool.org/ftp/verilator-3.900.tgz && \
+        tar xf verilator-3.900.tgz && \
+        cd verilator-3.900 && \
         ./configure --prefix=/usr && \
         make -j4 && \
         make install && \
