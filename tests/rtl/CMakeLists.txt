@@ -59,4 +59,4 @@ target_link_libraries(rtl-unittest
                       verilator
                       rtlsim)
 add_test(rtl-unittest rtl-unittest)
-set_tests_properties(rtl-unittest PROPERTIES TIMEOUT 5)
+set_tests_properties(rtl-unittest PROPERTIES TIMEOUT 20)
