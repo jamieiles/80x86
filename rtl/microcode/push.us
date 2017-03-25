@@ -5,12 +5,12 @@ pushff_reg:
 pushff_mem:
     segment DS, mem_read, jmp pushff_mem_save, ra_sel SP;
 pushff_reg_save:
-    a_sel RA, alu_op SELA, mdr_write;
+    a_sel RA, alu_op SELA, mdr_write, segment_force, segment SS;
     segment_force, segment SS, mem_write, a_sel MAR, rd_sel SP,
         rd_sel_source MICROCODE_RD_SEL, reg_wr_en, next_instruction;
 pushff_mem_save:
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
-        mar_write, mar_wr_sel Q;
+        mar_write, mar_wr_sel Q, segment_force, segment SS;
     segment_force, segment SS, mem_write, a_sel MAR, alu_op SELA,
         rd_sel SP, rd_sel_source MICROCODE_RD_SEL, reg_wr_en, next_instruction;
 
