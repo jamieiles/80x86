@@ -42,6 +42,7 @@ function(verilate)
         set(VERILATOR_INCLUDE_ARGS "${VERILATOR_INCLUDE_ARGS} -I${incdir}")
     endforeach(incdir)
     separate_arguments(VERILATOR_INCLUDE_ARGS)
+    set_source_files_properties(${generated} PROPERTIES COMPILE_FLAGS -Wno-unused-parameter)
     add_custom_command(OUTPUT ${generated}
                        COMMAND rm -f ${generated}
                        COMMAND verilator -sv -O3 ${verilate_VERILOG_SOURCES}
