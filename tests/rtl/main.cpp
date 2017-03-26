@@ -31,8 +31,6 @@ EmulateFixture.Das:\
 EmulateFixture.Hlt:\
 EmulateFixture.IntoNotTaken:\
 EmulateFixture.IntoTaken:\
-EmulateFixture.JcxzNotTaken:\
-EmulateFixture.JcxzTaken:\
 EmulateFixture.Lock:\
 IMul/MulMem16Test.*:\
 IMul/MulMem8Test.*:\

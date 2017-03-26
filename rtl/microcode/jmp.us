@@ -42,3 +42,16 @@ jmpff_indirect_inter_mem:
     segment DS, mem_read;
     a_sel MDR, alu_op SELA, segment_wr_en,
         segment_force, sr_wr_sel CS, next_instruction;
+
+// JCXZ
+.at 0xe3;
+    width 8, read_immed, jmp jcxz;
+
+.auto_address;
+jcxz:
+    ra_sel CX;
+    a_sel RA, b_sel IMMEDIATE, immediate 0x0, alu_op SUB,
+        jmp_if_zero jcxz_taken;
+    next_instruction;
+jcxz_taken:
+    a_sel IP, b_sel IMMEDIATE, alu_op ADD, load_ip, next_instruction;
