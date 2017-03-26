@@ -105,6 +105,7 @@ verilate(TOPLEVEL Core
          ${CMAKE_CURRENT_SOURCE_DIR}/RegisterFile.v
          ${CMAKE_CURRENT_SOURCE_DIR}/SegmentOverride.v
          ${CMAKE_CURRENT_SOURCE_DIR}/SegmentRegisterFile.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/TempReg.v
          ${CMAKE_CURRENT_BINARY_DIR}/Microcode.v
          GENERATED_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/VCore___024unit.cpp
          ${CMAKE_CURRENT_BINARY_DIR}/VCore___024unit.h)

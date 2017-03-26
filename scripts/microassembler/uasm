@@ -237,6 +237,7 @@ class MicroAssembler(object):
         'ra_modrm_rm_reg': (1, _boolean, True),
         'rd_sel_source': (num_bits(len(RDSelSource)), partial(_enumerated_field, enum_class=RDSelSource), True),
         'reg_wr_en': (1, _boolean, True),
+        'tmp_wr_en': (1, _boolean, True),
         'width': (1, _boolean, True),
         'load_ip': (1, _boolean, True),
         'read_immed': (1, _boolean, True),

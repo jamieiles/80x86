@@ -53,7 +53,7 @@ wire modrm_fifo_rd_en;
 wire immed_fifo_rd_en;
 wire microcode_fifo_rd_en;
 wire [1:0] a_sel;
-wire [1:0] b_sel;
+wire [2:0] b_sel;
 wire [`MC_ALUOp_t_BITS-1:0] alu_op;
 wire [15:0] alu_out;
 wire next_instruction;
@@ -71,6 +71,8 @@ wire [2:0] regnum;
 wire rm_is_reg;
 wire [2:0] rm_regnum;
 wire [15:0] mar_wr_val;
+wire tmp_wr_en;
+wire [15:0] tmp_val;
 assign mar_wr_val = mar_wr_sel == MARWrSel_EA ? effective_address : q_bus;
 
 wire ip_inc = fifo_rd_en & ~fifo_empty;
@@ -89,7 +91,9 @@ assign a_bus =
 assign b_bus =
     b_sel == BDriver_RB ? reg_rd_val[1] :
     b_sel == BDriver_IMMEDIATE ? immediate :
-    b_sel == BDriver_SR ? seg_rd_val : reg_rd_val[0];
+    b_sel == BDriver_SR ? seg_rd_val :
+    b_sel == BDriver_RA ? reg_rd_val[0] :
+    tmp_val;
 
 assign q_bus = alu_out;
 
@@ -192,6 +196,12 @@ CSIPSync        ipsync(.clk(clk),
                        .propagate(do_next_instruction),
                        .ip_out(prefetch_new_ip),
                        .update_out(prefetch_load_new_ip));
+
+TempReg         TempReg(.clk(clk),
+                        .reset(reset),
+                        .wr_val(q_bus),
+                        .wr_en(tmp_wr_en),
+                        .val(tmp_val));
 
 Prefetch        prefetch(.clk(clk),
                          .reset(reset),
@@ -311,6 +321,7 @@ Microcode       microcode(.clk(clk),
                           .segment_force(segment_force),
                           .segment_wr_en(segment_wr_en),
                           .sr_wr_sel(microcode_seg_wr_sel),
+                          .tmp_wr_en(tmp_wr_en),
                           .update_flags(update_flags),
                           .width(is_8_bit),
                           .fifo_rd_en(microcode_fifo_rd_en),
