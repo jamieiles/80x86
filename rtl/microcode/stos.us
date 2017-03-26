@@ -1,0 +1,44 @@
+.at 0xaa;
+    jmp stosb;
+
+.auto_address;
+stosb:
+    ra_sel DI, jmp_if_not_rep stosb_no_rep;
+    ra_sel CX;
+stosb_rep_loop:
+    ra_sel CX, a_sel RA, b_sel IMMEDIATE, immediate 0x0, alu_op SUB,
+        jmp_if_zero stosb_done;
+    ra_sel DI, a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel CX, reg_wr_en;
+stosb_no_rep:
+    ra_sel DI, a_sel RA, alu_op SELA, mar_wr_sel Q, mar_write;
+    a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op NEXT,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel DI, reg_wr_en;
+    width 8, ra_sel AL;
+    width 8, alu_op SELA, mdr_write, segment ES, segment_force;
+    width 8, segment ES, segment_force, mem_write;
+    ra_sel CX, jmp stosb_rep_loop;
+stosb_done:
+    next_instruction;
+
+.at 0xab;
+    jmp stosw;
+
+.auto_address;
+stosw:
+    ra_sel DI, jmp_if_not_rep stosw_no_rep;
+    ra_sel CX;
+stosw_rep_loop:
+    ra_sel CX, a_sel RA, b_sel IMMEDIATE, immediate 0x0, alu_op SUB,
+        jmp_if_zero stosw_done;
+    ra_sel DI, a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel CX, reg_wr_en;
+stosw_no_rep:
+    ra_sel DI, a_sel RA, alu_op SELA, mar_wr_sel Q, mar_write;
+    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op NEXT,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel DI, reg_wr_en;
+    ra_sel AL;
+    alu_op SELA, mdr_write, segment ES, segment_force;
+    segment ES, segment_force, mem_write, ra_sel CX, jmp stosw_rep_loop;
+stosw_done:
+    next_instruction;

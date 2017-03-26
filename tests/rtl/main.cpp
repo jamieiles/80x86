@@ -46,10 +46,6 @@ EmulateFixture.MovsbDec:\
 EmulateFixture.MovsbInc:\
 EmulateFixture.MovswDec:\
 EmulateFixture.MovswInc:\
-EmulateFixture.Stosb:\
-EmulateFixture.StosbDec:\
-EmulateFixture.Stosw:\
-EmulateFixture.StoswDec:\
 IMul/MulMem16Test.*:\
 IMul/MulMem8Test.*:\
 IMul/MulReg16Test.*:\
