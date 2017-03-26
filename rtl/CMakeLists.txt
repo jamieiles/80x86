@@ -23,6 +23,7 @@ set(microprogram_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/lea.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/les.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/lods.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/loop.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/mov.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/movs.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/neg.us

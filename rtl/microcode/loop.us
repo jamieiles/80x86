@@ -1,0 +1,45 @@
+// LOOP
+.at 0xe2;
+    width 8, read_immed, jmp loop;
+
+.auto_address;
+loop:
+    ra_sel CX;
+    a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel CX, reg_wr_en,
+        jmp_if_zero loop_not_taken;
+    a_sel IP, b_sel IMMEDIATE, alu_op ADD, load_ip, next_instruction;
+loop_not_taken:
+    next_instruction;
+
+// LOOPE
+.at 0xe1;
+    width 8, read_immed, jmp loope;
+
+.auto_address;
+loope:
+    ra_sel CX;
+    a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel CX, reg_wr_en,
+        jmp_if_zero loope_not_taken;
+    alu_op GETFLAGS, jmp_if_zero loope_taken;
+loope_not_taken:
+    next_instruction;
+loope_taken:
+    a_sel IP, b_sel IMMEDIATE, alu_op ADD, load_ip, next_instruction;
+
+// LOOPNE
+.at 0xe0;
+    width 8, read_immed, jmp loopne;
+
+.auto_address;
+loopne:
+    ra_sel CX;
+    a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel CX, reg_wr_en,
+        jmp_if_zero loopne_not_taken;
+    alu_op GETFLAGS, jmp_if_zero loopne_not_taken;
+loopne_taken:
+    a_sel IP, b_sel IMMEDIATE, alu_op ADD, load_ip, next_instruction;
+loopne_not_taken:
+    next_instruction;
