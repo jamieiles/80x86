@@ -34,10 +34,6 @@ EmulateFixture.IntoTaken:\
 EmulateFixture.JcxzNotTaken:\
 EmulateFixture.JcxzTaken:\
 EmulateFixture.Lock:\
-EmulateFixture.Lodsb:\
-EmulateFixture.LodsbDec:\
-EmulateFixture.Lodsw:\
-EmulateFixture.LodswDec:\
 EmulateFixture.LoopNotTaken:\
 EmulateFixture.LoopTaken:\
 EmulateFixture.LoopeNotTaken:\
