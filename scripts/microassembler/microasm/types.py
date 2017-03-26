@@ -60,6 +60,7 @@ class ALUOp(Enum):
     RCL = 20
     RCR = 21
     NOT = 22
+    NEXT = 23
 
 class UpdateFlags(Enum):
     CF = 0
@@ -82,6 +83,9 @@ class JumpType(Enum):
     RM_REG_MEM = 1
     OPCODE = 2
     DISPATCH_REG = 3
+    HAS_NO_REP_PREFIX = 4
+    ZERO = 5
+    REP_NOT_COMPLETE = 6
 
 class MARWrSel(Enum):
     EA = 0
@@ -90,3 +94,5 @@ class MARWrSel(Enum):
 class PrefixType(Enum):
     NONE = 0
     SEGMENT_OVERRIDE = 1
+    REPNE = 2
+    REPE = 3

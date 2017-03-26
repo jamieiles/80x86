@@ -3,6 +3,23 @@
 #include "EmulateFixture.h"
 #include "Flags.h"
 
+TEST_F(EmulateFixture, ScasbNoRep)
+{
+    write_reg(AL, 0);
+    write_reg(DI, 0x800);
+    write_reg(CX, 0xff);
+    write_cstring(0x800, "8086");
+
+    // repne scasb
+    set_instruction({ 0xae });
+
+    emulate();
+
+    ASSERT_EQ(read_reg(DI), 0x801);
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        FLAGS_STUCK_BITS | CF | AF | SF);
+}
+
 TEST_F(EmulateFixture, ScasbInc)
 {
     write_reg(AL, 0);
@@ -63,6 +80,25 @@ TEST_F(EmulateFixture, ScasbDecRepe)
     emulate();
 
     ASSERT_EQ(read_reg(DI), 0x7ff);
+}
+
+TEST_F(EmulateFixture, ScaswNoRep)
+{
+    write_reg(AX, 0);
+    write_reg(DI, 0x800);
+    write_reg(CX, 0xff);
+
+    for (int i = 0; i < 2; ++i)
+        write_mem<uint16_t>(0x800 + i * 2, 0xaa55);
+
+    // scasw
+    set_instruction({ 0xaf });
+
+    emulate();
+
+    ASSERT_EQ(read_reg(DI), 0x802);
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        FLAGS_STUCK_BITS | CF | AF);
 }
 
 TEST_F(EmulateFixture, ScaswInc)

@@ -35,6 +35,7 @@ set(microprogram_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/ror.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/sar.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/sbb.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/scas.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/shift.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/shl.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/shr.us

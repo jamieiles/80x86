@@ -10,6 +10,7 @@ module Microcode(input logic clk,
                  input logic stall,
                  input logic rm_is_reg,
                  input logic [2:0] modrm_reg,
+                 input logic zf,
                  output logic [15:0] microcode_immediate,
                  output logic use_microcode_immediate,
                  output logic segment_override,
@@ -57,6 +58,10 @@ assign fifo_rd_en = ~reset & current.fifo_pop & ~opcode_popped & ~fifo_empty;
 wire do_stall = stall | fifo_rd_en | (current.fifo_pop & !opcode_popped);
 
 reg opcode_popped;
+reg [1:0] rep_prefix_type;
+wire has_rep_prefix = (rep_prefix_type == PrefixType_REPE ||
+                       rep_prefix_type == PrefixType_REPNE);
+reg rep_complete;
 
 int i;
 initial begin
@@ -65,17 +70,38 @@ initial begin
     $readmemb({{`MICROCODE_ROM_PATH, "/microcode.bin"}}, mem);
 end
 
+always_comb begin
+    case (rep_prefix_type)
+    PrefixType_REPE: rep_complete = ~zf;
+    PrefixType_REPNE: rep_complete = zf;
+    default: rep_complete = 1'b0;
+    endcase
+end
+
 always_ff @(posedge clk or posedge reset)
     if (reset || !do_stall)
         opcode_popped <= 1'b0;
     else if (fifo_rd_en)
         opcode_popped <= 1'b1;
 
+always_ff @(posedge clk or posedge reset)
+    if (reset || next_instruction)
+        rep_prefix_type <= 2'b0;
+    else if (current.prefix_type == PrefixType_REPNE ||
+             current.prefix_type == PrefixType_REPE)
+        rep_prefix_type <= current.prefix_type;
+
 always_ff @(posedge clk or posedge reset) begin
     if (reset)
         addr <= reset_address;
     else if (!do_stall && current.next_instruction)
         addr <= {{addr_bits-9{1'b0}}, 9'h100};
+    else if (!do_stall && current.jump_type == JumpType_ZERO)
+        addr <= zf ? current.next : addr + 1'b1;
+    else if (!do_stall && current.jump_type == JumpType_HAS_NO_REP_PREFIX)
+        addr <= ~has_rep_prefix ? current.next : addr + 1'b1;
+    else if (!do_stall && current.jump_type == JumpType_REP_NOT_COMPLETE)
+        addr <= !rep_complete ? current.next : addr + 1'b1;
     else if (!do_stall && current.jump_type == JumpType_DISPATCH_REG)
         addr <= current.next + {{addr_bits-3{1'b0}}, modrm_reg};
     else if (!do_stall && current.jump_type == JumpType_RM_REG_MEM)

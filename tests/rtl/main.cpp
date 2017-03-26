@@ -56,14 +56,6 @@ EmulateFixture.MovsbDec:\
 EmulateFixture.MovsbInc:\
 EmulateFixture.MovswDec:\
 EmulateFixture.MovswInc:\
-EmulateFixture.ScasbDec:\
-EmulateFixture.ScasbDecRepe:\
-EmulateFixture.ScasbInc:\
-EmulateFixture.ScasbIncRepe:\
-EmulateFixture.ScaswDec:\
-EmulateFixture.ScaswDecRepe:\
-EmulateFixture.ScaswInc:\
-EmulateFixture.ScaswIncRepe:\
 EmulateFixture.Stosb:\
 EmulateFixture.StosbDec:\
 EmulateFixture.Stosw:\

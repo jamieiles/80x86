@@ -11,6 +11,7 @@ module ALU(input logic [15:0] a,
            // verilator lint_on UNDRIVEN
 
 always_comb begin
+    flags_out = flags_in;
     case (op)
     ALUOp_SELA: out = a;
     ALUOp_SELB: out = b;
@@ -35,6 +36,12 @@ always_comb begin
     ALUOp_RCL: do_rcl(out, is_8_bit, a, b, flags_in, flags_out);
     ALUOp_RCR: do_rcr(out, is_8_bit, a, b, flags_in, flags_out);
     ALUOp_NOT: do_not(out, a, flags_in, flags_out);
+    ALUOp_NEXT: begin
+        if (flags_in[DF_IDX])
+            do_sub(out, 1'b0, a, b, flags_in, flags_out);
+        else
+            do_add(out, 1'b0, a, b, flags_in, flags_out);
+    end
     // verilator coverage_off
     default: begin
 `ifdef verilator
