@@ -26,7 +26,7 @@ public:
         after_n_cycles(0, [&]{
             this->dut.mar_in = address;
             this->dut.write_mar = 1;
-            after_n_cycles(1, [&]{
+            after_n_cycles(0, [&]{
                 this->dut.write_mar = 0;
                 this->dut.mar_in = 0;
             });

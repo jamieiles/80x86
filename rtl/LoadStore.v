@@ -55,7 +55,7 @@ always_comb begin
         m_bytesel = 2'b01;
 end
 
-reg unaligned;
+wire unaligned = mar[0];
 reg fetching;
 reg second_byte;
 
@@ -68,12 +68,6 @@ always_ff @(posedge clk or posedge reset)
 
 always_ff @(posedge clk)
     complete <= m_ack && (is_8bit || (unaligned && second_byte) || !unaligned);
-
-always_ff @(posedge clk or posedge reset)
-    if (reset)
-        unaligned <= 1'b0;
-    else if (start && !fetching)
-        unaligned <= mar[0];
 
 always_ff @(posedge clk or posedge reset)
     if (m_ack && unaligned && !second_byte && !is_8bit)
