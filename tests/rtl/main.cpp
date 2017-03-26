@@ -42,10 +42,6 @@ EmulateFixture.LoopeTaken:\
 EmulateFixture.LoopnzNotTaken:\
 EmulateFixture.LoopnzNotTakenNonZero:\
 EmulateFixture.LoopnzTaken:\
-EmulateFixture.MovsbDec:\
-EmulateFixture.MovsbInc:\
-EmulateFixture.MovswDec:\
-EmulateFixture.MovswInc:\
 IMul/MulMem16Test.*:\
 IMul/MulMem8Test.*:\
 IMul/MulReg16Test.*:\

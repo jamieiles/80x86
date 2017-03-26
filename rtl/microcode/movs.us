@@ -1,0 +1,59 @@
+.at 0xa4;
+    jmp movsb;
+
+.auto_address;
+movsb:
+    ra_sel SI, jmp_if_not_rep movsb_no_rep;
+    ra_sel CX;
+movsb_rep_loop:
+    ra_sel CX, a_sel RA, b_sel IMMEDIATE, immediate 0x0, alu_op SUB,
+        jmp_if_zero movsb_done;
+    ra_sel SI, a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel CX, reg_wr_en;
+movsb_no_rep:
+    a_sel RA, alu_op SELA, mar_wr_sel Q, mar_write, ra_sel SI;
+    a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op NEXT,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel SI, reg_wr_en,
+        segment DS;
+    width 8, segment DS, mem_read;
+
+    ra_sel DI;
+    ra_sel DI, a_sel RA, alu_op SELA, mar_wr_sel Q, mar_write;
+    a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op NEXT,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel DI, reg_wr_en,
+        segment ES, segment_force;
+    width 8, segment ES, segment_force, mem_write;
+
+    ra_sel CX, jmp movsb_rep_loop;
+movsb_done:
+    next_instruction;
+
+.at 0xa5;
+    jmp movsw;
+
+.auto_address;
+movsw:
+    ra_sel SI, jmp_if_not_rep movsw_no_rep;
+    ra_sel CX;
+movsw_rep_loop:
+    ra_sel CX, a_sel RA, b_sel IMMEDIATE, immediate 0x0, alu_op SUB,
+        jmp_if_zero movsw_done;
+    ra_sel SI, a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel CX, reg_wr_en;
+movsw_no_rep:
+    a_sel RA, alu_op SELA, mar_wr_sel Q, mar_write, ra_sel SI;
+    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op NEXT,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel SI, reg_wr_en,
+        segment DS;
+    segment DS, mem_read;
+
+    ra_sel DI;
+    ra_sel DI, a_sel RA, alu_op SELA, mar_wr_sel Q, mar_write;
+    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op NEXT,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel DI, reg_wr_en,
+        segment ES, segment_force;
+    segment ES, segment_force, mem_write;
+
+    ra_sel CX, jmp movsw_rep_loop;
+movsw_done:
+    next_instruction;
