@@ -1,0 +1,59 @@
+.at 0xa6;
+    jmp cmpsb;
+
+.auto_address;
+cmpsb:
+    ra_sel DI, jmp_if_not_rep cmpsb_no_rep;
+    ra_sel CX;
+cmpsb_rep_loop:
+    ra_sel CX, a_sel RA, b_sel IMMEDIATE, immediate 0x0, alu_op SUB,
+        jmp_if_zero cmpsb_done;
+    ra_sel DI, a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel CX, reg_wr_en;
+cmpsb_no_rep:
+    ra_sel DI, a_sel RA, alu_op SELA, mar_wr_sel Q, mar_write, segment ES,
+        segment_force;
+    width 8, segment ES, segment_force, mem_read;
+    a_sel MDR, alu_op SELA, tmp_wr_en, ra_sel DI;
+    a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op NEXT,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel DI, reg_wr_en,
+        ra_sel SI;
+    a_sel RA, alu_op SELA, mar_wr_sel Q, mar_write, segment DS, ra_sel SI;
+    a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op NEXT,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel SI, reg_wr_en;
+    width 8, segment DS, mem_read;
+    width 8, a_sel MDR, b_sel TEMP, alu_op SUB,
+        update_flags OF SF ZF CF PF AF, jmp_if_not_rep cmpsb_done;
+    ra_sel CX, alu_op GETFLAGS, jmp_if_rep_not_complete cmpsb_rep_loop;
+cmpsb_done:
+    next_instruction;
+
+.at 0xa7;
+    jmp cmpsw;
+
+.auto_address;
+cmpsw:
+    ra_sel DI, jmp_if_not_rep cmpsw_no_rep;
+    ra_sel CX;
+cmpsw_rep_loop:
+    ra_sel CX, a_sel RA, b_sel IMMEDIATE, immediate 0x0, alu_op SUB,
+        jmp_if_zero cmpsw_done;
+    ra_sel DI, a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel CX, reg_wr_en;
+cmpsw_no_rep:
+    ra_sel DI, a_sel RA, alu_op SELA, mar_wr_sel Q, mar_write, segment ES,
+        segment_force;
+    segment ES, segment_force, mem_read;
+    a_sel MDR, alu_op SELA, tmp_wr_en, ra_sel DI;
+    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op NEXT,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel DI, reg_wr_en,
+        ra_sel SI;
+    a_sel RA, alu_op SELA, mar_wr_sel Q, mar_write, segment DS, ra_sel SI;
+    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op NEXT,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel SI, reg_wr_en;
+    segment DS, mem_read;
+    a_sel MDR, b_sel TEMP, alu_op SUB,
+        update_flags OF SF ZF CF PF AF, jmp_if_not_rep cmpsw_done;
+    ra_sel CX, alu_op GETFLAGS, jmp_if_rep_not_complete cmpsw_rep_loop;
+cmpsw_done:
+    next_instruction;

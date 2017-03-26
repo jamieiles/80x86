@@ -14,11 +14,7 @@ int main(int argc, char *argv[])
 {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::GTEST_FLAG(filter) += "\
--CmpsRepe/Cmps16Fixture.*:\
-CmpsRepe/Cmps8Fixture.*:\
-CmpsRepne/Cmps16Fixture.*:\
-CmpsRepne/Cmps8Fixture.*:\
-Div/DivMem16Test.*:\
+-Div/DivMem16Test.*:\
 Div/DivMem8Test.*:\
 Div/DivReg16Test.*:\
 Div/DivReg8Test.*:\
@@ -30,8 +26,6 @@ EmulateFixture.Aam129:\
 EmulateFixture.AamDivByZero:\
 EmulateFixture.AamSigned:\
 EmulateFixture.Aas:\
-EmulateFixture.CmpsbDec:\
-EmulateFixture.CmpswDec:\
 EmulateFixture.Daa:\
 EmulateFixture.Das:\
 EmulateFixture.Hlt:\
