@@ -21,7 +21,7 @@ inc_fe_mem:
     width 8, segment DS, mem_read;
     a_sel MDR, b_sel IMMEDIATE, immediate 0x1, alu_op ADD,
         mdr_write, update_flags OF SF ZF AF PF, width 8, segment DS;
-    segment DS, mem_write, next_instruction;
+    width 8, segment DS, mem_write, next_instruction;
 
 dec_fe_reg:
     a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
@@ -31,7 +31,7 @@ dec_fe_mem:
     width 8, segment DS, mem_read;
     a_sel MDR, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
         mdr_write, update_flags OF SF ZF AF PF, width 8, segment DS;
-    segment DS, mem_write, next_instruction;
+    width 8, segment DS, mem_write, next_instruction;
 
 inc_ff_reg:
     a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op ADD,

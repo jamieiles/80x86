@@ -85,9 +85,9 @@ alufunc ## 80_reg:                                                              
         update_flags flags, next_instruction;                   		\
 alufunc ## 80_mem:                                                              \
     segment DS, mem_read, width 8;						\
-    a_sel MDR, b_sel IMMEDIATE, alu_op alufunc,                      \
-        mdr_write, update_flags flags, segment DS;                              \
-    segment DS, mem_write, next_instruction;
+    a_sel MDR, b_sel IMMEDIATE, alu_op alufunc,                      		\
+        mdr_write, update_flags flags, segment DS, width 8;                     \
+    segment DS, mem_write, next_instruction, width 8;
 
 #define ARITH_81(alufunc, flags)                                                \
 alufunc ## 81_reg:                                                              \
