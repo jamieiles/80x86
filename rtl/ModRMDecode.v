@@ -26,7 +26,6 @@ module ModRMDecode(input logic clk,
                    input logic [15:0] immediate);
 
 reg [7:0] _modrm;
-wire _has_immediate;
 reg _modrm_byte_read;
 reg _latch_modrm_byte;
 reg _started;
@@ -37,6 +36,7 @@ wire _has_address = _mod != 2'b11;
 wire [1:0] _mod = _latch_modrm_byte ? fifo_rd_data[7:6] : _modrm[7:6];
 wire [2:0] _reg = _latch_modrm_byte ? fifo_rd_data[5:3] : _modrm[5:3];
 wire [2:0] _rm  = _latch_modrm_byte ? fifo_rd_data[2:0] : _modrm[2:0];
+wire _has_immediate = (_rm == 3'b110 && _mod == 2'b00) || ^_mod;
 
 assign busy = start | (_started & ~complete);
 assign fifo_rd_en = ~fifo_empty & start & ~_modrm_byte_read & ~complete;
@@ -70,15 +70,6 @@ always_ff @(posedge clk or posedge reset)
         _registers_fetched <= 1'b0;
     else if (_modrm_byte_read)
         _registers_fetched <= 1'b1;
-
-always_comb begin
-    case (_mod)
-    2'b00: _has_immediate = _rm == 3'b110;
-    2'b01: _has_immediate = 1'b1;
-    2'b10: _has_immediate = 1'b1;
-    2'b11: _has_immediate = 1'b0;
-    endcase
-end
 
 always_comb begin
     case (_rm)
