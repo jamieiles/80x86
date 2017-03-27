@@ -5,6 +5,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         clang \
         clang-c++ \
         cmake \
+        cpp \
         nasm \
         libsdl2-2.0-0 \
         libsdl2-dev \
@@ -12,6 +13,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         libboost-python1.58.0 \
         libboost-python-dev \
         python-dev \
+        llvm \
         ccache \
         ruby \
         ruby-dev \
@@ -40,3 +42,4 @@ RUN mkdir -p /build
 WORKDIR /build
 RUN apt-get install -y python3-setuptools
 RUN pip3 install textX
+RUN rm /usr/bin/gcov; ln -s /usr/bin/llvm-cov /usr/bin/gcov
