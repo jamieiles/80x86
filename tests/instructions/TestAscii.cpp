@@ -22,6 +22,8 @@ TEST_F(EmulateFixture, Aaa)
 {
     // aaa
     for (auto &t: aaa_tests) {
+        reset();
+
         write_flags(t.flags);
         write_reg(AX, t.ax);
         set_instruction({ 0x37 });

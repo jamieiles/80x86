@@ -1,0 +1,7 @@
+// AAA
+.at 0x37;
+    ra_sel AX, jmp aaa;
+.auto_address;
+aaa:
+    a_sel RA, alu_op AAA, rd_sel_source MICROCODE_RD_SEL, rd_sel AX,
+        reg_wr_en, update_flags AF CF, next_instruction;

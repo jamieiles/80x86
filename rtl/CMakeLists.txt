@@ -4,6 +4,7 @@ set_source_files_properties(${VERILATED_DPI_CPP} PROPERTIES COMPILE_FLAGS "-Wno-
 add_library(verilator SHARED ${VERILATOR_LIB_SOURCES})
 
 set(microprogram_sources
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/aaa.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/adc.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/add.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/and.us
@@ -72,6 +73,7 @@ set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/Microcode.v PROPERTIES
                             COMPILE_FLAGS "-DMICROCODE_ROM_PATH=\\\"${CMAKE_CURRENT_BINARY_DIR}\\\"")
 
 set(ALU_SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/alu/aaa.v
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/adc.v
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/add.v
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/and.v

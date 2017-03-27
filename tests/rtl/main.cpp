@@ -18,7 +18,6 @@ int main(int argc, char *argv[])
 Div/DivMem8Test.*:\
 Div/DivReg16Test.*:\
 Div/DivReg8Test.*:\
-EmulateFixture.Aaa:\
 EmulateFixture.Aad:\
 EmulateFixture.AadSigned:\
 EmulateFixture.Aam:\

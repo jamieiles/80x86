@@ -61,6 +61,7 @@ class ALUOp(Enum):
     RCR = 21
     NOT = 22
     NEXT = 23
+    AAA = 24
 
 class UpdateFlags(Enum):
     CF = 0
