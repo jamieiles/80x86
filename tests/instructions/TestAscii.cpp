@@ -98,6 +98,8 @@ TEST_F(EmulateFixture, Das)
 {
     // das
     for (auto &t: das_tests) {
+        reset();
+
         write_flags(t.flags);
         write_reg(AX, t.ax);
         set_instruction({ 0x2f });

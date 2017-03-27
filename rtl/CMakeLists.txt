@@ -10,6 +10,7 @@ set(microprogram_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/add.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/and.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/daa.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/das.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/arithmetic.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/call.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/comparison.us
@@ -81,6 +82,7 @@ set(ALU_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/add.v
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/and.v
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/daa.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/alu/das.v
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/flags.v
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/or.v
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/not.v

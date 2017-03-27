@@ -64,6 +64,7 @@ class ALUOp(Enum):
     AAA = 24
     AAS = 25
     DAA = 26
+    DAS = 27
 
 class UpdateFlags(Enum):
     CF = 0

@@ -1,0 +1,7 @@
+// DAS
+.at 0x2f;
+    ra_sel AX, jmp das;
+.auto_address;
+das:
+    a_sel RA, alu_op DAS, rd_sel_source MICROCODE_RD_SEL, rd_sel AX,
+        reg_wr_en, update_flags SF ZF AF CF PF, next_instruction;
