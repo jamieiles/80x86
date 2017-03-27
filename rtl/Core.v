@@ -53,7 +53,7 @@ wire modrm_fifo_rd_en;
 wire immed_fifo_rd_en;
 wire microcode_fifo_rd_en;
 wire [1:0] a_sel;
-wire [2:0] b_sel;
+wire [1:0] b_sel;
 wire [`MC_ALUOp_t_BITS-1:0] alu_op;
 wire [15:0] alu_out;
 wire next_instruction;
@@ -84,16 +84,10 @@ assign a_bus =
     a_sel == ADriver_IP ? ip_current :
     a_sel == ADriver_MAR ? mar : mdr;
 
-// Driving the B bus with RA seems a little odd, but it avoids needing
-// a separate rb_sel, and there are several cases where the MAR needs to be
-// added to both an immediate or a register, and this provides that.  Stack
-// accesses will be MAR +- IMMEDIATE, XLAT uses MAR + RA.
 assign b_bus =
     b_sel == BDriver_RB ? reg_rd_val[1] :
     b_sel == BDriver_IMMEDIATE ? immediate :
-    b_sel == BDriver_SR ? seg_rd_val :
-    b_sel == BDriver_RA ? reg_rd_val[0] :
-    tmp_val;
+    b_sel == BDriver_SR ? seg_rd_val : tmp_val;
 
 assign q_bus = alu_out;
 
