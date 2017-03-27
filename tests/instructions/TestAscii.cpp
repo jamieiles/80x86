@@ -70,6 +70,8 @@ TEST_F(EmulateFixture, Aas)
 {
     // aas
     for (auto &t: aas_tests) {
+        reset();
+
         write_flags(t.flags);
         write_reg(AX, t.ax);
         set_instruction({ 0x3f });

@@ -24,7 +24,6 @@ EmulateFixture.Aam:\
 EmulateFixture.Aam129:\
 EmulateFixture.AamDivByZero:\
 EmulateFixture.AamSigned:\
-EmulateFixture.Aas:\
 EmulateFixture.Daa:\
 EmulateFixture.Das:\
 EmulateFixture.Hlt:\

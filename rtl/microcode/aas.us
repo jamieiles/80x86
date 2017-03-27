@@ -1,0 +1,7 @@
+// AAS
+.at 0x3f;
+    ra_sel AX, jmp aas;
+.auto_address;
+aas:
+    a_sel RA, alu_op AAS, rd_sel_source MICROCODE_RD_SEL, rd_sel AX,
+        reg_wr_en, update_flags AF CF, next_instruction;

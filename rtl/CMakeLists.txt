@@ -5,6 +5,7 @@ add_library(verilator SHARED ${VERILATOR_LIB_SOURCES})
 
 set(microprogram_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/aaa.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/aas.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/adc.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/add.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/and.us
@@ -74,6 +75,7 @@ set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/Microcode.v PROPERTIES
 
 set(ALU_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/aaa.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/alu/aas.v
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/adc.v
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/add.v
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/and.v

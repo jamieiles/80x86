@@ -62,6 +62,7 @@ class ALUOp(Enum):
     NOT = 22
     NEXT = 23
     AAA = 24
+    AAS = 25
 
 class UpdateFlags(Enum):
     CF = 0
