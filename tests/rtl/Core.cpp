@@ -66,11 +66,11 @@ void RTLCPU<debug_enabled>::write_reg(GPR regnum, uint16_t val)
 template <bool debug_enabled>
 void RTLCPU<debug_enabled>::write_sr(GPR regnum, uint16_t val)
 {
-    svSetScope(svGetScopeFromName("TOP.Core.segregs"));
+    svSetScope(svGetScopeFromName("TOP.Core.SegmentRegisterFile"));
     this->dut.set_sr(regnum - ES, val);
 
     if (regnum == CS) {
-        svSetScope(svGetScopeFromName("TOP.Core.prefetch"));
+        svSetScope(svGetScopeFromName("TOP.Core.Prefetch"));
         this->dut.set_cs(val);
     }
 }
@@ -78,17 +78,17 @@ void RTLCPU<debug_enabled>::write_sr(GPR regnum, uint16_t val)
 template <bool debug_enabled>
 void RTLCPU<debug_enabled>::write_ip(uint16_t val)
 {
-    svSetScope(svGetScopeFromName("TOP.Core.ip"));
+    svSetScope(svGetScopeFromName("TOP.Core.IP"));
     this->dut.set_ip(val);
 
-    svSetScope(svGetScopeFromName("TOP.Core.prefetch"));
+    svSetScope(svGetScopeFromName("TOP.Core.Prefetch"));
     this->dut.set_ip(val);
 }
 
 template <bool debug_enabled>
 void RTLCPU<debug_enabled>::write_gpr(GPR regnum, uint16_t val)
 {
-    svSetScope(svGetScopeFromName("TOP.Core.regfile"));
+    svSetScope(svGetScopeFromName("TOP.Core.RegisterFile"));
 
     if (regnum < NUM_16BIT_REGS) {
         this->dut.set_gpr(static_cast<int>(regnum), val);
@@ -117,7 +117,7 @@ uint16_t RTLCPU<debug_enabled>::read_reg(GPR regnum)
 template <bool debug_enabled>
 uint16_t RTLCPU<debug_enabled>::read_ip() const
 {
-    svSetScope(svGetScopeFromName("TOP.Core.ip"));
+    svSetScope(svGetScopeFromName("TOP.Core.IP"));
 
     return this->dut.get_ip();
 }
@@ -125,7 +125,7 @@ uint16_t RTLCPU<debug_enabled>::read_ip() const
 template <bool debug_enabled>
 uint16_t RTLCPU<debug_enabled>::read_gpr(GPR regnum) const
 {
-    svSetScope(svGetScopeFromName("TOP.Core.regfile"));
+    svSetScope(svGetScopeFromName("TOP.Core.RegisterFile"));
 
     if (regnum < NUM_16BIT_REGS)
         return this->dut.get_gpr(static_cast<int>(regnum));
@@ -140,7 +140,7 @@ uint16_t RTLCPU<debug_enabled>::read_gpr(GPR regnum) const
 template <bool debug_enabled>
 uint16_t RTLCPU<debug_enabled>::read_sr(GPR regnum) const
 {
-    svSetScope(svGetScopeFromName("TOP.Core.segregs"));
+    svSetScope(svGetScopeFromName("TOP.Core.SegmentRegisterFile"));
     return this->dut.get_sr(regnum - ES);
 }
 
@@ -181,14 +181,14 @@ size_t RTLCPU<debug_enabled>::step()
 template <bool debug_enabled>
 void RTLCPU<debug_enabled>::write_flags(uint16_t val)
 {
-    svSetScope(svGetScopeFromName("TOP.Core.flags_reg"));
+    svSetScope(svGetScopeFromName("TOP.Core.Flags"));
     this->dut.set_flags(val);
 }
 
 template <bool debug_enabled>
 uint16_t RTLCPU<debug_enabled>::read_flags()
 {
-    svSetScope(svGetScopeFromName("TOP.Core.flags_reg"));
+    svSetScope(svGetScopeFromName("TOP.Core.Flags"));
     return this->dut.get_flags();
 }
 
@@ -242,7 +242,7 @@ void RTLCPU<debug_enabled>::data_access()
 template <bool debug_enabled>
 uint16_t RTLCPU<debug_enabled>::get_microcode_address()
 {
-    svSetScope(svGetScopeFromName("TOP.Core.microcode"));
+    svSetScope(svGetScopeFromName("TOP.Core.Microcode"));
 
     return this->dut.get_microcode_address();
 }

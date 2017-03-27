@@ -143,14 +143,14 @@ wire [15:0] prefetch_new_ip;
 wire [7:0] opcode;
 wire jump_taken;
 
-RegisterFile    regfile(.clk(clk),
-                        .reset(reset),
-                        .is_8_bit(reg_is_8_bit),
-                        .rd_sel(reg_rd_sel),
-                        .rd_val(reg_rd_val),
-                        .wr_sel(reg_wr_sel),
-                        .wr_val(reg_wr_val),
-                        .wr_en(reg_wr_en));
+RegisterFile    RegisterFile(.clk(clk),
+                             .reset(reset),
+                             .is_8_bit(reg_is_8_bit),
+                             .rd_sel(reg_rd_sel),
+                             .rd_val(reg_rd_val),
+                             .wr_sel(reg_wr_sel),
+                             .wr_val(reg_wr_val),
+                             .wr_en(reg_wr_en));
 
 SegmentOverride SegmentOverride(.clk(clk),
                                 .reset(reset),
@@ -161,39 +161,39 @@ SegmentOverride SegmentOverride(.clk(clk),
                                 .microcode_sr_rd_sel(microcode_segment),
                                 .sr_rd_sel(segment));
 
-SegmentRegisterFile segregs(.clk(clk),
-                            .reset(reset),
-                            .rd_sel(segment),
-                            .rd_val(seg_rd_val),
-                            .wr_en(segment_wr_en),
-                            .wr_sel(seg_wr_sel),
-                            .wr_val(seg_wr_val),
-                            .cs(cs));
+SegmentRegisterFile SegmentRegisterFile(.clk(clk),
+                                        .reset(reset),
+                                        .rd_sel(segment),
+                                        .rd_val(seg_rd_val),
+                                        .wr_en(segment_wr_en),
+                                        .wr_sel(seg_wr_sel),
+                                        .wr_val(seg_wr_val),
+                                        .cs(cs));
 
 Fifo            #(.data_width(8),
                   .depth(6))
-                prefetch_fifo(.clk(clk),
-                              .reset(reset | fifo_reset),
-                              .wr_en(fifo_wr_en),
-                              .wr_data(fifo_wr_data),
-                              .rd_en(fifo_rd_en),
-                              .rd_data(fifo_rd_data),
-                              .empty(fifo_empty),
-                              .nearly_full(fifo_full),
-                              // verilator lint_off PINCONNECTEMPTY
-                              .full()
-                              // verilator lint_on PINCONNECTEMPTY
-                              );
+                Fifo(.clk(clk),
+                     .reset(reset | fifo_reset),
+                     .wr_en(fifo_wr_en),
+                     .wr_data(fifo_wr_data),
+                     .rd_en(fifo_rd_en),
+                     .rd_data(fifo_rd_data),
+                     .empty(fifo_empty),
+                     .nearly_full(fifo_full),
+                     // verilator lint_off PINCONNECTEMPTY
+                     .full()
+                     // verilator lint_on PINCONNECTEMPTY
+                    );
 
-CSIPSync        ipsync(.clk(clk),
-                       .reset(reset),
-                       .cs_update(cs_updating),
-                       .ip_update(ip_wr_en),
-                       .ip_in(ip_current),
-                       .new_ip(q_bus),
-                       .propagate(do_next_instruction),
-                       .ip_out(prefetch_new_ip),
-                       .update_out(prefetch_load_new_ip));
+CSIPSync        CSIPSync(.clk(clk),
+                         .reset(reset),
+                         .cs_update(cs_updating),
+                         .ip_update(ip_wr_en),
+                         .ip_in(ip_current),
+                         .new_ip(q_bus),
+                         .propagate(do_next_instruction),
+                         .ip_out(prefetch_new_ip),
+                         .update_out(prefetch_load_new_ip));
 
 TempReg         TempReg(.clk(clk),
                         .reset(reset),
@@ -201,7 +201,7 @@ TempReg         TempReg(.clk(clk),
                         .wr_en(tmp_wr_en),
                         .val(tmp_val));
 
-Prefetch        prefetch(.clk(clk),
+Prefetch        Prefetch(.clk(clk),
                          .reset(reset),
                          .new_cs(cs),
                          .new_ip(prefetch_new_ip),
@@ -215,21 +215,21 @@ Prefetch        prefetch(.clk(clk),
                          .mem_address(instr_m_addr),
                          .mem_data(instr_m_data_in));
 
-ImmediateReader immedreader(.clk(clk),
-                            .reset(reset),
-                            // Control
-                            .start(immed_start),
-                            .busy(immed_busy),
-                            .complete(immed_complete),
-                            .is_8bit(immed_is_8bit),
-                            // Result
-                            .immediate(immediate_reader_immediate),
-                            // Fifo read port
-                            .fifo_rd_en(immed_fifo_rd_en),
-                            .fifo_rd_data(fifo_rd_data),
-                            .fifo_empty(fifo_empty));
+ImmediateReader ImmediateReader(.clk(clk),
+                                .reset(reset),
+                                // Control
+                                .start(immed_start),
+                                .busy(immed_busy),
+                                .complete(immed_complete),
+                                .is_8bit(immed_is_8bit),
+                                // Result
+                                .immediate(immediate_reader_immediate),
+                                // Fifo read port
+                                .fifo_rd_en(immed_fifo_rd_en),
+                                .fifo_rd_data(fifo_rd_data),
+                                .fifo_empty(fifo_empty));
 
-ModRMDecode     modrmdecode(.clk(clk),
+ModRMDecode     ModRMDecode(.clk(clk),
                             .reset(reset),
                             // Control
                             .start(modrm_start),
@@ -254,17 +254,17 @@ ModRMDecode     modrmdecode(.clk(clk),
                             .immed_is_8bit(modrm_immed_is_8bit),
                             .immediate(immediate_reader_immediate));
 
-Flags           flags_reg(.clk(clk),
-                          .reset(reset),
-                          .flags_in(alu_flags_out),
-                          .flags_out(flags),
-                          .update_flags(update_flags));
+Flags           Flags(.clk(clk),
+                      .reset(reset),
+                      .flags_in(alu_flags_out),
+                      .flags_out(flags),
+                      .update_flags(update_flags));
 
 JumpTest        JumpTest(.opcode(opcode),
                          .flags(alu_flags_out),
                          .taken(jump_taken));
 
-LoadStore       loadstore(.clk(clk),
+LoadStore       LoadStore(.clk(clk),
                           .reset(reset),
                           // MAR
                           .write_mar(write_mar),
@@ -291,7 +291,7 @@ LoadStore       loadstore(.clk(clk),
                           .complete(loadstore_complete),
                           .io(io_operation));
 
-Microcode       microcode(.clk(clk),
+Microcode       Microcode(.clk(clk),
                           .reset(reset),
                           .stall(do_stall),
                           .modrm_reg(regnum),
@@ -333,14 +333,14 @@ Microcode       microcode(.clk(clk),
                           .fifo_rd_data(fifo_rd_data),
                           .fifo_empty(fifo_empty));
 
-IP              ip(.clk(clk),
+IP              IP(.clk(clk),
                    .reset(reset),
                    .inc(ip_inc),
                    .wr_en(prefetch_load_new_ip),
                    .wr_val(prefetch_new_ip),
                    .val(ip_current));
 
-ALU             alu(.a(a_bus),
+ALU             ALU(.a(a_bus),
                     .b(b_bus),
                     .out(alu_out),
                     .op(alu_op),
