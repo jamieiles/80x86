@@ -27,7 +27,7 @@ assign complete = reset ? 1'b0 : _bytes_read == _num_bytes && _popped;
 
 reg _started;
 
-assign busy = start | (_started & ~complete);
+assign busy = (start | _started) & ~complete;
 
 always_ff @(posedge clk or posedge reset) begin
     if (reset)

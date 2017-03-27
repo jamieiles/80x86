@@ -38,7 +38,7 @@ wire [2:0] _reg = _latch_modrm_byte ? fifo_rd_data[5:3] : _modrm[5:3];
 wire [2:0] _rm  = _latch_modrm_byte ? fifo_rd_data[2:0] : _modrm[2:0];
 wire _has_immediate = (_rm == 3'b110 && _mod == 2'b00) || ^_mod;
 
-assign busy = start | (_started & ~complete);
+assign busy = (start | _started) & ~complete;
 assign fifo_rd_en = ~fifo_empty & start & ~_modrm_byte_read & ~complete;
 assign complete = reset ? 1'b0 :
     _modrm_byte_read && (!_has_address || _registers_fetched) &&

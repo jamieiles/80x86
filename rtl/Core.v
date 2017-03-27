@@ -143,9 +143,7 @@ wire jump_taken;
 
 // Misc control signals
 wire do_next_instruction = next_instruction & ~do_stall;
-wire do_stall = (modrm_busy & ~modrm_complete) |
-    (immed_busy & ~immed_complete) |
-    loadstore_busy;
+wire do_stall = modrm_busy | immed_busy | loadstore_busy;
 
 // IP
 wire ip_inc = fifo_rd_en & ~fifo_empty;
