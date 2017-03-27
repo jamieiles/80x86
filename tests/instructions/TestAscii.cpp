@@ -48,6 +48,8 @@ TEST_F(EmulateFixture, Daa)
 {
     // daa
     for (auto &t: daa_tests) {
+        reset();
+
         write_flags(t.flags);
         write_reg(AX, t.ax);
         set_instruction({ 0x27 });

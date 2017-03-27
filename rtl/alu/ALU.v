@@ -38,6 +38,7 @@ always_comb begin
     ALUOp_NOT: do_not(out, a, flags_in, flags_out);
     ALUOp_AAA: do_aaa(out, a, flags_in, flags_out);
     ALUOp_AAS: do_aas(out, a, flags_in, flags_out);
+    ALUOp_DAA: do_daa(out, a, flags_in, flags_out);
     ALUOp_NEXT: begin
         if (flags_in[DF_IDX])
             do_sub(out, 1'b0, a, b, flags_in, flags_out);

@@ -1,0 +1,7 @@
+// DAA
+.at 0x27;
+    ra_sel AX, jmp daa;
+.auto_address;
+daa:
+    a_sel RA, alu_op DAA, rd_sel_source MICROCODE_RD_SEL, rd_sel AX,
+        reg_wr_en, update_flags SF ZF AF CF PF, next_instruction;
