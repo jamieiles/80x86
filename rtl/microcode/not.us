@@ -3,7 +3,7 @@ notf6_reg:
         rd_sel_source MODRM_RM_REG, reg_wr_en,
         update_flags OF SF ZF CF PF AF, width 8, next_instruction;
 notf6_mem:
-    segment DS, mem_read, ra_modrm_rm_reg;
+    width 8, segment DS, mem_read, ra_modrm_rm_reg;
     a_sel MDR, b_sel IMMEDIATE, immediate 0x0, alu_op NOT,
         mdr_write, update_flags OF SF ZF CF PF AF, width 8,
         segment DS;

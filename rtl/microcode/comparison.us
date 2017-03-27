@@ -72,11 +72,11 @@ comp ## alufunc ## opcode:                                                      
 #define COMP_80(alufunc, flags)                                                 \
 comp ## alufunc ## 80_reg:                                                      \
     a_sel RA, b_sel IMMEDIATE, alu_op alufunc,                       \
-        update_flags flags, next_instruction;                                   \
+        update_flags flags, width 8, next_instruction;                                   \
 comp ## alufunc ## 80_mem:                                                      \
     segment DS, mem_read, width 8;                                              \
     a_sel MDR, b_sel IMMEDIATE, alu_op alufunc,                      \
-        update_flags flags, next_instruction;
+        update_flags flags, width 8, next_instruction;
 
 #define COMP_81(alufunc, flags)                                                 \
 comp ## alufunc ## 81_reg:                                                      \
@@ -108,11 +108,11 @@ comp ## alufunc ## 83_mem:                                                      
 #define COMP_F6(alufunc, flags)                                                 \
 comp ## alufunc ## f6_reg:                                                      \
     a_sel RA, b_sel IMMEDIATE, alu_op alufunc,                       \
-        update_flags flags, next_instruction;                                   \
+        update_flags flags, width 8, next_instruction;                                   \
 comp ## alufunc ## f6_mem:                                                      \
     segment DS, mem_read, width 8;                                              \
     a_sel MDR, b_sel IMMEDIATE, alu_op alufunc,                      \
-        update_flags flags, next_instruction;
+        update_flags flags, width 8, next_instruction;
 
 #define COMP_F7(alufunc, flags)                                                 \
 comp ## alufunc ## f7_reg:                                                      \
