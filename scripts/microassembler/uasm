@@ -242,6 +242,7 @@ class MicroAssembler(object):
         'load_ip': (1, _boolean, True),
         'read_immed': (1, _boolean, True),
         'io': (1, _boolean, True),
+        'lock': (1, _boolean, False),
         'immediate': (0, _immediate, False),
         # Internal keywords, generated from others
         'jump_type': (num_bits(len(JumpType)), _reserved, False),

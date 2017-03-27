@@ -101,3 +101,29 @@ TEST_F(MicrocodeTestbench, ExternalStall)
     cycle(2);
     ASSERT_NE(current_address(), held_address);
 }
+
+TEST_F(MicrocodeTestbench, MovUnlocked)
+{
+    set_instruction({0x88});
+
+    while (current_address() != 0x88)
+        cycle();
+
+    while (current_address() != 0x100) {
+        ASSERT_FALSE(this->dut.lock);
+        cycle();
+    }
+}
+
+TEST_F(MicrocodeTestbench, LockPrefixMovIsLocked)
+{
+    set_instruction({ 0xf0, 0x88 });
+
+    while (current_address() != 0x88)
+        cycle();
+
+    while (current_address() != 0x100) {
+        ASSERT_TRUE(this->dut.lock);
+        cycle();
+    }
+}

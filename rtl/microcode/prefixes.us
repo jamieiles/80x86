@@ -21,3 +21,7 @@
 // REPE prefix
 .at 0xf3;
     prefix_type REPE, fifo_pop, jmp_opcode;
+
+// LOCK prefix
+.at 0xf0;
+    lock, fifo_pop, jmp_opcode;

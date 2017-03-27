@@ -16,6 +16,7 @@ module Microcode(input logic clk,
                  output logic segment_override,
                  output logic [7:0] opcode,
                  input logic jump_taken,
+                 output logic lock,
                  // Microinstruction fields.
                  <%#exported_fields%>
                  output logic <%type%><%name%>,
@@ -120,6 +121,12 @@ always_ff @(posedge clk or posedge reset) begin
     else if (!do_stall)
         addr <= current.next;
 end
+
+always_ff @(posedge clk or posedge reset)
+    if (reset || (!do_stall && current.next_instruction))
+        lock <= 1'b0;
+    else if (current.lock)
+        lock <= 1'b1;
 
 `ifdef verilator
 export "DPI-C" function get_microcode_address;

@@ -25,7 +25,6 @@ EmulateFixture.Aam129:\
 EmulateFixture.AamDivByZero:\
 EmulateFixture.AamSigned:\
 EmulateFixture.Hlt:\
-EmulateFixture.Lock:\
 IMul/MulMem16Test.*:\
 IMul/MulMem8Test.*:\
 IMul/MulReg16Test.*:\

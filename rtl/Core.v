@@ -13,7 +13,8 @@ module Core(input logic clk,
             input logic data_m_ack,
             output logic data_m_wr_en,
             output logic [1:0] data_m_bytesel,
-            output logic d_io);
+            output logic d_io,
+            output logic lock);
 
 wire [15:0] a_bus;
 wire [15:0] b_bus;
@@ -299,6 +300,7 @@ Microcode       microcode(.clk(clk),
                           .use_microcode_immediate(use_microcode_immediate),
                           .opcode(opcode),
                           .jump_taken(jump_taken),
+                          .lock(lock),
                           .rm_is_reg(rm_is_reg),
                           .a_sel(a_sel),
                           .alu_op(alu_op),
