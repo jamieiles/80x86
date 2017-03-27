@@ -16,84 +16,64 @@ module Core(input logic clk,
             output logic d_io,
             output logic lock);
 
-wire [15:0] a_bus;
-wire [15:0] b_bus;
-wire [15:0] q_bus;
+// Internal busses.
+wire [15:0] a_bus =
+    a_sel == ADriver_RA ? reg_rd_val[0] :
+    a_sel == ADriver_IP ? ip_current :
+    a_sel == ADriver_MAR ? mar : mdr;
+wire [15:0] b_bus =
+    b_sel == BDriver_RB ? reg_rd_val[1] :
+    b_sel == BDriver_IMMEDIATE ? immediate :
+    b_sel == BDriver_SR ? seg_rd_val : tmp_val;
+wire [15:0] q_bus = alu_out;
 
-wire io_operation;
-assign d_io = io_operation;
-
+// Register file.
+wire reg_is_8_bit = modrm_start ? 1'b0 : is_8_bit;
 wire [2:0] reg_rd_sel[2];
-wire modrm_complete;
-wire rb_cl;
 assign reg_rd_sel[0] = modrm_start && ~modrm_complete ? modrm_reg_rd_sel[0] :
     ra_modrm_rm_reg ? rm_regnum : microcode_reg_rd_sel[0];
-assign reg_rd_sel[1] = modrm_start && ~modrm_complete ? modrm_reg_rd_sel[1] :
-    rb_cl ? CL : regnum;
-
-wire [2:0] modrm_reg_rd_sel[2];
-wire [2:0] microcode_reg_rd_sel[2];
-wire modrm_start;
-wire modrm_busy;
-wire modrm_uses_bp_as_base;
-
-wire [15:0] reg_rd_val[2];
-wire [2:0] microcode_reg_wr_sel;
+assign reg_rd_sel[1] = modrm_start && ~modrm_complete ?
+    modrm_reg_rd_sel[1] : rb_cl ? CL : regnum;
+wire [2:0] reg_wr_sel =
+    rd_sel_source == RDSelSource_MODRM_REG ? regnum :
+    rd_sel_source == RDSelSource_MODRM_RM_REG ? rm_regnum :
+    microcode_reg_wr_sel;
 wire [15:0] reg_wr_val = q_bus;
 wire reg_wr_en;
-wire [1:0] microcode_seg_wr_sel;
-wire [1:0] seg_wr_sel;
+wire [15:0] reg_rd_val[2];
+wire rb_cl;
+wire [`MC_RDSelSource_t_BITS-1:0] rd_sel_source;
+
+// Segment register file.
+wire io_operation;
+assign d_io = io_operation;
 wire segment_force;
-assign seg_wr_sel = segment_force ? microcode_seg_wr_sel
-    : reg_wr_sel[1:0];
+assign seg_wr_sel = segment_force ?
+    microcode_seg_wr_sel : reg_wr_sel[1:0];
 wire [15:0] seg_rd_val;
 wire [15:0] seg_wr_val = q_bus;
 wire [15:0] cs;
+wire [1:0] segment;
+wire segment_override;
+wire segment_wr_en;
+
+// Prefetch FIFO
 wire fifo_wr_en;
-wire modrm_fifo_rd_en;
-wire immed_fifo_rd_en;
-wire microcode_fifo_rd_en;
-wire [1:0] a_sel;
-wire [1:0] b_sel;
-wire [`MC_ALUOp_t_BITS-1:0] alu_op;
-wire [15:0] alu_out;
-wire next_instruction;
-wire mar_wr_sel;
 wire fifo_rd_en = modrm_fifo_rd_en | immed_fifo_rd_en | microcode_fifo_rd_en;
 wire [7:0] fifo_rd_data;
 wire [7:0] fifo_wr_data;
 wire fifo_empty;
 wire fifo_full;
 wire fifo_reset;
-wire is_8_bit;
-wire reg_is_8_bit = modrm_start ? 1'b0 : is_8_bit;
-wire [15:0] effective_address;
-wire [2:0] regnum;
-wire rm_is_reg;
-wire [2:0] rm_regnum;
-wire [15:0] mar_wr_val;
-wire tmp_wr_en;
-wire [15:0] tmp_val;
-assign mar_wr_val = mar_wr_sel == MARWrSel_EA ? effective_address : q_bus;
 
-wire ip_inc = fifo_rd_en & ~fifo_empty;
+// CS:IP Synchronizer
+wire cs_updating = seg_wr_sel == CS && segment_wr_en;
 wire ip_wr_en;
 wire [15:0] ip_current;
+wire prefetch_load_new_ip;
+wire [15:0] prefetch_new_ip;
 
-assign a_bus =
-    a_sel == ADriver_RA ? reg_rd_val[0] :
-    a_sel == ADriver_IP ? ip_current :
-    a_sel == ADriver_MAR ? mar : mdr;
-
-assign b_bus =
-    b_sel == BDriver_RB ? reg_rd_val[1] :
-    b_sel == BDriver_IMMEDIATE ? immediate :
-    b_sel == BDriver_SR ? seg_rd_val : tmp_val;
-
-assign q_bus = alu_out;
-
-wire modrm_immed_start;
-wire microcode_immed_start;
+// Immediate Reader
 wire immed_start = (modrm_immed_start | microcode_immed_start) & ~immed_complete;
 wire immed_busy;
 wire immed_complete;
@@ -102,46 +82,73 @@ wire immed_is_8bit = modrm_immed_start ? modrm_immed_is_8bit : is_8_bit;
 wire [15:0] immediate_reader_immediate;
 wire [15:0] immediate = use_microcode_immediate ? microcode_immediate :
     immediate_reader_immediate;
+wire immed_fifo_rd_en;
 
-wire do_stall = (modrm_busy & ~modrm_complete) |
-    (immed_busy & ~immed_complete) |
-    loadstore_busy;
-wire do_next_instruction = next_instruction & ~do_stall;
-wire [15:0] microcode_immediate;
-wire use_microcode_immediate;
+// ModRM Decoder
+wire modrm_complete;
+wire [2:0] modrm_reg_rd_sel[2];
+wire modrm_start;
+wire modrm_busy;
+wire modrm_uses_bp_as_base;
+wire modrm_fifo_rd_en;
+wire modrm_immed_start;
+wire [2:0] regnum;
+wire rm_is_reg;
+wire [2:0] rm_regnum;
+wire ra_modrm_rm_reg;
 
+// Flags
+wire [15:0] flags;
+wire [8:0] update_flags;
+
+// LoadStore
 wire [15:0] mar;
 wire [15:0] mdr;
 wire write_mdr;
 wire write_mar;
 wire mem_read;
 wire mem_write;
-wire ra_modrm_rm_reg;
-wire [`MC_RDSelSource_t_BITS-1:0] rd_sel_source;
-wire [2:0] reg_wr_sel =
-    rd_sel_source == RDSelSource_MODRM_REG ? regnum :
-    rd_sel_source == RDSelSource_MODRM_RM_REG ? rm_regnum :
-    microcode_reg_wr_sel;
-
+wire mar_wr_sel;
+wire [15:0] mar_wr_val;
 wire loadstore_start = (mem_read | mem_write) & ~loadstore_complete;
 wire loadstore_is_store = mem_write;
 wire loadstore_complete;
 wire loadstore_busy;
-wire [1:0] microcode_segment;
-wire [1:0] segment;
-wire segment_override;
-wire segment_wr_en;
+assign mar_wr_val = mar_wr_sel == MARWrSel_EA ? effective_address : q_bus;
 
-wire [8:0] update_flags;
-wire [15:0] flags;
+// ALU
+wire [`MC_ALUOp_t_BITS-1:0] alu_op;
+wire [15:0] alu_out;
 wire [15:0] alu_flags_out;
 
-wire cs_updating = seg_wr_sel == CS && segment_wr_en;
-wire prefetch_load_new_ip;
-wire [15:0] prefetch_new_ip;
-
+// Microcode
+wire [2:0] microcode_reg_rd_sel[2];
+wire [2:0] microcode_reg_wr_sel;
+wire [1:0] microcode_seg_wr_sel;
+wire [1:0] seg_wr_sel;
+wire microcode_fifo_rd_en;
+wire [1:0] a_sel;
+wire [1:0] b_sel;
+wire next_instruction;
+wire is_8_bit;
+wire [15:0] effective_address;
+wire tmp_wr_en;
+wire [15:0] tmp_val;
+wire microcode_immed_start;
+wire [15:0] microcode_immediate;
+wire use_microcode_immediate;
+wire [1:0] microcode_segment;
 wire [7:0] opcode;
 wire jump_taken;
+
+// Misc control signals
+wire do_next_instruction = next_instruction & ~do_stall;
+wire do_stall = (modrm_busy & ~modrm_complete) |
+    (immed_busy & ~immed_complete) |
+    loadstore_busy;
+
+// IP
+wire ip_inc = fifo_rd_en & ~fifo_empty;
 
 RegisterFile    RegisterFile(.clk(clk),
                              .reset(reset),
