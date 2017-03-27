@@ -61,11 +61,6 @@ integration environment.
 unit tests, producing JUnit XML suitable for importing into the CI test runner
 history.
 
-*scripts/ci/coverage* builds the project and runs all of the tests, with the
-addition of generating coverage information for all of the {cpp} code in the
-simulator, and generates HTML with lcov.  Running `scripts/view-coverage` will
-display the coverage report in a browser.
-
 *scripts/ci/gcov-coverage* performs the same steps as `scripts/ci/coverage`
 but produces Cobertura compatible coverage information that can be read into
 Jenkins or other CI systems supporting this format.

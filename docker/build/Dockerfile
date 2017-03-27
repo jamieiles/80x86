@@ -12,7 +12,6 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         libboost-python1.58.0 \
         libboost-python-dev \
         python-dev \
-        lcov \
         ccache \
         ruby \
         ruby-dev \
