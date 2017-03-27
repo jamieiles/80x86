@@ -14,6 +14,8 @@ module Microcode(input logic clk,
                  output logic [15:0] microcode_immediate,
                  output logic use_microcode_immediate,
                  output logic segment_override,
+                 output logic [7:0] opcode,
+                 input logic jump_taken,
                  // Microinstruction fields.
                  <%#exported_fields%>
                  output logic <%type%><%name%>,
@@ -62,6 +64,7 @@ reg [1:0] rep_prefix_type;
 wire has_rep_prefix = (rep_prefix_type == PrefixType_REPE ||
                        rep_prefix_type == PrefixType_REPNE);
 reg rep_complete;
+reg [7:0] opcode;
 
 int i;
 initial begin
@@ -84,6 +87,10 @@ always_ff @(posedge clk or posedge reset)
     else if (fifo_rd_en)
         opcode_popped <= 1'b1;
 
+always_ff @(posedge clk)
+    if (opcode_popped)
+        opcode <= fifo_rd_data;
+
 always_ff @(posedge clk or posedge reset)
     if (reset || next_instruction)
         rep_prefix_type <= 2'b0;
@@ -94,8 +101,8 @@ always_ff @(posedge clk or posedge reset)
 always_ff @(posedge clk or posedge reset) begin
     if (reset)
         addr <= reset_address;
-    else if (!do_stall && current.next_instruction)
-        addr <= {{addr_bits-9{1'b0}}, 9'h100};
+    else if (!do_stall && current.jump_type == JumpType_JUMP_TAKEN)
+        addr <= jump_taken ? current.next : addr + 1'b1;
     else if (!do_stall && current.jump_type == JumpType_ZERO)
         addr <= zf ? current.next : addr + 1'b1;
     else if (!do_stall && current.jump_type == JumpType_HAS_NO_REP_PREFIX)
@@ -108,6 +115,8 @@ always_ff @(posedge clk or posedge reset) begin
         addr <= current.next + {{addr_bits-1{1'b0}}, ~rm_is_reg};
     else if (!do_stall && current.jump_type == JumpType_OPCODE)
         addr <= {{addr_bits-8{1'b0}}, fifo_rd_data};
+    else if (!do_stall && current.next_instruction)
+        addr <= {{addr_bits-9{1'b0}}, 9'h100};
     else if (!do_stall)
         addr <= current.next;
 end

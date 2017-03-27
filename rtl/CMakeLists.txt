@@ -103,6 +103,7 @@ verilate(TOPLEVEL Core
          ${CMAKE_CURRENT_SOURCE_DIR}/CSIPSync.v
          ${CMAKE_CURRENT_SOURCE_DIR}/Fifo.v
          ${CMAKE_CURRENT_SOURCE_DIR}/Flags.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/JumpTest.v
          ${CMAKE_CURRENT_SOURCE_DIR}/IP.v
          ${CMAKE_CURRENT_SOURCE_DIR}/LoadStore.v
          ${CMAKE_CURRENT_SOURCE_DIR}/ModRMDecode.v

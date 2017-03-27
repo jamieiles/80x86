@@ -36,8 +36,6 @@ IMul/MulMem16Test.*:\
 IMul/MulMem8Test.*:\
 IMul/MulReg16Test.*:\
 IMul/MulReg8Test.*:\
-JmpConditional/JmpFixture.*:\
-JmpConditionalAlias/JmpFixture.*:\
 Mul/MulMem16Test.*:\
 Mul/MulMem8Test.*:\
 Mul/MulReg16Test.*:\

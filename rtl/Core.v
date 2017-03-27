@@ -139,6 +139,9 @@ wire cs_updating = seg_wr_sel == CS && segment_wr_en;
 wire prefetch_load_new_ip;
 wire [15:0] prefetch_new_ip;
 
+wire [7:0] opcode;
+wire jump_taken;
+
 RegisterFile    regfile(.clk(clk),
                         .reset(reset),
                         .is_8_bit(reg_is_8_bit),
@@ -256,6 +259,10 @@ Flags           flags_reg(.clk(clk),
                           .flags_out(flags),
                           .update_flags(update_flags));
 
+JumpTest        JumpTest(.opcode(opcode),
+                         .flags(alu_flags_out),
+                         .taken(jump_taken));
+
 LoadStore       loadstore(.clk(clk),
                           .reset(reset),
                           // MAR
@@ -290,6 +297,8 @@ Microcode       microcode(.clk(clk),
                           .zf(alu_flags_out[ZF_IDX]),
                           .microcode_immediate(microcode_immediate),
                           .use_microcode_immediate(use_microcode_immediate),
+                          .opcode(opcode),
+                          .jump_taken(jump_taken),
                           .rm_is_reg(rm_is_reg),
                           .a_sel(a_sel),
                           .alu_op(alu_op),

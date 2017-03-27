@@ -86,6 +86,7 @@ class JumpType(Enum):
     HAS_NO_REP_PREFIX = 4
     ZERO = 5
     REP_NOT_COMPLETE = 6
+    JUMP_TAKEN = 7
 
 class MARWrSel(Enum):
     EA = 0
