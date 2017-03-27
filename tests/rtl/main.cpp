@@ -29,8 +29,6 @@ EmulateFixture.Aas:\
 EmulateFixture.Daa:\
 EmulateFixture.Das:\
 EmulateFixture.Hlt:\
-EmulateFixture.IntoNotTaken:\
-EmulateFixture.IntoTaken:\
 EmulateFixture.Lock:\
 IMul/MulMem16Test.*:\
 IMul/MulMem8Test.*:\

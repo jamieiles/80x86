@@ -71,3 +71,37 @@ intN:
     segment_force, segment CS, mem_read;
     a_sel MDR, alu_op SELA, segment_force, sr_wr_sel CS,
         segment_wr_en, next_instruction;
+
+// INTO: the same as int3, but conditional on OF being set.
+.at 0xce;
+    alu_op GETFLAGS, mdr_write, jmp into;
+.auto_address;
+into:
+    alu_op GETFLAGS, jmp_if_taken into_taken, ra_sel SP;
+    next_instruction;
+into_taken:
+    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB,
+        mar_write, mar_wr_sel Q, segment DS;
+    segment DS, mem_write;
+    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op SUB,
+        mar_write, mar_wr_sel Q, segment CS;
+    b_sel SR, alu_op SELB, mdr_write, segment DS;
+    segment DS, mem_write;
+    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op SUB,
+        mar_write, mar_wr_sel Q;
+    a_sel IP, alu_op SELA, mdr_write, segment DS;
+    segment DS, mem_write;
+    a_sel MAR, alu_op SELA, rd_sel_source MICROCODE_RD_SEL,
+        rd_sel SP, reg_wr_en;
+    b_sel IMMEDIATE, immediate 0x0, alu_op SETFLAGSB, update_flags IF TF;
+    b_sel IMMEDIATE, immediate 0x0, alu_op SELB, segment_force,
+        sr_wr_sel CS, segment_wr_en;
+    b_sel IMMEDIATE, immediate 0x10, alu_op SELB, mar_wr_sel Q,
+        mar_write, segment CS, segment_force;
+    segment_force, segment CS, mem_read;
+    a_sel MDR, alu_op SELA, load_ip;
+    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, mar_write,
+        mar_wr_sel Q, segment CS, segment_force;
+    segment_force, segment CS, mem_read;
+    a_sel MDR, alu_op SELA, segment_force, sr_wr_sel CS,
+        segment_wr_en, next_instruction;

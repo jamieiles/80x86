@@ -24,6 +24,7 @@ always_comb begin
     8'b011?1101: taken = ~(flags[SF_IDX] ^ flags[OF_IDX]); // JNL
     8'b011?1110: taken = (flags[OF_IDX] ^ flags[SF_IDX]) | flags[ZF_IDX]; // JLE
     8'b011?1111: taken = ~((flags[SF_IDX] ^ flags[OF_IDX]) | flags[ZF_IDX]); // JNLE
+    8'b11001110: taken = flags[OF_IDX]; // INTO
     default: taken = 1'b0;
     endcase
 end
