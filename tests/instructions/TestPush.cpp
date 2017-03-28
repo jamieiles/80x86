@@ -27,7 +27,7 @@ TEST_F(EmulateFixture, PushRegFFInvalidReg)
     emulate();
 
     ASSERT_EQ(0x100, read_reg(SP));
-    ASSERT_EQ(0x0, read_mem<uint16_t>(0x0fe));
+    ASSERT_EQ(mem_init_16, read_mem<uint16_t>(0x0fe));
 
     ASSERT_FALSE(instruction_had_side_effects());
 }

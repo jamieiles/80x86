@@ -34,7 +34,7 @@ TEST_P(MovOverride, SegmentOverriden)
     emulate();
 
     ASSERT_EQ(0xaa55, read_mem<uint16_t>(get_phys_addr(0x8000, 0x0100)));
-    ASSERT_EQ(0x0000, read_mem<uint16_t>(get_phys_addr(0x2000, 0x0100)));
+    ASSERT_EQ(mem_init_16, read_mem<uint16_t>(get_phys_addr(0x2000, 0x0100)));
 }
 INSTANTIATE_TEST_CASE_P(SegmentOverride, MovOverride,
     ::testing::Values(

@@ -37,6 +37,9 @@ set(CMAKE_SHARED_LINKER_FLAGS_COVERAGE "--coverage")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2 ${CMAKE_CXX_FLAGS_RELEASE}")
 set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG ${CMAKE_CXX_FLAGS_DEBUG}")
 
+set(POISON_MEMORY_VALUE "0x00" CACHE STRING "Poison all memory with this value in tests")
+add_definitions(-DMEM_INT_BYTE_VAL=${POISON_MEMORY_VALUE})
+
 enable_testing()
 
 add_subdirectory(googletest)

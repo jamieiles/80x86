@@ -56,6 +56,7 @@ public:
         do {
             write_mem<uint8_t>(addr++, *str++);
         } while (*str);
+        write_mem<uint8_t>(addr, 0);
     }
 
     template <typename T>

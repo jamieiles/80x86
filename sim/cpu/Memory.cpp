@@ -5,7 +5,8 @@
 
 Memory::Memory()
 {
-    memset(mem, 0, sizeof(mem));
+    memset(mem, mem_init_8, sizeof(mem));
+    memset(mem + 0x1000, 0, 128);
 }
 
 template <typename T>

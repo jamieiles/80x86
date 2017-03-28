@@ -90,6 +90,7 @@ TEST_F(EmulateFixture, ScaswNoRep)
 
     for (int i = 0; i < 2; ++i)
         write_mem<uint16_t>(0x800 + i * 2, 0xaa55);
+    write_mem<uint16_t>(0x800 + 2 * 2, 0x0000);
 
     // scasw
     set_instruction({ 0xaf });
@@ -109,6 +110,7 @@ TEST_F(EmulateFixture, ScaswInc)
 
     for (int i = 0; i < 2; ++i)
         write_mem<uint16_t>(0x800 + i * 2, 0xaa55);
+    write_mem<uint16_t>(0x800 + 2 * 2, 0x0000);
 
     // repne scasw
     set_instruction({ 0xf2, 0xaf });
@@ -127,6 +129,8 @@ TEST_F(EmulateFixture, ScaswDec)
 
     for (int i = 0; i < 4; ++i)
         write_mem<uint16_t>(0x800 + i * 2, 0xaa55);
+    write_mem<uint16_t>(0x800 + 4 * 2, 0x0000);
+    write_mem<uint16_t>(0x7fe, 0x0000);
 
     // repne scasw
     set_instruction({ 0xf2, 0xaf });
@@ -178,6 +182,7 @@ TEST_F(EmulateFixture, MovsbInc)
     write_reg(DI, 0x400);
     write_reg(CX, 0x4);
     write_cstring(0x800, "8086");
+    write_mem<uint8_t>(0x404, 0);
 
     // repne movsb
     set_instruction({ 0xf3, 0xa4 });
@@ -197,6 +202,7 @@ TEST_F(EmulateFixture, MovsbDec)
     write_reg(DI, 0x403);
     write_reg(CX, 0x4);
     write_cstring(0x800, "8086");
+    write_mem<uint8_t>(0x404, 0);
 
     // repne movsb
     set_instruction({ 0xf3, 0xa4 });
@@ -274,6 +280,10 @@ TEST_P(Cmps8Fixture, Flags)
     write_reg(DI, 0x400);
     write_reg(CX, std::max(p.src.size() + 1, p.dst.size() + 1));
 
+    for (auto i = 0; i < 32; ++i) {
+        write_mem<uint8_t>(0x400 + i, 0);
+        write_mem<uint8_t>(0x800 + i, 0);
+    }
     write_vector(0x800, p.src);
     write_vector(0x400, p.dst);
 
@@ -340,6 +350,10 @@ TEST_P(Cmps16Fixture, Flags)
     write_reg(DI, 0x400);
     write_reg(CX, std::max(p.src.size() + 1, p.dst.size() + 1));
 
+    for (auto i = 0; i < 32; ++i) {
+        write_mem<uint16_t>(0x400 + i, 0);
+        write_mem<uint16_t>(0x800 + i, 0);
+    }
     write_vector(0x800, p.src);
     write_vector(0x400, p.dst);
 
@@ -457,6 +471,7 @@ TEST_F(EmulateFixture, Stosb)
 {
     write_flags(0);
     write_reg(DI, 0x800);
+    write_mem<uint8_t>(0x803, 0);
     write_reg(AL, 'a');
     write_reg(CX, 3);
 
@@ -472,6 +487,7 @@ TEST_F(EmulateFixture, StosbDec)
 {
     write_flags(DF);
     write_reg(DI, 0x802);
+    write_mem<uint8_t>(0x803, 0);
     write_reg(AL, 'a');
     write_reg(CX, 3);
 
@@ -488,6 +504,7 @@ TEST_F(EmulateFixture, Stosw)
     write_flags(0);
     write_reg(DI, 0x800);
     write_reg(AX, 0x6261);
+    write_mem<uint16_t>(0x806, 0x0000);
     write_reg(CX, 3);
 
     set_instruction({ 0xf2, 0xab });
@@ -502,6 +519,7 @@ TEST_F(EmulateFixture, StoswDec)
 {
     write_flags(DF);
     write_reg(DI, 0x804);
+    write_mem<uint16_t>(0x806, 0x0000);
     write_reg(AX, 0x6261);
     write_reg(CX, 3);
 
