@@ -118,11 +118,15 @@ class MicroAssembler(object):
         return sorted(instructions, key=lambda i: i.address)
 
     def _write_microcode(self, filename, instructions):
+        last_addr = 0
         with open(filename, 'w') as f:
             f.write(self.field_comment())
             for instr in instructions:
-                f.write('@ {0:x}\n'.format(instr.address))
-                f.write('%s\n' % (instr.encode(num_bits(instructions[-1].address + 1)),))
+                if instr.address != last_addr + 1:
+                    f.write('@ {0:x}\n'.format(instr.address))
+                f.write('%s // %x\n' % (instr.encode(num_bits(instructions[-1].address + 1)),
+                                        instr.address))
+                last_addr = instr.address
 
     def _write_microcode_verilog(self, filename, instructions):
         data = {
