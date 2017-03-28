@@ -1,6 +1,3 @@
-`include "FlagsEnum.v"
-`include "MicrocodeTypes.v"
-
 module Flags(input logic clk,
              input logic reset,
              // verilator lint_off UNUSED

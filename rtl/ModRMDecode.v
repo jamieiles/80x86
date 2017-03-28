@@ -1,5 +1,3 @@
-`include "RegisterEnum.v"
-
 module ModRMDecode(input logic clk,
                    input logic reset,
                    // Control.

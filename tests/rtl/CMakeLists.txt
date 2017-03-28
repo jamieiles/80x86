@@ -1,5 +1,6 @@
 include(Verilator)
 
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/../../rtl)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../rtl)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
@@ -7,7 +8,8 @@ include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/coverage)
 
 verilate(TOPLEVEL ModRMTestbench
-         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/ModRMTestbench.v
+         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/RegisterEnum.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/ModRMTestbench.v
          ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/ModRMDecode.v
          ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/ImmediateReader.v)
 

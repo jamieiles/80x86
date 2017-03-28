@@ -1,5 +1,3 @@
-`include "RegisterEnum.v"
-
 module RegisterFile(input logic clk,
                     input logic reset,
                     input logic is_8_bit,

@@ -16,7 +16,7 @@ endif()
 function(verilate)
     set(options "")
     set(oneValueArgs TOPLEVEL)
-    set(multiValueArgs VERILOG_SOURCES GENERATED_SOURCES)
+    set(multiValueArgs VERILOG_SOURCES GENERATED_SOURCES DEPENDS)
     cmake_parse_arguments(verilate "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
     set(generated
         ${CMAKE_CURRENT_BINARY_DIR}/V${verilate_TOPLEVEL}.cpp
@@ -54,7 +54,7 @@ function(verilate)
                             --Mdir ${CMAKE_CURRENT_BINARY_DIR}
                             ${VERILATOR_INCLUDE_ARGS}
                        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-                       DEPENDS ${verilate_VERILOG_SOURCES})
+                       DEPENDS ${verilate_VERILOG_SOURCES} ${verilate_DEPENDS})
     add_library(V${verilate_TOPLEVEL} SHARED ${generated})
     include_directories(${CMAKE_CURRENT_BINARY_DIR})
     include_directories(${CMAKE_CURRENT_SOURCE_DIR})
