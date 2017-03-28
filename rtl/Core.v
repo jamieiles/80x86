@@ -25,7 +25,6 @@ wire [15:0] b_bus =
     b_sel == BDriver_RB ? reg_rd_val[1] :
     b_sel == BDriver_IMMEDIATE ? immediate :
     b_sel == BDriver_SR ? seg_rd_val : tmp_val;
-wire [15:0] q_bus = alu_out;
 
 // Register file.
 wire reg_is_8_bit = modrm_start ? 1'b0 : is_8_bit;
@@ -38,7 +37,7 @@ wire [2:0] reg_wr_sel =
     rd_sel_source == RDSelSource_MODRM_REG ? regnum :
     rd_sel_source == RDSelSource_MODRM_RM_REG ? rm_regnum :
     microcode_reg_wr_sel;
-wire [15:0] reg_wr_val = q_bus;
+wire [15:0] reg_wr_val = alu_out[15:0];
 wire reg_wr_en;
 wire [15:0] reg_rd_val[2];
 wire rb_cl;
@@ -51,7 +50,7 @@ wire segment_force;
 assign seg_wr_sel = segment_force ?
     microcode_seg_wr_sel : reg_wr_sel[1:0];
 wire [15:0] seg_rd_val;
-wire [15:0] seg_wr_val = q_bus;
+wire [15:0] seg_wr_val = alu_out[15:0];
 wire [15:0] cs;
 wire [1:0] segment;
 wire segment_override;
@@ -114,11 +113,12 @@ wire loadstore_start = (mem_read | mem_write) & ~loadstore_complete;
 wire loadstore_is_store = mem_write;
 wire loadstore_complete;
 wire loadstore_busy;
-assign mar_wr_val = mar_wr_sel == MARWrSel_EA ? effective_address : q_bus;
+assign mar_wr_val = mar_wr_sel == MARWrSel_EA ?
+    effective_address : alu_out[15:0];
 
 // ALU
 wire [`MC_ALUOp_t_BITS-1:0] alu_op;
-wire [15:0] alu_out;
+wire [31:0] alu_out;
 wire [15:0] alu_flags_out;
 
 // Microcode
@@ -133,6 +133,9 @@ wire next_instruction;
 wire is_8_bit;
 wire [15:0] effective_address;
 wire tmp_wr_en;
+wire [15:0] tmp_wr_val = (tmp_wr_sel == TEMPWrSel_Q_LOW) ?
+    alu_out[15:0] : alu_out[31:16];
+wire tmp_wr_sel;
 wire [15:0] tmp_val;
 wire microcode_immed_start;
 wire [15:0] microcode_immediate;
@@ -195,14 +198,14 @@ CSIPSync        CSIPSync(.clk(clk),
                          .cs_update(cs_updating),
                          .ip_update(ip_wr_en),
                          .ip_in(ip_current),
-                         .new_ip(q_bus),
+                         .new_ip(alu_out[15:0]),
                          .propagate(do_next_instruction),
                          .ip_out(prefetch_new_ip),
                          .update_out(prefetch_load_new_ip));
 
 TempReg         TempReg(.clk(clk),
                         .reset(reset),
-                        .wr_val(q_bus),
+                        .wr_val(tmp_wr_val),
                         .wr_en(tmp_wr_en),
                         .val(tmp_val));
 
@@ -279,7 +282,7 @@ LoadStore       LoadStore(.clk(clk),
                           .mar_out(mar),
                           .mdr_out(mdr),
                           .write_mdr(write_mdr),
-                          .mdr_in(q_bus),
+                          .mdr_in(alu_out[15:0]),
                           // Memory bus
                           .m_addr(data_m_addr),
                           .m_data_in(data_m_data_in),
@@ -332,6 +335,7 @@ Microcode       Microcode(.clk(clk),
                           .segment_wr_en(segment_wr_en),
                           .sr_wr_sel(microcode_seg_wr_sel),
                           .tmp_wr_en(tmp_wr_en),
+                          .tmp_wr_sel(tmp_wr_sel),
                           .update_flags(update_flags),
                           .width(is_8_bit),
                           .fifo_rd_en(microcode_fifo_rd_en),

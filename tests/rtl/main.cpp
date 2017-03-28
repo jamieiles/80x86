@@ -24,15 +24,7 @@ EmulateFixture.Aam:\
 EmulateFixture.Aam129:\
 EmulateFixture.AamDivByZero:\
 EmulateFixture.AamSigned:\
-EmulateFixture.Hlt:\
-IMul/MulMem16Test.*:\
-IMul/MulMem8Test.*:\
-IMul/MulReg16Test.*:\
-IMul/MulReg8Test.*:\
-Mul/MulMem16Test.*:\
-Mul/MulMem8Test.*:\
-Mul/MulReg16Test.*:\
-Mul/MulReg8Test.*";
+EmulateFixture.Hlt:";
 
     return RUN_ALL_TESTS();
 }

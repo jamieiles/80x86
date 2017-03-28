@@ -65,6 +65,8 @@ class ALUOp(Enum):
     AAS = 25
     DAA = 26
     DAS = 27
+    MUL = 28
+    IMUL = 29
 
 class UpdateFlags(Enum):
     CF = 0
@@ -95,6 +97,10 @@ class JumpType(Enum):
 class MARWrSel(Enum):
     EA = 0
     Q = 1
+
+class TEMPWrSel(Enum):
+    Q_LOW = 0
+    Q_HIGH = 1
 
 class PrefixType(Enum):
     NONE = 0

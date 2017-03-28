@@ -16,9 +16,9 @@ TEST_F(ALUTestFixture, Select)
 
     dut.op = ALUOp_SELA;
     dut.eval();
-    ASSERT_EQ(dut.out, 0xaaaa);
+    ASSERT_EQ(dut.out, 0xaaaaUL);
 
     dut.op = ALUOp_SELB;
     dut.eval();
-    ASSERT_EQ(dut.out, 0xbbbb);
+    ASSERT_EQ(dut.out, 0xbbbbUL);
 }

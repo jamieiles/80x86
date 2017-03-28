@@ -46,6 +46,8 @@ TEST_P(MulReg8Test, ResultAndFlags)
 {
     auto params = GetParam();
     for (auto &t: params.second) {
+        reset();
+
         SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " * " +
                      std::to_string(static_cast<int>(t.v2)));
         write_flags(0);
@@ -78,6 +80,8 @@ TEST_P(MulMem8Test, ResultAndFlags)
 {
     auto params = GetParam();
     for (auto &t: params.second) {
+        reset();
+
         SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " * " +
                      std::to_string(static_cast<int>(t.v2)));
         write_flags(0);
@@ -133,6 +137,8 @@ TEST_P(MulReg16Test, ResultAndFlags)
 {
     auto params = GetParam();
     for (auto &t: params.second) {
+        reset();
+
         SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " * " +
                      std::to_string(static_cast<int>(t.v2)));
         write_flags(0);
@@ -165,6 +171,8 @@ TEST_P(MulMem16Test, ResultAndFlags)
 {
     auto params = GetParam();
     for (auto &t: params.second) {
+        reset();
+
         SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " * " +
                      std::to_string(static_cast<int>(t.v2)));
         write_flags(0);

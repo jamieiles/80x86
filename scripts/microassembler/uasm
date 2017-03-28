@@ -19,6 +19,7 @@ from microasm.types import (
     UpdateFlags,
     JumpType,
     MARWrSel,
+    TEMPWrSel,
     PrefixType
 )
 
@@ -153,7 +154,7 @@ class MicroAssembler(object):
     def _gather_enums():
         enums = []
         for cls in [ADriver, BDriver, ALUOp, JumpType, RDSelSource,
-                    MARWrSel, UpdateFlags, PrefixType]:
+                    MARWrSel, TEMPWrSel, UpdateFlags, PrefixType]:
             items = []
             for idx, e in enumerate(cls.__members__):
                 name = '%s_%s' % (cls.__name__, e)
@@ -238,6 +239,7 @@ class MicroAssembler(object):
         'rd_sel_source': (num_bits(len(RDSelSource)), partial(_enumerated_field, enum_class=RDSelSource), True),
         'reg_wr_en': (1, _boolean, True),
         'tmp_wr_en': (1, _boolean, True),
+        'tmp_wr_sel': (num_bits(len(TEMPWrSel)), partial(_enumerated_field, enum_class=TEMPWrSel), True),
         'width': (1, _boolean, True),
         'load_ip': (1, _boolean, True),
         'read_immed': (1, _boolean, True),

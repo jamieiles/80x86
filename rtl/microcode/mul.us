@@ -1,0 +1,53 @@
+// Multiplicand in TEMP, multiplier in MDR
+mulf6_reg:
+    width 8, a_sel RA, alu_op SELA, mdr_write, ra_sel AL, jmp do_mul8;
+mulf6_mem:
+    width 8, segment DS, mem_read, ra_sel AL, jmp do_mul8;
+do_mul8:
+    width 8, a_sel RA, alu_op SELA, tmp_wr_en;
+    // 8-bit multiplication yields a 16-bit result so move the result into
+    // TEMP to later transfer to AX as a 16-bit operation.
+    width 8, a_sel MDR, b_sel TEMP, alu_op MUL, update_flags ZF OF CF,
+        tmp_wr_en;
+    b_sel TEMP, alu_op SELB, rd_sel_source MICROCODE_RD_SEL, rd_sel AX,
+        reg_wr_en, next_instruction;
+
+// Multiplicand in TEMP, multiplier in MDR
+mulf7_reg:
+    a_sel RA, alu_op SELA, mdr_write, ra_sel AX, jmp do_mul16;
+mulf7_mem:
+    segment DS, mem_read, ra_sel AX, jmp do_mul16;
+do_mul16:
+    a_sel RA, alu_op SELA, tmp_wr_en;
+    a_sel MDR, b_sel TEMP, alu_op MUL, update_flags ZF OF CF,
+        tmp_wr_sel Q_HIGH, tmp_wr_en, rd_sel_source MICROCODE_RD_SEL,
+        rd_sel AX, reg_wr_en;
+    b_sel TEMP, alu_op SELB, rd_sel_source MICROCODE_RD_SEL, rd_sel DX,
+        reg_wr_en, next_instruction;
+
+// imultiplicand in TEMP, imultiplier in MDR
+imulf6_reg:
+    width 8, a_sel RA, alu_op SELA, mdr_write, ra_sel AL, jmp do_imul8;
+imulf6_mem:
+    width 8, segment DS, mem_read, ra_sel AL, jmp do_imul8;
+do_imul8:
+    width 8, a_sel RA, alu_op SELA, tmp_wr_en;
+    // 8-bit imultiplication yields a 16-bit result so move the result into
+    // TEMP to later transfer to AX as a 16-bit operation.
+    width 8, a_sel MDR, b_sel TEMP, alu_op IMUL, update_flags ZF OF CF,
+        tmp_wr_en;
+    b_sel TEMP, alu_op SELB, rd_sel_source MICROCODE_RD_SEL, rd_sel AX,
+        reg_wr_en, next_instruction;
+
+// imultiplicand in TEMP, imultiplier in MDR
+imulf7_reg:
+    a_sel RA, alu_op SELA, mdr_write, ra_sel AX, jmp do_imul16;
+imulf7_mem:
+    segment DS, mem_read, ra_sel AX, jmp do_imul16;
+do_imul16:
+    a_sel RA, alu_op SELA, tmp_wr_en;
+    a_sel MDR, b_sel TEMP, alu_op IMUL, update_flags ZF OF CF,
+        tmp_wr_sel Q_HIGH, tmp_wr_en, rd_sel_source MICROCODE_RD_SEL,
+        rd_sel AX, reg_wr_en;
+    b_sel TEMP, alu_op SELB, rd_sel_source MICROCODE_RD_SEL, rd_sel DX,
+        reg_wr_en, next_instruction;

@@ -30,6 +30,7 @@ set(microprogram_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/loop.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/mov.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/movs.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/mul.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/neg.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/not.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/or.us
@@ -84,6 +85,7 @@ set(ALU_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/daa.v
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/das.v
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/flags.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/alu/mul.v
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/or.v
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/not.v
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/rcl.v
