@@ -194,6 +194,8 @@ TEST_F(EmulateFixture, Aad)
 {
     // aad
     for (auto &t: aad_tests) {
+        reset();
+
         write_flags(t.flags);
         write_reg(AX, t.ax);
         set_instruction({ 0xd5, 0x0a });

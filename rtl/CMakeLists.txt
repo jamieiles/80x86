@@ -5,6 +5,7 @@ add_library(verilator SHARED ${VERILATOR_LIB_SOURCES})
 
 set(microprogram_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/aaa.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode/aad.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/aas.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/adc.us
     ${CMAKE_CURRENT_SOURCE_DIR}/microcode/add.us

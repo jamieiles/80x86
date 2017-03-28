@@ -1,0 +1,12 @@
+// AAD
+.at 0xd5;
+    width 8, read_immed, ra_sel AH, jmp aad;
+.auto_address;
+aad:
+    a_sel RA, b_sel IMMEDIATE, alu_op IMUL, tmp_wr_en;
+    width 8, ra_sel AL;
+    a_sel RA, b_sel TEMP, alu_op ADD, update_flags SF ZF PF,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel AX, reg_wr_en;
+    width 8, b_sel IMMEDIATE, immediate 0x0, alu_op SELB,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel AH, reg_wr_en,
+        next_instruction;
