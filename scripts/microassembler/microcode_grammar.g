@@ -3,11 +3,15 @@ Microcode:
 ;
 
 Comment:
-  /\/\/.*$/ | /#.*$/
+  /\/\/.*$/
+;
+
+PreprocessorDirective:
+  "#" LineNumber=INT Filename=STRING Flags*=INT[' ']
 ;
 
 Line:
-  (Directive ';') | LabelAnchor | (MicroInstruction ';')
+  PreprocessorDirective | (Directive ';') | LabelAnchor | (MicroInstruction ';')
 ;
 
 LabelAnchor:

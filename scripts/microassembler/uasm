@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import argparse
 import math
-import textx
 import os
 import subprocess
 import pystache
@@ -78,38 +77,45 @@ class MicroAssembler(object):
                     instr.next = instr.address + 1
 
         def preprocess(filename):
-            return subprocess.check_output(['cpp', filename, '-o', '-']).decode('utf-8')
+            return subprocess.check_output(['cpp', '-nostdinc', filename, '-o', '-']).decode('utf-8')
 
-        all_input = ''.join(map(lambda x: preprocess(x), files))
-        model = mm.model_from_str(all_input)
-        current_label = None
-        current_address = None
+        for f in files:
+            model = mm.model_from_str(preprocess(f))
+            current_label = None
+            current_address = None
 
-        for d in model.lines:
-            if token_type(d) == 'LabelAnchor':
-                current_label = d.label
-                if current_label in label_map:
-                    raise KeyError('Duplicate label "{0}"'.format(current_label))
-            elif token_type(d) == 'Directive':
-                if d.directive == 'at':
-                    current_address = int(d.arguments[0].value, 0)
-                elif d.directive == 'auto_address':
+            line_offset = 0
+            for d in model.lines:
+                line, _ = mm.parser.pos_to_linecol(d._tx_position)
+                line -= line_offset + 1
+                if token_type(d) == 'LabelAnchor':
+                    current_label = d.label
+                    if current_label in label_map:
+                        raise KeyError('Duplicate label "{0}"'.format(current_label))
+                elif token_type(d) == 'Directive':
+                    if d.directive == 'at':
+                        current_address = int(d.arguments[0].value, 0)
+                    elif d.directive == 'auto_address':
+                        current_address = None
+                    else:
+                        raise ValueError('Invalid directive "{0}"'.format(d.directive))
+                elif token_type(d) == 'MicroInstruction':
+                    instr = MicroInstruction(f, line, current_address)
+                    instructions.append(instr)
+                    self._current_instr = instr
+
+                    self._parse(d.fields)
+
+                    if current_label:
+                        label_map[current_label] = instr
                     current_address = None
+                    current_label = None
+                elif token_type(d) == 'PreprocessorDirective':
+                    if d.Filename == f:
+                        line, _ = mm.parser.pos_to_linecol(d._tx_position)
+                        line_offset = line - d.LineNumber
                 else:
-                    raise ValueError('Invalid directive "{0}"'.format(d.directive))
-            elif token_type(d) == 'MicroInstruction':
-                instr = MicroInstruction(current_address)
-                instructions.append(instr)
-                self._current_instr = instr
-
-                self._parse(d.fields)
-
-                if current_label:
-                    label_map[current_label] = instr
-                current_address = None
-                current_label = None
-            else:
-                raise ValueError('Unexpected token type {0}'.format(token_type(d)))
+                    raise ValueError('Unexpected token type {0}'.format(token_type(d)))
 
         assign_addresses()
         resolve_labels()
@@ -124,8 +130,8 @@ class MicroAssembler(object):
             for instr in instructions:
                 if instr.address != last_addr + 1:
                     f.write('@ {0:x}\n'.format(instr.address))
-                f.write('%s // %x\n' % (instr.encode(num_bits(instructions[-1].address + 1)),
-                                        instr.address))
+                f.write('%s // %x %s\n' % (instr.encode(num_bits(instructions[-1].address + 1)),
+                                           instr.address, instr.origin))
                 last_addr = instr.address
 
     def _write_microcode_verilog(self, filename, instructions):
@@ -322,12 +328,13 @@ class MicroAssembler(object):
         self._write_types(self._verilog_types_output, self._cpp_types_output)
 
 class MicroInstruction(object):
-    def __init__(self, address=None):
+    def __init__(self, filename, line, address=None):
         self.next = None
         self.next_label = None
         self.address = address
         self._has_jump = False
         self.present_fields = {}
+        self.origin = '%s:%d' % (filename, line)
 
     def encode(self, address_bits):
         if 'immediate' in self.present_fields:
