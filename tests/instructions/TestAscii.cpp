@@ -173,8 +173,8 @@ TEST_F(EmulateFixture, AamDivByZero)
     write_flags(0);
     write_reg(AX, 1);
     set_instruction({ 0xd4, 0 });
-    write_mem<uint16_t>(VEC_DIVIDE_ERROR + 0, 0x8000);
-    write_mem<uint16_t>(VEC_DIVIDE_ERROR + 2, 0xc000);
+    write_mem<uint16_t>(VEC_DIVIDE_ERROR + 0, 0x8000, CS);
+    write_mem<uint16_t>(VEC_DIVIDE_ERROR + 2, 0xc000, CS);
 
     emulate();
 

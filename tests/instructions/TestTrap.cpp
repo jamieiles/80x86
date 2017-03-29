@@ -7,8 +7,8 @@
 TEST_F(EmulateFixture, TrapOnInt3)
 {
     set_instruction({ 0x90 });
-    write_mem<uint16_t>(VEC_INT + 2, 0x8000);
-    write_mem<uint16_t>(VEC_INT + 0, 0x0100);
+    write_mem<uint16_t>(VEC_INT + 2, 0x8000, CS);
+    write_mem<uint16_t>(VEC_INT + 0, 0x0100, CS);
     emulate();
 
     ASSERT_FALSE(cpu->has_trapped());

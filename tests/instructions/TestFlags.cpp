@@ -33,13 +33,13 @@ TEST_F(EmulateFixture, Pushf)
     emulate();
 
     ASSERT_EQ(read_reg(SP), 0x00fe);
-    ASSERT_EQ(0x00d7, read_mem<uint16_t>(0x00fe));
+    ASSERT_EQ(0x00d7, read_mem<uint16_t>(0x00fe, SS));
 }
 
 TEST_F(EmulateFixture, Popf)
 {
     write_reg(SP, 0x00fe);
-    write_mem<uint16_t>(0x00fe, 0x00d7);
+    write_mem<uint16_t>(0x00fe, 0x00d7, SS);
     set_instruction({ 0x9d });
 
     emulate();

@@ -8,7 +8,7 @@ TEST_F(EmulateFixture, ScasbNoRep)
     write_reg(AL, 0);
     write_reg(DI, 0x800);
     write_reg(CX, 0xff);
-    write_cstring(0x800, "8086");
+    write_cstring(0x800, "8086", ES);
 
     // repne scasb
     set_instruction({ 0xae });
@@ -25,7 +25,7 @@ TEST_F(EmulateFixture, ScasbInc)
     write_reg(AL, 0);
     write_reg(DI, 0x800);
     write_reg(CX, 0xff);
-    write_cstring(0x800, "8086");
+    write_cstring(0x800, "8086", ES);
 
     // repne scasb
     set_instruction({ 0xf2, 0xae });
@@ -41,7 +41,7 @@ TEST_F(EmulateFixture, ScasbDec)
     write_reg(AL, '1');
     write_reg(DI, 0x803);
     write_reg(CX, 0xff);
-    write_cstring(0x800, "1234");
+    write_cstring(0x800, "1234", ES);
 
     // repne scasb
     set_instruction({ 0xf2, 0xae });
@@ -56,7 +56,7 @@ TEST_F(EmulateFixture, ScasbIncRepe)
     write_reg(AL, 'a');
     write_reg(DI, 0x800);
     write_reg(CX, 0xff);
-    write_cstring(0x800, "aaab");
+    write_cstring(0x800, "aaab", ES);
 
     // repe scasb
     set_instruction({ 0xf3, 0xae });
@@ -72,7 +72,7 @@ TEST_F(EmulateFixture, ScasbDecRepe)
     write_reg(AL, 'b');
     write_reg(DI, 0x803);
     write_reg(CX, 0xff);
-    write_cstring(0x800, "abbb");
+    write_cstring(0x800, "abbb", ES);
 
     // repe scasb
     set_instruction({ 0xf3, 0xae });
@@ -89,8 +89,8 @@ TEST_F(EmulateFixture, ScaswNoRep)
     write_reg(CX, 0xff);
 
     for (int i = 0; i < 2; ++i)
-        write_mem<uint16_t>(0x800 + i * 2, 0xaa55);
-    write_mem<uint16_t>(0x800 + 2 * 2, 0x0000);
+        write_mem<uint16_t>(0x800 + i * 2, 0xaa55, ES);
+    write_mem<uint16_t>(0x800 + 2 * 2, 0x0000, ES);
 
     // scasw
     set_instruction({ 0xaf });
@@ -109,8 +109,8 @@ TEST_F(EmulateFixture, ScaswInc)
     write_reg(CX, 0xff);
 
     for (int i = 0; i < 2; ++i)
-        write_mem<uint16_t>(0x800 + i * 2, 0xaa55);
-    write_mem<uint16_t>(0x800 + 2 * 2, 0x0000);
+        write_mem<uint16_t>(0x800 + i * 2, 0xaa55, ES);
+    write_mem<uint16_t>(0x800 + 2 * 2, 0x0000, ES);
 
     // repne scasw
     set_instruction({ 0xf2, 0xaf });
@@ -128,9 +128,9 @@ TEST_F(EmulateFixture, ScaswDec)
     write_reg(CX, 0xff);
 
     for (int i = 0; i < 4; ++i)
-        write_mem<uint16_t>(0x800 + i * 2, 0xaa55);
-    write_mem<uint16_t>(0x800 + 4 * 2, 0x0000);
-    write_mem<uint16_t>(0x7fe, 0x0000);
+        write_mem<uint16_t>(0x800 + i * 2, 0xaa55, ES);
+    write_mem<uint16_t>(0x800 + 4 * 2, 0x0000, ES);
+    write_mem<uint16_t>(0x7fe, 0x0000, ES);
 
     // repne scasw
     set_instruction({ 0xf2, 0xaf });
@@ -147,7 +147,7 @@ TEST_F(EmulateFixture, ScaswIncRepe)
     write_reg(CX, 0xff);
 
     for (int i = 0; i < 4; ++i)
-        write_mem<uint16_t>(0x800 + i * 2, 0xaa55);
+        write_mem<uint16_t>(0x800 + i * 2, 0xaa55, ES);
 
     // repe scasw
     set_instruction({ 0xf3, 0xaf });
@@ -165,7 +165,7 @@ TEST_F(EmulateFixture, ScaswDecRepe)
     write_reg(CX, 0xff);
 
     for (int i = 0; i < 4; ++i)
-        write_mem<uint16_t>(0x800 + i * 2, 0xaa55);
+        write_mem<uint16_t>(0x800 + i * 2, 0xaa55, ES);
 
     // repe scasw
     set_instruction({ 0xf3, 0xaf });
@@ -191,7 +191,7 @@ TEST_F(EmulateFixture, MovsbInc)
 
     ASSERT_EQ(read_reg(DI), 0x404);
     ASSERT_EQ(read_reg(SI), 0x804);
-    ASSERT_EQ(read_cstring(0x400), "8086");
+    ASSERT_EQ(read_cstring(0x400, ES), "8086");
 }
 
 TEST_F(EmulateFixture, MovsbDec)
@@ -211,7 +211,7 @@ TEST_F(EmulateFixture, MovsbDec)
 
     ASSERT_EQ(read_reg(DI), 0x3ff);
     ASSERT_EQ(read_reg(SI), 0x7ff);
-    ASSERT_EQ(read_cstring(0x400), "8086");
+    ASSERT_EQ(read_cstring(0x400, ES), "8086");
 }
 
 TEST_F(EmulateFixture, MovswInc)
@@ -230,8 +230,8 @@ TEST_F(EmulateFixture, MovswInc)
 
     ASSERT_EQ(read_reg(DI), 0x404);
     ASSERT_EQ(read_reg(SI), 0x804);
-    ASSERT_EQ(read_mem<uint16_t>(0x400), 0xaa55);
-    ASSERT_EQ(read_mem<uint16_t>(0x402), 0x55aa);
+    ASSERT_EQ(read_mem<uint16_t>(0x400, ES), 0xaa55);
+    ASSERT_EQ(read_mem<uint16_t>(0x402, ES), 0x55aa);
 }
 
 TEST_F(EmulateFixture, MovswDec)
@@ -251,8 +251,8 @@ TEST_F(EmulateFixture, MovswDec)
 
     ASSERT_EQ(read_reg(DI), 0x3fe);
     ASSERT_EQ(read_reg(SI), 0x7fe);
-    ASSERT_EQ(read_mem<uint16_t>(0x400), 0xaa55);
-    ASSERT_EQ(read_mem<uint16_t>(0x402), 0x55aa);
+    ASSERT_EQ(read_mem<uint16_t>(0x400, ES), 0xaa55);
+    ASSERT_EQ(read_mem<uint16_t>(0x402, ES), 0x55aa);
 }
 
 template <typename T>
@@ -281,11 +281,11 @@ TEST_P(Cmps8Fixture, Flags)
     write_reg(CX, std::max(p.src.size() + 1, p.dst.size() + 1));
 
     for (auto i = 0; i < 32; ++i) {
-        write_mem<uint8_t>(0x400 + i, 0);
+        write_mem<uint8_t>(0x400 + i, 0, ES);
         write_mem<uint8_t>(0x800 + i, 0);
     }
     write_vector(0x800, p.src);
-    write_vector(0x400, p.dst);
+    write_vector(0x400, p.dst, ES);
 
     set_instruction({ p.prefix, 0xa6 });
 
@@ -325,7 +325,7 @@ TEST_F(EmulateFixture, CmpsbDec)
     write_reg(DI, 0x400);
 
     write_mem<uint8_t>(0x800, 'f');
-    write_mem<uint8_t>(0x400, 'g');
+    write_mem<uint8_t>(0x400, 'g', ES);
 
     set_instruction({ 0xa6 });
 
@@ -351,11 +351,11 @@ TEST_P(Cmps16Fixture, Flags)
     write_reg(CX, std::max(p.src.size() + 1, p.dst.size() + 1));
 
     for (auto i = 0; i < 32; ++i) {
-        write_mem<uint16_t>(0x400 + i, 0);
+        write_mem<uint16_t>(0x400 + i, 0, ES);
         write_mem<uint16_t>(0x800 + i, 0);
     }
     write_vector(0x800, p.src);
-    write_vector(0x400, p.dst);
+    write_vector(0x400, p.dst, ES);
 
     set_instruction({ p.prefix, 0xa7 });
 
@@ -395,7 +395,7 @@ TEST_F(EmulateFixture, CmpswDec)
     write_reg(DI, 0x400);
 
     write_mem<uint16_t>(0x800, 0xaa55);
-    write_mem<uint16_t>(0x400, 0xaa56);
+    write_mem<uint16_t>(0x400, 0xaa56, ES);
 
     set_instruction({ 0xa7 });
 
@@ -480,7 +480,7 @@ TEST_F(EmulateFixture, Stosb)
     emulate();
 
     ASSERT_EQ(read_reg(DI), 0x803);
-    ASSERT_EQ(read_cstring(0x800), "aaa");
+    ASSERT_EQ(read_cstring(0x800, ES), "aaa");
 }
 
 TEST_F(EmulateFixture, StosbDec)
@@ -496,7 +496,7 @@ TEST_F(EmulateFixture, StosbDec)
     emulate();
 
     ASSERT_EQ(read_reg(DI), 0x7ff);
-    ASSERT_EQ(read_cstring(0x800), "aaa");
+    ASSERT_EQ(read_cstring(0x800, ES), "aaa");
 }
 
 TEST_F(EmulateFixture, Stosw)
@@ -512,7 +512,7 @@ TEST_F(EmulateFixture, Stosw)
     emulate();
 
     ASSERT_EQ(read_reg(DI), 0x806);
-    ASSERT_EQ(read_cstring(0x800), "ababab");
+    ASSERT_EQ(read_cstring(0x800, ES), "ababab");
 }
 
 TEST_F(EmulateFixture, StoswDec)
@@ -528,5 +528,5 @@ TEST_F(EmulateFixture, StoswDec)
     emulate();
 
     ASSERT_EQ(read_reg(DI), 0x7fe);
-    ASSERT_EQ(read_cstring(0x800), "ababab");
+    ASSERT_EQ(read_cstring(0x800, ES), "ababab");
 }

@@ -13,7 +13,7 @@ TEST_F(EmulateFixture, CallDirectIntra)
     emulate();
 
     ASSERT_EQ(0x00fe, read_reg(SP));
-    ASSERT_EQ(0x0033, read_mem<uint16_t>(0x00fe));
+    ASSERT_EQ(0x0033, read_mem<uint16_t>(0x00fe, SS));
     ASSERT_EQ(0x2000, read_reg(CS));
     ASSERT_EQ(0x2043, read_reg(IP));
 }
@@ -32,7 +32,7 @@ TEST_F(EmulateFixture, CallIndirectIntraReg)
     emulate();
 
     ASSERT_EQ(0x00fe, read_reg(SP));
-    ASSERT_EQ(0x0032, read_mem<uint16_t>(0x00fe));
+    ASSERT_EQ(0x0032, read_mem<uint16_t>(0x00fe, SS));
     ASSERT_EQ(0x2000, read_reg(CS));
     ASSERT_EQ(0x2010, read_reg(IP));
 }
@@ -52,7 +52,7 @@ TEST_F(EmulateFixture, CallIndirectIntraMem)
     emulate();
 
     ASSERT_EQ(0x00fe, read_reg(SP));
-    ASSERT_EQ(0x0032, read_mem<uint16_t>(0x00fe));
+    ASSERT_EQ(0x0032, read_mem<uint16_t>(0x00fe, SS));
     ASSERT_EQ(0x2000, read_reg(CS));
     ASSERT_EQ(0x2010, read_reg(IP));
 }
@@ -67,8 +67,8 @@ TEST_F(EmulateFixture, CallDirectInter)
     emulate();
 
     ASSERT_EQ(0x00fc, read_reg(SP));
-    ASSERT_EQ(0x2000, read_mem<uint16_t>(0x00fe));
-    ASSERT_EQ(0x0035, read_mem<uint16_t>(0x00fc));
+    ASSERT_EQ(0x2000, read_mem<uint16_t>(0x00fe, SS));
+    ASSERT_EQ(0x0035, read_mem<uint16_t>(0x00fc, SS));
     ASSERT_EQ(0x8000, read_reg(CS));
     ASSERT_EQ(0x2010, read_reg(IP));
 }
@@ -89,8 +89,8 @@ TEST_F(EmulateFixture, CallIndirectInter)
     emulate();
 
     ASSERT_EQ(0x00fc, read_reg(SP));
-    ASSERT_EQ(0x2000, read_mem<uint16_t>(0x00fe));
-    ASSERT_EQ(0x0032, read_mem<uint16_t>(0x00fc));
+    ASSERT_EQ(0x2000, read_mem<uint16_t>(0x00fe, SS));
+    ASSERT_EQ(0x0032, read_mem<uint16_t>(0x00fc, SS));
     EXPECT_EQ(0x8000, read_reg(CS));
     EXPECT_EQ(0x2010, read_reg(IP));
 }

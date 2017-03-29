@@ -25,13 +25,16 @@ public:
         // need to handle wrapping around to 0.  Just start off away from the
         // interrupt vector table so we can easily detect interrupts.
         cpu->write_reg(IP, 0x1000);
+        cpu->write_reg(SS, 0x2000);
+        cpu->write_reg(ES, 0x4000);
+        cpu->write_reg(DS, 0x6000);
     }
 
     void set_instruction(const std::vector<uint8_t> &instr)
     {
         for (size_t m = 0; m < instr.size(); ++m)
             cpu->write_mem<uint8_t>(get_phys_addr(cpu->read_reg(CS), cpu->read_reg(IP) + m),
-                                   instr[m]);
+                                    instr[m]);
         instr_len = instr.size();
     }
 
@@ -46,35 +49,35 @@ public:
     }
 
     template <typename T>
-    void write_mem(uint32_t addr, T val)
+    void write_mem(uint32_t addr, T val, GPR segment=DS)
     {
-        cpu->write_mem<T>(addr, val);
+        cpu->write_mem<T>(get_phys_addr(cpu->read_reg(segment), addr), val);
     }
 
-    void write_cstring(uint32_t addr, const char *str)
+    void write_cstring(uint32_t addr, const char *str, GPR segment=DS)
     {
         do {
-            write_mem<uint8_t>(addr++, *str++);
+            write_mem<uint8_t>(addr++, *str++, segment);
         } while (*str);
-        write_mem<uint8_t>(addr, 0);
+        write_mem<uint8_t>(addr, 0, segment);
     }
 
     template <typename T>
-    void write_vector(uint32_t addr, std::vector<T> vec)
+    void write_vector(uint32_t addr, std::vector<T> vec, GPR segment=DS)
     {
         for (auto v: vec) {
-            write_mem<T>(addr, v);
+            write_mem<T>(addr, v, segment);
             addr += sizeof(T);
         }
     }
 
-    std::string read_cstring(uint32_t addr)
+    std::string read_cstring(uint32_t addr, GPR segment=DS)
     {
         std::string str;
 
         char v;
         for (;;) {
-            v = read_mem<uint8_t>(addr++);
+            v = read_mem<uint8_t>(addr++, segment);
             if (!v)
                 break;
             str += v;
@@ -84,9 +87,9 @@ public:
     }
 
     template <typename T>
-    T read_mem(uint32_t addr)
+    T read_mem(uint32_t addr, GPR segment=DS)
     {
-        return cpu->read_mem<T>(addr);
+        return cpu->read_mem<T>(get_phys_addr(cpu->read_reg(segment), addr));
     }
 
     template <typename T>
