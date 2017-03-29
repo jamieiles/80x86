@@ -1,6 +1,8 @@
 #include <stdexcept>
+#include <fstream>
 #include <VCore.h>
 #include <VerilogDriver.h>
+#include <boost/algorithm/string/replace.hpp>
 
 #include "svdpi.h"
 
@@ -27,7 +29,8 @@ RTLCPU<debug_enabled>::RTLCPU(const std::string &test_name)
     : VerilogDriver<VCore, debug_enabled>(test_name),
     i_in_progress(false),
     d_in_progress(false),
-    mem_latency(0)
+    mem_latency(0),
+    test_name(test_name)
 {
     this->reset();
 
@@ -44,6 +47,25 @@ RTLCPU<debug_enabled>::RTLCPU(const std::string &test_name)
                                              (this->dut.data_m_data_out >> 8) & 0xff);
         }
     });
+}
+
+template <bool debug_enabled>
+void RTLCPU<debug_enabled>::write_coverage()
+{
+#ifdef COVERAGE
+    auto filename = (boost::format("microcode_%s.mcov") % test_name).str();
+    boost::replace_all(filename, "/", "_");
+    std::ofstream cov;
+    cov.open("coverage/" + filename);
+
+    svSetScope(svGetScopeFromName("TOP.Core.Microcode"));
+    auto num_bins = this->dut.get_microcode_num_instructions();
+    for (auto i = 0; i < num_bins; ++i) {
+        auto count = this->dut.get_microcode_coverage_bin(i);
+        cov << std::hex << i << ":" << count << std::endl;
+    }
+    cov.close();
+#endif
 }
 
 template <bool debug_enabled>

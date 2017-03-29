@@ -18,6 +18,11 @@ public:
         reset();
     }
 
+    ~EmulateFixture()
+    {
+        cpu->write_coverage();
+    }
+
     void reset()
     {
         cpu->reset();

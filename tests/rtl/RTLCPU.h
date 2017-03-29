@@ -13,6 +13,7 @@ class RTLCPU : public VerilogDriver<VCore, debug_enabled>,
     public CPU {
 public:
     RTLCPU(const std::string &test_name);
+    void write_coverage();
     void reset();
     void write_reg(GPR regnum, uint16_t val);
     uint16_t read_reg(GPR regnum);
@@ -35,4 +36,5 @@ private:
     bool i_in_progress;
     bool d_in_progress;
     int mem_latency;
+    std::string test_name;
 };

@@ -31,7 +31,7 @@ set(CMAKE_LINK_DEPENDS_NO_SHARED 1)
 set(CMAKE_CONFIGURATION_TYPES "Coverage;Release;Debug")
 
 set(CMAKE_CXX_FLAGS "-Weffc++ -Wall -Wextra -Werror -ggdb3 -std=c++14 ${CMAKE_CXX_FLAGS}")
-set(CMAKE_CXX_FLAGS_COVERAGE "-O0 -fprofile-arcs -ftest-coverage -fno-elide-constructors ${CMAKE_CXX_FLAGS_COVERAGE}")
+set(CMAKE_CXX_FLAGS_COVERAGE "-O0 -fprofile-arcs -ftest-coverage -fno-elide-constructors ${CMAKE_CXX_FLAGS_COVERAGE} -DCOVERAGE")
 set(CMAKE_EXE_LINKER_FLAGS_COVERAGE "--coverage")
 set(CMAKE_SHARED_LINKER_FLAGS_COVERAGE "--coverage")
 set(CMAKE_CXX_FLAGS_RELEASE "-O2 ${CMAKE_CXX_FLAGS_RELEASE}")

@@ -132,6 +132,24 @@ export "DPI-C" function get_microcode_address;
 function [addr_bits-1:0] get_microcode_address;
     get_microcode_address = addr;
 endfunction
+
+int microcode_coverage[num_instructions];
+
+always_ff @(posedge clk)
+    microcode_coverage[addr] <= microcode_coverage[addr] + 1;
+
+export "DPI-C" function get_microcode_num_instructions;
+
+function int get_microcode_num_instructions;
+    get_microcode_num_instructions = num_instructions;
+endfunction
+
+export "DPI-C" function get_microcode_coverage_bin;
+
+function int get_microcode_coverage_bin;
+    input int bin;
+    get_microcode_coverage_bin = microcode_coverage[bin];
+endfunction
 `endif
 
 endmodule;
