@@ -154,6 +154,11 @@ INSTANTIATE_TEST_CASE_P(Inc, IncReg16Test,
         // inc ax
         IncDec16Params({ 0xff, 0xc0 }, inc16_tests)
     ));
+INSTANTIATE_TEST_CASE_P(Dec, IncReg16Test,
+    ::testing::Values(
+        // dec ax
+        IncDec16Params({ 0xff, 0xc8 }, dec16_tests)
+    ));
 
 class IncMem16Test : public EmulateFixture,
     public ::testing::WithParamInterface<IncDec16Params> {
