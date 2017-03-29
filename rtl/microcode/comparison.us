@@ -90,11 +90,11 @@ comp ## alufunc ## 81_mem:                                                      
 #define COMP_82(alufunc, flags)                                                 \
 comp ## alufunc ## 82_reg:                                                      \
     a_sel RA, b_sel IMMEDIATE, alu_op alufunc,                                  \
-        update_flags flags, next_instruction;                                   \
+        width 8, update_flags flags, next_instruction;                          \
 comp ## alufunc ## 82_mem:                                                      \
-    segment DS, mem_read;                                                       \
+    width 8, segment DS, mem_read;                                              \
     a_sel MDR, b_sel IMMEDIATE, alu_op alufunc,                                 \
-        update_flags flags, next_instruction;
+        width 8, update_flags flags, next_instruction;
 
 #define COMP_83(alufunc, flags)                                                 \
 comp ## alufunc ## 83_reg:                                                      \

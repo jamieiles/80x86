@@ -82,7 +82,7 @@ alufunc ## opcode:                                                              
 alufunc ## 80_reg:                                                              \
     a_sel RA, b_sel IMMEDIATE, alu_op alufunc,                       		\
         rd_sel_source MODRM_RM_REG, reg_wr_en,                                  \
-        update_flags flags, next_instruction;                   		\
+        width 8, update_flags flags, next_instruction;                   	\
 alufunc ## 80_mem:                                                              \
     segment DS, mem_read, width 8;						\
     a_sel MDR, b_sel IMMEDIATE, alu_op alufunc,                      		\
@@ -115,11 +115,11 @@ alufunc ## 82_mem:                                                              
 alufunc ## 83_reg:                                                              \
     a_sel RA, b_sel IMMEDIATE, alu_op alufunc,                       		\
         rd_sel_source MODRM_RM_REG, reg_wr_en,                                  \
-        update_flags flags, next_instruction;                   		\
+        width 8, update_flags flags, next_instruction;                   	\
 alufunc ## 83_mem:                                                              \
-    segment DS, mem_read;							\
-    a_sel MDR, b_sel IMMEDIATE, alu_op alufunc,                      		\
+    width 8, segment DS, mem_read;						\
+    width 8, a_sel MDR, b_sel IMMEDIATE, alu_op alufunc,                      	\
         mdr_write, update_flags flags, segment DS;                              \
-    segment DS, mem_write, next_instruction;
+    width 8, segment DS, mem_write, next_instruction;
 
 #endif // ARITHMETIC_US
