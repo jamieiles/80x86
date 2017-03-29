@@ -1,0 +1,49 @@
+#!/usr/bin/env python3
+import argparse
+import os
+import re
+
+from collections import defaultdict
+
+
+def gather_coverage(coverage_root):
+    coverage = defaultdict(int)
+    for root, dirs, files in os.walk(coverage_root):
+        for f in files:
+            if not re.match(r'microcode_.*\.mcov', f):
+                continue
+            with open(os.path.join(root, f)) as covfile:
+                lines = covfile.readlines()
+            for l in lines:
+                loc, count = l.split(':')
+                coverage[int(loc, 16)] += int(count, 16)
+
+    return coverage
+
+
+def report(microcode, coverage_root):
+    coverage = gather_coverage(coverage_root)
+
+    with open(microcode) as microcode_bin:
+        lines = microcode_bin.readlines()
+
+    addr = 0
+    for l in lines:
+        if l.startswith('//'):
+            print(l, end='')
+            continue
+        if l.startswith('@'):
+            print(l, end='')
+            addr = int(l.split()[1], 16)
+            continue
+        print('%s %8d %s' % ('*' if coverage[addr] == 0 else ' ',
+                             coverage[addr], l), end='')
+        addr += 1
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('microcode_bin')
+    parser.add_argument('coverage_root')
+    args = parser.parse_args()
+
+    report(args.microcode_bin, args.coverage_root)
