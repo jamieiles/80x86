@@ -5,9 +5,9 @@ calle8:
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
         reg_wr_en, rd_sel_source MICROCODE_RD_SEL, mar_write,
         mar_wr_sel Q;
-    a_sel IP, alu_op SELA, mdr_write, ra_sel SP, segment DS;
-    segment DS, mem_write, a_sel IP, b_sel IMMEDIATE, alu_op ADD,
-        load_ip;
+    a_sel IP, alu_op SELA, mdr_write, ra_sel SP, segment SS, segment_force;
+    segment SS, segment_force, mem_write, a_sel IP, b_sel IMMEDIATE,
+        alu_op ADD, load_ip;
     next_instruction;
 
 callff_indirect_intra_reg:
@@ -21,8 +21,8 @@ callff_indirect_intra_save:
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
         reg_wr_en, rd_sel_source MICROCODE_RD_SEL, mar_write,
         mar_wr_sel Q;
-    a_sel IP, alu_op SELA, mdr_write, ra_sel SP, segment DS;
-    segment DS, mem_write, next_instruction;
+    a_sel IP, alu_op SELA, mdr_write, ra_sel SP, segment SS, segment_force;
+    segment SS, segment_force, mem_write, next_instruction;
 
 .at 0x9a;
     jmp call9a, read_immed, mdr_write, b_sel IMMEDIATE, alu_op SELB;
@@ -39,13 +39,13 @@ call9a:
     b_sel SR, alu_op SELB, mdr_write, ra_sel SP;
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
         reg_wr_en, rd_sel_source MICROCODE_RD_SEL, mar_write,
-        mar_wr_sel Q, segment DS;
-    segment DS, mem_write, ra_sel SP;
+        mar_wr_sel Q, segment SS;
+    segment SS, mem_write, ra_sel SP;
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
         reg_wr_en, rd_sel_source MICROCODE_RD_SEL, mar_write,
         mar_wr_sel Q;
-    a_sel IP, alu_op SELA, mdr_write, segment DS;
-    segment DS, mem_write;
+    a_sel IP, alu_op SELA, mdr_write, segment SS;
+    segment SS, mem_write;
     b_sel IMMEDIATE, alu_op SELB, segment_force, sr_wr_sel CS,
         segment_wr_en, next_instruction;
 
@@ -55,13 +55,13 @@ callff_indirect_inter_mem:
     b_sel SR, alu_op SELB, mdr_write, ra_sel SP;
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
         reg_wr_en, rd_sel_source MICROCODE_RD_SEL, mar_write,
-        mar_wr_sel Q, segment DS;
-    segment DS, mem_write, ra_sel SP;
+        mar_wr_sel Q, segment SS;
+    segment SS, mem_write, ra_sel SP;
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
         reg_wr_en, rd_sel_source MICROCODE_RD_SEL, mar_write,
         mar_wr_sel Q;
-    a_sel IP, alu_op SELA, mdr_write, segment DS;
-    segment DS, mem_write;
+    a_sel IP, alu_op SELA, mdr_write, segment SS;
+    segment SS, mem_write;
     mar_wr_sel EA, mar_write, segment DS;
     segment DS, mem_read;
     a_sel MDR, alu_op SELA, load_ip;

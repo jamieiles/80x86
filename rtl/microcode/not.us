@@ -7,7 +7,7 @@ notf6_mem:
     a_sel MDR, b_sel IMMEDIATE, immediate 0x0, alu_op NOT,
         mdr_write, update_flags OF SF ZF CF PF AF, width 8,
         segment DS;
-    width 8, mem_write, next_instruction;
+    width 8, segment DS, mem_write, next_instruction;
 
 notf7_reg:
     a_sel RA, b_sel IMMEDIATE, immediate 0x0, alu_op NOT,
@@ -17,4 +17,4 @@ notf7_mem:
     segment DS, mem_read, ra_modrm_rm_reg;
     a_sel MDR, b_sel IMMEDIATE, immediate 0x0, alu_op NOT,
         mdr_write, update_flags OF SF ZF CF PF AF, segment DS;
-    mem_write, next_instruction;
+    segment DS, mem_write, next_instruction;
