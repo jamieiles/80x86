@@ -85,6 +85,7 @@ wire immed_fifo_rd_en;
 
 // ModRM Decoder
 wire modrm_complete;
+wire modrm_clear = reset | do_next_instruction;
 wire [2:0] modrm_reg_rd_sel[2];
 wire modrm_start;
 wire modrm_busy;
@@ -243,6 +244,7 @@ ModRMDecode     ModRMDecode(.clk(clk),
                             .start(modrm_start),
                             .busy(modrm_busy),
                             .complete(modrm_complete),
+                            .clear(modrm_clear),
                             // Results
                             .effective_address(effective_address),
                             .regnum(regnum),

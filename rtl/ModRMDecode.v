@@ -4,6 +4,7 @@ module ModRMDecode(input logic clk,
                    input logic start,
                    output logic busy,
                    output logic complete,
+                   input logic clear,
                    // Results
                    output logic [15:0] effective_address,
                    output logic [2:0] regnum,
@@ -124,7 +125,7 @@ always_ff @(posedge clk or posedge reset)
         _modrm_byte_read <= 1;
 
 always_ff @(posedge clk or posedge reset)
-    if (reset)
+    if (reset || clear)
         _modrm <= 8'b0;
     else if (_latch_modrm_byte)
         _modrm <= fifo_rd_data;
