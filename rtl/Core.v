@@ -69,6 +69,7 @@ wire fifo_reset;
 
 // CS:IP Synchronizer
 wire cs_updating = seg_wr_sel == CS && segment_wr_en;
+wire [15:0] prefetch_cs = cs_updating ? seg_wr_val : cs;
 wire ip_wr_en;
 wire [15:0] ip_current;
 wire prefetch_load_new_ip;
@@ -229,7 +230,7 @@ TempReg         TempReg(.clk(clk),
 
 Prefetch        Prefetch(.clk(clk),
                          .reset(reset),
-                         .new_cs(cs),
+                         .new_cs(prefetch_cs),
                          .new_ip(prefetch_new_ip),
                          .load_new_ip(prefetch_load_new_ip),
                          .fifo_wr_en(fifo_wr_en),
