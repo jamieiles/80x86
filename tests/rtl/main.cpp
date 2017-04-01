@@ -14,11 +14,7 @@ int main(int argc, char *argv[])
 {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::GTEST_FLAG(filter) += "\
--Div/DivMem16Test.*:\
-Div/DivMem8Test.*:\
-Div/DivReg16Test.*:\
-Div/DivReg8Test.*:\
-EmulateFixture.Aam:\
+-EmulateFixture.Aam:\
 EmulateFixture.Aam129:\
 EmulateFixture.AamDivByZero:\
 EmulateFixture.AamSigned:\

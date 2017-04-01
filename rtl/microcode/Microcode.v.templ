@@ -6,6 +6,7 @@
 module Microcode(input logic clk,
                  input logic reset,
                  input logic stall,
+                 input logic divide_error,
                  input logic rm_is_reg,
                  input logic [2:0] modrm_reg,
                  input logic zf,
@@ -114,6 +115,8 @@ always_ff @(posedge clk or posedge reset) begin
         addr <= current.next + {{addr_bits-1{1'b0}}, ~rm_is_reg};
     else if (!do_stall && current.jump_type == JumpType_OPCODE)
         addr <= {{addr_bits-8{1'b0}}, fifo_rd_data};
+    else if (!do_stall && divide_error)
+        addr <= {{addr_bits-9{1'b0}}, 9'h101};
     else if (!do_stall && current.next_instruction)
         addr <= {{addr_bits-9{1'b0}}, 9'h100};
     else if (!do_stall)

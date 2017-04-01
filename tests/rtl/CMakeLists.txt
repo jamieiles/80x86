@@ -25,6 +25,8 @@ set_target_properties(rtlsim PROPERTIES LINK_FLAGS "-Wl,--export-dynamic")
 add_executable(rtl-unittest
                TestALU.cpp
                TestCSIPSync.cpp
+               TestDivider.cpp
+               TestDivisionAlgorithm.cpp
                TestFifo.cpp
                TestFlags.cpp
                TestImmediateReader.cpp
@@ -45,6 +47,7 @@ target_link_libraries(rtl-unittest
                       VALU
                       VCSIPSync
                       VCore
+                      VDivider
                       VFifo
                       VFlags
                       VImmediateReader

@@ -37,7 +37,9 @@ wire [2:0] reg_wr_sel =
     rd_sel_source == RDSelSource_MODRM_REG ? regnum :
     rd_sel_source == RDSelSource_MODRM_RM_REG ? rm_regnum :
     microcode_reg_wr_sel;
-wire [15:0] reg_wr_val = alu_out[15:0];
+wire [15:0] reg_wr_val =
+    reg_wr_source == RegWrSource_Q ? alu_out[15:0] :
+    reg_wr_source == RegWrSource_QUOTIENT ? quotient : remainder;
 wire reg_wr_en;
 wire [15:0] reg_rd_val[2];
 wire rb_cl;
@@ -125,6 +127,7 @@ wire [15:0] alu_flags_out;
 // Microcode
 wire [2:0] microcode_reg_rd_sel[2];
 wire [2:0] microcode_reg_wr_sel;
+wire [1:0] reg_wr_source;
 wire [1:0] microcode_seg_wr_sel;
 wire [1:0] seg_wr_sel;
 wire microcode_fifo_rd_en;
@@ -147,10 +150,24 @@ wire jump_taken;
 
 // Misc control signals
 wire do_next_instruction = next_instruction & ~do_stall;
-wire do_stall = modrm_busy | immed_busy | loadstore_busy;
+wire do_stall = modrm_busy | immed_busy | loadstore_busy | divide_busy;
 
 // IP
 wire ip_inc = fifo_rd_en & ~fifo_empty;
+
+// Divider
+wire [31:0] dividend8 = divide_signed ? {{16{tmp_val[15]}}, tmp_val} : {16'b0, tmp_val};
+wire [31:0] dividend = is_8_bit ? dividend8 : {reg_rd_val[0], tmp_val};
+wire [15:0] divisor8 = divide_signed ? {{8{mdr[7]}}, mdr[7:0]} : mdr;
+wire [15:0] divisor = is_8_bit ? divisor8 : mdr;
+wire [15:0] quotient;
+wire [15:0] remainder;
+wire divide_error;
+wire divide_busy;
+wire divide = alu_op == ALUOp_DIV || alu_op == ALUOp_IDIV;
+wire divide_signed = alu_op == ALUOp_IDIV;
+wire divide_complete;
+wire do_divide = divide & ~divide_complete;
 
 RegisterFile    RegisterFile(.clk(clk),
                              .reset(reset),
@@ -304,6 +321,7 @@ LoadStore       LoadStore(.clk(clk),
 Microcode       Microcode(.clk(clk),
                           .reset(reset),
                           .stall(do_stall),
+                          .divide_error(divide_error),
                           .modrm_reg(regnum),
                           .zf(alu_flags_out[ZF_IDX]),
                           .microcode_immediate(microcode_immediate),
@@ -331,6 +349,7 @@ Microcode       Microcode(.clk(clk),
                           .rd_sel_source(rd_sel_source),
                           .rd_sel(microcode_reg_wr_sel),
                           .reg_wr_en(reg_wr_en),
+                          .reg_wr_source(reg_wr_source),
                           .segment(microcode_segment),
                           .segment_override(segment_override),
                           .segment_force(segment_force),
@@ -358,6 +377,19 @@ ALU             ALU(.a(a_bus),
                     .is_8_bit(is_8_bit),
                     .flags_in(flags),
                     .flags_out(alu_flags_out));
+
+Divider         Divider(.clk(clk),
+                        .reset(reset),
+                        .start(do_divide),
+                        .is_8_bit(is_8_bit),
+                        .is_signed(divide_signed),
+                        .busy(divide_busy),
+                        .complete(divide_complete),
+                        .error(divide_error),
+                        .dividend(dividend),
+                        .divisor(divisor),
+                        .quotient(quotient),
+                        .remainder(remainder));
 
 `ifdef verilator
 // verilator lint_off BLKANDNBLK

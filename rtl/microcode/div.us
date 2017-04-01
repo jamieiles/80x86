@@ -1,0 +1,53 @@
+divf6_reg:
+    width 8, a_sel RA, alu_op SELA, mdr_write, jmp do_div8;
+divf6_mem:
+    width 8, segment DS, mem_read, jmp do_div8;
+do_div8:
+    ra_sel AX;
+    // Divisor in MDR, dividend in DX:TMP
+    a_sel RA, alu_op SELA, tmp_wr_en;
+    width 8, alu_op DIV;
+    width 8, reg_wr_source QUOTIENT, rd_sel_source MICROCODE_RD_SEL, rd_sel AL,
+        reg_wr_en;
+    width 8, reg_wr_source REMAINDER, rd_sel_source MICROCODE_RD_SEL,
+        rd_sel AH, reg_wr_en, next_instruction;
+
+divf7_reg:
+    a_sel RA, alu_op SELA, mdr_write, ra_sel AX, jmp do_div16;
+divf7_mem:
+    segment DS, mem_read, ra_sel AX, jmp do_div16;
+do_div16:
+    // Divisor in MDR, dividend in DX:TMP
+    a_sel RA, alu_op SELA, tmp_wr_en, ra_sel DX;
+    ra_sel DX, alu_op DIV;
+    reg_wr_source QUOTIENT, rd_sel_source MICROCODE_RD_SEL, rd_sel AX,
+        reg_wr_en;
+    reg_wr_source REMAINDER, rd_sel_source MICROCODE_RD_SEL, rd_sel DX,
+        reg_wr_en, next_instruction;
+
+idivf6_reg:
+    width 8, a_sel RA, alu_op SELA, mdr_write, jmp do_idiv8;
+idivf6_mem:
+    width 8, segment DS, mem_read, jmp do_idiv8;
+do_idiv8:
+    ra_sel AX;
+    // divisor in MDR, dividend in DX:TMP
+    a_sel RA, alu_op SELA, tmp_wr_en;
+    width 8, alu_op IDIV;
+    width 8, reg_wr_source QUOTIENT, rd_sel_source MICROCODE_RD_SEL, rd_sel AL,
+        reg_wr_en;
+    width 8, reg_wr_source REMAINDER, rd_sel_source MICROCODE_RD_SEL,
+        rd_sel AH, reg_wr_en, next_instruction;
+
+idivf7_reg:
+    a_sel RA, alu_op SELA, mdr_write, ra_sel AX, jmp do_idiv16;
+idivf7_mem:
+    segment DS, mem_read, ra_sel AX, jmp do_idiv16;
+do_idiv16:
+    // divisor in MDR, dividend in DX:TMP
+    a_sel RA, alu_op SELA, tmp_wr_en, ra_sel DX;
+    ra_sel DX, alu_op IDIV;
+    reg_wr_source QUOTIENT, rd_sel_source MICROCODE_RD_SEL, rd_sel AX,
+        reg_wr_en;
+    reg_wr_source REMAINDER, rd_sel_source MICROCODE_RD_SEL, rd_sel DX,
+        reg_wr_en, next_instruction;

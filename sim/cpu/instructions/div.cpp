@@ -66,10 +66,11 @@ void EmulatorPimpl::divf7()
 // idiv r/m, 8-bit
 void EmulatorPimpl::idivf6()
 {
-    auto divisor = read_data<uint8_t>();
-    auto dividend = registers->get(AX);
+    int8_t divisor = static_cast<int8_t>(read_data<uint8_t>());
+    int16_t dividend = static_cast<int16_t>(registers->get(AX));
 
-    if (divisor == 0 || ((dividend / divisor) & 0xff00)) {
+    if (divisor == 0 || (dividend / divisor < -127) ||
+        (dividend / divisor > 127)) {
         auto flags = registers->get_flags();
         push_word(flags);
         push_word(registers->get(CS));
@@ -88,8 +89,8 @@ void EmulatorPimpl::idivf6()
         return;
     }
 
-    uint8_t quotient = dividend / divisor;
-    uint8_t remainder = dividend % divisor;
+    int8_t quotient = dividend / divisor;
+    int8_t remainder = dividend % divisor;
 
     registers->set(AH, remainder);
     registers->set(AL, quotient);
@@ -98,11 +99,12 @@ void EmulatorPimpl::idivf6()
 // div r/m, 16-bit
 void EmulatorPimpl::idivf7()
 {
-    auto divisor = read_data<uint16_t>();
-    uint32_t dividend =
+    auto divisor = static_cast<int16_t>(read_data<uint16_t>());
+    int32_t dividend =
         (static_cast<uint32_t>(registers->get(DX)) << 16) | registers->get(AX);
 
-    if (divisor == 0 || ((dividend / divisor) & 0xffff0000)) {
+    if (divisor == 0 || (dividend / divisor < -32767) ||
+        (dividend / divisor) > 32767) {
         auto flags = registers->get_flags();
         push_word(flags);
         push_word(registers->get(CS));
@@ -121,8 +123,8 @@ void EmulatorPimpl::idivf7()
         return;
     }
 
-    uint16_t quotient = dividend / divisor;
-    uint16_t remainder = dividend % divisor;
+    int16_t quotient = dividend / divisor;
+    int16_t remainder = dividend % divisor;
 
     registers->set(DX, remainder);
     registers->set(AX, quotient);

@@ -47,6 +47,7 @@ verilate(TOPLEVEL Core
          ${CMAKE_CURRENT_SOURCE_DIR}/FlagsEnum.v
          ${CMAKE_CURRENT_SOURCE_DIR}/Core.v
          ${CMAKE_CURRENT_SOURCE_DIR}/CSIPSync.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/Divider.v
          ${CMAKE_CURRENT_SOURCE_DIR}/Fifo.v
          ${CMAKE_CURRENT_SOURCE_DIR}/Flags.v
          ${CMAKE_CURRENT_SOURCE_DIR}/JumpTest.v
@@ -90,6 +91,8 @@ verilate(TOPLEVEL SegmentOverride
 verilate(TOPLEVEL SegmentRegisterFile
          VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/RegisterEnum.v
          ${CMAKE_CURRENT_SOURCE_DIR}/SegmentRegisterFile.v)
+verilate(TOPLEVEL Divider
+         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Divider.v)
 
 install(TARGETS verilator VCore
         LIBRARY DESTINATION lib

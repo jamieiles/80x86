@@ -2,6 +2,10 @@
 opcode_fetch:
     fifo_pop, jmp_opcode;
 
+.at 0x101;
+divide_error:
+    jmp opcode_fetch;
+
 // Multiplexed add/adc/sub/sbb/cmp/xor/or/and
 // r/m OP immed8
 .at 0x80;
@@ -143,8 +147,8 @@ dispatch_f6:
     width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem negf6_reg; // reg == 3
     width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem mulf6_reg; // reg == 4
     width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem imulf6_reg; // reg == 5
-    next_instruction; // reg == 6
-    next_instruction; // reg == 7
+    width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem divf6_reg; // reg == 6
+    width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem idivf6_reg; // reg == 7
 
 // Multiplexed neg/mul/not/test/div 16 bit
 .at 0xf7;
@@ -157,8 +161,8 @@ dispatch_f7:
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem negf7_reg; // reg == 3
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem mulf7_reg; // reg == 4
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem imulf7_reg; // reg == 5
-    next_instruction; // reg == 6
-    next_instruction; // reg == 7
+    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem divf7_reg; // reg == 6
+    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem idivf7_reg; // reg == 7
 
 // Multiplexed push/inc/jmp/call/ff
 .at 0xff;

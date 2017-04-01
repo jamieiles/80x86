@@ -44,6 +44,8 @@ always_comb begin
     ALUOp_DAS: do_das(out[15:0], a, flags_in, flags_out);
     ALUOp_MUL: do_mul(out, is_8_bit, a, b, flags_in, flags_out, 1'b0);
     ALUOp_IMUL: do_mul(out, is_8_bit, a, b, flags_in, flags_out, 1'b1);
+    ALUOp_DIV: ; // Handled by Divider, shares the enumeration.
+    ALUOp_IDIV: ; // Handled by Divider, shares the enumeration.
     ALUOp_NEXT: begin
         if (flags_in[DF_IDX])
             do_sub(out[15:0], 1'b0, a, b, flags_in, flags_out);
