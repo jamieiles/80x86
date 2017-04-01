@@ -98,9 +98,13 @@ comp ## alufunc ## 82_mem:                                                      
 
 #define COMP_83(alufunc, flags)                                                 \
 comp ## alufunc ## 83_reg:                                                      \
+    ra_modrm_rm_reg, jmp comp ## alufunc ## 83_regwrite;                        \
+comp ## alufunc ## 83_mem:                                                      \
+    ra_modrm_rm_reg, segment DS, jmp comp ## alufunc ## 83_memwrite;            \
+comp ## alufunc ## 83_regwrite:                                                 \
     a_sel RA, b_sel IMMEDIATE, alu_op alufunc,                                  \
         update_flags flags, next_instruction;                                   \
-comp ## alufunc ## 83_mem:                                                      \
+comp ## alufunc ## 83_memwrite:                                                 \
     segment DS, mem_read;                                                       \
     a_sel MDR, b_sel IMMEDIATE, alu_op alufunc,                                 \
         update_flags flags, next_instruction;
