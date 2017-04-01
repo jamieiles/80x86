@@ -131,8 +131,9 @@ class MicroAssembler(object):
             for instr in instructions:
                 if instr.address != last_addr + 1:
                     f.write('@ {0:x}\n'.format(instr.address))
-                f.write('%s // %x %s\n' % (instr.encode(num_bits(instructions[-1].address + 1)),
-                                           instr.address, instr.origin))
+                f.write('%s // %x %s %s\n' % (instr.encode(num_bits(instructions[-1].address + 1)),
+                                              instr.address, instr.origin,
+                                              ' '.join(instr.present_fields.keys())))
                 last_addr = instr.address
 
     def _write_microcode_verilog(self, filename, instructions):
