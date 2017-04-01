@@ -172,7 +172,7 @@ dispatch_ff:
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem inc_ff_reg; // reg == 0
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem dec_ff_reg; // reg == 1
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem callff_indirect_intra_reg; // reg == 2
-    segment CS, jmp_rm_reg_mem callff_indirect_inter_reg; // reg == 3
+    segment_force, segment CS, jmp_rm_reg_mem callff_indirect_inter_reg; // reg == 3
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem jmpff_indirect_intra_reg; // reg == 4
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem jmpff_indirect_inter_reg; // reg == 5
     ra_sel SP, segment DS, jmp_rm_reg_mem pushff_reg; // reg == 6
