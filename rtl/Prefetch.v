@@ -30,7 +30,7 @@ reg abort_cur;
 // verilator lint_on BLKANDNBLK
 reg [7:0] fetched_high_byte;
 reg write_second;
-wire should_write_second_byte = mem_ack && !abort_cur && !fetch_address[0];
+wire should_write_second_byte = mem_ack && !abort_cur && !fetch_address[0] && !fifo_reset;
 
 // verilator lint_off UNUSED
 wire [15:0] next_address = mem_ack && !abort_cur ? fetch_address + 1'b1 : fetch_address;
