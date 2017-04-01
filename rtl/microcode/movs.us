@@ -22,7 +22,7 @@ movsb_no_rep:
     a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op NEXT,
         rd_sel_source MICROCODE_RD_SEL, rd_sel DI, reg_wr_en,
         segment ES, segment_force;
-    width 8, segment ES, segment_force, mem_write;
+    width 8, segment ES, segment_force, mem_write, jmp_if_not_rep movsb_done;
 
     ra_sel CX, jmp movsb_rep_loop;
 movsb_done:
@@ -52,7 +52,7 @@ movsw_no_rep:
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op NEXT,
         rd_sel_source MICROCODE_RD_SEL, rd_sel DI, reg_wr_en,
         segment ES, segment_force;
-    segment ES, segment_force, mem_write;
+    segment ES, segment_force, mem_write, jmp_if_not_rep movsw_done;
 
     ra_sel CX, jmp movsw_rep_loop;
 movsw_done:
