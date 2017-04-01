@@ -16,7 +16,7 @@ stosb_no_rep:
         rd_sel_source MICROCODE_RD_SEL, rd_sel DI, reg_wr_en;
     width 8, ra_sel AL;
     width 8, alu_op SELA, mdr_write, segment ES, segment_force;
-    width 8, segment ES, segment_force, mem_write;
+    width 8, segment ES, segment_force, mem_write, jmp_if_not_rep stosb_done;
     ra_sel CX, jmp stosb_rep_loop;
 stosb_done:
     next_instruction;
@@ -39,6 +39,7 @@ stosw_no_rep:
         rd_sel_source MICROCODE_RD_SEL, rd_sel DI, reg_wr_en;
     ra_sel AL;
     alu_op SELA, mdr_write, segment ES, segment_force;
-    segment ES, segment_force, mem_write, ra_sel CX, jmp stosw_rep_loop;
+    segment ES, segment_force, mem_write, jmp_if_not_rep stosw_done;
+    ra_sel CX, jmp stosw_rep_loop;
 stosw_done:
     next_instruction;
