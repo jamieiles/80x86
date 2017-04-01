@@ -13,8 +13,6 @@ std::unique_ptr<CPU> get_cpu(const std::string &test_name)
 int main(int argc, char *argv[])
 {
     ::testing::InitGoogleTest(&argc, argv);
-    ::testing::GTEST_FLAG(filter) += "\
--EmulateFixture.Hlt:";
 
     return RUN_ALL_TESTS();
 }

@@ -16,6 +16,7 @@ set(microprogram_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/esc.us
     ${CMAKE_CURRENT_SOURCE_DIR}/extend.us
     ${CMAKE_CURRENT_SOURCE_DIR}/flags.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/hlt.us
     ${CMAKE_CURRENT_SOURCE_DIR}/inc.us
     ${CMAKE_CURRENT_SOURCE_DIR}/int.us
     ${CMAKE_CURRENT_SOURCE_DIR}/io.us
