@@ -10,6 +10,10 @@ task do_shr;
         flags_out = flags_in;
         {out, flags_out[CF_IDX]} = {a, 1'b0} >> b[4:0];
         common_flags(flags_out, is_8_bit, out, a, b);
+        if (is_8_bit)
+            flags_out[OF_IDX] = a[7] ^ out[7];
+        else
+            flags_out[OF_IDX] = a[15] ^ out[15];
 
         if (~|b)
             flags_out = flags_in;
