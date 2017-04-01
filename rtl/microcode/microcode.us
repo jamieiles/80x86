@@ -2,9 +2,38 @@
 opcode_fetch:
     fifo_pop, jmp_opcode;
 
+// See 0xcc in int.us for more details, this is the same thing but for a
+// divide error.
 .at 0x101;
 divide_error:
-    jmp opcode_fetch;
+    alu_op GETFLAGS, mdr_write, ra_sel SP, jmp do_divide_error;
+.auto_address;
+do_divide_error:
+    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB,
+        mar_write, mar_wr_sel Q, segment SS, segment_force;
+    segment SS, segment_force, mem_write;
+    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op SUB,
+        mar_write, mar_wr_sel Q, segment CS;
+    b_sel SR, alu_op SELB, mdr_write, segment SS, segment_force;
+    segment SS, segment_force, mem_write;
+    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op SUB,
+        mar_write, mar_wr_sel Q;
+    a_sel IP, alu_op SELA, mdr_write, segment SS, segment_force;
+    segment SS, segment_force, mem_write;
+    a_sel MAR, alu_op SELA, rd_sel_source MICROCODE_RD_SEL,
+        rd_sel SP, reg_wr_en;
+    b_sel IMMEDIATE, immediate 0x0, alu_op SETFLAGSB, update_flags IF TF;
+    b_sel IMMEDIATE, immediate 0x0, alu_op SELB, segment_force,
+        sr_wr_sel CS, segment_wr_en;
+    b_sel IMMEDIATE, immediate 0x0, alu_op SELB, mar_wr_sel Q,
+        mar_write, segment CS, segment_force;
+    segment_force, segment CS, mem_read;
+    a_sel MDR, alu_op SELA, load_ip;
+    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, mar_write,
+        mar_wr_sel Q, segment CS, segment_force;
+    segment_force, segment CS, mem_read;
+    a_sel MDR, alu_op SELA, segment_force, sr_wr_sel CS,
+        segment_wr_en, next_instruction;
 
 // Multiplexed add/adc/sub/sbb/cmp/xor/or/and
 // r/m OP immed8

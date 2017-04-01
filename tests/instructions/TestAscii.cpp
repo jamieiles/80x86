@@ -30,9 +30,9 @@ TEST_F(EmulateFixture, Aaa)
 
         emulate();
 
-        ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+        EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
                             FLAGS_STUCK_BITS | t.flags_expected);
-        ASSERT_EQ(read_reg(AX), t.ax_expected);
+        EXPECT_EQ(read_reg(AX), t.ax_expected);
     }
 }
 
@@ -56,9 +56,9 @@ TEST_F(EmulateFixture, Daa)
 
         emulate();
 
-        ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+        EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
                             FLAGS_STUCK_BITS | t.flags_expected);
-        ASSERT_EQ(read_reg(AX), t.ax_expected);
+        EXPECT_EQ(read_reg(AX), t.ax_expected);
     }
 }
 
@@ -80,9 +80,9 @@ TEST_F(EmulateFixture, Aas)
 
         emulate();
 
-        ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+        EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
                             FLAGS_STUCK_BITS | t.flags_expected);
-        ASSERT_EQ(read_reg(AX), t.ax_expected);
+        EXPECT_EQ(read_reg(AX), t.ax_expected);
     }
 }
 
@@ -106,9 +106,9 @@ TEST_F(EmulateFixture, Das)
 
         emulate();
 
-        ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+        EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
                             FLAGS_STUCK_BITS | t.flags_expected);
-        ASSERT_EQ(read_reg(AX), t.ax_expected);
+        EXPECT_EQ(read_reg(AX), t.ax_expected);
     }
 }
 
@@ -122,15 +122,17 @@ TEST_F(EmulateFixture, Aam)
 {
     // aam
     for (auto &t: aam_tests) {
+        reset();
+
         write_flags(t.flags);
         write_reg(AX, t.ax);
         set_instruction({ 0xd4, 0x0a });
 
         emulate();
 
-        ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+        EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
                             FLAGS_STUCK_BITS | t.flags_expected);
-        ASSERT_EQ(read_reg(AX), t.ax_expected);
+        EXPECT_EQ(read_reg(AX), t.ax_expected);
     }
 }
 
@@ -141,15 +143,17 @@ TEST_F(EmulateFixture, Aam129)
 {
     // aam 129
     for (auto &t: aam_129_tests) {
+        reset();
+
         write_flags(t.flags);
         write_reg(AX, t.ax);
         set_instruction({ 0xd4, 129 });
 
         emulate();
 
-        ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+        EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
                             FLAGS_STUCK_BITS | t.flags_expected);
-        ASSERT_EQ(read_reg(AX), t.ax_expected);
+        EXPECT_EQ(read_reg(AX), t.ax_expected);
     }
 }
 
@@ -158,13 +162,13 @@ TEST_F(EmulateFixture, AamSigned)
     // aam 1
     write_flags(0);
     write_reg(AX, 0xffff);
-    set_instruction({ 0xd4, 1 });
+    set_instruction({ 0xd4, 0x10 });
 
     emulate();
 
-    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                        FLAGS_STUCK_BITS | PF | SF);
-    ASSERT_EQ(read_reg(AX), 0xff00);
+    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        FLAGS_STUCK_BITS | PF);
+    EXPECT_EQ(read_reg(AX), 0x0f0f);
 }
 
 TEST_F(EmulateFixture, AamDivByZero)
@@ -178,10 +182,10 @@ TEST_F(EmulateFixture, AamDivByZero)
 
     emulate();
 
-    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
                         FLAGS_STUCK_BITS | 0);
-    ASSERT_EQ(read_reg(CS), 0xc000);
-    ASSERT_EQ(read_reg(IP), 0x8000);
+    EXPECT_EQ(read_reg(CS), 0xc000);
+    EXPECT_EQ(read_reg(IP), 0x8000);
 }
 
 static const std::vector<AsciiTest> aad_tests {
@@ -202,9 +206,9 @@ TEST_F(EmulateFixture, Aad)
 
         emulate();
 
-        ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+        EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
                             FLAGS_STUCK_BITS | t.flags_expected);
-        ASSERT_EQ(read_reg(AX), t.ax_expected);
+        EXPECT_EQ(read_reg(AX), t.ax_expected);
     }
 }
 
@@ -217,7 +221,7 @@ TEST_F(EmulateFixture, AadSigned)
 
     emulate();
 
-    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
                         FLAGS_STUCK_BITS | SF);
-    ASSERT_EQ(read_reg(AX), 1);
+    EXPECT_EQ(read_reg(AX), 1);
 }

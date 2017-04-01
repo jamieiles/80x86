@@ -51,3 +51,20 @@ do_idiv16:
         reg_wr_en;
     reg_wr_source REMAINDER, rd_sel_source MICROCODE_RD_SEL, rd_sel DX,
         reg_wr_en, next_instruction;
+
+.at 0xd4;
+    width 8, read_immed, ra_modrm_rm_reg, b_sel IMMEDIATE, alu_op SELB,
+        mdr_write, jmp do_aam;
+.auto_address;
+do_aam:
+    width 8, ra_sel AL;
+    // divisor in MDR, dividend in DX:TMP
+    a_sel RA, alu_op SELA, tmp_wr_en;
+    width 8, alu_op DIV;
+    width 8, reg_wr_source QUOTIENT, rd_sel_source MICROCODE_RD_SEL, rd_sel AH,
+        reg_wr_en;
+    width 8, reg_wr_source REMAINDER, rd_sel_source MICROCODE_RD_SEL,
+        rd_sel AL, reg_wr_en;
+    ra_sel AX;
+    a_sel RA, b_sel IMMEDIATE, immediate 0x0, alu_op ADD,
+        update_flags SF ZF PF, next_instruction;

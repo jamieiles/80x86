@@ -14,11 +14,7 @@ int main(int argc, char *argv[])
 {
     ::testing::InitGoogleTest(&argc, argv);
     ::testing::GTEST_FLAG(filter) += "\
--EmulateFixture.Aam:\
-EmulateFixture.Aam129:\
-EmulateFixture.AamDivByZero:\
-EmulateFixture.AamSigned:\
-EmulateFixture.Hlt:";
+-EmulateFixture.Hlt:";
 
     return RUN_ALL_TESTS();
 }

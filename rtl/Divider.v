@@ -90,7 +90,7 @@ end
 
 always_comb begin
     case (state)
-    INIT: next_state = start && !error ? WORKING : INIT;
+    INIT: next_state = start && !error && !raise_error ? WORKING : INIT;
     WORKING: next_state = idx == 4'b0 ? RESTORE : WORKING;
     RESTORE: next_state = is_signed ? FIX_SIGN : INIT;
     FIX_SIGN: next_state = INIT;

@@ -149,6 +149,7 @@ INSTANTIATE_TEST_CASE_P(Div, DivMem16Test,
     ));
 
 static const std::vector<struct DivTest<int16_t, int8_t>> idiv8_tests = {
+    { 250, 10, 25, 0, },
     { 10, 3, 3, 1, },
     { 10, -3, -3, 1, },
     { -10, -3, 3, -1, },
