@@ -59,7 +59,7 @@ dec_ff_mem:
 inc ## reg:                                                             \
     a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op ADD,               \
         rd_sel_source MICROCODE_RD_SEL, rd_sel reg, reg_wr_en,          \
-        next_instruction;
+        update_flags OF SF ZF AF PF, next_instruction;
 
 #define DEC_REG(opcode, reg)                                            \
 .at opcode;                                                             \
@@ -67,7 +67,7 @@ inc ## reg:                                                             \
 dec ## reg:                                                             \
     a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,               \
         rd_sel_source MICROCODE_RD_SEL, rd_sel reg, reg_wr_en,          \
-        next_instruction;
+        update_flags OF SF ZF AF PF, next_instruction;
 
 INC_REG(0x40, AX)
 INC_REG(0x41, CX)
