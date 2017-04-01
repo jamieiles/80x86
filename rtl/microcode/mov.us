@@ -192,10 +192,10 @@ mov8e_mem:
     modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_8c;
 .auto_address;
 dispatch_8c:
-    segment ES, jmp_rm_reg_mem mov8c_reg;
-    segment CS, jmp_rm_reg_mem mov8c_reg;
-    segment SS, jmp_rm_reg_mem mov8c_reg;
-    segment DS, jmp_rm_reg_mem mov8c_reg;
+    segment_force, segment ES, jmp_rm_reg_mem mov8c_reg;
+    segment_force, segment CS, jmp_rm_reg_mem mov8c_reg;
+    segment_force, segment SS, jmp_rm_reg_mem mov8c_reg;
+    segment_force, segment DS, jmp_rm_reg_mem mov8c_reg;
     next_instruction; // reg == 4
     next_instruction; // reg == 5
     next_instruction; // reg == 6
