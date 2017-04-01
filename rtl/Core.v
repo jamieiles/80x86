@@ -27,7 +27,7 @@ wire [15:0] b_bus =
     b_sel == BDriver_SR ? seg_rd_val : tmp_val;
 
 // Register file.
-wire reg_is_8_bit = modrm_start ? 1'b0 : is_8_bit;
+wire reg_is_8_bit = modrm_start & ~modrm_complete ? 1'b0 : is_8_bit;
 wire [2:0] reg_rd_sel[2];
 assign reg_rd_sel[0] = modrm_start && ~modrm_complete ? modrm_reg_rd_sel[0] :
     ra_modrm_rm_reg ? rm_regnum : microcode_reg_rd_sel[0];
