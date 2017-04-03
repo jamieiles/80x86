@@ -43,9 +43,9 @@ add_definitions(-DMEM_INT_BYTE_VAL=${POISON_MEMORY_VALUE})
 enable_testing()
 
 add_subdirectory(googletest)
+add_subdirectory(rtl)
 add_subdirectory(python)
 add_subdirectory(sim)
-add_subdirectory(rtl)
 add_subdirectory(tests)
 add_subdirectory(documentation)
 

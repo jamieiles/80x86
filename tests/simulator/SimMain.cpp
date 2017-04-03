@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include <memory>
 
-#include "CPU.h"
+#include "SoftwareCPU.h"
 
 std::unique_ptr<CPU> get_cpu(const std::string &test_name)
 {

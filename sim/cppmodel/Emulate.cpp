@@ -6,6 +6,7 @@
 #include <functional>
 #include <stdint.h>
 #include "Memory.h"
+#include "SoftwareCPU.h"
 
 template <typename Out, typename In>
 static inline Out sign_extend(In v)

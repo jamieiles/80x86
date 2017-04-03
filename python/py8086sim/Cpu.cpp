@@ -1,9 +1,9 @@
 #include <boost/python.hpp>
 #include <boost/version.hpp>
 
-#include "CPU.h"
 #include "RegisterFile.h"
 #include "RTLCPU.h"
+#include "SoftwareCPU.h"
 
 using namespace boost::python;
 

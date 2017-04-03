@@ -4,6 +4,8 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/../../rtl)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../rtl)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../../sim/RTLCPU)
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/../../sim/RTLCPU)
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/coverage)
 
@@ -56,20 +58,6 @@ verilate(TOPLEVEL SegmentRegisterFile
          ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/SegmentRegisterFile.v)
 verilate(TOPLEVEL Divider
          VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/Divider.v)
-verilate(TOPLEVEL Core
-         VERILOG_SOURCES ${CORE_SOURCES}
-         GENERATED_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/VCore___024unit.cpp
-         ${CMAKE_CURRENT_BINARY_DIR}/VCore___024unit.h
-         DEPENDS generate_microcode)
-
-add_library(rtlsim SHARED
-            Core.cpp
-            ../../sim/cpu/RegisterFile.cpp
-            ../../sim/cpu/Memory.cpp)
-target_link_libraries(rtlsim
-                      verilator
-                      VCore)
-set_target_properties(rtlsim PROPERTIES LINK_FLAGS "-Wl,--export-dynamic")
 
 add_executable(rtl-unittest
                TestALU.cpp
@@ -111,10 +99,7 @@ target_link_libraries(rtl-unittest
 		      gtest
 		      gmock
                       verilator
-                      rtlsim)
+                      rtlsim
+                      simcommon)
 add_test(rtl-unittest rtl-unittest)
 set_tests_properties(rtl-unittest PROPERTIES TIMEOUT 20)
-
-install(TARGETS VCore
-        LIBRARY DESTINATION lib
-        COMPONENT simulator)

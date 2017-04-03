@@ -1,4 +1,5 @@
 include_directories(..)
+include_directories(../../sim/cppmodel)
 
 add_library(simtests OBJECT
 	    TestFifo.cpp

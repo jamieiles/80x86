@@ -13,6 +13,8 @@
 
 #include "CPU.h"
 #include "Display.h"
+#include "SoftwareCPU.h"
+#include "RTLCPU.h"
 
 static std::map<int, char> key_to_scancode_map = {
     { SDLK_a, 0x1e },

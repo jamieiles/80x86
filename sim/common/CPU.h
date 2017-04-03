@@ -2,9 +2,22 @@
 
 #include <string>
 
-#include "Emulate.h"
 #include "Memory.h"
 #include "RegisterFile.h"
+
+enum InterruptVectorOffset {
+    VEC_DIVIDE_ERROR = 0,
+    VEC_SINGLE_STEP = 4,
+    VEC_NMI = 8,
+    VEC_INT = 12,
+    VEC_OVERFLOW = 16
+};
+
+static inline phys_addr get_phys_addr(uint16_t segment,
+                                      uint32_t displacement)
+{
+    return ((static_cast<uint32_t>(segment) << 4) + displacement) % (1 * 1024 * 1024);
+}
 
 class CPU {
 public:
@@ -65,69 +78,3 @@ protected:
     Memory io;
 };
 
-class SoftwareCPU : public CPU {
-public:
-    SoftwareCPU()
-        : SoftwareCPU("default")
-    {
-    }
-    SoftwareCPU(const std::string &name)
-        : CPU(), emulator(&registers)
-    {
-        (void)name;
-
-        emulator.set_memory(&mem);
-        emulator.set_io(&io);
-    }
-
-    void write_reg(GPR regnum, uint16_t val)
-    {
-        registers.set(regnum, val);
-    }
-
-    uint16_t read_reg(GPR regnum)
-    {
-        return registers.get(regnum);
-    }
-
-    size_t step()
-    {
-        return emulator.emulate();
-    }
-
-    void write_flags(uint16_t val)
-    {
-        registers.set_flags(val);
-    }
-
-    uint16_t read_flags()
-    {
-        return registers.get_flags();
-    }
-
-    bool has_trapped() const
-    {
-        return emulator.has_trapped();
-    }
-
-    void reset()
-    {
-        emulator.reset();
-    }
-
-    bool instruction_had_side_effects() const
-    {
-        if (registers.has_written())
-            return true;
-        return CPU::instruction_had_side_effects();
-    }
-
-    void clear_side_effects()
-    {
-        registers.clear_has_written();
-        CPU::clear_side_effects();
-    }
-private:
-    RegisterFile registers;
-    Emulator emulator;
-};

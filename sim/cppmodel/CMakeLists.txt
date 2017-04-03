@@ -1,12 +1,12 @@
+include_directories(../common)
+
 add_library(8086sim SHARED
-            RegisterFile.h
-            RegisterFile.cpp
-            Memory.h
-            Memory.cpp
             ModRM.h
             ModRM.cpp
             Emulate.h
-            Emulate.cpp)
+            Emulate.cpp
+            SoftwareCPU.h)
+target_link_libraries(8086sim simcommon)
 install(TARGETS 8086sim
         LIBRARY DESTINATION lib
         COMPONENT simulator)
