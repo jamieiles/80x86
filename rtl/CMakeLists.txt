@@ -28,72 +28,31 @@ set(ALU_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/xor.v
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/ALU.v)
 
-set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/microcode/Microcode.v PROPERTIES
-                            COMPILE_FLAGS "-DMICROCODE_ROM_PATH=\\\"${CMAKE_CURRENT_BINARY_DIR}/microcode/\\\"")
+set(CORE_SOURCES
+    ${CMAKE_CURRENT_BINARY_DIR}/microcode/MicrocodeTypes.v
+    ${ALU_SOURCES}
+    ${CMAKE_CURRENT_BINARY_DIR}/microcode/Microcode.v
+    ${CMAKE_CURRENT_BINARY_DIR}/microcode/MicrocodeTypes.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/RegisterEnum.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/FlagsEnum.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/Core.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/CSIPSync.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/Divider.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/Fifo.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/Flags.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/JumpTest.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/IP.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/LoadStore.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/ModRMDecode.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/Prefetch.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/RegisterFile.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/SegmentOverride.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/SegmentRegisterFile.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/TempReg.v)
 
-verilate(TOPLEVEL ALU
-         VERILOG_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/microcode/MicrocodeTypes.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/FlagsEnum.v
-         ${ALU_SOURCES}
-         GENERATED_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/VALU___024unit.cpp
-         ${CMAKE_CURRENT_BINARY_DIR}/VALU___024unit.h
-         DEPENDS generate_microcode)
-verilate(TOPLEVEL Core
-         VERILOG_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/microcode/MicrocodeTypes.v
-         ${ALU_SOURCES}
-         ${CMAKE_CURRENT_BINARY_DIR}/microcode/Microcode.v
-         ${CMAKE_CURRENT_BINARY_DIR}/microcode/MicrocodeTypes.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/RegisterEnum.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/FlagsEnum.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/Core.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/CSIPSync.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/Divider.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/Fifo.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/Flags.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/JumpTest.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/IP.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/LoadStore.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/ModRMDecode.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/Prefetch.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/RegisterFile.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/SegmentOverride.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/SegmentRegisterFile.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/TempReg.v
-         GENERATED_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/VCore___024unit.cpp
-         ${CMAKE_CURRENT_BINARY_DIR}/VCore___024unit.h
-         DEPENDS generate_microcode)
-verilate(TOPLEVEL CSIPSync
-         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/CSIPSync.v)
-verilate(TOPLEVEL Fifo
-         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Fifo.v)
-verilate(TOPLEVEL Flags
-         VERILOG_SOURCES
-         ${CMAKE_CURRENT_SOURCE_DIR}/FlagsEnum.v
-         ${CMAKE_CURRENT_BINARY_DIR}/microcode/MicrocodeTypes.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/Flags.v
-         DEPENDS generate_microcode)
-verilate(TOPLEVEL ImmediateReader
-         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/ImmediateReader.v)
-verilate(TOPLEVEL IP
-         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/IP.v)
-verilate(TOPLEVEL LoadStore
-         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/LoadStore.v)
-verilate(TOPLEVEL ModRMDecode
-         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/RegisterEnum.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/ModRMDecode.v)
-verilate(TOPLEVEL Prefetch
-         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Prefetch.v)
-verilate(TOPLEVEL RegisterFile
-         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/RegisterFile.v)
-verilate(TOPLEVEL SegmentOverride
-         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/RegisterEnum.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/SegmentOverride.v)
-verilate(TOPLEVEL SegmentRegisterFile
-         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/RegisterEnum.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/SegmentRegisterFile.v)
-verilate(TOPLEVEL Divider
-         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Divider.v)
+set_property(GLOBAL PROPERTY G_ALU_SOURCES "${ALU_SOURCES}")
+set_property(GLOBAL PROPERTY G_CORE_SOURCES "${CORE_SOURCES}")
 
-install(TARGETS verilator VCore
+install(TARGETS verilator
         LIBRARY DESTINATION lib
         COMPONENT simulator)

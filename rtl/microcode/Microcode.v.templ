@@ -66,12 +66,7 @@ wire has_rep_prefix = (rep_prefix_type == PrefixType_REPE ||
 reg rep_complete;
 reg [7:0] opcode;
 
-int i;
-initial begin
-    for (i = 0; i < num_instructions; i = i + 1)
-        mem[i] = 0;
-    $readmemb({{`MICROCODE_ROM_PATH, "/microcode.bin"}}, mem);
-end
+initial $readmemb({{`MICROCODE_ROM_PATH, "/microcode.bin"}}, mem);
 
 always_comb begin
     case (rep_prefix_type)
