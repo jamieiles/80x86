@@ -11,6 +11,8 @@
 
 #include <SDL_events.h>
 
+#include <boost/program_options.hpp>
+
 #include "CPU.h"
 #include "Display.h"
 #include "SoftwareCPU.h"
@@ -74,12 +76,14 @@ static std::map<int, char> key_to_scancode_map = {
     { SDLK_SEMICOLON, 0x27 },
 };
 
+template <typename T>
 class Simulator {
 public:
-    Simulator(const char *bios_path, const char *disk_image_path);
+    Simulator<T>(const std::string &bios_path,
+                 const std::string &disk_image_path);
     void run();
 private:
-    void load_bios(const char *bios_path);
+    void load_bios(const std::string &bios_path);
     void process_events();
     void set_stack_flags(uint16_t mask, uint16_t new_flags);
     void handle_vectors();
@@ -116,22 +120,26 @@ private:
     void clear_keypress(const SDL_Event &e);
     void return_keypress(bool block);
 
-    SoftwareCPU cpu;
+    T cpu;
     Display display;
     std::ifstream disk_image;
     std::chrono::time_point<std::chrono::system_clock> start_time;
     std::deque<SDL_Event> active_keypresses;
 };
 
-Simulator::Simulator(const char *bios_path,
-                     const char *disk_image_path)
-    : disk_image(disk_image_path, std::ios::binary),
+template <typename T>
+Simulator<T>::Simulator(const std::string &bios_path,
+                        const std::string &disk_image_path)
+    : cpu("simulator"),
+    disk_image(disk_image_path, std::ios::binary),
     start_time(std::chrono::system_clock::now())
 {
+    cpu.reset();
     load_bios(bios_path);
 }
 
-void Simulator::load_bios(const char *bios_path)
+template <typename T>
+void Simulator<T>::load_bios(const std::string &bios_path)
 {
     cpu.write_reg(CS, 0xff00);
     cpu.write_reg(IP, 0x0000);
@@ -140,15 +148,16 @@ void Simulator::load_bios(const char *bios_path)
     for (unsigned offs = 0; !bios.eof(); ++offs) {
         char v;
         bios.read(&v, 1);
-        cpu.write_mem<uint8_t>(get_phys_addr(0xff00, offs), v);
+        cpu.template write_mem<uint8_t>(get_phys_addr(0xff00, offs), v);
     }
 
-    cpu.write_mem<uint8_t>(get_phys_addr(0xf000, 0xfffe), 0xff);
-    cpu.write_mem<uint8_t>(get_phys_addr(0xf000, 0x0002), 0xff);
-    cpu.write_mem<uint8_t>(get_phys_addr(0xf000, 0x0000), 8);
+    cpu.template write_mem<uint8_t>(get_phys_addr(0xf000, 0xfffe), 0xff);
+    cpu.template write_mem<uint8_t>(get_phys_addr(0xf000, 0x0002), 0xff);
+    cpu.template write_mem<uint8_t>(get_phys_addr(0xf000, 0x0000), 8);
 }
 
-void Simulator::run()
+template <typename T>
+void Simulator<T>::run()
 {
     for (unsigned cycle_count = 0; ; ++cycle_count) {
         if (cycle_count % 10000 == 0) {
@@ -160,7 +169,8 @@ void Simulator::run()
     }
 }
 
-int Simulator::get_bios_interrupt()
+template <typename T>
+int Simulator<T>::get_bios_interrupt()
 {
     auto cs = cpu.read_reg(CS);
     auto ip = cpu.read_reg(IP);
@@ -171,7 +181,8 @@ int Simulator::get_bios_interrupt()
     return ip - 0x400;
 }
 
-void Simulator::handle_vectors()
+template <typename T>
+void Simulator<T>::handle_vectors()
 {
     auto vector = get_bios_interrupt();
     if (vector == 0)
@@ -212,12 +223,14 @@ void Simulator::handle_vectors()
     }
 }
 
-void Simulator::equipment_check()
+template <typename T>
+void Simulator<T>::equipment_check()
 {
     cpu.write_reg(AX, (3 << 4) | (1 << 0));
 }
 
-void Simulator::video_services()
+template <typename T>
+void Simulator<T>::video_services()
 {
     auto ah = cpu.read_reg(AH);
 
@@ -241,34 +254,40 @@ void Simulator::video_services()
     }
 }
 
-void Simulator::video_teletype_output()
+template <typename T>
+void Simulator<T>::video_teletype_output()
 {
     display.write_char(cpu.read_reg(AL));
 }
 
-void Simulator::video_current_state()
+template <typename T>
+void Simulator<T>::video_current_state()
 {
     cpu.write_reg(AL, 0x07); // MDA
     cpu.write_reg(AH, 80); // 80 columns
     cpu.write_reg(BH, 0); // Page 0
 }
 
-void Simulator::video_set_cursor_position()
+template <typename T>
+void Simulator<T>::video_set_cursor_position()
 {
     display.set_cursor(cpu.read_reg(DH), cpu.read_reg(DL));
 }
 
-void Simulator::video_scroll()
+template <typename T>
+void Simulator<T>::video_scroll()
 {
     display.scroll(cpu.read_reg(AL));
 }
 
-void Simulator::report_memory_size()
+template <typename T>
+void Simulator<T>::report_memory_size()
 {
     cpu.write_reg(AX, 640);
 }
 
-void Simulator::disk_services()
+template <typename T>
+void Simulator<T>::disk_services()
 {
     auto ah = cpu.read_reg(AH);
     switch (ah) {
@@ -295,7 +314,8 @@ void Simulator::disk_services()
     }
 }
 
-void Simulator::disk_reset()
+template <typename T>
+void Simulator<T>::disk_reset()
 {
     if (cpu.read_reg(DL) == 0)
         cpu.write_reg(AH, 0);
@@ -303,7 +323,8 @@ void Simulator::disk_reset()
         set_stack_flags(CF, CF);
 }
 
-void Simulator::disk_status()
+template <typename T>
+void Simulator<T>::disk_status()
 {
     if (cpu.read_reg(DL) == 0)
         cpu.write_reg(AH, 0);
@@ -311,7 +332,8 @@ void Simulator::disk_status()
         set_stack_flags(CF, CF);
 }
 
-void Simulator::disk_read()
+template <typename T>
+void Simulator<T>::disk_read()
 {
     auto count = cpu.read_reg(AL);
     auto ch = cpu.read_reg(CH);
@@ -335,13 +357,14 @@ void Simulator::disk_read()
         for (unsigned offset = 0; offset < count * 512; ++offset) {
             char v;
             disk_image.read(&v, 1);
-            cpu.write_mem<uint8_t>(get_phys_addr(es, (bx + offset) & 0xffff), v);
+            cpu.template write_mem<uint8_t>(get_phys_addr(es, (bx + offset) & 0xffff), v);
         }
         cpu.write_reg(AH, 0);
     }
 }
 
-void Simulator::disk_get_parameters()
+template <typename T>
+void Simulator<T>::disk_get_parameters()
 {
     cpu.write_reg(AH, 0);
     cpu.write_reg(BL, 4);
@@ -349,7 +372,8 @@ void Simulator::disk_get_parameters()
     cpu.write_reg(DL, 1);
 }
 
-void Simulator::disk_get_type()
+template <typename T>
+void Simulator<T>::disk_get_type()
 {
     if (cpu.read_reg(DL) == 0)
         cpu.write_reg(AH, 1);
@@ -357,7 +381,8 @@ void Simulator::disk_get_type()
         set_stack_flags(CF, CF);
 }
 
-void Simulator::system_services()
+template <typename T>
+void Simulator<T>::system_services()
 {
     auto ah = cpu.read_reg(AH);
 
@@ -380,24 +405,27 @@ void Simulator::system_services()
     }
 }
 
-void Simulator::system_configuration_parameters()
+template <typename T>
+void Simulator<T>::system_configuration_parameters()
 {
     cpu.write_reg(AH, 0x80);
     cpu.write_reg(ES, 0xf000);
     cpu.write_reg(BX, 0);
 }
 
-void Simulator::system_extended_memory_size()
+template <typename T>
+void Simulator<T>::system_extended_memory_size()
 {
     cpu.write_reg(AX, 0);
 }
 
-void Simulator::time_services()
+template <typename T>
+void Simulator<T>::time_services()
 {
     auto ah = cpu.read_reg(AH);
 
     // Maintain the counter of times that int 1a'h was called.
-    cpu.write_mem(0x46c, cpu.read_mem<uint32_t>(0x46c) + 1);
+    cpu.write_mem(0x46c, cpu.template read_mem<uint32_t>(0x46c) + 1);
     switch (ah) {
     case 0x0:
         time_system_clock_counter();
@@ -425,7 +453,8 @@ void Simulator::time_services()
     }
 }
 
-void Simulator::time_system_clock_counter()
+template <typename T>
+void Simulator<T>::time_system_clock_counter()
 {
     auto now = std::chrono::system_clock::now();
     auto elapsed_seconds = std::chrono::duration_cast<std::chrono::seconds>(now - start_time).count();
@@ -434,7 +463,8 @@ void Simulator::time_system_clock_counter()
     cpu.write_reg(CX, (elapsed_seconds >> 16) & 0xffff);
 }
 
-void Simulator::time_read_rtc_time()
+template <typename T>
+void Simulator<T>::time_read_rtc_time()
 {
     auto time = std::time(nullptr);
     auto local_time = std::localtime(&time);
@@ -444,7 +474,8 @@ void Simulator::time_read_rtc_time()
     cpu.write_reg(DH, local_time->tm_sec);
 }
 
-void Simulator::time_read_rtc_date()
+template <typename T>
+void Simulator<T>::time_read_rtc_date()
 {
     auto time = std::time(nullptr);
     auto local_time = std::localtime(&time);
@@ -454,13 +485,15 @@ void Simulator::time_read_rtc_date()
     cpu.write_reg(DH, local_time->tm_mday);
 }
 
-void Simulator::pci_installation_check()
+template <typename T>
+void Simulator<T>::pci_installation_check()
 {
     set_stack_flags(CF, CF);
     cpu.write_reg(AH, 0x86);
 }
 
-void Simulator::keyboard_services()
+template <typename T>
+void Simulator<T>::keyboard_services()
 {
     auto ah = cpu.read_reg(AH);
 
@@ -479,7 +512,8 @@ void Simulator::keyboard_services()
     }
 }
 
-void Simulator::return_keypress(bool block)
+template <typename T>
+void Simulator<T>::return_keypress(bool block)
 {
     auto k = active_keypresses[0];
     auto scancode = key_to_scancode_map[static_cast<int>(k.key.keysym.sym)];
@@ -499,7 +533,8 @@ void Simulator::return_keypress(bool block)
         active_keypresses.erase(active_keypresses.begin());
 }
 
-void Simulator::keyboard_wait()
+template <typename T>
+void Simulator<T>::keyboard_wait()
 {
     while (!active_keypresses.size())
         process_events();
@@ -507,7 +542,8 @@ void Simulator::keyboard_wait()
     return_keypress(true);
 }
 
-void Simulator::keyboard_status()
+template <typename T>
+void Simulator<T>::keyboard_status()
 {
     process_events();
 
@@ -520,12 +556,14 @@ void Simulator::keyboard_status()
     return_keypress(false);
 }
 
-void Simulator::keyboard_shift_status()
+template <typename T>
+void Simulator<T>::keyboard_shift_status()
 {
     cpu.write_reg(AL, 0x1);
 }
 
-bool Simulator::keypress_is_active(const SDL_Event &e)
+template <typename T>
+bool Simulator<T>::keypress_is_active(const SDL_Event &e)
 {
     for (auto i = active_keypresses.begin(); i != active_keypresses.end(); ++i)
         if ((*i).key.keysym.scancode == e.key.keysym.scancode &&
@@ -536,7 +574,8 @@ bool Simulator::keypress_is_active(const SDL_Event &e)
     return false;
 }
 
-void Simulator::clear_keypress(const SDL_Event &e)
+template <typename T>
+void Simulator<T>::clear_keypress(const SDL_Event &e)
 {
     if (active_keypresses.size() < 100)
         return;
@@ -551,7 +590,8 @@ void Simulator::clear_keypress(const SDL_Event &e)
     }
 }
 
-void Simulator::process_events()
+template <typename T>
+void Simulator<T>::process_events()
 {
     SDL_Event e;
     while (SDL_PollEvent(&e)) {
@@ -566,17 +606,19 @@ void Simulator::process_events()
     }
 }
 
-void Simulator::set_stack_flags(uint16_t mask, uint16_t new_flags)
+template <typename T>
+void Simulator<T>::set_stack_flags(uint16_t mask, uint16_t new_flags)
 {
     // Interrupt frame
     auto flags_addr = get_phys_addr(cpu.read_reg(SS), cpu.read_reg(SP) + 4);
-    auto flags = cpu.read_mem<uint16_t>(flags_addr);
+    auto flags = cpu.template read_mem<uint16_t>(flags_addr);
     flags &= ~mask;
     flags |= (mask & new_flags);
     cpu.write_mem(flags_addr, flags);
 }
 
-void Simulator::unsupported_bios_interrupt()
+template <typename T>
+void Simulator<T>::unsupported_bios_interrupt()
 {
     auto vector = get_bios_interrupt();
     auto ah = cpu.read_reg(AH);
@@ -590,14 +632,48 @@ void Simulator::unsupported_bios_interrupt()
 
 int main(int argc, char **argv)
 {
-    if (argc < 3) {
-        std::cerr << "error: usage: " << argv[0] << " BIOS DISK" << std::endl;
-        return EXIT_FAILURE;
+    namespace po = boost::program_options;
+    std::string bios_image;
+    std::string disk_image;
+    std::string backend = "SoftwareCPU";
+
+    po::options_description desc("Options");
+    desc.add_options()
+        ("backend,b", po::value<std::string>(&backend),
+         "the simulator backend module to use, either SoftwareCPU or RTLCPU, default SoftwareCPU")
+        ("bios", po::value<std::string>(&bios_image)->required(),
+         "the bios image to use")
+        ("diskimage", po::value<std::string>(&disk_image)->required(),
+         "the boot disk image");
+
+    po::positional_options_description positional;
+    positional.add("bios", 1);
+    positional.add("diskimage", 1);
+
+    po::variables_map variables_map;
+    try {
+        po::store(po::command_line_parser(argc, argv)
+                    .options(desc).positional(positional).run(),
+                  variables_map);
+        po::notify(variables_map);
+    } catch (boost::program_options::required_option &e) {
+        std::cerr << "Error: missing arguments " << e.what() << std::endl;
+        return 1;
+    } catch (boost::program_options::error &e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return 2;
     }
 
-    Simulator sim(argv[1], argv[2]);
-
-    sim.run();
+    if (backend == "SoftwareCPU") {
+        Simulator<SoftwareCPU> sim(bios_image, disk_image);
+        sim.run();
+    } else if (backend == "RTLCPU") {
+        Simulator<RTLCPU<verilator_debug_enabled>> sim(bios_image, disk_image);
+        sim.run();
+    } else {
+        std::cerr << "Error: invalid simulation backend \"" << backend << "\"" << std::endl;
+        return 3;
+    }
 
     return 0;
 }

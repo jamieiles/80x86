@@ -1,9 +1,11 @@
 include(Verilator)
 
+find_package(Boost COMPONENTS program_options REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 include_directories(${SDL2_INCLUDE_DIR})
 include_directories(${SDL2_TTF_INCLUDE_DIR})
+include_directories(${Boost_INCLUDE_DIR})
 
 add_subdirectory(common)
 add_subdirectory(cppmodel)
@@ -21,7 +23,9 @@ add_executable(simulator
 target_link_libraries(simulator
                       simcommon
                       8086sim
-                      simdisplay)
+                      simdisplay
+                      rtlsim
+                      ${Boost_LIBRARIES})
 nasm_file(bios.asm bios.bin)
 
 install(TARGETS simulator
