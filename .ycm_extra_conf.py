@@ -44,8 +44,8 @@ flags = [
 '/usr/include/c++/5',
 '-isystem',
 '/usr/lib/clang/3.8/',
-'-Igoogletest/googletest/include/',
-'-Igoogletest/googlemock/include/',
+'-Ivendor/googletest/googletest/include/',
+'-Ivendor/googletest/googlemock/include/',
 ]
 
 compilation_database_folder = os.path.join(os.path.dirname(__file__), '_build', 'dev')

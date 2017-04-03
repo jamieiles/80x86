@@ -1,5 +1,5 @@
-include_directories(../googletest/googletest/include)
-include_directories(../googletest/googlemock/include)
+include_directories(../vendor/googletest/googletest/include)
+include_directories(../vendor/googletest/googlemock/include)
 include_directories(../sim/common)
 include_directories(../sim/cppmodel)
 include_directories(../sim)
