@@ -639,6 +639,7 @@ int main(int argc, char **argv)
 
     po::options_description desc("Options");
     desc.add_options()
+        ("help,h", "print this usage information and exit")
         ("backend,b", po::value<std::string>(&backend),
          "the simulator backend module to use, either SoftwareCPU or RTLCPU, default SoftwareCPU")
         ("bios", po::value<std::string>(&bios_image)->required(),
@@ -655,6 +656,11 @@ int main(int argc, char **argv)
         po::store(po::command_line_parser(argc, argv)
                     .options(desc).positional(positional).run(),
                   variables_map);
+        if (variables_map.count("help")) {
+            std::cout << desc << std::endl;
+            return 0;
+        }
+
         po::notify(variables_map);
     } catch (boost::program_options::required_option &e) {
         std::cerr << "Error: missing arguments " << e.what() << std::endl;
