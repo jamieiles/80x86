@@ -38,14 +38,14 @@ TEST_P(ArithmeticMemReg8Test, ResultAndFlags)
             write_flags(CF);
         write_reg(AL, t.v2);
         write_reg(BX, 0x100);
-        write_mem<uint8_t>(0x100, t.v1);
+        write_mem8(0x100, t.v1);
 
         // ARITH [bx], al
         set_instruction(params.first);
 
         emulate();
 
-        ASSERT_EQ(read_mem<uint8_t>(0x100), t.expected);
+        ASSERT_EQ(read_mem8(0x100), t.expected);
         ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
                             FLAGS_STUCK_BITS | t.expected_flags);
     }
@@ -88,7 +88,7 @@ TEST_P(ArithmeticMemReg8TestReversed, ResultAndFlags)
             write_flags(CF);
         write_reg(AL, t.v1);
         write_reg(BX, 0x100);
-        write_mem<uint8_t>(0x100, t.v2);
+        write_mem8(0x100, t.v2);
 
         // ARITH al, [bx]
         set_instruction(params.first);
@@ -137,7 +137,7 @@ TEST_P(ArithmeticMemReg8TestReversedNoResult, ResultAndFlags)
             write_flags(CF);
         write_reg(AL, t.v1);
         write_reg(BX, 0x100);
-        write_mem<uint8_t>(0x100, t.v2);
+        write_mem8(0x100, t.v2);
 
         // ARITH al, [bx]
         set_instruction(params.first);
@@ -186,14 +186,14 @@ TEST_P(ArithmeticRegMem16Test, ResultAndFlags)
             write_flags(CF);
         write_reg(AX, t.v2);
         write_reg(BX, 0x100);
-        write_mem<uint16_t>(0x100, t.v1);
+        write_mem16(0x100, t.v1);
 
         // ARITH [bx], ax
         set_instruction(params.first);
 
         emulate();
 
-        ASSERT_EQ(read_mem<uint16_t>(0x100), t.expected);
+        ASSERT_EQ(read_mem16(0x100), t.expected);
         ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
                             FLAGS_STUCK_BITS | t.expected_flags);
     }
@@ -236,7 +236,7 @@ TEST_P(ArithmeticMemReg16TestReversed, ResultAndFlags)
             write_flags(CF);
         write_reg(AX, t.v1);
         write_reg(BX, 0x100);
-        write_mem<uint16_t>(0x100, t.v2);
+        write_mem16(0x100, t.v2);
 
         // ARITH ax, [bx]
         set_instruction(params.first);
@@ -285,7 +285,7 @@ TEST_P(ArithmeticMemReg16TestReversedNoResult, ResultAndFlags)
             write_flags(CF);
         write_reg(AX, t.v1);
         write_reg(BX, 0x100);
-        write_mem<uint16_t>(0x100, t.v2);
+        write_mem16(0x100, t.v2);
 
         // ARITH ax, [bx]
         set_instruction(params.first);
@@ -318,12 +318,12 @@ TEST_P(ArithmeticMemImmed8Test, ResultAndFlags)
     if (params.second.carry_set)
         write_flags(CF);
     set_instruction(params.first);
-    write_mem<uint8_t>(0x0100, params.second.v1);
+    write_mem8(0x0100, params.second.v1);
     write_reg(BX, 0x0100);
 
     emulate();
 
-    ASSERT_EQ(read_mem<uint8_t>(0x0100), params.second.expected);
+    ASSERT_EQ(read_mem8(0x0100), params.second.expected);
     ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
                         FLAGS_STUCK_BITS | params.second.expected_flags);
 }
@@ -351,12 +351,12 @@ TEST_P(ArithmeticMemImmed16Test, ResultAndFlags)
         write_flags(CF);
     // ARITH word [bx], 1
     set_instruction(params.first);
-    write_mem<uint16_t>(0x0100, params.second.v1);
+    write_mem16(0x0100, params.second.v1);
     write_reg(BX, 0x0100);
 
     emulate();
 
-    ASSERT_EQ(read_mem<uint16_t>(0x0100), params.second.expected);
+    ASSERT_EQ(read_mem16(0x0100), params.second.expected);
     ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
                         FLAGS_STUCK_BITS | params.second.expected_flags);
 }
@@ -384,12 +384,12 @@ TEST_P(ArithmeticMemImmed16TestExtend, ResultAndFlags)
         write_flags(CF);
     // ARITH word [bx], 1
     set_instruction(params.first);
-    write_mem<uint16_t>(0x0100, params.second.v1);
+    write_mem16(0x0100, params.second.v1);
     write_reg(BX, 0x0100);
 
     emulate();
 
-    ASSERT_EQ(read_mem<uint16_t>(0x0100), params.second.expected);
+    ASSERT_EQ(read_mem16(0x0100), params.second.expected);
     ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
                         FLAGS_STUCK_BITS | params.second.expected_flags);
 }

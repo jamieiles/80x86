@@ -50,29 +50,58 @@ public:
         io.clear_has_written();
     }
 
-    template <typename T>
-    void write_mem(uint32_t addr, T val)
+    void write_mem8(uint32_t addr, uint8_t val)
     {
-        mem.write<T>(addr, val);
+        mem.write<uint8_t>(addr, val);
+    }
+    void write_mem16(uint32_t addr, uint16_t val)
+    {
+        mem.write<uint16_t>(addr, val);
+    }
+    void write_mem32(uint32_t addr, uint32_t val)
+    {
+        mem.write<uint32_t>(addr, val);
     }
 
-    template <typename T>
-    T read_mem(uint32_t addr)
+    uint8_t read_mem8(uint32_t addr)
     {
-        return mem.read<T>(addr);
+        return mem.read<uint8_t>(addr);
+    }
+    uint16_t read_mem16(uint32_t addr)
+    {
+        return mem.read<uint16_t>(addr);
+    }
+    uint32_t read_mem32(uint32_t addr)
+    {
+        return mem.read<uint32_t>(addr);
     }
 
-    template <typename T>
-    void write_io(uint32_t addr, T val)
+    void write_io8(uint32_t addr, uint8_t val)
     {
-        io.write<T>(addr, val);
+        io.write<uint8_t>(addr, val);
+    }
+    void write_io16(uint32_t addr, uint16_t val)
+    {
+        io.write<uint16_t>(addr, val);
+    }
+    void write_io32(uint32_t addr, uint32_t val)
+    {
+        io.write<uint32_t>(addr, val);
     }
 
-    template <typename T>
-    T read_io(uint32_t addr)
+    uint8_t read_io8(uint32_t addr)
     {
-        return io.read<T>(addr);
+        return io.read<uint8_t>(addr);
     }
+    uint16_t read_io16(uint32_t addr)
+    {
+        return io.read<uint16_t>(addr);
+    }
+    uint32_t read_io32(uint32_t addr)
+    {
+        return io.read<uint32_t>(addr);
+    }
+
 protected:
     Memory mem;
     Memory io;

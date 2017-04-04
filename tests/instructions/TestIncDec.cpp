@@ -95,12 +95,12 @@ TEST_P(IncMem8Test, ResultAndFlags)
         if (t.carry_set)
             write_flags(CF);
         write_reg(BX, 0x0100);
-        write_mem<uint8_t>(0x0100, t.v);
+        write_mem8(0x0100, t.v);
         set_instruction(params.first);
 
         emulate();
 
-        ASSERT_EQ(read_mem<uint8_t>(0x0100), t.expected);
+        ASSERT_EQ(read_mem8(0x0100), t.expected);
         ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
                             FLAGS_STUCK_BITS | t.expected_flags);
     }
@@ -173,12 +173,12 @@ TEST_P(IncMem16Test, ResultAndFlags)
         if (t.carry_set)
             write_flags(CF);
         write_reg(BX, 0x0100);
-        write_mem<uint16_t>(0x0100, t.v);
+        write_mem16(0x0100, t.v);
         set_instruction(params.first);
 
         emulate();
 
-        ASSERT_EQ(read_mem<uint16_t>(0x0100), t.expected);
+        ASSERT_EQ(read_mem16(0x0100), t.expected);
         ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
                             FLAGS_STUCK_BITS | t.expected_flags);
     }

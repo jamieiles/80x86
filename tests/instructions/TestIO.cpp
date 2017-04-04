@@ -6,7 +6,7 @@ TEST_F(EmulateFixture, InFixed8)
 {
     // in al, 0x80
     set_instruction({ 0xe4, 0x80 });
-    write_io<uint8_t>(0x80, 0xaa);
+    write_io8(0x80, 0xaa);
 
     emulate();
 
@@ -17,7 +17,7 @@ TEST_F(EmulateFixture, InFixed16)
 {
     // in ax, 0x10
     set_instruction({ 0xe5, 0x10 });
-    write_io<uint16_t>(0x10, 0xaa55);
+    write_io16(0x10, 0xaa55);
 
     emulate();
 
@@ -29,7 +29,7 @@ TEST_F(EmulateFixture, InVariable8)
     // in al, dx
     set_instruction({ 0xec });
     write_reg(DX, 0x0100);
-    write_io<uint8_t>(0x0100, 0xaa);
+    write_io8(0x0100, 0xaa);
 
     emulate();
 
@@ -41,7 +41,7 @@ TEST_F(EmulateFixture, InVariable16)
     // in ax, dx
     set_instruction({ 0xed });
     write_reg(DX, 0x0100);
-    write_io<uint16_t>(0x0100, 0xaa55);
+    write_io16(0x0100, 0xaa55);
 
     emulate();
 
@@ -56,7 +56,7 @@ TEST_F(EmulateFixture, OutFixed8)
 
     emulate();
 
-    ASSERT_EQ(0xaa, read_io<uint8_t>(0x10));
+    ASSERT_EQ(0xaa, read_io8(0x10));
 }
 
 TEST_F(EmulateFixture, OutFixed16)
@@ -67,7 +67,7 @@ TEST_F(EmulateFixture, OutFixed16)
 
     emulate();
 
-    ASSERT_EQ(0xaa55, read_io<uint16_t>(0x10));
+    ASSERT_EQ(0xaa55, read_io16(0x10));
 }
 
 TEST_F(EmulateFixture, IOIgnoresSegments)
@@ -81,7 +81,7 @@ TEST_F(EmulateFixture, IOIgnoresSegments)
 
     emulate();
 
-    ASSERT_EQ(0xaa55, read_io<uint16_t>(0x10));
+    ASSERT_EQ(0xaa55, read_io16(0x10));
 }
 
 TEST_F(EmulateFixture, OutVariable8)
@@ -93,7 +93,7 @@ TEST_F(EmulateFixture, OutVariable8)
 
     emulate();
 
-    ASSERT_EQ(0xaa, read_io<uint8_t>(0x0100));
+    ASSERT_EQ(0xaa, read_io8(0x0100));
 }
 
 TEST_F(EmulateFixture, OutVariable16)
@@ -105,5 +105,5 @@ TEST_F(EmulateFixture, OutVariable16)
 
     emulate();
 
-    ASSERT_EQ(0xaa55, read_io<uint16_t>(0x0100));
+    ASSERT_EQ(0xaa55, read_io16(0x0100));
 }

@@ -4,7 +4,7 @@
 
 TEST_F(EmulateFixture, Xlat)
 {
-    write_mem<uint8_t>(0x1000 + 0xaa, 0x55);
+    write_mem8(0x1000 + 0xaa, 0x55);
     write_reg(BX, 0x1000);
     write_reg(AL, 0xaa);
     set_instruction({ 0xd7 });

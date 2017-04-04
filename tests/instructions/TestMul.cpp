@@ -87,7 +87,7 @@ TEST_P(MulMem8Test, ResultAndFlags)
         write_flags(0);
         write_reg(AL, t.v2);
         write_reg(BX, 0x100);
-        write_mem<uint8_t>(0x100, t.v1);
+        write_mem8(0x100, t.v1);
 
         // xMUL byte [bx]
         set_instruction(params.first);
@@ -178,7 +178,7 @@ TEST_P(MulMem16Test, ResultAndFlags)
         write_flags(0);
         write_reg(AX, t.v2);
         write_reg(BX, 0x100);
-        write_mem<uint16_t>(0x100, t.v1);
+        write_mem16(0x100, t.v1);
 
         // xMUL word [bx]
         set_instruction(params.first);

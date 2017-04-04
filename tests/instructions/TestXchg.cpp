@@ -32,26 +32,26 @@ TEST_F(EmulateFixture, XchgRegMem8)
 {
     // xchg al, [0x1234]
     set_instruction({ 0x86, 0x06, 0x34, 0x12 });
-    write_mem<uint8_t>(0x1234, 0x12);
+    write_mem8(0x1234, 0x12);
     write_reg(AL, 0xaa);
 
     emulate();
 
     ASSERT_EQ(read_reg(AL), 0x12);
-    ASSERT_EQ(read_mem<uint8_t>(0x1234), 0xaa);
+    ASSERT_EQ(read_mem8(0x1234), 0xaa);
 }
 
 TEST_F(EmulateFixture, XchgRegMem16)
 {
     // xchg ax, [0x1234]
     set_instruction({ 0x87, 0x06, 0x34, 0x12 });
-    write_mem<uint16_t>(0x1234, 0x1234);
+    write_mem16(0x1234, 0x1234);
     write_reg(AX, 0xaaaa);
 
     emulate();
 
     ASSERT_EQ(read_reg(AX), 0x1234);
-    ASSERT_EQ(read_mem<uint16_t>(0x1234), 0xaaaa);
+    ASSERT_EQ(read_mem16(0x1234), 0xaaaa);
 }
 
 TEST_F(EmulateFixture, XchgALALNop)

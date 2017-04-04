@@ -47,7 +47,7 @@ TEST_F(EmulateFixture, JmpIndirectIntraMem)
     write_reg(IP, 0x0030);
 
     write_reg(BX, 0x0800);
-    write_mem<uint16_t>(0x0800, 0x0100);
+    write_mem16(0x0800, 0x0100);
     // jmp [bx]
     set_instruction({ 0xff, 0x27 });
 
@@ -92,8 +92,8 @@ TEST_F(EmulateFixture, JmpIndirectInterMem)
     write_reg(IP, 0x0030);
 
     write_reg(BX, 0x0800);
-    write_mem<uint16_t>(0x0800, 0x5678);
-    write_mem<uint16_t>(0x0802, 0x4000);
+    write_mem16(0x0800, 0x5678);
+    write_mem16(0x0802, 0x4000);
     // jmp far [bx]
     set_instruction({ 0xff, 0x2f });
 

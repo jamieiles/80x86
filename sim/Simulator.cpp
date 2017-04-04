@@ -148,12 +148,12 @@ void Simulator<T>::load_bios(const std::string &bios_path)
     for (unsigned offs = 0; !bios.eof(); ++offs) {
         char v;
         bios.read(&v, 1);
-        cpu.template write_mem<uint8_t>(get_phys_addr(0xff00, offs), v);
+        cpu.write_mem8(get_phys_addr(0xff00, offs), v);
     }
 
-    cpu.template write_mem<uint8_t>(get_phys_addr(0xf000, 0xfffe), 0xff);
-    cpu.template write_mem<uint8_t>(get_phys_addr(0xf000, 0x0002), 0xff);
-    cpu.template write_mem<uint8_t>(get_phys_addr(0xf000, 0x0000), 8);
+    cpu.write_mem8(get_phys_addr(0xf000, 0xfffe), 0xff);
+    cpu.write_mem8(get_phys_addr(0xf000, 0x0002), 0xff);
+    cpu.write_mem8(get_phys_addr(0xf000, 0x0000), 8);
 }
 
 template <typename T>
@@ -357,7 +357,7 @@ void Simulator<T>::disk_read()
         for (unsigned offset = 0; offset < count * 512; ++offset) {
             char v;
             disk_image.read(&v, 1);
-            cpu.template write_mem<uint8_t>(get_phys_addr(es, (bx + offset) & 0xffff), v);
+            cpu.write_mem8(get_phys_addr(es, (bx + offset) & 0xffff), v);
         }
         cpu.write_reg(AH, 0);
     }
@@ -425,7 +425,7 @@ void Simulator<T>::time_services()
     auto ah = cpu.read_reg(AH);
 
     // Maintain the counter of times that int 1a'h was called.
-    cpu.write_mem(0x46c, cpu.template read_mem<uint32_t>(0x46c) + 1);
+    cpu.write_mem32(0x46c, cpu.read_mem32(0x46c) + 1);
     switch (ah) {
     case 0x0:
         time_system_clock_counter();
@@ -611,10 +611,10 @@ void Simulator<T>::set_stack_flags(uint16_t mask, uint16_t new_flags)
 {
     // Interrupt frame
     auto flags_addr = get_phys_addr(cpu.read_reg(SS), cpu.read_reg(SP) + 4);
-    auto flags = cpu.template read_mem<uint16_t>(flags_addr);
+    auto flags = cpu.read_mem16(flags_addr);
     flags &= ~mask;
     flags |= (mask & new_flags);
-    cpu.write_mem(flags_addr, flags);
+    cpu.write_mem16(flags_addr, flags);
 }
 
 template <typename T>

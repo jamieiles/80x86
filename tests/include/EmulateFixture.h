@@ -38,8 +38,8 @@ public:
     void set_instruction(const std::vector<uint8_t> &instr)
     {
         for (size_t m = 0; m < instr.size(); ++m)
-            cpu->write_mem<uint8_t>(get_phys_addr(cpu->read_reg(CS), cpu->read_reg(IP) + m),
-                                    instr[m]);
+            cpu->write_mem8(get_phys_addr(cpu->read_reg(CS), cpu->read_reg(IP) + m),
+                            instr[m]);
         instr_len = instr.size();
         // Force a prefetch fifo clear so we don't end up executing what was
         // there before we wrote this instruction.
@@ -56,26 +56,39 @@ public:
         return cpu->read_reg(regnum);
     }
 
-    template <typename T>
-    void write_mem(uint32_t addr, T val, GPR segment=DS)
+    void write_mem8(uint32_t addr, uint8_t val, GPR segment=DS)
     {
-        cpu->write_mem<T>(get_phys_addr(cpu->read_reg(segment), addr), val);
+        cpu->write_mem8(get_phys_addr(cpu->read_reg(segment), addr), val);
+    }
+    void write_mem16(uint32_t addr, uint16_t val, GPR segment=DS)
+    {
+        cpu->write_mem16(get_phys_addr(cpu->read_reg(segment), addr), val);
+    }
+    void write_mem32(uint32_t addr, uint32_t val, GPR segment=DS)
+    {
+        cpu->write_mem32(get_phys_addr(cpu->read_reg(segment), addr), val);
     }
 
     void write_cstring(uint32_t addr, const char *str, GPR segment=DS)
     {
         do {
-            write_mem<uint8_t>(addr++, *str++, segment);
+            write_mem8(addr++, *str++, segment);
         } while (*str);
-        write_mem<uint8_t>(addr, 0, segment);
+        write_mem8(addr, 0, segment);
     }
 
-    template <typename T>
-    void write_vector(uint32_t addr, std::vector<T> vec, GPR segment=DS)
+    void write_vector8(uint32_t addr, std::vector<uint8_t> vec, GPR segment=DS)
     {
         for (auto v: vec) {
-            write_mem<T>(addr, v, segment);
-            addr += sizeof(T);
+            write_mem8(addr, v, segment);
+            ++addr;
+        }
+    }
+    void write_vector16(uint32_t addr, std::vector<uint16_t> vec, GPR segment=DS)
+    {
+        for (auto v: vec) {
+            write_mem16(addr, v, segment);
+            addr += sizeof(uint16_t);
         }
     }
 
@@ -85,7 +98,7 @@ public:
 
         char v;
         for (;;) {
-            v = read_mem<uint8_t>(addr++, segment);
+            v = read_mem8(addr++, segment);
             if (!v)
                 break;
             str += v;
@@ -94,22 +107,43 @@ public:
         return str;
     }
 
-    template <typename T>
-    T read_mem(uint32_t addr, GPR segment=DS)
+    uint8_t read_mem8(uint32_t addr, GPR segment=DS)
     {
-        return cpu->read_mem<T>(get_phys_addr(cpu->read_reg(segment), addr));
+        return cpu->read_mem8(get_phys_addr(cpu->read_reg(segment), addr));
+    }
+    uint16_t read_mem16(uint32_t addr, GPR segment=DS)
+    {
+        return cpu->read_mem16(get_phys_addr(cpu->read_reg(segment), addr));
+    }
+    uint32_t read_mem32(uint32_t addr, GPR segment=DS)
+    {
+        return cpu->read_mem32(get_phys_addr(cpu->read_reg(segment), addr));
     }
 
-    template <typename T>
-    void write_io(uint32_t addr, T val)
+    void write_io8(uint32_t addr, uint8_t val)
     {
-        cpu->write_io<T>(addr, val);
+        cpu->write_io8(addr, val);
+    }
+    void write_io16(uint32_t addr, uint16_t val)
+    {
+        cpu->write_io16(addr, val);
+    }
+    void write_io32(uint32_t addr, uint32_t val)
+    {
+        cpu->write_io32(addr, val);
     }
 
-    template <typename T>
-    T read_io(uint32_t addr)
+    uint8_t read_io8(uint32_t addr)
     {
-        return cpu->read_io<T>(addr);
+        return cpu->read_io8(addr);
+    }
+    uint16_t read_io16(uint32_t addr)
+    {
+        return cpu->read_io16(addr);
+    }
+    uint32_t read_io32(uint32_t addr)
+    {
+        return cpu->read_io32(addr);
     }
 
     void emulate(int count=1)

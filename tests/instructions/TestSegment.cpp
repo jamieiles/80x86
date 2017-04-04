@@ -33,8 +33,8 @@ TEST_P(MovOverride, SegmentOverriden)
 
     emulate();
 
-    ASSERT_EQ(0xaa55, read_mem<uint16_t>(0x0100, t.segment_register));
-    ASSERT_EQ(mem_init_16, read_mem<uint16_t>(0x0100, DS));
+    ASSERT_EQ(0xaa55, read_mem16(0x0100, t.segment_register));
+    ASSERT_EQ(mem_init_16, read_mem16(0x0100, DS));
 }
 INSTANTIATE_TEST_CASE_P(SegmentOverride, MovOverride,
     ::testing::Values(
@@ -51,7 +51,7 @@ TEST_F(EmulateFixture, DSSegmentOverrideIsNop)
 
     emulate();
 
-    ASSERT_EQ(0xaa55, read_mem<uint16_t>(0x0100, DS));
+    ASSERT_EQ(0xaa55, read_mem16(0x0100, DS));
 }
 
 TEST_F(EmulateFixture, PushMemSegmentOverride)
@@ -61,7 +61,7 @@ TEST_F(EmulateFixture, PushMemSegmentOverride)
     write_reg(BX, 0x0100);
     write_reg(SP, 0x0080);
 
-    write_mem<uint16_t>(0x0100, 0xaa55, ES);
+    write_mem16(0x0100, 0xaa55, ES);
 
     // push word [es:bx]
     set_instruction({ 0x26, 0xff, 0x37 });
@@ -69,7 +69,7 @@ TEST_F(EmulateFixture, PushMemSegmentOverride)
     emulate();
 
     ASSERT_EQ(read_reg(SP), 0x007e);
-    ASSERT_EQ(read_mem<uint16_t>(0x007e, SS), 0xaa55);
+    ASSERT_EQ(read_mem16(0x007e, SS), 0xaa55);
 }
 
 TEST_F(EmulateFixture, PopMemSegmentOverride)
@@ -79,7 +79,7 @@ TEST_F(EmulateFixture, PopMemSegmentOverride)
     write_reg(BX, 0x0100);
     write_reg(SP, 0x007e);
 
-    write_mem<uint16_t>(0x007e, 0xaa55, SS);
+    write_mem16(0x007e, 0xaa55, SS);
 
     // pop word [es:bx]
     set_instruction({ 0x26, 0x8f, 0x07 });
@@ -87,5 +87,5 @@ TEST_F(EmulateFixture, PopMemSegmentOverride)
     emulate();
 
     ASSERT_EQ(read_reg(SP), 0x0080);
-    ASSERT_EQ(read_mem<uint16_t>(0x0100, ES), 0xaa55);
+    ASSERT_EQ(read_mem16(0x0100, ES), 0xaa55);
 }

@@ -65,7 +65,7 @@ TEST_F(EmulateFixture, Neg8Mem)
         SCOPED_TRACE("neg " + std::to_string(static_cast<int>(t.val)) +
                      " cf=" + std::to_string(static_cast<int>(!!t.carry_set)));
         write_reg(BX, 0x0100);
-        write_mem<uint8_t>(0x0100, t.val);
+        write_mem8(0x0100, t.val);
         write_flags(t.carry_set ? CF : 0);
         set_instruction({ 0xf6, 0x1f });
 
@@ -73,7 +73,7 @@ TEST_F(EmulateFixture, Neg8Mem)
 
         ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
                             FLAGS_STUCK_BITS | t.expected_flags);
-        ASSERT_EQ(read_mem<uint8_t>(0x0100), t.expected);
+        ASSERT_EQ(read_mem8(0x0100), t.expected);
     }
 }
 
@@ -106,7 +106,7 @@ TEST_F(EmulateFixture, Neg16Mem)
         SCOPED_TRACE("neg " + std::to_string(static_cast<int>(t.val)) +
                      " cf=" + std::to_string(static_cast<int>(!!t.carry_set)));
         write_reg(BX, 0x0100);
-        write_mem<uint16_t>(0x0100, t.val);
+        write_mem16(0x0100, t.val);
         write_flags(t.carry_set ? CF : 0);
         set_instruction({ 0xf7, 0x1f });
 
@@ -114,6 +114,6 @@ TEST_F(EmulateFixture, Neg16Mem)
 
         ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
                             FLAGS_STUCK_BITS | t.expected_flags);
-        ASSERT_EQ(read_mem<uint16_t>(0x0100), t.expected);
+        ASSERT_EQ(read_mem16(0x0100), t.expected);
     }
 }

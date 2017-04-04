@@ -23,11 +23,11 @@ TEST_F(EmulateFixture, MovMemReg8)
 
     write_reg(AL, 0x12);
     write_reg(BX, 0x100);
-    write_mem<uint16_t>(0x0100, 0);
+    write_mem16(0x0100, 0);
 
     emulate();
 
-    ASSERT_EQ(0x12, read_mem<uint16_t>(0x0100));
+    ASSERT_EQ(0x12, read_mem16(0x0100));
 }
 
 TEST_F(EmulateFixture, MovRegReg16)
@@ -51,11 +51,11 @@ TEST_F(EmulateFixture, MovMemReg16)
 
     write_reg(AL, 0x12);
     write_reg(BX, 0x100);
-    write_mem<uint16_t>(0x0100, 0);
+    write_mem16(0x0100, 0);
 
     emulate();
 
-    ASSERT_EQ(0x12, read_mem<uint16_t>(0x0100));
+    ASSERT_EQ(0x12, read_mem16(0x0100));
 }
 
 TEST_F(EmulateFixture, MovRegReg8_8a)
@@ -79,7 +79,7 @@ TEST_F(EmulateFixture, MovRegMem8)
 
     write_reg(AL, 0x12);
     write_reg(BX, 0x100);
-    write_mem<uint16_t>(0x0100, 0x55);
+    write_mem16(0x0100, 0x55);
 
     emulate();
 
@@ -107,7 +107,7 @@ TEST_F(EmulateFixture, MovRegMem16)
 
     write_reg(AL, 0x12);
     write_reg(BX, 0x100);
-    write_mem<uint16_t>(0x0100, 0xaa55);
+    write_mem16(0x0100, 0xaa55);
 
     emulate();
 
@@ -143,7 +143,7 @@ TEST_F(EmulateFixture, MovC6MemImmediate)
     write_reg(BX, 0x100);
     emulate();
 
-    ASSERT_EQ(0xaa, read_mem<uint8_t>(0x100));
+    ASSERT_EQ(0xaa, read_mem8(0x100));
 }
 
 TEST_F(EmulateFixture, MovC7RegImmediate)
@@ -162,7 +162,7 @@ TEST_F(EmulateFixture, MovC7MemImmediate)
     write_reg(BX, 0x100);
     emulate();
 
-    ASSERT_EQ(0xaa55, read_mem<uint16_t>(0x100));
+    ASSERT_EQ(0xaa55, read_mem16(0x100));
 }
 
 TEST_F(EmulateFixture, MovRegImmediate8)
@@ -201,7 +201,7 @@ TEST_F(EmulateFixture, MovAccumulatorMemory8)
 {
     // mov al, [1234]
     set_instruction({ 0xa0, 0x34, 0x12 });
-    write_mem<uint16_t>(0x1234, 0xaa55);
+    write_mem16(0x1234, 0xaa55);
     emulate();
 
     ASSERT_EQ(0x55, read_reg(AL));
@@ -211,7 +211,7 @@ TEST_F(EmulateFixture, MovAccumulatorMemory16)
 {
     // mov ax, [1234]
     set_instruction({ 0xa1, 0x34, 0x12 });
-    write_mem<uint16_t>(0x1234, 0xaa55);
+    write_mem16(0x1234, 0xaa55);
     emulate();
 
     ASSERT_EQ(0xaa55, read_reg(AX));
@@ -224,7 +224,7 @@ TEST_F(EmulateFixture, MovMemoryAccumulator8)
     write_reg(AL, 0x55);
     emulate();
 
-    ASSERT_EQ(0x55, read_mem<uint8_t>(0x1234));
+    ASSERT_EQ(0x55, read_mem8(0x1234));
 }
 
 TEST_F(EmulateFixture, MovMemoryAccumulator16)
@@ -234,7 +234,7 @@ TEST_F(EmulateFixture, MovMemoryAccumulator16)
     write_reg(AX, 0xaa55);
     emulate();
 
-    ASSERT_EQ(0xaa55, read_mem<uint16_t>(0x1234));
+    ASSERT_EQ(0xaa55, read_mem16(0x1234));
 }
 
 TEST_F(EmulateFixture, MovSRReg)
@@ -251,7 +251,7 @@ TEST_F(EmulateFixture, MovSRMem)
 {
     // mov es, [bx]
     set_instruction({ 0x8e, 0x07 });
-    write_mem<uint16_t>(0x0100, 0x8000);
+    write_mem16(0x0100, 0x8000);
     write_reg(BX, 0x0100);
     emulate();
 
@@ -287,7 +287,7 @@ TEST_F(EmulateFixture, MovMemSR)
     set_instruction({ 0x8c, 0x0f });
     emulate();
 
-    ASSERT_EQ(0x8000, read_mem<uint16_t>(0x0100));
+    ASSERT_EQ(0x8000, read_mem16(0x0100));
 }
 
 TEST_F(EmulateFixture, MovRegInvalidSR)

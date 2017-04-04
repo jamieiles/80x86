@@ -38,7 +38,7 @@ TEST_F(EmulateFixture, Lds)
 {
     // lds si, [0x0100]
     set_instruction({ 0xc5, 0x36, 0x00, 0x01 });
-    write_mem<uint32_t>(0x0100, 0x80001234);
+    write_mem32(0x0100, 0x80001234);
     emulate();
 
     ASSERT_EQ(0x8000, read_reg(DS));
@@ -58,7 +58,7 @@ TEST_F(EmulateFixture, Les)
 {
     // les si, [0x0100]
     set_instruction({ 0xc4, 0x36, 0x00, 0x01 });
-    write_mem<uint32_t>(0x0100, 0x80001234);
+    write_mem32(0x0100, 0x80001234);
     emulate();
 
     ASSERT_EQ(0x8000, read_reg(ES));
