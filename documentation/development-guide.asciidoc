@@ -77,91 +77,6 @@ Verilog models which will write VCD files for each test run.
 
 *Coverage* builds everything for coverage including {cpp} and Verilog.
 
-== RTL Tests
-
-The RTL tests are written in {cpp}, using Verilator to create {cpp} models of the
-Verilog.  For example, given a synchronous Fifo, the Verilator model can be
-created using the Verilator CMake package:
-
-[source,cmake]
-----
-include(Verilator)
-add_library(verilator STATIC ${VERILATOR_LIB_SOURCES})
-verilate(Fifo ${CMAKE_CURRENT_SOURCE_DIR}/Fifo.v)
-----
-
-This will generate a `verilator` library containing the common Verilator
-support functions, run Verilator on `Fifo.v` and generate a `VFifo` library
-and `VFifo.h` header for inclusion in the test code.  A templated wrapper
-'VerilogTestbench' in `VerilogTestbench.h` provides convenient methods for
-resetting and clocking the device under test along with running deferred and
-clock edge events, tracing and coverage.
-
-The device under test can then be encapsulated inside a class and used for
-writing tests with Google Test.  For example, wrapping the Verilog model:
-
-[source,c++]
-----
-#include <VFifo.h>
-
-#include "VerilogTestbench.h"
-
-class FifoTestbench : public VerilogTestbench<VFifo> {
-public:
-    FifoTestbench(VFifo *dut);
-    void push(uint32_t val);
-    uint32_t pop();
-};
-
-FifoTestbench::FifoTestbench(VFifo *dut)
-    : VerilogTestbench<VFifo>(dut)
-{
-    dut->wr_en = 0;
-    dut->wr_data = 0LU;
-    dut->rd_en = 0;
-}
-
-void FifoTestbench::push(uint32_t val)
-{
-    dut->wr_data = val;
-    dut->wr_en = 1;
-    cycle();
-    dut->wr_en = 0;
-}
-
-uint32_t FifoTestbench::pop()
-{
-    dut->rd_en = 1;
-    cycle();
-    dut->rd_en = 0;
-
-    return dut->rd_data;
-}
-----
-
-Then a test can be written to exercise it:
-
-[source,c++]
-----
-TEST(Fifo, ResetClears)
-{
-    FifoTestbench tb;
-
-    for (uint32_t m = 0; m < 4; ++m)
-        tb.push(m);
-
-    ASSERT_FALSE(tb.dut->empty);
-    tb.reset();
-    ASSERT_TRUE(tb.dut->empty);
-}
-----
-
-More complex tests that have deferred events such as reading from memory can
-be written by adding events on positive+negative clock edges and running after
-a number of cycles.  `tests/rtl/TestPrefetch.cpp` uses a number of these
-concepts.  With the right abstractions it can be possible to type-parameterize
-these test cases to run against pure software simulations and Verilog models.
-
 == Microcode
 
 The microcode is stored in `rtl/microcode` where microcode files have the
@@ -174,7 +89,7 @@ Directives are used to provide information to the microassembler about
 microcode layout without actually generating microinstructions.
 
 .Microassembler Directives
-[cols="1,7"]
+[cols="3,7"]
 |===
 | Name | Description
 | .opcode NUM
@@ -457,3 +372,88 @@ and the core.
 | 0x1e | `debug_val` | `DS`
 | 0x1f | `debug_val` | `IP`
 |===
+
+== RTL Tests
+
+The RTL tests are written in {cpp}, using Verilator to create {cpp} models of the
+Verilog.  For example, given a synchronous Fifo, the Verilator model can be
+created using the Verilator CMake package:
+
+[source,cmake]
+----
+include(Verilator)
+add_library(verilator STATIC ${VERILATOR_LIB_SOURCES})
+verilate(Fifo ${CMAKE_CURRENT_SOURCE_DIR}/Fifo.v)
+----
+
+This will generate a `verilator` library containing the common Verilator
+support functions, run Verilator on `Fifo.v` and generate a `VFifo` library
+and `VFifo.h` header for inclusion in the test code.  A templated wrapper
+'VerilogTestbench' in `VerilogTestbench.h` provides convenient methods for
+resetting and clocking the device under test along with running deferred and
+clock edge events, tracing and coverage.
+
+The device under test can then be encapsulated inside a class and used for
+writing tests with Google Test.  For example, wrapping the Verilog model:
+
+[source,c++]
+----
+#include <VFifo.h>
+
+#include "VerilogTestbench.h"
+
+class FifoTestbench : public VerilogTestbench<VFifo> {
+public:
+    FifoTestbench(VFifo *dut);
+    void push(uint32_t val);
+    uint32_t pop();
+};
+
+FifoTestbench::FifoTestbench(VFifo *dut)
+    : VerilogTestbench<VFifo>(dut)
+{
+    dut->wr_en = 0;
+    dut->wr_data = 0LU;
+    dut->rd_en = 0;
+}
+
+void FifoTestbench::push(uint32_t val)
+{
+    dut->wr_data = val;
+    dut->wr_en = 1;
+    cycle();
+    dut->wr_en = 0;
+}
+
+uint32_t FifoTestbench::pop()
+{
+    dut->rd_en = 1;
+    cycle();
+    dut->rd_en = 0;
+
+    return dut->rd_data;
+}
+----
+
+Then a test can be written to exercise it:
+
+[source,c++]
+----
+TEST(Fifo, ResetClears)
+{
+    FifoTestbench tb;
+
+    for (uint32_t m = 0; m < 4; ++m)
+        tb.push(m);
+
+    ASSERT_FALSE(tb.dut->empty);
+    tb.reset();
+    ASSERT_TRUE(tb.dut->empty);
+}
+----
+
+More complex tests that have deferred events such as reading from memory can
+be written by adding events on positive+negative clock edges and running after
+a number of cycles.  `tests/rtl/TestPrefetch.cpp` uses a number of these
+concepts.  With the right abstractions it can be possible to type-parameterize
+these test cases to run against pure software simulations and Verilog models.
