@@ -9,7 +9,7 @@ let g:dispatch_compilers = {
 set makeprg=./docker/s80x86-dev
 map <Leader>t :Make "ninja -C _build/dev && ninja -C _build/dev test"<cr>
 map <Leader>T :GTestRunUnderCursor<cr>
-map <Leader>m :Make<cr>
+map <Leader>m :Make "ninja -C _build/dev"<cr>
 map <Leader>M :Make!<cr>
 map <Leader>c :Copen<cr>
 au BufNewFile,BufRead *.us set filetype=asm
