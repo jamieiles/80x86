@@ -173,23 +173,29 @@ preprocessor to allow inclusion of other files and creating macros.
 Directives are used to provide information to the microassembler about
 microcode layout without actually generating microinstructions.
 
-==== .opcode NUM
-
-The `.opcode NUM` directive tells the microassembler to insert the next
-microinstruction at address `NUM` in the microprogram.  This is used for the
-first 256 opcodes so that efficient dispatch can be performed by jumping to
-the address corresponding to the value of the opcode.
-
-==== .auto_address
-
-Returns the address assignment to automatically assigned addresses after using
-the `.opcode` directive.
+.Microassembler Directives
+[cols="1,7"]
+|===
+| Name | Description
+| .opcode NUM
+| The `.opcode NUM` directive tells the microassembler to insert the next
+  microinstruction at address `NUM` in the microprogram.  This is used for the
+  first 256 opcodes so that efficient dispatch can be performed by jumping to
+  the address corresponding to the value of the opcode.
+| .auto_address
+| Returns the address assignment to automatically assigned addresses after
+  using the `.opcode` directive.
+|===
 
 === Microinstruction Fields
 
-==== jmp_rm_reg_mem
+==== Jumps
 
-`jmp_rm_reg_mem LABEL` tells the microassembler to generate a jump that will
+.Microcode Jump Types
+[cols="3,7"]
+|===
+| Name | Description
+| jmp_rm_reg_mem LABEL a| tells the microassembler to generate a jump that will
 jump to the label if the Mod R/M decoder indicates a register operand in the
 R/M field and the label + 1 if the R/M field encodes a memory operand.  For
 example:
@@ -206,6 +212,158 @@ foo_mem:
 will jump to `foo_reg` if the R/M operand is a register operand and `foo_mem`
 if the R/M operand is a memory operand.  The two microinstructions must be
 adjacent with the register based instruction appearing first.
+
+| jmp_opcode | Takes the value of the opcode that was fetched and jumps to
+  that address as an absolute value, used in combination with the `.at`
+  directive to implement opcodes.
+
+| jmp_dispatch_reg LABEL | Using the reg field of the mod r/m byte, jump to
+  the target address + the value of the reg field.  Used for implementing
+  different instructions that share the same opcode.
+
+| jmp_if_not_rep LABEL | Jump to the target address if the string instruction
+  does not have a rep prefix, otherwise continue execution at the next
+  incremented address.  Only valid on string instructions that may be combined
+  with a rep prefix.
+
+| jmp_if_zero LABEL | Jump to the target address if the Z flag of the ALU
+  output is set, otherwise continue with the adjacent instruction.  Note that
+  this uses the flags output from the ALU, not the current value of the flags
+  register, if the value in the flags register is required, use the `GETFLAGS`
+  ALU operation in combination with this field.
+
+| jmp_if_rep_not_taken LABEL | Check the condition for the current rep prefix
+  and jump to the target if the termination condition is not met, otherwise
+  execute the adjacent instruction.  Only valid when there is a rep prefix
+  present.
+
+| jmp_if_taken LABEL | Jump to the target if the jump instruction has the
+  condition met, otherwise continue with the adjacent instruction.  This is
+  only valid for jump instructions, and INTO.
+
+| jmp LABEL | An unconditional jump, will always transfer control to LABEL.
+|===
+
+=== Data Sources
+
+.Microcode Data Sources
+[cols="3,7"]
+|===
+| Name | Description
+| ra_sel | Which general purpose register to fetch for RA.  Note that register
+  fetches have a single cycle latency.  Only valid when `ra_modrm_rm_reg` is
+  not set.
+| rb_cl | Set to use the value of `CL` for RB after a single cycle of latency,
+  used primarily for shifts.
+| segment | Set the default segment for the memory operation or segment
+  register read.  This is the default segment and may be overriden with a
+  segment override prefix unless `segment_force` is also set.
+| a_sel a|
+  Selects which operand source to use for the internal A bus:
+
+    - RA: the fetched RA GPR value.
+    - IP: the instruction pointer of the next instruction.
+    - MAR: the contents of the memory address register.
+    - MDR: the contents of the memory data register.
+| b_sel a|
+  Selects which operand source to use for the internal B bus:
+
+    - RB: the fetched RB GPR value.
+    - IMMEDIATE: an immediate value, either from the immediate reader or from
+    the constant pool if a microinstruction defined constant is being used.
+    - SR: the fetched segment register value.
+    - TEMP: the contents of the temporary register.
+| immediate | The immediate constant to use.  This forms a constant pool in
+  the microcode and can be used for operations such as fetching exception
+  handler addresses, incrementing/decrementing pointers etc.
+| mar_wr_sel a| Selects the source of the value to be written to the memory
+  address register:
+
+    - EA: the effective address calculated by the mod r/m decoder.
+    - Q: the Q bus driven by the ALU.
+|===
+
+=== Control Signals
+
+.Microcode Control Signals
+[cols="3,7"]
+|===
+| Name | Description
+| next_instruction | Ends processing of the current instruction, will check
+  for pending interrupts, jump to the instruction dispatch address, update
+  CS:IP and reset any intermediate state.
+| mar_write | Write the value of the `mar_wr_sel` source into the memory
+  address register.
+| mdr_write | Write the value of the ALU output into the memory data register.
+| mem_read | Perform a memory access with the specified segment and memory
+  address register value, reading into the memory data register.  Note that
+  the segment register must have had the fetch initiated in the previous
+  instruction and should be held for the duration of the access.  This field
+  will cause the microsequencer to stall until the access is complete.  The
+  `width` field will specify the size of the access.
+| mem_write | Perform a memory write, writing the contents of the memory data
+  register to the address specified by the fetched segment and the memory
+  address register.  As with `mem_read`, the segment must have had the fetch
+  initiated in the previous instruction and held for the duration of this
+  instruction.
+| sr_wr_sel | The destination segment register for a segment register write
+  operation.
+| segment_force | When used in combination with the `segment` field, this will
+  force that segment to be used unconditionally, ignoring any segment override
+  prefix.
+| alu_op | The ALU operation to execute, see
+  "scripts/microassembler/microasm/types.py" for a full list of operations.
+| update_flags a| A list of flags that should be written when performing an ALU
+  operation.  If not specified, no flags will be update.  For example:
+
+[source,asm]
+----
+    alu_op ADD, update_flags CF OF ZF AF
+----
+
+will update the carry, overflow, zero and adjust flags to the result of the
+ALU operation.
+| fifo_pop | Pop a single byte from the prefetch FIFO, used in combination
+with `jmp_opcode` to implement opcode dispatch.
+| modrm_start | Trigger the mod r/m decoding.  This will stall until complete
+  and calculate any effective addresses required.
+| rd_sel_source a| The source of the destination register number:
+
+  - MODRM_REG: use the reg field of the mod r/m byte as the destination
+  register.
+  - MODRM_RM_REG: use the rm field of the mod r/m byte as the destination
+  register.
+  - MICROCODE_RD_SEL: use the rd_sel field of the instruction to select the
+  destination register.
+
+| reg_wr_en | Causes the result to be written to the destination register.
+| reg_wr_source a| Selects which result should be written to the destination
+  register:
+
+  - Q: the result of the ALU operation.
+  - QUOTIENT: the quotient of a division operation.
+  - REMAINDER: the remainder of a division operation.
+
+| tmp_wr_en | Set to write the output of the ALU into the temporary register.
+| tmp_wr_sel a| Select the source of the temporary register write:
+
+  - Q_LOW: the low 16-bits of the ALU output by default.
+  - Q_HIGH: the high 16-bits of the ALU output, only used for 16x16
+  multiplications.
+
+| width | Selects the width of the operation.  Defaults to 16-bit, but "width
+  8" will perform byte operations for register read/write, memory read/write,
+  immediate fetch and ALU operations.
+| load_ip | Causes the ALU result to be used as the new IP to be taken when
+  the next instruction is executed.
+| read_immed | Triggers the immediate reader to read an immediate from the
+  instruction stream with the specified width.
+| io | Combined with `mem_read`/`mem_write` to indicate that the operation
+  should use the I/O address space.  This will cause the segment to be ignored
+  and the io pin to be asserted for the duration of this microinstruction.
+| lock | Sets the lock prefix, the lock pin will be asserted for the remainder
+  of the microprogram.
+|===
 
 == Debug
 
