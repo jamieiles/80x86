@@ -52,22 +52,4 @@ for (rd_port = 0; rd_port < 2; ++rd_port) begin: read_port
 end
 endgenerate
 
-`ifdef verilator
-export "DPI-C" function get_gpr;
-
-function [15:0] get_gpr;
-    input int regnum;
-    get_gpr = gprs[regnum];
-endfunction
-
-export "DPI-C" function set_gpr;
-
-function set_gpr;
-    input int regnum;
-    input int val;
-    gprs[regnum] = val[15:0];
-    set_gpr = 0;
-endfunction
-`endif
-
 endmodule

@@ -1,3 +1,4 @@
+// verilator lint_off UNUSED
 // vi: ft=systemverilog
 `ifndef MICROCODE_ROM_PATH
 `define MICROCODE_ROM_PATH "."
@@ -23,7 +24,12 @@ module Microcode(input logic clk,
                  // Fifo Read Port.
                  output logic fifo_rd_en,
                  input logic [7:0] fifo_rd_data,
-                 input logic fifo_empty);
+                 input logic fifo_empty,
+                 // Debug
+                 output logic debug_stopped,
+                 input logic debug_seize,
+                 input logic [7:0] debug_addr,
+                 input logic debug_run);
 
 localparam num_instructions = <%num_instructions%>;
 localparam addr_bits = <%addr_bits%>;
@@ -66,6 +72,8 @@ wire has_rep_prefix = (rep_prefix_type == PrefixType_REPE ||
 reg rep_complete;
 reg [7:0] opcode;
 
+assign debug_stopped = addr == {{addr_bits-9{1'b0}}, 9'h102};
+
 initial $readmemb({{`MICROCODE_ROM_PATH, "/microcode.bin"}}, mem);
 
 always_comb begin
@@ -95,7 +103,9 @@ always_ff @(posedge clk or posedge reset)
 
 always_ff @(posedge clk or posedge reset) begin
     if (reset)
-        addr <= reset_address;
+        addr <= debug_seize ? {{addr_bits-9{1'b0}}, 9'h102} : reset_address;
+    else if (debug_stopped && debug_run)
+        addr <= {{addr_bits - 9{1'b0}}, 1'b1, debug_addr};
     else if (!do_stall && current.jump_type == JumpType_JUMP_TAKEN)
         addr <= jump_taken ? current.next : addr + 1'b1;
     else if (!do_stall && current.jump_type == JumpType_ZERO)
@@ -112,6 +122,8 @@ always_ff @(posedge clk or posedge reset) begin
         addr <= {{addr_bits-8{1'b0}}, fifo_rd_data};
     else if (!do_stall && divide_error)
         addr <= {{addr_bits-9{1'b0}}, 9'h101};
+    else if (!do_stall && current.next_instruction && debug_seize)
+        addr <= {{addr_bits-9{1'b0}}, 9'h102};
     else if (!do_stall && current.next_instruction)
         addr <= {{addr_bits-9{1'b0}}, 9'h100};
     else if (!do_stall)

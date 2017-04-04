@@ -73,24 +73,4 @@ always_ff @(posedge clk)
     if (mem_ack)
         fetched_high_byte <= mem_data[15:8];
 
-`ifdef verilator
-export "DPI-C" function set_ip;
-
-function set_ip;
-    input int new_val;
-    fetch_address = new_val[15:0];
-    abort_cur = 1'b1;
-    set_ip = 0;
-endfunction
-
-export "DPI-C" function set_cs;
-
-function set_cs;
-    input int new_val;
-    cs = new_val[15:0];
-    abort_cur = 1'b1;
-    set_cs = 0;
-endfunction
-`endif
-
 endmodule

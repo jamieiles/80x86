@@ -14,7 +14,15 @@ module Core(input logic clk,
             output logic data_m_wr_en,
             output logic [1:0] data_m_bytesel,
             output logic d_io,
-            output logic lock);
+            output logic lock,
+            // Debug
+            output logic debug_stopped,
+            input logic debug_seize,
+            input logic [7:0] debug_addr,
+            input logic debug_run,
+            output logic [15:0] debug_val,
+            input logic [15:0] debug_wr_val,
+            input logic debug_wr_en);
 
 // Internal busses.
 wire [15:0] a_bus =
@@ -137,9 +145,11 @@ wire [1:0] b_sel;
 wire next_instruction;
 wire is_8_bit;
 wire [15:0] effective_address;
-wire tmp_wr_en;
-wire [15:0] tmp_wr_val = (tmp_wr_sel == TEMPWrSel_Q_LOW) ?
-    alu_out[15:0] : alu_out[31:16];
+wire microcode_tmp_wr_en;
+wire tmp_wr_en = microcode_tmp_wr_en | (debug_wr_en && debug_stopped);
+wire [15:0] tmp_wr_val = debug_stopped && debug_wr_en ? debug_wr_val :
+    (tmp_wr_sel == TEMPWrSel_Q_LOW) ?  alu_out[15:0] :
+    alu_out[31:16];
 wire tmp_wr_sel;
 wire [15:0] tmp_val;
 wire microcode_immed_start;
@@ -150,7 +160,8 @@ wire [7:0] opcode;
 wire jump_taken;
 
 // Misc control signals
-wire do_next_instruction = next_instruction & ~do_stall;
+wire debug_set_ip = debug_stopped && ip_wr_en;
+wire do_next_instruction = (next_instruction & ~do_stall) | debug_set_ip;
 wire do_stall = modrm_busy | immed_busy | loadstore_busy | divide_busy;
 
 // IP
@@ -169,6 +180,8 @@ wire divide = alu_op == ALUOp_DIV || alu_op == ALUOp_IDIV;
 wire divide_signed = alu_op == ALUOp_IDIV;
 wire divide_complete;
 wire do_divide = divide & ~divide_complete;
+
+assign debug_val = tmp_val;
 
 RegisterFile    RegisterFile(.clk(clk),
                              .reset(reset),
@@ -356,13 +369,18 @@ Microcode       Microcode(.clk(clk),
                           .segment_force(segment_force),
                           .segment_wr_en(segment_wr_en),
                           .sr_wr_sel(microcode_seg_wr_sel),
-                          .tmp_wr_en(tmp_wr_en),
+                          .tmp_wr_en(microcode_tmp_wr_en),
                           .tmp_wr_sel(tmp_wr_sel),
                           .update_flags(update_flags),
                           .width(is_8_bit),
                           .fifo_rd_en(microcode_fifo_rd_en),
                           .fifo_rd_data(fifo_rd_data),
-                          .fifo_empty(fifo_empty));
+                          .fifo_empty(fifo_empty),
+                          // Debug
+                          .debug_stopped(debug_stopped),
+                          .debug_seize(debug_seize),
+                          .debug_addr(debug_addr),
+                          .debug_run(debug_run));
 
 IP              IP(.clk(clk),
                    .reset(reset),

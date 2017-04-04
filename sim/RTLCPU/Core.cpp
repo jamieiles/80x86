@@ -1,7 +1,7 @@
 #include <stdexcept>
 #include <fstream>
-#include <VCore.h>
 #include <VerilogDriver.h>
+#include <VCore.h>
 #include <boost/algorithm/string/replace.hpp>
 
 #include "svdpi.h"
@@ -30,8 +30,10 @@ RTLCPU<debug_enabled>::RTLCPU(const std::string &test_name)
     i_in_progress(false),
     d_in_progress(false),
     mem_latency(0),
-    test_name(test_name)
+    test_name(test_name),
+    is_stopped(true)
 {
+    this->dut.debug_seize = 1;
     this->reset();
 
     this->periodic(ClockSetup, [&]{ this->data_access(); });
@@ -47,6 +49,46 @@ RTLCPU<debug_enabled>::RTLCPU(const std::string &test_name)
                                              (this->dut.data_m_data_out >> 8) & 0xff);
         }
     });
+    this->periodic(ClockCapture, [&]{
+        this->is_stopped = this->dut.debug_stopped;
+    });
+}
+
+template <bool debug_enabled>
+void RTLCPU<debug_enabled>::debug_run_proc(unsigned addr)
+{
+    this->after_n_cycles(0, [&]{
+        this->dut.debug_addr = addr;
+        this->dut.debug_run = 1;
+        this->after_n_cycles(1, [&] {
+            this->dut.debug_run = 0;
+        });
+    });
+
+    int cycle_count = 0;
+
+    // Start the procedure running.
+    while (debug_is_stopped()) {
+        this->cycle();
+        ++cycle_count;
+    }
+
+    // wait for completion
+    while (!debug_is_stopped()) {
+        this->cycle();
+        ++cycle_count;
+    }
+
+    if (cycle_count >= max_cycles_per_step)
+        throw std::runtime_error("execution timeout");
+}
+
+template <bool debug_enabled>
+void RTLCPU<debug_enabled>::debug_step()
+{
+    assert(is_stopped);
+
+    debug_run_proc(0x00);
 }
 
 template <bool debug_enabled>
@@ -88,40 +130,47 @@ void RTLCPU<debug_enabled>::write_reg(GPR regnum, uint16_t val)
 template <bool debug_enabled>
 void RTLCPU<debug_enabled>::write_sr(GPR regnum, uint16_t val)
 {
-    svSetScope(svGetScopeFromName("TOP.Core.SegmentRegisterFile"));
-    this->dut.set_sr(regnum - ES, val);
+    debug_write_data(val);
+    debug_run_proc(0x13 + static_cast<int>(regnum));
+}
 
-    if (regnum == CS) {
-        svSetScope(svGetScopeFromName("TOP.Core.Prefetch"));
-        this->dut.set_cs(val);
-    }
+template <bool debug_enabled>
+void RTLCPU<debug_enabled>::debug_write_data(uint16_t val)
+{
+    this->after_n_cycles(0, [&] {
+        this->dut.debug_wr_en = 1;
+        this->dut.debug_wr_val = val;
+        this->after_n_cycles(1, [&] {
+            this->dut.debug_wr_en = 0;
+        });
+    });
+    this->cycle();
 }
 
 template <bool debug_enabled>
 void RTLCPU<debug_enabled>::write_ip(uint16_t val)
 {
-    svSetScope(svGetScopeFromName("TOP.Core.IP"));
-    this->dut.set_ip(val);
+    assert(is_stopped);
 
-    svSetScope(svGetScopeFromName("TOP.Core.Prefetch"));
-    this->dut.set_ip(val);
+    debug_write_data(val);
+    debug_run_proc(0x11);
 }
 
 template <bool debug_enabled>
 void RTLCPU<debug_enabled>::write_gpr(GPR regnum, uint16_t val)
 {
-    svSetScope(svGetScopeFromName("TOP.Core.RegisterFile"));
-
     if (regnum < NUM_16BIT_REGS) {
-        this->dut.set_gpr(static_cast<int>(regnum), val);
+        debug_write_data(val);
+        debug_run_proc(0x13 + static_cast<int>(regnum));
     } else {
-        auto regsel = static_cast<int>(regnum - AL) & 0x3;
+        auto regsel = (regnum - AL) & 0x3;
         reg_converter conv;
-        conv.v16 = this->dut.get_gpr(regsel);
+        conv.v16 = this->read_reg(static_cast<GPR>(regsel));
 
         conv.v8[regnum >= AH] = val;
 
-        this->dut.set_gpr(regsel, conv.v16);
+        debug_write_data(conv.v16);
+        debug_run_proc(0x13 + static_cast<int>(regsel));
     }
 }
 
@@ -137,33 +186,38 @@ uint16_t RTLCPU<debug_enabled>::read_reg(GPR regnum)
 }
 
 template <bool debug_enabled>
-uint16_t RTLCPU<debug_enabled>::read_ip() const
+uint16_t RTLCPU<debug_enabled>::read_ip()
 {
-    svSetScope(svGetScopeFromName("TOP.Core.IP"));
+    assert(this->dut.debug_stopped);
+    debug_run_proc(0x0f);
 
-    return this->dut.get_ip();
+    return this->dut.debug_val;
 }
 
 template <bool debug_enabled>
-uint16_t RTLCPU<debug_enabled>::read_gpr(GPR regnum) const
+uint16_t RTLCPU<debug_enabled>::read_gpr(GPR regnum)
 {
-    svSetScope(svGetScopeFromName("TOP.Core.RegisterFile"));
+    if (regnum < NUM_16BIT_REGS) {
+        debug_run_proc(0x03 + static_cast<int>(regnum));
 
-    if (regnum < NUM_16BIT_REGS)
-        return this->dut.get_gpr(static_cast<int>(regnum));
+        return this->dut.debug_val;
+    }
 
     auto regsel = static_cast<int>(regnum - AL) & 0x3;
+    debug_run_proc(0x03 + static_cast<int>(regsel));
+
     reg_converter conv;
-    conv.v16 = this->dut.get_gpr(regsel);
+    conv.v16 = this->dut.debug_val;
 
     return conv.v8[regnum >= AH];
 }
 
 template <bool debug_enabled>
-uint16_t RTLCPU<debug_enabled>::read_sr(GPR regnum) const
+uint16_t RTLCPU<debug_enabled>::read_sr(GPR regnum)
 {
-    svSetScope(svGetScopeFromName("TOP.Core.SegmentRegisterFile"));
-    return this->dut.get_sr(regnum - ES);
+    debug_run_proc(0x03 + static_cast<int>(regnum));
+
+    return this->dut.debug_val;
 }
 
 template <bool debug_enabled>
@@ -179,23 +233,7 @@ size_t RTLCPU<debug_enabled>::step()
 {
     this->get_and_clear_instr_length();
 
-    // Wait for opcode dispatch
-    while (this->get_microcode_address() != 0x100)
-        this->cycle();
-
-    // Wait for opcode dispatch to start
-    do {
-        this->cycle();
-    } while (this->get_microcode_address() == 0x100);
-
-    // Return to opcode dispatch
-    int cycle_count = 0;
-    while (this->get_microcode_address() != 0x100 &&
-           cycle_count++ < max_cycles_per_step)
-        this->cycle();
-
-    if (cycle_count >= max_cycles_per_step)
-        throw std::runtime_error("execution timeout");
+    this->debug_step();
 
     return this->get_and_clear_instr_length();
 }
@@ -203,19 +241,20 @@ size_t RTLCPU<debug_enabled>::step()
 template <bool debug_enabled>
 void RTLCPU<debug_enabled>::write_flags(uint16_t val)
 {
-    svSetScope(svGetScopeFromName("TOP.Core.Flags"));
-    this->dut.set_flags(val);
+    debug_write_data(val);
+    debug_run_proc(0x12);
 }
 
 template <bool debug_enabled>
 uint16_t RTLCPU<debug_enabled>::read_flags()
 {
-    svSetScope(svGetScopeFromName("TOP.Core.Flags"));
-    return this->dut.get_flags();
+    this->debug_run_proc(0x10);
+
+    return this->dut.debug_val;
 }
 
 template <bool debug_enabled>
-bool RTLCPU<debug_enabled>::has_trapped() const
+bool RTLCPU<debug_enabled>::has_trapped()
 {
     auto int_cs = this->mem.template read<uint16_t>(VEC_INT + 2);
     auto int_ip = this->mem.template read<uint16_t>(VEC_INT + 0);

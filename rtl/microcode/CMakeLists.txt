@@ -53,7 +53,8 @@ set(microprogram_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/xlat.us
     ${CMAKE_CURRENT_SOURCE_DIR}/xor.us
     ${CMAKE_CURRENT_SOURCE_DIR}/wait.us
-    ${CMAKE_CURRENT_SOURCE_DIR}/microcode.us)
+    ${CMAKE_CURRENT_SOURCE_DIR}/microcode.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/debug.us)
 
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/microcode.bin
                           ${CMAKE_CURRENT_BINARY_DIR}/Microcode.v

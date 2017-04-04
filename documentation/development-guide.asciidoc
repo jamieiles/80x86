@@ -206,3 +206,96 @@ foo_mem:
 will jump to `foo_reg` if the R/M operand is a register operand and `foo_mem`
 if the R/M operand is a memory operand.  The two microinstructions must be
 adjacent with the register based instruction appearing first.
+
+== Debug
+
+The microsequencer provides a very simple way to implement on-chip debug.  The
+core has a number of signals to interface between a debug controller
+(typically JTAG) and the microsequencer.  These signals are all in the core
+clock domain and will require synchronization with a debug controller in a
+different clock domain.
+
+The debug mechanism works by putting the core into a halt mode where it will
+perform a tight loop in the microsequencer at which point other debug
+operations can be issued.  Operations are issued by running a microprogram at
+a known address allowing more debug procedures to be added easily.  To perform
+a debug operation, the debug controller first halts the core by raising
+`debug_seize` and waits for the core to enter the halted state with
+`debug_stopped` asserted which will be at the end of the current microprogram.
+Once stopped, the controller can write data to the temporary register if
+required with `debug_wr_val` and `debug_wr_en` and then run the debug procedure
+by writing the procedure address to `debug_addr` and asserting `debug_run` for
+a single clock cycle.
+
+=== Debug Signals
+
+.Debug Interface Signals
+[cols="2,1,1,3",options="header"]
+|===
+| Name | Width | Direction | Description
+
+| debug_stopped | 1 | output | Asserted when the core is in a debug halt and
+  is ready for debug operations.  The debug controller must not issue any
+  operations when `debug_stopped` is not asserted.
+| debug_seize | 1 | input | Asserted by the controller to request that the core
+  enters debug mode.  This may be deasserted once `debug_stopped` has been
+  asserted and then the run procedure executed to continue normal operation.
+| debug_addr | 8 | input | The address of the debug procedure to execute, must
+  be written at the same time as `debug_run`.  The core will run the procedure
+  at 100h + `debug_addr`.
+| debug_run | 1 | input | Asserted by the debug controller to begin the debug
+  procedure specified in `debug_addr`.
+| debug_wr_val | 16 | input | Asserted by the debug controller to write the
+  value in `debug_wr_val` into the temporary register.
+| debug_wr_en | 1 | input | Asserted by the debug controller to write
+  `debug_wr_val` into the temporary register.
+|===
+
+=== Control and Reserved Debug Procedures
+
+  - *0x00*: resume execution.  If `debug_seize` is held high then this will
+  single-step one instruction, otherwise run indefinitely until seized.
+  - *0x01 - 0x02: reserved for internal use, execution will yield undefined
+  behaviour.*
+
+=== Data Transfer Debug Procedures
+
+These debug procedures are used to transfer data between the debug controller
+and the core.
+
+.Data Transfer Debug Procedures
+[cols=3*,options="header"]
+|===
+| Program Number
+| Source
+| Destination
+| 0x03 | `AX` | `debug_val`
+| 0x04 | `CX` | `debug_val`
+| 0x05 | `DX` | `debug_val`
+| 0x06 | `BX` | `debug_val`
+| 0x07 | `SP` | `debug_val`
+| 0x08 | `BP` | `debug_val`
+| 0x09 | `SI` | `debug_val`
+| 0x0a | `DI` | `debug_val`
+| 0x0b | `ES` | `debug_val`
+| 0x0c | `CS` | `debug_val`
+| 0x0d | `SS` | `debug_val`
+| 0x0e | `DS` | `debug_val`
+| 0x0f | `IP` | `debug_val`
+| 0x10 | `FLAGS` | `debug_val`
+| 0x11 | `debug_val` | `IP`
+| 0x12 | `debug_val` | `FLAGS`
+| 0x13 | `debug_val` | `AX`
+| 0x14 | `debug_val` | `CX`
+| 0x15 | `debug_val` | `DX`
+| 0x16 | `debug_val` | `BX`
+| 0x17 | `debug_val` | `SP`
+| 0x18 | `debug_val` | `BP`
+| 0x19 | `debug_val` | `SI`
+| 0x1a | `debug_val` | `DI`
+| 0x1b | `debug_val` | `ES`
+| 0x1c | `debug_val` | `CS`
+| 0x1d | `debug_val` | `SS`
+| 0x1e | `debug_val` | `DS`
+| 0x1f | `debug_val` | `IP`
+|===

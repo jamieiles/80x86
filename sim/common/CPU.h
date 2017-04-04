@@ -36,7 +36,7 @@ public:
     virtual size_t step() = 0;
     virtual void write_flags(uint16_t val) = 0;
     virtual uint16_t read_flags() = 0;
-    virtual bool has_trapped() const = 0;
+    virtual bool has_trapped() = 0;
     virtual void reset() = 0;
 
     virtual bool instruction_had_side_effects() const

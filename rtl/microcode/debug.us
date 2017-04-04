@@ -1,0 +1,72 @@
+.at 0x102;
+debug_wait:
+    jmp debug_wait;
+
+#define DEBUG_READ_GPR(reg, addr) \
+.at addr; \
+    ra_sel reg, jmp debug_read_gpr;
+
+#define DEBUG_READ_SR(reg, addr) \
+.at addr; \
+    segment_force, segment reg, jmp debug_read_sr;
+
+DEBUG_READ_GPR(AX, 0x103)
+DEBUG_READ_GPR(CX, 0x104)
+DEBUG_READ_GPR(DX, 0x105)
+DEBUG_READ_GPR(BX, 0x106)
+DEBUG_READ_GPR(SP, 0x107)
+DEBUG_READ_GPR(BP, 0x108)
+DEBUG_READ_GPR(SI, 0x109)
+DEBUG_READ_GPR(DI, 0x10a)
+DEBUG_READ_SR(ES, 0x10b)
+DEBUG_READ_SR(CS, 0x10c)
+DEBUG_READ_SR(SS, 0x10d)
+DEBUG_READ_SR(DS, 0x10e)
+
+#define DEBUG_WRITE_GPR(reg, addr) \
+.at addr; \
+    b_sel TEMP, alu_op SELB, rd_sel_source MICROCODE_RD_SEL, rd_sel reg, \
+        reg_wr_en, jmp debug_wait;
+
+#define DEBUG_WRITE_SR(reg, addr) \
+.at addr; \
+    b_sel TEMP, alu_op SELB, segment_force, segment_wr_en, \
+        segment_force, sr_wr_sel reg, next_instruction, \
+        jmp debug_wait;
+
+DEBUG_WRITE_GPR(AX, 0x113)
+DEBUG_WRITE_GPR(CX, 0x114)
+DEBUG_WRITE_GPR(DX, 0x115)
+DEBUG_WRITE_GPR(BX, 0x116)
+DEBUG_WRITE_GPR(SP, 0x117)
+DEBUG_WRITE_GPR(BP, 0x118)
+DEBUG_WRITE_GPR(SI, 0x119)
+DEBUG_WRITE_GPR(DI, 0x11a)
+DEBUG_WRITE_SR(ES, 0x11b)
+DEBUG_WRITE_SR(CS, 0x11c)
+DEBUG_WRITE_SR(SS, 0x11d)
+DEBUG_WRITE_SR(DS, 0x11e)
+
+.auto_address;
+debug_read_gpr:
+    a_sel RA, alu_op SELA, tmp_wr_en, jmp debug_wait;
+
+debug_read_sr:
+    b_sel SR, alu_op SELB, tmp_wr_en, jmp debug_wait;
+
+// Get IP
+.at 0x10f;
+    a_sel IP, alu_op SELA, tmp_wr_en, jmp debug_wait;
+
+// Get flags
+.at 0x110;
+    alu_op GETFLAGS, tmp_wr_en, jmp debug_wait;
+
+// Set IP
+.at 0x111;
+    b_sel TEMP, alu_op SELB, load_ip, next_instruction, jmp debug_wait;
+
+// Set flags
+.at 0x112;
+    b_sel TEMP, alu_op SETFLAGSB, update_flags CF PF AF ZF SF TF IF DF OF,
+        jmp debug_wait;

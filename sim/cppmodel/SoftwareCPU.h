@@ -42,7 +42,7 @@ public:
         return registers.get_flags();
     }
 
-    bool has_trapped() const
+    bool has_trapped()
     {
         return emulator.has_trapped();
     }

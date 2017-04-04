@@ -18,20 +18,4 @@ always @(posedge clk or posedge reset)
     else if (inc)
         cur_val <= cur_val + 1'b1;
 
-`ifdef verilator
-export "DPI-C" function get_ip;
-
-function [15:0] get_ip;
-    get_ip = cur_val;
-endfunction
-
-export "DPI-C" function set_ip;
-
-function set_ip;
-    input int new_val;
-    cur_val = new_val[15:0];
-    set_ip = 0;
-endfunction
-`endif
-
 endmodule

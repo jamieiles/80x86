@@ -37,20 +37,4 @@ always_ff @(posedge clk or posedge reset) begin
         flags <= FLAGS_RESET;
 end
 
-`ifdef verilator
-export "DPI-C" function get_flags;
-
-function [15:0] get_flags;
-    get_flags = flags;
-endfunction
-
-export "DPI-C" function set_flags;
-
-function [15:0] set_flags;
-    input int val;
-    flags = val[15:0] | FLAGS_RESET;
-    set_flags = 16'b0;
-endfunction
-`endif
-
 endmodule

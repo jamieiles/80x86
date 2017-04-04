@@ -41,6 +41,9 @@ public:
             cpu->write_mem<uint8_t>(get_phys_addr(cpu->read_reg(CS), cpu->read_reg(IP) + m),
                                     instr[m]);
         instr_len = instr.size();
+        // Force a prefetch fifo clear so we don't end up executing what was
+        // there before we wrote this instruction.
+        cpu->write_reg(IP, cpu->read_reg(IP));
     }
 
     void write_reg(GPR regnum, uint16_t val)
