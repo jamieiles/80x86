@@ -23,7 +23,7 @@ enum PeriodicEventType {
     ClockSetup,
 };
 
-const int evals_per_cycle = 100;
+const int evals_per_cycle = 10;
 
 extern double sc_time_stamp();
 extern double cur_time_stamp;

@@ -370,8 +370,24 @@ and the core.
 | 0x1c | `debug_val` | `CS`
 | 0x1d | `debug_val` | `SS`
 | 0x1e | `debug_val` | `DS`
-| 0x1f | `debug_val` | `IP`
+| 0x1f | `debug_val` | `MAR`
+| 0x20 | `debug_val` | `MDR`
+| 0x21 | mem8[DS:MAR] | `debug_val`
+| 0x22 | mem16[DS:MAR] | `debug_val`
+| 0x23 | MDR | mem8[DS:MAR]
+| 0x24 | MDR | mem16[DS:MAR]
+| 0x25 | io8[MAR] | `debug_val`
+| 0x26 | io16[MAR] | `debug_val`
+| 0x27 | MDR | io8[MAR]
+| 0x28 | MDR | io16[MAR]
 |===
+
+[NOTE]
+====
+All memory transfers implicitly use DS as the segment.  To write outside of
+the current data segment, save the value of DS, write it with the new value,
+perform the access and then restore DS.
+====
 
 == RTL Tests
 

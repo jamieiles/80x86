@@ -70,3 +70,71 @@ debug_read_sr:
 .at 0x112;
     b_sel TEMP, alu_op SETFLAGSB, update_flags CF PF AF ZF SF TF IF DF OF,
         jmp debug_wait;
+
+// Write MAR
+.at 0x11f;
+    b_sel TEMP, alu_op SELB, mar_wr_sel Q, mar_write, jmp debug_wait;
+
+// Write MDR
+.at 0x120;
+    b_sel TEMP, alu_op SELB, mdr_write, jmp debug_wait;
+
+// Read 8
+.at 0x121;
+    segment_force, segment DS, jmp debug_read8;
+.auto_address;
+debug_read8:
+    segment_force, segment DS, width 8, mem_read;
+    a_sel MDR, alu_op SELA, tmp_wr_en, jmp debug_wait;
+
+// Read 16
+.at 0x122;
+    segment_force, segment DS, jmp debug_read16;
+.auto_address;
+debug_read16:
+    segment_force, segment DS, mem_read;
+    a_sel MDR, alu_op SELA, tmp_wr_en, jmp debug_wait;
+
+// Write 8
+.at 0x123;
+    segment_force, segment DS, jmp debug_write8;
+.auto_address;
+debug_write8:
+    segment_force, segment DS, width 8, mem_write, jmp debug_wait;
+
+// Write 16
+.at 0x124;
+    segment_force, segment DS, jmp debug_write16;
+.auto_address;
+debug_write16:
+    segment_force, segment DS, mem_write, jmp debug_wait;
+
+// Read 8 IO
+.at 0x125;
+    segment_force, segment DS, jmp debug_read8io;
+.auto_address;
+debug_read8io:
+    segment_force, segment DS, width 8, mem_read, io;
+    a_sel MDR, alu_op SELA, tmp_wr_en, jmp debug_wait;
+
+// Read 16 IO
+.at 0x126;
+    segment_force, segment DS, jmp debug_read16io;
+.auto_address;
+debug_read16io:
+    segment_force, segment DS, mem_read, io;
+    a_sel MDR, alu_op SELA, tmp_wr_en, jmp debug_wait;
+
+// Write 8 IO
+.at 0x127;
+    segment_force, segment DS, jmp debug_write8io;
+.auto_address;
+debug_write8io:
+    segment_force, segment DS, width 8, mem_write, io, jmp debug_wait;
+
+// Write 16 IO
+.at 0x128;
+    segment_force, segment DS, jmp debug_write16io;
+.auto_address;
+debug_write16io:
+    segment_force, segment DS, mem_write, io, jmp debug_wait;

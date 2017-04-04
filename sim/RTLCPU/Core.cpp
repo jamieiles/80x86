@@ -312,75 +312,121 @@ template <bool debug_enabled>
 void RTLCPU<debug_enabled>::write_mem8(uint16_t segment, uint16_t addr,
                                        uint8_t val)
 {
-    mem.write<uint8_t>(get_phys_addr(segment, addr), val);
+    auto prev_ds = read_reg(DS);
+
+    write_reg(DS, segment);
+    write_mar(addr);
+    write_mdr(val);
+    debug_run_proc(0x23); // Write mem 8
+    write_reg(DS, prev_ds);
 }
 
 template <bool debug_enabled>
 void RTLCPU<debug_enabled>::write_mem16(uint16_t segment, uint16_t addr,
                                         uint16_t val)
 {
-    mem.write<uint16_t>(get_phys_addr(segment, addr), val);
+    auto prev_ds = read_reg(DS);
+
+    write_reg(DS, segment);
+    write_mar(addr);
+    write_mdr(val);
+    debug_run_proc(0x24); // Write mem 16
+    write_reg(DS, prev_ds);
 }
 
 template <bool debug_enabled>
 void RTLCPU<debug_enabled>::write_mem32(uint16_t segment, uint16_t addr,
                                         uint32_t val)
 {
-    mem.write<uint32_t>(get_phys_addr(segment, addr), val);
+    write_mem16(segment, addr, val & 0xffff);
+    write_mem16(segment, addr + 2, val >> 16);
+}
+
+template <bool debug_enabled>
+void RTLCPU<debug_enabled>::write_mar(uint16_t v)
+{
+    debug_write_data(v);
+    debug_run_proc(0x1f);
+}
+
+template <bool debug_enabled>
+void RTLCPU<debug_enabled>::write_mdr(uint16_t v)
+{
+    debug_write_data(v);
+    debug_run_proc(0x20);
 }
 
 template <bool debug_enabled>
 uint8_t RTLCPU<debug_enabled>::read_mem8(uint16_t segment, uint16_t addr)
 {
-    return mem.read<uint8_t>(get_phys_addr(segment, addr));
+    auto prev_ds = read_reg(DS);
+
+    write_reg(DS, segment);
+    write_mar(addr);
+    debug_run_proc(0x21); // Read mem 8
+
+    uint8_t val = this->dut.debug_val;
+
+    write_reg(DS, prev_ds);
+
+    return val;
 }
 
 template <bool debug_enabled>
 uint16_t RTLCPU<debug_enabled>::read_mem16(uint16_t segment, uint16_t addr)
 {
-    return mem.read<uint16_t>(get_phys_addr(segment, addr));
+    auto prev_ds = read_reg(DS);
+
+    write_reg(DS, segment);
+    write_mar(addr);
+    debug_run_proc(0x22); // Read mem 8
+
+    uint16_t val = this->dut.debug_val;
+
+    write_reg(DS, prev_ds);
+
+    return val;
 }
 
 template <bool debug_enabled>
 uint32_t RTLCPU<debug_enabled>::read_mem32(uint16_t segment, uint16_t addr)
 {
-    return mem.read<uint32_t>(get_phys_addr(segment, addr));
+    return read_mem16(segment, addr) |
+        (static_cast<uint32_t>(read_mem16(segment, addr + 2)) << 16);
 }
 
 template <bool debug_enabled>
 void RTLCPU<debug_enabled>::write_io8(uint32_t addr, uint8_t val)
 {
-    io.write<uint8_t>(addr, val);
+    write_mar(addr);
+    write_mdr(val);
+    debug_run_proc(0x27); // Write io 8
 }
 
 template <bool debug_enabled>
 void RTLCPU<debug_enabled>::write_io16(uint32_t addr, uint16_t val)
 {
-    io.write<uint16_t>(addr, val);
-}
-
-template <bool debug_enabled>
-void RTLCPU<debug_enabled>::write_io32(uint32_t addr, uint32_t val)
-{
-    io.write<uint32_t>(addr, val);
+    write_mar(addr);
+    write_mdr(val);
+    debug_run_proc(0x28); // Write io 16
 }
 
 template <bool debug_enabled>
 uint8_t RTLCPU<debug_enabled>::read_io8(uint32_t addr)
 {
-    return io.read<uint8_t>(addr);
+    write_mar(addr);
+    debug_run_proc(0x25); // Read io 8
+
+    return this->dut.debug_val;
 }
 
 template <bool debug_enabled>
 uint16_t RTLCPU<debug_enabled>::read_io16(uint32_t addr)
 {
-    return io.read<uint16_t>(addr);
-}
+    write_mar(addr);
+    debug_run_proc(0x26); // Read io 16
 
-template <bool debug_enabled>
-uint32_t RTLCPU<debug_enabled>::read_io32(uint32_t addr)
-{
-    return io.read<uint32_t>(addr);
+    return this->dut.debug_val;
 }
 
 template RTLCPU<verilator_debug_enabled>::RTLCPU(const std::string &);

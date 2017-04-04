@@ -49,10 +49,8 @@ public:
     uint32_t read_mem32(uint16_t segment, uint16_t addr);
     void write_io8(uint32_t addr, uint8_t val);
     void write_io16(uint32_t addr, uint16_t val);
-    void write_io32(uint32_t addr, uint32_t val);
     uint8_t read_io8(uint32_t addr);
     uint16_t read_io16(uint32_t addr);
-    uint32_t read_io32(uint32_t addr);
 private:
     uint16_t get_microcode_address();
     void data_access();
@@ -65,6 +63,8 @@ private:
     void write_gpr(GPR regnum, uint16_t v);
     size_t get_and_clear_instr_length();
     void debug_write_data(uint16_t v);
+    void write_mar(uint16_t v);
+    void write_mdr(uint16_t v);
 
     bool i_in_progress;
     bool d_in_progress;

@@ -128,10 +128,6 @@ public:
     {
         cpu->write_io16(addr, val);
     }
-    void write_io32(uint32_t addr, uint32_t val)
-    {
-        cpu->write_io32(addr, val);
-    }
 
     uint8_t read_io8(uint32_t addr)
     {
@@ -140,10 +136,6 @@ public:
     uint16_t read_io16(uint32_t addr)
     {
         return cpu->read_io16(addr);
-    }
-    uint32_t read_io32(uint32_t addr)
-    {
-        return cpu->read_io32(addr);
     }
 
     void emulate(int count=1)

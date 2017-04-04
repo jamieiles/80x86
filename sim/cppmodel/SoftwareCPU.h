@@ -98,10 +98,6 @@ public:
     {
         io.write<uint16_t>(addr, val);
     }
-    void write_io32(uint32_t addr, uint32_t val)
-    {
-        io.write<uint32_t>(addr, val);
-    }
 
     uint8_t read_io8(uint32_t addr)
     {
@@ -110,10 +106,6 @@ public:
     uint16_t read_io16(uint32_t addr)
     {
         return io.read<uint16_t>(addr);
-    }
-    uint32_t read_io32(uint32_t addr)
-    {
-        return io.read<uint32_t>(addr);
     }
 private:
     RegisterFile registers;

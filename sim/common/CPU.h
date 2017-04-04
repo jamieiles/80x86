@@ -48,9 +48,7 @@ public:
     virtual uint32_t read_mem32(uint16_t segment, uint16_t addr) = 0;
     virtual void write_io8(uint32_t addr, uint8_t val) = 0;
     virtual void write_io16(uint32_t addr, uint16_t val) = 0;
-    virtual void write_io32(uint32_t addr, uint32_t val) = 0;
     virtual uint8_t read_io8(uint32_t addr) = 0;
     virtual uint16_t read_io16(uint32_t addr) = 0;
-    virtual uint32_t read_io32(uint32_t addr) = 0;
 };
 
