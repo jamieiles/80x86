@@ -38,7 +38,7 @@ public:
     void set_instruction(const std::vector<uint8_t> &instr)
     {
         for (size_t m = 0; m < instr.size(); ++m)
-            cpu->write_mem8(get_phys_addr(cpu->read_reg(CS), cpu->read_reg(IP) + m),
+            cpu->write_mem8(cpu->read_reg(CS), cpu->read_reg(IP) + m,
                             instr[m]);
         instr_len = instr.size();
         // Force a prefetch fifo clear so we don't end up executing what was
@@ -56,20 +56,20 @@ public:
         return cpu->read_reg(regnum);
     }
 
-    void write_mem8(uint32_t addr, uint8_t val, GPR segment=DS)
+    void write_mem8(uint16_t addr, uint8_t val, GPR segment=DS)
     {
-        cpu->write_mem8(get_phys_addr(cpu->read_reg(segment), addr), val);
+        cpu->write_mem8(cpu->read_reg(segment), addr, val);
     }
-    void write_mem16(uint32_t addr, uint16_t val, GPR segment=DS)
+    void write_mem16(uint16_t addr, uint16_t val, GPR segment=DS)
     {
-        cpu->write_mem16(get_phys_addr(cpu->read_reg(segment), addr), val);
+        cpu->write_mem16(cpu->read_reg(segment), addr, val);
     }
-    void write_mem32(uint32_t addr, uint32_t val, GPR segment=DS)
+    void write_mem32(uint16_t addr, uint32_t val, GPR segment=DS)
     {
-        cpu->write_mem32(get_phys_addr(cpu->read_reg(segment), addr), val);
+        cpu->write_mem32(cpu->read_reg(segment), addr, val);
     }
 
-    void write_cstring(uint32_t addr, const char *str, GPR segment=DS)
+    void write_cstring(uint16_t addr, const char *str, GPR segment=DS)
     {
         do {
             write_mem8(addr++, *str++, segment);
@@ -77,14 +77,14 @@ public:
         write_mem8(addr, 0, segment);
     }
 
-    void write_vector8(uint32_t addr, std::vector<uint8_t> vec, GPR segment=DS)
+    void write_vector8(uint16_t addr, std::vector<uint8_t> vec, GPR segment=DS)
     {
         for (auto v: vec) {
             write_mem8(addr, v, segment);
             ++addr;
         }
     }
-    void write_vector16(uint32_t addr, std::vector<uint16_t> vec, GPR segment=DS)
+    void write_vector16(uint16_t addr, std::vector<uint16_t> vec, GPR segment=DS)
     {
         for (auto v: vec) {
             write_mem16(addr, v, segment);
@@ -92,7 +92,7 @@ public:
         }
     }
 
-    std::string read_cstring(uint32_t addr, GPR segment=DS)
+    std::string read_cstring(uint16_t addr, GPR segment=DS)
     {
         std::string str;
 
@@ -107,17 +107,17 @@ public:
         return str;
     }
 
-    uint8_t read_mem8(uint32_t addr, GPR segment=DS)
+    uint8_t read_mem8(uint16_t addr, GPR segment=DS)
     {
-        return cpu->read_mem8(get_phys_addr(cpu->read_reg(segment), addr));
+        return cpu->read_mem8(cpu->read_reg(segment), addr);
     }
-    uint16_t read_mem16(uint32_t addr, GPR segment=DS)
+    uint16_t read_mem16(uint16_t addr, GPR segment=DS)
     {
-        return cpu->read_mem16(get_phys_addr(cpu->read_reg(segment), addr));
+        return cpu->read_mem16(cpu->read_reg(segment), addr);
     }
-    uint32_t read_mem32(uint32_t addr, GPR segment=DS)
+    uint32_t read_mem32(uint16_t addr, GPR segment=DS)
     {
-        return cpu->read_mem32(get_phys_addr(cpu->read_reg(segment), addr));
+        return cpu->read_mem32(cpu->read_reg(segment), addr);
     }
 
     void write_io8(uint32_t addr, uint8_t val)

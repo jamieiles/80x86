@@ -11,8 +11,8 @@ class CallsRunner(Runner):
         self.write_reg(GPR.IP, 1024)
 
     def validate_result(self):
-        self.assert_mem_equal(0x1000, 1, width=16)
-        self.assert_mem_equal(0x1002, 2, width=16)
-        self.assert_mem_equal(0x1004, 3, width=16)
+        self.assert_mem_equal(0, 0x1000, 1, width=16)
+        self.assert_mem_equal(0, 0x1002, 2, width=16)
+        self.assert_mem_equal(0, 0x1004, 3, width=16)
 
 CallsRunner(sys.argv[1]).run()

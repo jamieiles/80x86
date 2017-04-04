@@ -308,4 +308,79 @@ uint16_t RTLCPU<debug_enabled>::get_microcode_address()
     return this->dut.get_microcode_address();
 }
 
+template <bool debug_enabled>
+void RTLCPU<debug_enabled>::write_mem8(uint16_t segment, uint16_t addr,
+                                       uint8_t val)
+{
+    mem.write<uint8_t>(get_phys_addr(segment, addr), val);
+}
+
+template <bool debug_enabled>
+void RTLCPU<debug_enabled>::write_mem16(uint16_t segment, uint16_t addr,
+                                        uint16_t val)
+{
+    mem.write<uint16_t>(get_phys_addr(segment, addr), val);
+}
+
+template <bool debug_enabled>
+void RTLCPU<debug_enabled>::write_mem32(uint16_t segment, uint16_t addr,
+                                        uint32_t val)
+{
+    mem.write<uint32_t>(get_phys_addr(segment, addr), val);
+}
+
+template <bool debug_enabled>
+uint8_t RTLCPU<debug_enabled>::read_mem8(uint16_t segment, uint16_t addr)
+{
+    return mem.read<uint8_t>(get_phys_addr(segment, addr));
+}
+
+template <bool debug_enabled>
+uint16_t RTLCPU<debug_enabled>::read_mem16(uint16_t segment, uint16_t addr)
+{
+    return mem.read<uint16_t>(get_phys_addr(segment, addr));
+}
+
+template <bool debug_enabled>
+uint32_t RTLCPU<debug_enabled>::read_mem32(uint16_t segment, uint16_t addr)
+{
+    return mem.read<uint32_t>(get_phys_addr(segment, addr));
+}
+
+template <bool debug_enabled>
+void RTLCPU<debug_enabled>::write_io8(uint32_t addr, uint8_t val)
+{
+    io.write<uint8_t>(addr, val);
+}
+
+template <bool debug_enabled>
+void RTLCPU<debug_enabled>::write_io16(uint32_t addr, uint16_t val)
+{
+    io.write<uint16_t>(addr, val);
+}
+
+template <bool debug_enabled>
+void RTLCPU<debug_enabled>::write_io32(uint32_t addr, uint32_t val)
+{
+    io.write<uint32_t>(addr, val);
+}
+
+template <bool debug_enabled>
+uint8_t RTLCPU<debug_enabled>::read_io8(uint32_t addr)
+{
+    return io.read<uint8_t>(addr);
+}
+
+template <bool debug_enabled>
+uint16_t RTLCPU<debug_enabled>::read_io16(uint32_t addr)
+{
+    return io.read<uint16_t>(addr);
+}
+
+template <bool debug_enabled>
+uint32_t RTLCPU<debug_enabled>::read_io32(uint32_t addr)
+{
+    return io.read<uint32_t>(addr);
+}
+
 template RTLCPU<verilator_debug_enabled>::RTLCPU(const std::string &);

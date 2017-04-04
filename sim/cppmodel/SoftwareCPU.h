@@ -64,30 +64,30 @@ public:
         io.clear_has_written();
     }
 
-    void write_mem8(uint32_t addr, uint8_t val)
+    void write_mem8(uint16_t segment, uint16_t addr, uint8_t val)
     {
-        mem.write<uint8_t>(addr, val);
+        mem.write<uint8_t>(get_phys_addr(segment, addr), val);
     }
-    void write_mem16(uint32_t addr, uint16_t val)
+    void write_mem16(uint16_t segment, uint16_t addr, uint16_t val)
     {
-        mem.write<uint16_t>(addr, val);
+        mem.write<uint16_t>(get_phys_addr(segment, addr), val);
     }
-    void write_mem32(uint32_t addr, uint32_t val)
+    void write_mem32(uint16_t segment, uint16_t addr, uint32_t val)
     {
-        mem.write<uint32_t>(addr, val);
+        mem.write<uint32_t>(get_phys_addr(segment, addr), val);
     }
 
-    uint8_t read_mem8(uint32_t addr)
+    uint8_t read_mem8(uint16_t segment, uint16_t addr)
     {
-        return mem.read<uint8_t>(addr);
+        return mem.read<uint8_t>(get_phys_addr(segment, addr));
     }
-    uint16_t read_mem16(uint32_t addr)
+    uint16_t read_mem16(uint16_t segment, uint16_t addr)
     {
-        return mem.read<uint16_t>(addr);
+        return mem.read<uint16_t>(get_phys_addr(segment, addr));
     }
-    uint32_t read_mem32(uint32_t addr)
+    uint32_t read_mem32(uint16_t segment, uint16_t addr)
     {
-        return mem.read<uint32_t>(addr);
+        return mem.read<uint32_t>(get_phys_addr(segment, addr));
     }
 
     void write_io8(uint32_t addr, uint8_t val)
