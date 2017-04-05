@@ -12,6 +12,7 @@ set(ALU_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/and.v
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/daa.v
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/das.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/alu/extend.v
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/flags.v
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/mul.v
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/or.v

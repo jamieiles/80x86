@@ -142,28 +142,28 @@ dispatch_d1:
     width 8, modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_d2;
 .auto_address;
 dispatch_d2:
-    width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem ROLd2_reg;
-    width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem RORd2_reg;
-    width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem RCLd2_reg;
-    width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem RCRd2_reg;
-    width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem SHLd2_reg;
-    width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem SHRd2_reg;
+    width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp ROLd2;
+    width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp RORd2;
+    width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp RCLd2;
+    width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp RCRd2;
+    width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp SHLd2;
+    width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp SHRd2;
     next_instruction; // reg == 6
-    width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem SARd2_reg;
+    width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp SARd2;
 
-// Multiplexed shift multiple 8-bit
+// Multiplexed shift multiple 16-bit
 .at 0xd3;
     modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_d3;
 .auto_address;
 dispatch_d3:
-    ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem ROLd3_reg;
-    ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem RORd3_reg;
-    ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem RCLd3_reg;
-    ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem RCRd3_reg;
-    ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem SHLd3_reg;
-    ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem SHRd3_reg;
+    ra_modrm_rm_reg, rb_cl, segment DS, jmp ROLd3;
+    ra_modrm_rm_reg, rb_cl, segment DS, jmp RORd3;
+    ra_modrm_rm_reg, rb_cl, segment DS, jmp RCLd3;
+    ra_modrm_rm_reg, rb_cl, segment DS, jmp RCRd3;
+    ra_modrm_rm_reg, rb_cl, segment DS, jmp SHLd3;
+    ra_modrm_rm_reg, rb_cl, segment DS, jmp SHRd3;
     next_instruction; // reg == 6
-    ra_modrm_rm_reg, rb_cl, segment DS, jmp_rm_reg_mem SARd3_reg;
+    ra_modrm_rm_reg, rb_cl, segment DS, jmp SARd3;
 
 // Multiplexed neg/mul/not/test/div 8 bit
 .at 0xf6;

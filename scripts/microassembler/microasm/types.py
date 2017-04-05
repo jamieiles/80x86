@@ -69,6 +69,7 @@ class ALUOp(Enum):
     IMUL = 29
     DIV = 30
     IDIV = 31
+    EXTEND = 32
 
 class UpdateFlags(Enum):
     CF = 0

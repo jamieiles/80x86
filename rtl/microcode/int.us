@@ -62,7 +62,7 @@ intN:
     b_sel IMMEDIATE, alu_op SELB, mar_wr_sel Q, mar_write;
     a_sel MAR, b_sel IMMEDIATE, immediate 0xff, alu_op AND, mar_write,
         mar_wr_sel Q;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op SHL, mar_write,
+    a_sel MAR, b_sel IMMEDIATE, immediate 0x4, alu_op MUL, mar_write,
         mar_wr_sel Q, segment CS, segment_force;
     segment_force, segment CS, mem_read;
     a_sel MDR, alu_op SELA, load_ip;

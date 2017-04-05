@@ -132,6 +132,7 @@ assign mar_wr_val = mar_wr_sel == MARWrSel_EA ?
 wire [`MC_ALUOp_t_BITS-1:0] alu_op;
 wire [31:0] alu_out;
 wire [15:0] alu_flags_out;
+wire alu_busy;
 
 // Microcode
 wire [2:0] microcode_reg_rd_sel[2];
@@ -158,11 +159,12 @@ wire use_microcode_immediate;
 wire [1:0] microcode_segment;
 wire [7:0] opcode;
 wire jump_taken;
+wire multibit_shift;
 
 // Misc control signals
 wire debug_set_ip = debug_stopped && ip_wr_en;
 wire do_next_instruction = (next_instruction & ~do_stall) | debug_set_ip;
-wire do_stall = modrm_busy | immed_busy | loadstore_busy | divide_busy;
+wire do_stall = modrm_busy | immed_busy | loadstore_busy | divide_busy | alu_busy;;
 
 // IP
 wire ip_inc = fifo_rd_en & ~fifo_empty;
@@ -343,6 +345,7 @@ Microcode       Microcode(.clk(clk),
                           .opcode(opcode),
                           .jump_taken(jump_taken),
                           .lock(lock),
+                          .multibit_shift(multibit_shift),
                           .rm_is_reg(rm_is_reg),
                           .a_sel(a_sel),
                           .alu_op(alu_op),
@@ -395,7 +398,10 @@ ALU             ALU(.a(a_bus),
                     .op(alu_op),
                     .is_8_bit(is_8_bit),
                     .flags_in(flags),
-                    .flags_out(alu_flags_out));
+                    .flags_out(alu_flags_out),
+                    .multibit_shift(multibit_shift),
+                    .shift_count(tmp_val[4:0]),
+                    .busy(alu_busy));
 
 Divider         Divider(.clk(clk),
                         .reset(reset),

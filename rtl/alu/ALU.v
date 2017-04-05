@@ -6,13 +6,18 @@ module ALU(input logic [15:0] a,
            // verilator lint_off UNUSED
            // verilator lint_off UNDRIVEN
            input logic [15:0] flags_in,
-           output logic [15:0] flags_out);
+           output logic [15:0] flags_out,
            // verilator lint_on UNUSED
            // verilator lint_on UNDRIVEN
+           input logic multibit_shift,
+           input logic [4:0] shift_count,
+           output logic busy);
 
 always_comb begin
     flags_out = flags_in;
     out = 32'b0;
+    busy = 1'b0;
+
     case (op)
     ALUOp_SELA: out[15:0] = a;
     ALUOp_SELB: out[15:0] = b;
@@ -29,13 +34,20 @@ always_comb begin
     ALUOp_SETFLAGSA: flags_out = a;
     ALUOp_SETFLAGSB: flags_out = b;
     ALUOp_CMC: flags_out[CF_IDX] = ~flags_in[CF_IDX];
-    ALUOp_SHR: do_shr(out[15:0], is_8_bit, a, b, flags_in, flags_out);
-    ALUOp_SHL: do_shl(out[15:0], is_8_bit, a, b, flags_in, flags_out);
-    ALUOp_SAR: do_sar(out[15:0], is_8_bit, a, b, flags_in, flags_out);
-    ALUOp_ROR: do_ror(out[15:0], is_8_bit, a, b, flags_in, flags_out);
-    ALUOp_ROL: do_rol(out[15:0], is_8_bit, a, b, flags_in, flags_out);
-    ALUOp_RCL: do_rcl(out[15:0], is_8_bit, a, b, flags_in, flags_out);
-    ALUOp_RCR: do_rcr(out[15:0], is_8_bit, a, b, flags_in, flags_out);
+    ALUOp_SHR: do_shr(out, is_8_bit, a, shift_count, flags_in, flags_out, busy,
+                      multibit_shift);
+    ALUOp_SHL: do_shl(out, is_8_bit, a, shift_count, flags_in, flags_out, busy,
+                      multibit_shift);
+    ALUOp_SAR: do_sar(out, is_8_bit, a, shift_count, flags_in, flags_out, busy,
+                      multibit_shift);
+    ALUOp_ROR: do_ror(out, is_8_bit, a, shift_count, flags_in, flags_out, busy,
+                      multibit_shift);
+    ALUOp_ROL: do_rol(out, is_8_bit, a, shift_count, flags_in, flags_out, busy,
+                      multibit_shift);
+    ALUOp_RCL: do_rcl(out, is_8_bit, a, shift_count, flags_in, flags_out, busy,
+                      multibit_shift);
+    ALUOp_RCR: do_rcr(out, is_8_bit, a, shift_count, flags_in, flags_out, busy,
+                      multibit_shift);
     ALUOp_NOT: do_not(out[15:0], a, flags_in, flags_out);
     ALUOp_AAA: do_aaa(out[15:0], a, flags_in, flags_out);
     ALUOp_AAS: do_aas(out[15:0], a, flags_in, flags_out);
@@ -43,6 +55,7 @@ always_comb begin
     ALUOp_DAS: do_das(out[15:0], a, flags_in, flags_out);
     ALUOp_MUL: do_mul(out, is_8_bit, a, b, flags_in, flags_out, 1'b0);
     ALUOp_IMUL: do_mul(out, is_8_bit, a, b, flags_in, flags_out, 1'b1);
+    ALUOp_EXTEND: do_extend(out[15:0], is_8_bit, a);
     ALUOp_DIV: ; // Handled by Divider, shares the enumeration.
     ALUOp_IDIV: ; // Handled by Divider, shares the enumeration.
     ALUOp_NEXT: begin

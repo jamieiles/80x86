@@ -4,7 +4,6 @@ task shift_flags;
     // verilator lint_off UNUSED
     input [15:0] out;
     input [15:0] a;
-    input [15:0] b;
     // verilator lint_on UNUSED
 
     begin
