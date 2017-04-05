@@ -1,8 +1,6 @@
 module ALU(input logic [15:0] a,
            input logic [15:0] b,
-           // verilator lint_off UNDRIVEN
            output logic [31:0] out,
-           // verilator lint_on UNDRIVEN
            input logic is_8_bit,
            input logic [`MC_ALUOp_t_BITS-1:0] op,
            // verilator lint_off UNUSED
@@ -14,6 +12,7 @@ module ALU(input logic [15:0] a,
 
 always_comb begin
     flags_out = flags_in;
+    out = 32'b0;
     case (op)
     ALUOp_SELA: out[15:0] = a;
     ALUOp_SELB: out[15:0] = b;

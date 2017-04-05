@@ -8,6 +8,7 @@ task do_sar;
 
     begin
         flags_out = flags_in;
+        out = 16'b0;
         if (!is_8_bit)
             {out, flags_out[CF_IDX]} = $signed({a, 1'b0}) >>> b[4:0];
         else

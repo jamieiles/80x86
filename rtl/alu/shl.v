@@ -8,6 +8,7 @@ task do_shl;
 
     begin
         flags_out = flags_in;
+        out = 16'b0;
         if (!is_8_bit) begin
             {flags_out[CF_IDX], out} = {1'b0, a} << b[4:0];
             flags_out[OF_IDX] = a[15] ^ out[15];

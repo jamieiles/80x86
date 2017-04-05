@@ -9,16 +9,16 @@ task do_ror;
     begin
         flags_out = flags_in;
         if (!is_8_bit) begin
-            reg [4:0] i;
+            reg [5:0] i;
             out = a;
-            for (i = 5'b0; i < b[4:0]; ++i) begin
+            for (i = 6'b0; i < {1'b0, b[4:0]}; ++i) begin
                 flags_out[CF_IDX] = out[0];
                 out = {out[0], out[15:1]};
             end
         end else begin
-            reg [4:0] i;
+            reg [5:0] i;
             out = {8'b0, a[7:0]};
-            for (i = 5'b0; i < b[4:0]; ++i) begin
+            for (i = 6'b0; i < {1'b0, b[4:0]}; ++i) begin
                 flags_out[CF_IDX] = out[0];
                 out[7:0] = {out[0], out[7:1]};
             end

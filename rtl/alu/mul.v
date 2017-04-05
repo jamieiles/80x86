@@ -10,6 +10,7 @@ task do_mul;
     begin
         flags_out = flags_in;
         flags_out[ZF_IDX] = 1'b0;
+        out = 32'b0;
         if (!is_8_bit) begin
             if (is_signed)
                 out[31:0] = {{16{a[15]}}, a} * {{16{b[15]}}, b};
@@ -19,9 +20,9 @@ task do_mul;
             flags_out[OF_IDX] = |out[31:16];
         end else begin
             if (is_signed)
-                out[15:0] = {{8{a[7]}}, a[7:0]} * {{8{b[7]}}, b[7:0]};
+                out = {16'b0, {{8{a[7]}}, a[7:0]} * {{8{b[7]}}, b[7:0]}};
             else
-                out[15:0] = {8'b0, a[7:0]} * {8'b0, b[7:0]};
+                out = {16'b0, {8'b0, a[7:0]} * {8'b0, b[7:0]}};
             flags_out[CF_IDX] = |out[15:8];
             flags_out[OF_IDX] = |out[15:8];
         end
