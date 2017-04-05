@@ -140,7 +140,7 @@ class MicroAssembler(object):
         data = {
             'fields': MicroAssembler.bitfields(num_bits(instructions[-1].address + 1)),
             'exported_fields': MicroAssembler.exported_fields(),
-            'num_instructions': 2**(instructions[-1].address).bit_length(),
+            'num_instructions': instructions[-1].address + 1,
             'addr_bits': num_bits(instructions[-1].address + 1),
             'immediates': MicroAssembler.get_immediate_dict(),
         }
