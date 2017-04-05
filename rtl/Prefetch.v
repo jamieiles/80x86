@@ -45,10 +45,14 @@ assign fifo_wr_data = mem_ack ?
     (fetch_address[0] ? mem_data[15:8] : mem_data[7:0]) : fetched_high_byte;
 
 always_ff @(posedge clk or posedge reset) begin
-    if (reset || (abort_cur && mem_ack))
+    if (reset) begin
         abort_cur <= 1'b0;
-    else if (mem_access && load_new_ip)
-        abort_cur <= 1'b1;
+    end else begin
+        if (abort_cur && mem_ack)
+            abort_cur <= 1'b0;
+        else if (mem_access && load_new_ip)
+            abort_cur <= 1'b1;
+    end
 end
 
 always_ff @(posedge clk or posedge reset)
