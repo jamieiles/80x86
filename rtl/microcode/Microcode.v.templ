@@ -41,6 +41,11 @@ typedef struct packed {
 <%/fields%>
 } microcode_instruction;
 
+microcode_instruction mem[num_instructions];
+microcode_instruction current;
+reg [addr_bits-1:0] addr;
+wire [addr_bits-1:0] next_addr;
+
 assign segment_override = current.prefix_type == PrefixType_SEGMENT_OVERRIDE;
 assign use_microcode_immediate = |current.immediate;
 
@@ -52,11 +57,6 @@ always_comb begin
     default: microcode_immediate = 16'h0;
     endcase
 end
-
-microcode_instruction mem[num_instructions];
-microcode_instruction current;
-reg [addr_bits-1:0] addr;
-assign current = mem[addr];
 
 <%#exported_fields%>
 assign <%name%> = current.<%name%>;
