@@ -91,6 +91,7 @@ always_comb begin
     regnum = _reg;
     rm_regnum = _rm;
     rm_is_reg = 1'b0;
+    _effective_address = 16'b0;
 
     case (_mod)
     2'b00: begin
