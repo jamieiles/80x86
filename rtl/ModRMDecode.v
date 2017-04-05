@@ -65,7 +65,9 @@ always_ff @(posedge clk or posedge reset) begin
 end
 
 always_ff @(posedge clk or posedge reset)
-    if (reset || complete)
+    if (reset)
+        _registers_fetched <= 1'b0;
+    else if (complete)
         _registers_fetched <= 1'b0;
     else if (_modrm_byte_read)
         _registers_fetched <= 1'b1;
@@ -116,16 +118,23 @@ always_ff @(posedge clk)
         _cached_effective_address <= _effective_address;
 
 always_ff @(posedge clk or posedge reset)
-    _latch_modrm_byte <= reset || complete ? 1'b0 : fifo_rd_en;
+    if (reset)
+        _latch_modrm_byte <= 1'b0;
+    else
+        _latch_modrm_byte <= complete ? 1'b0 : fifo_rd_en;
 
 always_ff @(posedge clk or posedge reset)
-    if (reset || complete)
+    if (reset)
+        _modrm_byte_read <= 1'b0;
+    else if (complete)
         _modrm_byte_read <= 1'b0;
     else if (fifo_rd_en)
         _modrm_byte_read <= 1;
 
 always_ff @(posedge clk or posedge reset)
-    if (reset || clear)
+    if (reset)
+        _modrm <= 8'b0;
+    else if (clear)
         _modrm <= 8'b0;
     else if (_latch_modrm_byte)
         _modrm <= fifo_rd_data;
