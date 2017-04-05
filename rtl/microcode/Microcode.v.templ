@@ -104,34 +104,42 @@ always_ff @(posedge clk or posedge reset)
              current.prefix_type == PrefixType_REPE)
         rep_prefix_type <= current.prefix_type;
 
-always_ff @(posedge clk or posedge reset) begin
+always_comb begin
     if (reset)
-        addr <= reset_address;
+        next_addr = reset_address;
     else if (debug_stopped && debug_run)
-        addr <= {{addr_bits - 9{1'b0}}, 1'b1, debug_addr};
+        next_addr = {{addr_bits - 9{1'b0}}, 1'b1, debug_addr};
     else if (!do_stall && current.jump_type == JumpType_JUMP_TAKEN)
-        addr <= jump_taken ? current.next : addr + 1'b1;
+        next_addr = jump_taken ? current.next : addr + 1'b1;
     else if (!do_stall && current.jump_type == JumpType_ZERO)
-        addr <= zf ? current.next : addr + 1'b1;
+        next_addr = zf ? current.next : addr + 1'b1;
     else if (!do_stall && current.jump_type == JumpType_HAS_NO_REP_PREFIX)
-        addr <= ~has_rep_prefix ? current.next : addr + 1'b1;
+        next_addr = ~has_rep_prefix ? current.next : addr + 1'b1;
     else if (!do_stall && current.jump_type == JumpType_REP_NOT_COMPLETE)
-        addr <= !rep_complete ? current.next : addr + 1'b1;
+        next_addr = !rep_complete ? current.next : addr + 1'b1;
     else if (!do_stall && current.jump_type == JumpType_DISPATCH_REG)
-        addr <= current.next + {{addr_bits-3{1'b0}}, modrm_reg};
+        next_addr = current.next + {{addr_bits-3{1'b0}}, modrm_reg};
     else if (!do_stall && current.jump_type == JumpType_RM_REG_MEM)
-        addr <= current.next + {{addr_bits-1{1'b0}}, ~rm_is_reg};
+        next_addr = current.next + {{addr_bits-1{1'b0}}, ~rm_is_reg};
     else if (!do_stall && current.jump_type == JumpType_OPCODE)
-        addr <= {{addr_bits-8{1'b0}}, fifo_rd_data};
+        next_addr = {{addr_bits-8{1'b0}}, fifo_rd_data};
     else if (!do_stall && divide_error)
-        addr <= {{addr_bits-9{1'b0}}, 9'h101};
+        next_addr = {{addr_bits-9{1'b0}}, 9'h101};
     else if (!do_stall && current.next_instruction && debug_seize)
-        addr <= {{addr_bits-9{1'b0}}, 9'h102};
+        next_addr = {{addr_bits-9{1'b0}}, 9'h102};
     else if (!do_stall && current.next_instruction)
-        addr <= {{addr_bits-9{1'b0}}, 9'h100};
+        next_addr = {{addr_bits-9{1'b0}}, 9'h100};
     else if (!do_stall)
-        addr <= current.next;
+        next_addr = current.next;
+    else
+        next_addr = addr;
 end
+
+always @(posedge clk)
+    addr <= next_addr;
+
+always @(posedge clk)
+    current <= mem[next_addr];
 
 always_ff @(posedge clk or posedge reset)
     if (reset)
@@ -167,4 +175,4 @@ function int get_microcode_coverage_bin;
 endfunction
 `endif
 
-endmodule;
+endmodule
