@@ -84,7 +84,9 @@ always_comb begin
 end
 
 always_ff @(posedge clk or posedge reset)
-    if (reset || !do_stall)
+    if (reset)
+        opcode_popped <= 1'b0;
+    else if (!do_stall)
         opcode_popped <= 1'b0;
     else if (fifo_rd_en)
         opcode_popped <= 1'b1;
@@ -94,7 +96,9 @@ always_ff @(posedge clk)
         opcode <= fifo_rd_data;
 
 always_ff @(posedge clk or posedge reset)
-    if (reset || next_instruction)
+    if (reset)
+        rep_prefix_type <= 2'b0;
+    else if (next_instruction)
         rep_prefix_type <= 2'b0;
     else if (current.prefix_type == PrefixType_REPNE ||
              current.prefix_type == PrefixType_REPE)
@@ -130,7 +134,9 @@ always_ff @(posedge clk or posedge reset) begin
 end
 
 always_ff @(posedge clk or posedge reset)
-    if (reset || (!do_stall && current.next_instruction))
+    if (reset)
+        lock <= 1'b0;
+    else if (reset)
         lock <= 1'b0;
     else if (current.lock)
         lock <= 1'b1;
