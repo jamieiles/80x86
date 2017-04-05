@@ -70,7 +70,6 @@ reg [1:0] rep_prefix_type;
 wire has_rep_prefix = (rep_prefix_type == PrefixType_REPE ||
                        rep_prefix_type == PrefixType_REPNE);
 reg rep_complete;
-reg [7:0] opcode;
 
 assign debug_stopped = addr == {{addr_bits-9{1'b0}}, 9'h102};
 
