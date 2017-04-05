@@ -60,23 +60,34 @@ reg fetching;
 reg second_byte;
 
 always_ff @(posedge clk or posedge reset)
-    fetching <= start ? 1'b1 : reset || complete ? 1'b0 : fetching;
+    if (reset)
+        fetching <= 1'b0;
+    else
+        fetching <= start ? 1'b1 : complete ? 1'b0 : fetching;
 
 always_ff @(posedge clk or posedge reset)
-    mar <= reset ? 16'b0 :
-        write_mar ? mar_in : mar;
+    if (reset)
+        mar <= 16'b0;
+    else
+        mar <= write_mar ? mar_in : mar;
 
 always_ff @(posedge clk)
     complete <= m_ack && (is_8bit || (unaligned && second_byte) || !unaligned);
 
 always_ff @(posedge clk or posedge reset)
-    if (m_ack && unaligned && !second_byte && !is_8bit)
-        second_byte <= 1'b1;
-    else if (reset || (start && !fetching) || complete)
+    if (reset) begin
         second_byte <= 1'b0;
+    end else begin
+        if (m_ack && unaligned && !second_byte && !is_8bit)
+            second_byte <= 1'b1;
+        else if ((start && !fetching) || complete)
+            second_byte <= 1'b0;
+    end
 
 always_ff @(posedge clk or posedge reset) begin
-    if (reset || (start && !fetching && !wr_en))
+    if (reset)
+        mdr <= 16'b0;
+    else if (start && !fetching && !wr_en)
         mdr <= 16'b0;
     else if (write_mdr)
         mdr <= mdr_in;
