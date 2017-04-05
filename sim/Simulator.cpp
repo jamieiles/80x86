@@ -141,9 +141,6 @@ Simulator<T>::Simulator(const std::string &bios_path,
 template <typename T>
 void Simulator<T>::load_bios(const std::string &bios_path)
 {
-    cpu.write_reg(CS, 0xff00);
-    cpu.write_reg(IP, 0x0000);
-
     std::ifstream bios(bios_path, std::ios::binary);
     for (unsigned offs = 0; !bios.eof(); ++offs) {
         char v;
@@ -154,6 +151,9 @@ void Simulator<T>::load_bios(const std::string &bios_path)
     cpu.write_mem8(0xf000, 0xfffe, 0xff);
     cpu.write_mem8(0xf000, 0x0002, 0xff);
     cpu.write_mem8(0xf000, 0x0000, 8);
+
+    cpu.write_reg(CS, 0xff00);
+    cpu.write_reg(IP, 0x0000);
 }
 
 template <typename T>
