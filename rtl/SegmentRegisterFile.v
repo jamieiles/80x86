@@ -19,7 +19,7 @@ assign cs = registers[CS];
 always_ff @(posedge reset)
     ; // Reset is handled by the microcode
 
-always_ff @(posedge clk or posedge reset) begin
+always_ff @(posedge clk) begin
     if (wr_en)
         registers[wr_sel] <= wr_val;
 end
