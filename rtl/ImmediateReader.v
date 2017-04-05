@@ -48,32 +48,42 @@ always_comb begin
 end
 
 always_ff @(posedge clk or posedge reset)
-    if (reset || complete)
+    if (reset)
+        _fetch_busy <= 1'b0;
+    else if (complete)
         _fetch_busy <= 1'b0;
     else if (start)
         _fetch_busy <= 1'b1;
 
 always_ff @(posedge clk or posedge reset) begin
-    if (reset || (start && !_started) || complete)
+    if (reset) begin
         _bytes_read <= 2'b0;
-    if (fifo_rd_en)
-        _bytes_read <= _bytes_read + 2'b1;
+    end else begin
+        if ((start && !_started) || complete)
+            _bytes_read <= 2'b0;
+        if (fifo_rd_en)
+            _bytes_read <= _bytes_read + 2'b1;
+    end
 end
 
 always_ff @(posedge clk or posedge reset)
     _popped <= reset ? 1'b0 : fifo_rd_en;
 
 always_ff @(posedge clk or posedge reset) begin
-    if (reset || (start && !_started)) begin
+    if (reset) begin
         _immediate_buf <= 16'b0;
-    end
+    end else begin
+        if (start && !_started) begin
+            _immediate_buf <= 16'b0;
+        end
 
-    if (_bytes_read == 2'b1 && _popped) begin
-        _immediate_buf[7:0] <= fifo_rd_data;
-        if (is_8bit)
-            _immediate_buf[15:8] <= {8{fifo_rd_data[7]}};
-    end else if (_bytes_read == 2'd2 && _popped)
-        _immediate_buf[15:8] <= fifo_rd_data;
+        if (_bytes_read == 2'b1 && _popped) begin
+            _immediate_buf[7:0] <= fifo_rd_data;
+            if (is_8bit)
+                _immediate_buf[15:8] <= {8{fifo_rd_data[7]}};
+        end else if (_bytes_read == 2'd2 && _popped)
+            _immediate_buf[15:8] <= fifo_rd_data;
+    end
 end
 
 endmodule
