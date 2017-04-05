@@ -14,13 +14,11 @@ reg [15:0] gprs[8];
 wire wr_sel_low_byte = ~wr_sel[2];
 wire [2:0] wr_8_bit_sel = {1'b0, wr_sel[1:0]};
 
-integer i;
+always_ff @(posedge reset)
+    ; // Reset is handled by the microcode.
 
-always_ff @(posedge clk or posedge reset) begin
-    if (reset) begin
-        for (i = 0; i < 8; ++i)
-            gprs[i] <= 16'b0;
-    end else if (wr_en) begin
+always_ff @(posedge clk) begin
+    if (wr_en) begin
         if (is_8_bit) begin
             if (wr_sel_low_byte)
                 gprs[wr_8_bit_sel][7:0] <= wr_val[7:0];

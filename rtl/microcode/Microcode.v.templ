@@ -33,7 +33,7 @@ module Microcode(input logic clk,
 
 localparam num_instructions = <%num_instructions%>;
 localparam addr_bits = <%addr_bits%>;
-localparam reset_address = <%addr_bits%>'h100;
+localparam reset_address = <%addr_bits%>'h129;
 
 typedef struct packed {
 <%#fields%>
@@ -103,7 +103,7 @@ always_ff @(posedge clk or posedge reset)
 
 always_ff @(posedge clk or posedge reset) begin
     if (reset)
-        addr <= debug_seize ? {{addr_bits-9{1'b0}}, 9'h102} : reset_address;
+        addr <= reset_address;
     else if (debug_stopped && debug_run)
         addr <= {{addr_bits - 9{1'b0}}, 1'b1, debug_addr};
     else if (!do_stall && current.jump_type == JumpType_JUMP_TAKEN)

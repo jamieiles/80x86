@@ -114,6 +114,9 @@ template <bool debug_enabled>
 void RTLCPU<debug_enabled>::reset()
 {
     VerilogDriver<VCore, debug_enabled>::reset();
+
+    while (get_microcode_address() != 0x102)
+        this->cycle();
 }
 
 template <bool debug_enabled>

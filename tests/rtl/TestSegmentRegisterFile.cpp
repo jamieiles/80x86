@@ -2,6 +2,7 @@
 #include <VSegmentRegisterFile.h>
 
 #include "VerilogTestbench.h"
+#include "RTLCPU.h"
 
 class SegmentRegisterFileTestFixture : public VerilogTestbench<VSegmentRegisterFile>,
     public ::testing::Test {
@@ -52,4 +53,24 @@ TEST_F(SegmentRegisterFileTestFixture, cs_output_during_write)
 {
     write_sr(1, 0xf00f);
     ASSERT_EQ(0xf00f, dut.cs);
+}
+
+class CoreFixture : public RTLCPU<verilator_debug_enabled>,
+    public ::testing::Test {
+public:
+    CoreFixture():
+        RTLCPU(current_test_name())
+    {}
+};
+TEST_F(CoreFixture, SegmentRegisterFileReset)
+{
+    for (auto r = static_cast<int>(ES); r <= static_cast<int>(DS); ++r) {
+        write_reg(static_cast<GPR>(r), ~r);
+        EXPECT_EQ(read_reg(static_cast<GPR>(r)), static_cast<uint16_t>(~r));
+    }
+
+    reset();
+
+    for (auto r = static_cast<int>(ES); r <= static_cast<int>(DS); ++r)
+        EXPECT_EQ(read_reg(static_cast<GPR>(r)), 0);
 }

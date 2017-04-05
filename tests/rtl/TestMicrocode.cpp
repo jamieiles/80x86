@@ -52,6 +52,10 @@ MicrocodeTestbench::MicrocodeTestbench()
 
 TEST_F(MicrocodeTestbench, JumpOpcode)
 {
+    reset();
+    while (current_address() != 0x100)
+        cycle();
+
     set_instruction({0x88});
 
     ASSERT_EQ(current_address(), 0x100);
@@ -69,7 +73,9 @@ TEST_F(MicrocodeTestbench, JumpOpcode)
 
 TEST_F(MicrocodeTestbench, Stall)
 {
-    cycle();
+    // Wait for reset to complete
+    for (int i = 0; i < 128; ++i)
+        cycle();
 
     for (int i = 0; i < 32; ++i) {
         cycle();
@@ -81,6 +87,10 @@ TEST_F(MicrocodeTestbench, Stall)
 
 TEST_F(MicrocodeTestbench, ExternalStall)
 {
+    reset();
+    while (current_address() != 0x100)
+        cycle();
+
     set_instruction({0x88});
 
     while (current_address() != 0x88)

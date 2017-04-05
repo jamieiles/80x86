@@ -2,6 +2,7 @@
 #include <VRegisterFile.h>
 
 #include "VerilogTestbench.h"
+#include "RTLCPU.h"
 
 class RegisterFileTestFixture : public VerilogTestbench<VRegisterFile>,
     public ::testing::Test {
@@ -87,19 +88,6 @@ TEST_F(RegisterFileTestFixture, read_write_16_bit)
     }
 }
 
-TEST_F(RegisterFileTestFixture, reset)
-{
-    for (auto r = 0; r < 8; ++r)
-        write16(r, ~r);
-
-    reset();
-
-    for (auto r = 0; r < 8; ++r) {
-        trigger_read16(0, r);
-        EXPECT_EQ(0, get_value(0));
-    }
-}
-
 TEST_F(RegisterFileTestFixture, read_during_write)
 {
     write16(0, 0x1234);
@@ -131,4 +119,24 @@ TEST_F(RegisterFileTestFixture, multiple_reads)
 
     EXPECT_EQ(0xbeef, get_value(0));
     EXPECT_EQ(0xdead, get_value(1));
+}
+
+class CoreFixture : public RTLCPU<verilator_debug_enabled>,
+    public ::testing::Test {
+public:
+    CoreFixture():
+        RTLCPU(current_test_name())
+    {}
+};
+TEST_F(CoreFixture, RegisterFileReset)
+{
+    for (auto r = static_cast<int>(AX); r <= static_cast<int>(DI); ++r) {
+        write_reg(static_cast<GPR>(r), ~r);
+        EXPECT_EQ(read_reg(static_cast<GPR>(r)), static_cast<uint16_t>(~r));
+    }
+
+    reset();
+
+    for (auto r = static_cast<int>(AX); r <= static_cast<int>(DI); ++r)
+        EXPECT_EQ(read_reg(static_cast<GPR>(r)), 0);
 }

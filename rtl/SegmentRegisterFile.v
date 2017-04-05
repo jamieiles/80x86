@@ -12,17 +12,15 @@ module SegmentRegisterFile(input logic clk,
 
 reg [15:0] registers[4];
 
-integer i;
-
 wire rd_bypass = wr_en && wr_sel == rd_sel;
 
 assign cs = registers[CS];
 
+always_ff @(posedge reset)
+    ; // Reset is handled by the microcode
+
 always_ff @(posedge clk or posedge reset) begin
-    if (reset)
-        for (i = 0; i < 4; ++i)
-            registers[i] <= 16'b0;
-    else if (wr_en)
+    if (wr_en)
         registers[wr_sel] <= wr_val;
 end
 

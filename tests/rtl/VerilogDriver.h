@@ -49,7 +49,7 @@ public:
     VerilogDriver(const std::string &instance_name);
     VerilogDriver(const VerilogDriver &rhs) = delete;
     virtual ~VerilogDriver();
-    void reset();
+    void reset(int count=2);
     void after_n_cycles(vluint64_t delta,
                         std::function<void()> cb)
     {
@@ -154,10 +154,10 @@ VerilogDriver<T, debug_enabled>::~VerilogDriver()
 }
 
 template <typename T, bool debug_enabled>
-void VerilogDriver<T, debug_enabled>::reset()
+void VerilogDriver<T, debug_enabled>::reset(int count)
 {
     this->dut.reset = 1;
-    after_n_cycles(2, [&]{
+    after_n_cycles(count, [&]{
         this->dut.reset = 0;
     });
     do {

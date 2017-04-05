@@ -206,3 +206,34 @@ dispatch_ff:
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem jmpff_indirect_inter_reg; // reg == 5
     ra_sel SP, segment DS, jmp_rm_reg_mem pushff_reg; // reg == 6
     next_instruction; // reg == 7
+
+.at 0x129;
+    jmp reset;
+
+.auto_address;
+reset:
+    b_sel IMMEDIATE, alu_op SELB, immediate 0x0, rd_sel_source MICROCODE_RD_SEL,
+        rd_sel AX, reg_wr_en;
+    b_sel IMMEDIATE, alu_op SELB, immediate 0x0, rd_sel_source MICROCODE_RD_SEL,
+        rd_sel CX, reg_wr_en;
+    b_sel IMMEDIATE, alu_op SELB, immediate 0x0, rd_sel_source MICROCODE_RD_SEL,
+        rd_sel DX, reg_wr_en;
+    b_sel IMMEDIATE, alu_op SELB, immediate 0x0, rd_sel_source MICROCODE_RD_SEL,
+        rd_sel BX, reg_wr_en;
+    b_sel IMMEDIATE, alu_op SELB, immediate 0x0, rd_sel_source MICROCODE_RD_SEL,
+        rd_sel SP, reg_wr_en;
+    b_sel IMMEDIATE, alu_op SELB, immediate 0x0, rd_sel_source MICROCODE_RD_SEL,
+        rd_sel BP, reg_wr_en;
+    b_sel IMMEDIATE, alu_op SELB, immediate 0x0, rd_sel_source MICROCODE_RD_SEL,
+        rd_sel SI, reg_wr_en;
+    b_sel IMMEDIATE, alu_op SELB, immediate 0x0, rd_sel_source MICROCODE_RD_SEL,
+        rd_sel DI, reg_wr_en;
+    b_sel IMMEDIATE, alu_op SELB, immediate 0x0, segment_force, sr_wr_sel ES,
+        segment_wr_en;
+    b_sel IMMEDIATE, alu_op SELB, immediate 0x0, segment_force, sr_wr_sel CS,
+        segment_wr_en;
+    b_sel IMMEDIATE, alu_op SELB, immediate 0x0, segment_force, sr_wr_sel SS,
+        segment_wr_en;
+    b_sel IMMEDIATE, alu_op SELB, immediate 0x0, segment_force, sr_wr_sel DS,
+        segment_wr_en;
+    next_instruction, jmp opcode_fetch;
