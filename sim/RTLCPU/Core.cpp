@@ -379,7 +379,7 @@ uint16_t RTLCPU<debug_enabled>::read_mem16(uint16_t segment, uint16_t addr)
 
     write_reg(DS, segment);
     write_mar(addr);
-    debug_run_proc(0x22); // Read mem 8
+    debug_run_proc(0x22); // Read mem 16
 
     uint16_t val = this->dut.debug_val;
 
