@@ -164,7 +164,7 @@ wire multibit_shift;
 // Misc control signals
 wire debug_set_ip = debug_stopped && ip_wr_en;
 wire do_next_instruction = (next_instruction & ~do_stall) | debug_set_ip;
-wire do_stall = modrm_busy | immed_busy | loadstore_busy | divide_busy | alu_busy;;
+wire do_stall = modrm_busy | immed_busy | loadstore_busy | divide_busy | alu_busy;
 
 // IP
 wire ip_inc = fifo_rd_en & ~fifo_empty;
