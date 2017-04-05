@@ -66,7 +66,6 @@ wire in_signs_equal8 = ~(dividend[15] ^ divisor[7]);
 wire in_signs_equal16 = ~(dividend[31] ^ divisor[15]);
 wire in_signs_equal = is_8_bit ? in_signs_equal8 : in_signs_equal16;
 wire dividend_negative = is_8_bit ? dividend[15] : dividend[31];
-wire [15:0] signed_quotient = in_signs_equal ? quotient : negative_quotient;
 
 reg [63:0] P;
 reg [3:0] idx;
@@ -101,44 +100,49 @@ always_comb begin
 end
 
 always_ff @(posedge clk or posedge reset) begin
-    case (state)
-    INIT: begin
+    if (reset) begin
         error <= 1'b0;
+        complete <= 1'b0;
+    end else begin
+        case (state)
+        INIT: begin
+            error <= 1'b0;
 
-        if (start) begin
-            quotient <= 16'b0;
-            P <= P_init;
-            idx <= !is_8_bit ? 4'hf : 4'h7;
-            error <= raise_error;
-        end
+            if (start) begin
+                quotient <= 16'b0;
+                P <= P_init;
+                idx <= !is_8_bit ? 4'hf : 4'h7;
+                error <= raise_error;
+            end
 
-        complete <= start && raise_error;
-    end
-    WORKING: begin
-        if (!P[63]) begin
-            quotient[idx] <= 1'b1;
-            P <= (P * 2) - {32'b0, D};
-        end else begin
-            P <= (P * 2) + {32'b0, D};
+            complete <= start && raise_error;
         end
-        idx <= idx - 1;
+        WORKING: begin
+            if (!P[63]) begin
+                quotient[idx] <= 1'b1;
+                P <= (P * 2) - {32'b0, D};
+            end else begin
+                P <= (P * 2) + {32'b0, D};
+            end
+            idx <= idx - 1'b1;
+        end
+        RESTORE: begin
+            quotient <= restored_quotient;
+            if (P[63])
+                P <= P + {{32{D[31]}}, D};
+            complete <= ~is_signed;
+        end
+        FIX_SIGN: begin
+            if (~in_signs_equal)
+                quotient <= negative_quotient;
+            if (dividend_negative && is_8_bit)
+                P[15:8] <= ~P[15:8] + 1'b1;
+            else if (dividend_negative)
+                P[31:16] <= ~P[31:16] + 1'b1;
+            complete <= 1'b1;
+        end
+        endcase
     end
-    RESTORE: begin
-        quotient <= restored_quotient;
-        if (P[63])
-            P <= P + {{32{D[31]}}, D};
-        complete <= ~is_signed;
-    end
-    FIX_SIGN: begin
-        if (~in_signs_equal)
-            quotient <= negative_quotient;
-        if (dividend_negative && is_8_bit)
-            P[15:8] <= ~P[15:8] + 1'b1;
-        else if (dividend_negative)
-            P[31:16] <= ~P[31:16] + 1'b1;
-        complete <= 1'b1;
-    end
-    endcase
 end
 
 always_ff @(posedge clk)
