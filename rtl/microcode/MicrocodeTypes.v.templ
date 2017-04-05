@@ -4,7 +4,7 @@
 <%#enums%>
 typedef enum bit [<%high_bit%>:0] {
 <%#items%>
-    <%name%> = <%value%>
+    <%name%> = <%num_bits%>'d<%value%>
 <%/items%>
 } <%name%>;
 `define <%name%>_BITS <%num_bits%>
