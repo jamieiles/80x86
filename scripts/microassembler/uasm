@@ -5,7 +5,7 @@ import os
 import subprocess
 import pystache
 
-from functools import partial
+from functools import partial, lru_cache
 from textx.metamodel import metamodel_from_file
 
 from microasm.types import (
@@ -26,6 +26,7 @@ from microasm.types import (
 HERE = os.path.dirname(__file__)
 GRAMMAR = os.path.join(HERE, 'microcode_grammar.g')
 TEMPLATE = os.path.join(HERE, '..', '..', 'rtl', 'microcode', 'Microcode.v.templ')
+MIF_TEMPLATE = os.path.join(HERE, '..', '..', 'rtl', 'microcode', 'microcode.mif.templ')
 VERILOG_ENUM_TEMPLATE = os.path.join(HERE, '..', '..', 'rtl', 'microcode', 'MicrocodeTypes.v.templ')
 CPP_ENUM_TEMPLATE = os.path.join(HERE, '..', '..', 'rtl', 'microcode', 'MicrocodeTypes.h.templ')
 mm = metamodel_from_file(GRAMMAR, skipws='\s\t\n\\', debug=False)
@@ -46,10 +47,11 @@ def field_type(size):
     return '[{0}:0] '.format(size - 1)
 
 class MicroAssembler(object):
-    def __init__(self, infiles, microcode_output, verilog_output,
+    def __init__(self, infiles, bin_output, mif_output, verilog_output,
                  verilog_types_output, cpp_types_output):
         self._infiles = infiles
-        self._output = microcode_output
+        self._bin_output = bin_output
+        self._mif_output = mif_output
         self._verilog_output = verilog_output
         self._verilog_types_output = verilog_types_output
         self._cpp_types_output = cpp_types_output
@@ -124,7 +126,7 @@ class MicroAssembler(object):
 
         return sorted(instructions, key=lambda i: i.address)
 
-    def _write_microcode(self, filename, instructions):
+    def _write_bin(self, filename, instructions):
         last_addr = 0
         with open(filename, 'w') as f:
             f.write(self.field_comment())
@@ -136,9 +138,25 @@ class MicroAssembler(object):
                                               ' '.join(instr.present_fields.keys())))
                 last_addr = instr.address
 
-    def _write_microcode_verilog(self, filename, instructions):
+    def _write_mif(self, filename, instructions):
+        address_bits = num_bits(instructions[-1].address + 1)
+        instr_list = [{'address': '%x' % (i.address,),
+                       'value': i.encode(num_bits(instructions[-1].address + 1))}
+                      for i in instructions]
         data = {
-            'fields': MicroAssembler.bitfields(num_bits(instructions[-1].address + 1)),
+            'num_instructions': instructions[-1].address + 1,
+            'width': self.width(address_bits),
+            'instructions': instr_list,
+        }
+        with open(MIF_TEMPLATE) as f:
+            template = f.read()
+        with open(filename, 'w') as outfile:
+            outfile.write(pystache.render(template, data))
+
+    def _write_microcode_verilog(self, filename, instructions):
+        address_bits = num_bits(instructions[-1].address + 1)
+        data = {
+            'fields': MicroAssembler.bitfields(address_bits),
             'exported_fields': MicroAssembler.exported_fields(),
             'num_instructions': instructions[-1].address + 1,
             'addr_bits': num_bits(instructions[-1].address + 1),
@@ -291,6 +309,13 @@ class MicroAssembler(object):
         return '//' + ' '.join(['next'] + fields) + '\n'
 
     @staticmethod
+    def width(address_bits):
+        w = address_bits
+        for name in MicroAssembler.sorted_field_keys():
+            w += MicroAssembler.microcode_fields[name][0]
+        return w
+
+    @staticmethod
     def bitfields(address_bits):
         fields = []
         fields.append({
@@ -327,7 +352,8 @@ class MicroAssembler(object):
 
     def assemble(self):
         instructions = self._build_microcode(self._infiles)
-        self._write_microcode(self._output, instructions)
+        self._write_bin(self._bin_output, instructions)
+        self._write_mif(self._mif_output, instructions)
         self._write_microcode_verilog(self._verilog_output, instructions)
         self._write_types(self._verilog_types_output, self._cpp_types_output)
 
@@ -340,6 +366,7 @@ class MicroInstruction(object):
         self.present_fields = {}
         self.origin = '%s:%d' % (filename, line)
 
+    @lru_cache(maxsize=None)
     def encode(self, address_bits):
         if 'immediate' in self.present_fields:
             self.present_fields['immediate'] = MicroAssembler.immediate_dict[self.present_fields['immediate']]
@@ -359,16 +386,18 @@ class MicroInstruction(object):
 
             value = self.present_fields.get(name, 0)
             field_values.append('{0:0{width}b}'.format(value, width=width))
-        return '_'.join(field_values)
+        return ''.join(field_values)
 
 parser = argparse.ArgumentParser()
-parser.add_argument('microcode_output')
+parser.add_argument('bin_output')
+parser.add_argument('mif_output')
 parser.add_argument('verilog_output')
 parser.add_argument('verilog_types_output')
 parser.add_argument('cpp_types_output')
 parser.add_argument('input', nargs='+')
 args = parser.parse_args()
 
-assembler = MicroAssembler(args.input, args.microcode_output, args.verilog_output,
-                           args.verilog_types_output, args.cpp_types_output)
+assembler = MicroAssembler(args.input, args.bin_output, args.mif_output,
+                           args.verilog_output, args.verilog_types_output,
+                           args.cpp_types_output)
 assembler.assemble()

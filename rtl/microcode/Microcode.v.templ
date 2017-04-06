@@ -42,7 +42,7 @@ typedef struct packed {
 <%/fields%>
 } microcode_instruction;
 
-microcode_instruction mem[num_instructions];
+microcode_instruction mem[num_instructions] /* synthesis ram_init_file = "microcode.mif" */;
 microcode_instruction current;
 reg [addr_bits-1:0] addr;
 wire [addr_bits-1:0] next_addr;
@@ -75,7 +75,9 @@ reg rep_complete;
 assign debug_stopped = addr == {{addr_bits-9{1'b0}}, 9'h102};
 assign multibit_shift = opcode == 8'hd2 || opcode == 8'hd3;
 
+`ifdef verilator
 initial $readmemb({{`MICROCODE_ROM_PATH, "/microcode.bin"}}, mem);
+`endif
 
 always_comb begin
     case (rep_prefix_type)
