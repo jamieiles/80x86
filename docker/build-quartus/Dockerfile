@@ -19,9 +19,6 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         xauth \
         xvfb \
         pkg-config \
-        libprotobuf-dev \
-        protobuf-compiler \
-        python-protobuf \
         wget \
         libxft2:i386 \
         libxext6:i386 \
