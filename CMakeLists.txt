@@ -19,6 +19,7 @@ find_package(Nasm)
 find_package(Verilator)
 find_program(CCACHE_FOUND ccache)
 find_package(Asciidoctor REQUIRED)
+find_package(Quartus REQUIRED)
 
 if(CCACHE_FOUND)
     set_property(GLOBAL PROPERTY RULE_LAUNCH_COMPILE ccache)
@@ -40,6 +41,8 @@ set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG ${CMAKE_CXX_FLAGS_DEBUG}")
 set(POISON_MEMORY_VALUE "0x00" CACHE STRING "Poison all memory with this value in tests")
 add_definitions(-DMEM_INT_BYTE_VAL=${POISON_MEMORY_VALUE})
 
+set(BUILD_DE0_CV OFF CACHE STRING "Build an image for the DE0-CV board")
+
 enable_testing()
 
 add_subdirectory(vendor/googletest)
@@ -48,5 +51,9 @@ add_subdirectory(python)
 add_subdirectory(sim)
 add_subdirectory(tests)
 add_subdirectory(documentation)
+
+if(${BUILD_DE0_CV})
+add_subdirectory(fpga/de0-cv)
+endif()
 
 include(CTest)
