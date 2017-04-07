@@ -25,9 +25,9 @@ from microasm.types import (
 
 HERE = os.path.dirname(__file__)
 GRAMMAR = os.path.join(HERE, 'microcode_grammar.g')
-TEMPLATE = os.path.join(HERE, '..', '..', 'rtl', 'microcode', 'Microcode.v.templ')
+TEMPLATE = os.path.join(HERE, '..', '..', 'rtl', 'microcode', 'Microcode.sv.templ')
 MIF_TEMPLATE = os.path.join(HERE, '..', '..', 'rtl', 'microcode', 'microcode.mif.templ')
-VERILOG_ENUM_TEMPLATE = os.path.join(HERE, '..', '..', 'rtl', 'microcode', 'MicrocodeTypes.v.templ')
+VERILOG_ENUM_TEMPLATE = os.path.join(HERE, '..', '..', 'rtl', 'microcode', 'MicrocodeTypes.sv.templ')
 CPP_ENUM_TEMPLATE = os.path.join(HERE, '..', '..', 'rtl', 'microcode', 'MicrocodeTypes.h.templ')
 mm = metamodel_from_file(GRAMMAR, skipws='\s\t\n\\', debug=False)
 

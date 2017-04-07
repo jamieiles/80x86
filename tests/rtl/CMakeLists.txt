@@ -12,52 +12,52 @@ file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/coverage)
 get_property(ALU_SOURCES GLOBAL PROPERTY G_ALU_SOURCES)
 get_property(CORE_SOURCES GLOBAL PROPERTY G_CORE_SOURCES)
 
-set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/Microcode.v PROPERTIES
+set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/Microcode.sv PROPERTIES
                             COMPILE_FLAGS "-DMICROCODE_ROM_PATH=\\\"${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/\\\"")
 
 verilate(TOPLEVEL ModRMTestbench
-         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/RegisterEnum.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/ModRMTestbench.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/ModRMDecode.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/ImmediateReader.v)
+         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/RegisterEnum.sv
+         ${CMAKE_CURRENT_SOURCE_DIR}/ModRMTestbench.sv
+         ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/ModRMDecode.sv
+         ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/ImmediateReader.sv)
 verilate(TOPLEVEL ALU
-         VERILOG_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/MicrocodeTypes.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/FlagsEnum.v
+         VERILOG_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/MicrocodeTypes.sv
+         ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/FlagsEnum.sv
          ${ALU_SOURCES}
          GENERATED_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/VALU___024unit.cpp
          ${CMAKE_CURRENT_BINARY_DIR}/VALU___024unit.h
          DEPENDS generate_microcode)
 verilate(TOPLEVEL CSIPSync
-         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/CSIPSync.v)
+         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/CSIPSync.sv)
 verilate(TOPLEVEL Fifo
-         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/Fifo.v)
+         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/Fifo.sv)
 verilate(TOPLEVEL Flags
          VERILOG_SOURCES
-         ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/FlagsEnum.v
-         ${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/MicrocodeTypes.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/Flags.v
+         ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/FlagsEnum.sv
+         ${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/MicrocodeTypes.sv
+         ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/Flags.sv
          DEPENDS generate_microcode)
 verilate(TOPLEVEL ImmediateReader
-         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/ImmediateReader.v)
+         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/ImmediateReader.sv)
 verilate(TOPLEVEL IP
-         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/IP.v)
+         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/IP.sv)
 verilate(TOPLEVEL LoadStore
-         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/LoadStore.v)
+         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/LoadStore.sv)
 verilate(TOPLEVEL ModRMDecode
-         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/RegisterEnum.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/ModRMDecode.v)
+         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/RegisterEnum.sv
+         ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/ModRMDecode.sv)
 verilate(TOPLEVEL Prefetch
-         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/Prefetch.v)
+         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/Prefetch.sv)
 verilate(TOPLEVEL RegisterFile
-         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/RegisterFile.v)
+         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/RegisterFile.sv)
 verilate(TOPLEVEL SegmentOverride
-         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/RegisterEnum.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/SegmentOverride.v)
+         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/RegisterEnum.sv
+         ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/SegmentOverride.sv)
 verilate(TOPLEVEL SegmentRegisterFile
-         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/RegisterEnum.v
-         ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/SegmentRegisterFile.v)
+         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/RegisterEnum.sv
+         ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/SegmentRegisterFile.sv)
 verilate(TOPLEVEL Divider
-         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/Divider.v)
+         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/Divider.sv)
 
 add_executable(rtl-unittest
                TestALU.cpp

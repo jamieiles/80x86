@@ -58,25 +58,25 @@ set(microprogram_sources
 
 add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/microcode.bin
                           ${CMAKE_CURRENT_BINARY_DIR}/microcode.mif
-                          ${CMAKE_CURRENT_BINARY_DIR}/Microcode.v
-                          ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.v
+                          ${CMAKE_CURRENT_BINARY_DIR}/Microcode.sv
+                          ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.sv
                           ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.h
                    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/microassembler/uasm
                            ${CMAKE_CURRENT_BINARY_DIR}/microcode.bin
                            ${CMAKE_CURRENT_BINARY_DIR}/microcode.mif
-                           ${CMAKE_CURRENT_BINARY_DIR}/Microcode.v
-                           ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.v
+                           ${CMAKE_CURRENT_BINARY_DIR}/Microcode.sv
+                           ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.sv
                            ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.h
                            ${microprogram_sources}
                    DEPENDS ${microprogram_sources}
-                           ${CMAKE_CURRENT_SOURCE_DIR}/Microcode.v.templ
+                           ${CMAKE_CURRENT_SOURCE_DIR}/Microcode.sv.templ
                            ${CMAKE_CURRENT_SOURCE_DIR}/microcode.mif.templ
-                           ${CMAKE_CURRENT_SOURCE_DIR}/MicrocodeTypes.v.templ
+                           ${CMAKE_CURRENT_SOURCE_DIR}/MicrocodeTypes.sv.templ
                            ${CMAKE_CURRENT_SOURCE_DIR}/MicrocodeTypes.h.templ
                            ${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/microassembler/uasm
                            ${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/microassembler/microasm/types.py)
 
-set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/Microcode.v PROPERTIES
+set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/Microcode.sv PROPERTIES
                             COMPILE_FLAGS "-DMICROCODE_ROM_PATH=\\\"${CMAKE_CURRENT_BINARY_DIR}\\\"")
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
@@ -84,11 +84,11 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 add_custom_target(generate_microcode
                   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/microcode.bin
                   ${CMAKE_CURRENT_BINARY_DIR}/microcode.mif
-                  ${CMAKE_CURRENT_BINARY_DIR}/Microcode.v
-                  ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.v
+                  ${CMAKE_CURRENT_BINARY_DIR}/Microcode.sv
+                  ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.sv
                   ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.h)
 
 verilate(TOPLEVEL Microcode
          VERILOG_SOURCES
-         ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.v
-         ${CMAKE_CURRENT_BINARY_DIR}/Microcode.v)
+         ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.sv
+         ${CMAKE_CURRENT_BINARY_DIR}/Microcode.sv)
