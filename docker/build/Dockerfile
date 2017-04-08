@@ -1,4 +1,4 @@
-FROM ubuntu:xenial
+FROM s80x86-build-quartus:latest
 MAINTAINER Jamie Iles <jamie@jamieiles.com>
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install --no-install-recommends -y \

@@ -1,4 +1,4 @@
-FROM s80x86-build-quartus:latest
+FROM s80x86-build:latest
 MAINTAINER Jamie Iles <jamie@jamieiles.com>
 RUN apt-get install -y runit \
         gtkwave \
