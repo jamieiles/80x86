@@ -35,4 +35,4 @@ add_custom_command(OUTPUT Top.asm.rpt
 add_custom_command(OUTPUT Top.sta.rpt
                    COMMAND ${QUARTUS_STA_EXECUTABLE} Top
                    DEPENDS Top.asm.rpt)
-add_custom_target(fpga ALL DEPENDS Top.sta.rpt)
+add_custom_target(de0-cv DEPENDS Top.sta.rpt)
