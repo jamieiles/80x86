@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         libboost-program-options-dev \
         libboost-python1.58.0 \
         libboost-python-dev \
+        libusb-1.0-0-dev \
         python-dev \
         llvm \
         ccache \
