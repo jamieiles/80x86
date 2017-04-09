@@ -33,7 +33,6 @@ set(CORE_SOURCES
     ${CMAKE_CURRENT_BINARY_DIR}/microcode/MicrocodeTypes.sv
     ${ALU_SOURCES}
     ${CMAKE_CURRENT_BINARY_DIR}/microcode/Microcode.sv
-    ${CMAKE_CURRENT_BINARY_DIR}/microcode/MicrocodeTypes.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/RegisterEnum.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/FlagsEnum.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/Core.sv
