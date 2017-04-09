@@ -116,6 +116,8 @@ class JmpFixture : public EmulateFixture,
 
 TEST_P(JmpFixture, TakenNotTaken)
 {
+    auto old_ip = read_reg(IP);
+
     SCOPED_TRACE(GetParam().name + std::string(" [") +
                  flags_to_string(GetParam().flags) +
                  std::string("]") +
@@ -127,9 +129,9 @@ TEST_P(JmpFixture, TakenNotTaken)
     emulate();
 
     if (GetParam().taken)
-        ASSERT_EQ(read_reg(IP), 0x1010);
+        ASSERT_EQ(read_reg(IP), old_ip + 0x10);
     else
-        ASSERT_EQ(read_reg(IP), 0x1002);
+        ASSERT_EQ(read_reg(IP), old_ip + 0x02);
 }
 INSTANTIATE_TEST_CASE_P(JmpConditional, JmpFixture,
     ::testing::Values(
