@@ -30,7 +30,7 @@ alu_func ## d1_mem:                                                             
 #define SHIFTN_8(alu_func, flags)                                               \
 alu_func ## d2:									\
     ra_modrm_rm_reg, b_sel RB, alu_op SELB, tmp_wr_en, width 8,                 \
-        jmp_rm_reg_mem alu_func ## d2_reg;	                                \
+        segment DS, jmp_rm_reg_mem alu_func ## d2_reg;	                        \
 alu_func ## d2_reg:                                                             \
     a_sel RA, b_sel RB, alu_op alu_func, rd_sel_source MODRM_RM_REG, 		\
         update_flags flags, reg_wr_en, width 8, tmp_wr_sel Q_HIGH, 		\
@@ -44,7 +44,7 @@ alu_func ## d2_mem:                                                             
 #define SHIFTN_16(alu_func, flags)                                              \
 alu_func ## d3:									\
     ra_modrm_rm_reg, b_sel RB, alu_op SELB, tmp_wr_en,                          \
-        jmp_rm_reg_mem alu_func ## d3_reg;	                                \
+        segment DS, jmp_rm_reg_mem alu_func ## d3_reg;	                        \
 alu_func ## d3_reg:                                                             \
     a_sel RA, b_sel RB, alu_op alu_func, rd_sel_source MODRM_RM_REG, 		\
         update_flags flags, reg_wr_en, tmp_wr_sel Q_HIGH, tmp_wr_en,            \

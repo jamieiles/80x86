@@ -1,7 +1,7 @@
 pushff_reg:
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
         mar_write, mar_wr_sel Q, jmp pushff_reg_save,
-        ra_modrm_rm_reg;
+        ra_modrm_rm_reg, segment DS;
 pushff_mem:
     segment DS, mem_read, jmp pushff_mem_save, ra_sel SP;
 pushff_reg_save:

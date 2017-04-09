@@ -26,7 +26,7 @@ mov89_mem:
 // MOV 0x8a     r := r/m (8-bit)
 .at 0x8a;
     modrm_start, mar_write, mar_wr_sel EA, ra_modrm_rm_reg, width 8,
-        jmp_rm_reg_mem mov8a_reg, a_sel RA;
+        jmp_rm_reg_mem mov8a_reg, segment DS, a_sel RA;
 .auto_address;
 mov8a_reg:
     a_sel RA, ra_modrm_rm_reg, alu_op SELA,
