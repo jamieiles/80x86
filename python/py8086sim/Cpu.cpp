@@ -4,6 +4,7 @@
 #include "RegisterFile.h"
 #include "RTLCPU.h"
 #include "SoftwareCPU.h"
+#include "JTAGCPU.h"
 
 using namespace boost::python;
 
@@ -29,6 +30,23 @@ BOOST_PYTHON_MODULE(Cpu)
         .def("step", &SoftwareCPU::step)
         .def("has_trapped", &SoftwareCPU::has_trapped);
     class_<rtlcpu, boost::noncopyable>("RTLCPU", init<const std::string &>())
+        .def("write_reg", &rtlcpu::write_reg)
+        .def("read_reg", &rtlcpu::read_reg)
+        .def("write_mem8", &rtlcpu::write_mem8)
+        .def("write_mem16", &rtlcpu::write_mem16)
+        .def("write_mem32", &rtlcpu::write_mem32)
+        .def("read_mem8", &rtlcpu::read_mem8)
+        .def("read_mem16", &rtlcpu::read_mem16)
+        .def("read_mem32", &rtlcpu::read_mem32)
+        .def("write_io8", &rtlcpu::write_io8)
+        .def("write_io16", &rtlcpu::write_io16)
+        .def("read_io8", &rtlcpu::read_io8)
+        .def("read_io16", &rtlcpu::read_io16)
+        .def("read_flags", &rtlcpu::read_flags)
+        .def("write_flags", &rtlcpu::write_flags)
+        .def("step", &rtlcpu::step)
+        .def("has_trapped", &rtlcpu::has_trapped);
+    class_<JTAGCPU, boost::noncopyable>("JTAGCPU", init<const std::string &>())
         .def("write_reg", &rtlcpu::write_reg)
         .def("read_reg", &rtlcpu::read_reg)
         .def("write_mem8", &rtlcpu::write_mem8)

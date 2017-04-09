@@ -6,6 +6,7 @@ include_directories(../sim)
 include_directories(include)
 
 add_subdirectory(programs)
+add_subdirectory(jtag)
 add_subdirectory(instructions)
 add_subdirectory(integration)
 add_subdirectory(simulator)
