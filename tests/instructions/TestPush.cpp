@@ -23,6 +23,7 @@ TEST_F(EmulateFixture, PushRegFFInvalidReg)
 
     write_reg(AX, 0xaa55);
     write_reg(SP, 0x100);
+    write_mem16(0x0fe, mem_init_16, SS);
 
     emulate();
 

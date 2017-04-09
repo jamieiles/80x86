@@ -474,6 +474,7 @@ TEST_F(EmulateFixture, Stosb)
     write_mem8(0x803, 0);
     write_reg(AL, 'a');
     write_reg(CX, 3);
+    write_vector8(0x800, {0, 0, 0, 0, 0, 0, 0, 0}, ES);
 
     set_instruction({ 0xf2, 0xaa });
 
@@ -492,6 +493,7 @@ TEST_F(EmulateFixture, StosbDec)
     write_reg(CX, 3);
 
     set_instruction({ 0xf2, 0xaa });
+    write_vector8(0x800, {0, 0, 0, 0, 0, 0, 0, 0}, ES);
 
     emulate();
 
@@ -506,6 +508,7 @@ TEST_F(EmulateFixture, Stosw)
     write_reg(AX, 0x6261);
     write_mem16(0x806, 0x0000);
     write_reg(CX, 3);
+    write_vector16(0x800, {0, 0, 0, 0, 0, 0, 0, 0}, ES);
 
     set_instruction({ 0xf2, 0xab });
 
@@ -522,6 +525,7 @@ TEST_F(EmulateFixture, StoswDec)
     write_mem16(0x806, 0x0000);
     write_reg(AX, 0x6261);
     write_reg(CX, 3);
+    write_vector16(0x800, {0, 0, 0, 0, 0, 0, 0, 0}, ES);
 
     set_instruction({ 0xf2, 0xab });
 
