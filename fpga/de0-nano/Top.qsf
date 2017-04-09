@@ -10,7 +10,19 @@ set_global_assignment -name OPTIMIZATION_TECHNIQUE SPEED
 
 set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVCMOS"
 
-set_location_assignment PIN_M9 -to clk
-set_location_assignment PIN_P22 -to rst_in
+set_location_assignment PIN_R8 -to clk
+set_location_assignment PIN_J15 -to rst_in_n
 
 set_instance_assignment -name GLOBAL_SIGNAL "GLOBAL CLOCK" -to "SysPLL:SysPLL|outclk_0"
+
+# IO
+set_location_assignment PIN_A15 -to leds[0]
+set_location_assignment PIN_A13 -to leds[1]
+set_location_assignment PIN_B13 -to leds[2]
+set_location_assignment PIN_A11 -to leds[3]
+set_location_assignment PIN_D1 -to leds[4]
+set_location_assignment PIN_F3 -to leds[5]
+set_location_assignment PIN_B1 -to leds[6]
+set_location_assignment PIN_L3 -to leds[7]
+
+set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to leds[*]

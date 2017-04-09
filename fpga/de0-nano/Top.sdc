@@ -8,6 +8,6 @@ create_clock -period 20.000 -name clk clk
 derive_pll_clocks
 derive_clock_uncertainty
 
-set sys_clk   "pll|sys_pll_inst|altera_pll_i|general[0].gpll~PLL_OUTPUT_COUNTER|divclk"
+set sys_clk   "pll|altpll_component|auto_generated|pll1|clk[0]"
 # Reset request
-set_false_path -from [get_ports {rst_in}]
+set_false_path -from [get_ports {rst_in_n}]

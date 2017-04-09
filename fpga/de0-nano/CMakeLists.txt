@@ -3,8 +3,8 @@ get_property(CORE_SOURCES GLOBAL PROPERTY G_CORE_SOURCES)
 
 configure_file(Top.qsf Top.qsf)
 
-set(FPGA_FAMILY "Cyclone V")
-set(FPGA_PART "5CEBA4F23C7")
+set(FPGA_FAMILY "Cyclone IV E")
+set(FPGA_PART "EP4CE22F17C6")
 
 set(FPGA_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/Top.sv
@@ -40,8 +40,8 @@ add_custom_command(OUTPUT Top.asm.rpt
 add_custom_command(OUTPUT Top.sta.rpt Top.sof
                    COMMAND ${QUARTUS_STA_EXECUTABLE} Top
                    DEPENDS Top.asm.rpt)
-add_custom_command(OUTPUT __program_de0_cv__
+add_custom_command(OUTPUT __program_de0_nano__
                    COMMAND ${QUARTUS_PGM_EXECUTABLE} --mode=jtag -o \"P\;Top.sof\"
                    DEPENDS Top.sof)
-add_custom_target(de0-cv DEPENDS Top.sta.rpt)
-add_custom_target(de0-cv-program DEPENDS __program_de0_cv__)
+add_custom_target(de0-nano DEPENDS Top.sta.rpt)
+add_custom_target(de0-nano-program DEPENDS __program_de0_nano__)

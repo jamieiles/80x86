@@ -42,6 +42,7 @@ set(POISON_MEMORY_VALUE "0x00" CACHE STRING "Poison all memory with this value i
 add_definitions(-DMEM_INT_BYTE_VAL=${POISON_MEMORY_VALUE})
 
 set(BUILD_DE0_CV OFF CACHE STRING "Build an image for the DE0-CV board")
+set(BUILD_DE0_NANO OFF CACHE STRING "Build an image for the DE0-nano board")
 
 enable_testing()
 
@@ -54,6 +55,10 @@ add_subdirectory(documentation)
 
 if(${BUILD_DE0_CV})
 add_subdirectory(fpga/de0-cv)
+endif()
+
+if(${BUILD_DE0_NANO})
+add_subdirectory(fpga/de0-nano)
 endif()
 
 include(CTest)

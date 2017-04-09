@@ -1,5 +1,5 @@
 module Top(input logic clk,
-	   input logic rst_in);
+	   input logic rst_in_n);
 
 wire sys_clk;
 wire reset_n;
@@ -40,7 +40,6 @@ JTAGBridge      JTAGBridge(.cpu_clk(sys_clk),
                            .*);
 
 SysPLL	SysPLL(.refclk(clk),
-	       .rst(1'b0),
 	       .outclk_0(sys_clk));
 
 reg instr_m_ack;

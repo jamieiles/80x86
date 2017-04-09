@@ -389,6 +389,82 @@ the current data segment, save the value of DS, write it with the new value,
 perform the access and then restore DS.
 ====
 
+== FPGA JTAG
+
+The DE0-Nano and DE0-CV boards use the Altera Virtual JTAG to implement a
+debug bridge between the development machine and the FPGA design.  This is not
+a compliant JTAG TAP, but provides a reference implementation of implementing
+a debug interface for the core.
+
+The implementation uses a 2 bit instruction register and variable length data
+register.
+
+.JTAG Instruction Register Definitions
+[cols=2*,options="header"]
+|===
+| Register
+| Name
+| 2'b00 | IDCODE
+| 2'b01 | STATUS_CONTROL
+| 2'b10 | DEBUG_VALUE
+| 2'b11 | RUN_PROCEDURE
+|===
+
+=== IDCODE
+
+The IDCODE register is a 32-bit register containing the device ID code.  This
+register is read-only, values shifted in are ignored.
+
+=== STATUS_CONTROL
+
+.JTAG STATUS_CONTROL Data Register
+[cols="2,1,1,3",options="header"]
+|===
+| Field
+| Bits
+| Access
+| Description
+| RUN | [0:0] | R/W | Returns the current execution state of the CPU, "1"
+indicates that the core is executing in normal mode.  Write a "0" to enter
+debug mode, polling this bit until it reflects that the core has stopped.  To
+restart the core, write a "1", and then run debug procedure "0".
+| RESET | [1:1] | R/W | Core reset control, write "1" to start a reset, write
+"0" to clear.
+| RESERVED | [15:2] | RO | Reserved for future use.
+| WRITE_ENABLE | [16] | WO | Write as "1" to write the value shifted in into
+the core, otherwise the shifted value will be discarded.
+|===
+
+=== DEBUG_VALUE
+
+.JTAG DEBUG_VALUE Data Register
+[cols="2,1,1,3",options="header"]
+|===
+| Field
+| Bits
+| Access
+| Description
+| VALUE | [15:0] | RW | The value to be written to/read from the debug
+controller.
+| WRITE_ENABLE | [16] | R/W | For the value shifted in, if this is set to "1",
+then the VALUE will be written into the debug controller, otherwise discarded.
+For the value shifted out, if "1", then the VALUE field is valid.  When
+reading, this bit should be polled until it returns "1".
+|===
+
+=== RUN_PROCEDURE
+
+.JTAG RUN_PROCEDURE Data Register
+[cols="2,1,1,3",options="header"]
+|===
+| Field
+| Bits
+| Access
+| Description
+| VALUE | [7:0] | WO | The debug procedure to run.  This is a write-only
+field.
+|===
+
 == RTL Tests
 
 The RTL tests are written in {cpp}, using Verilator to create {cpp} models of the
