@@ -4,7 +4,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 ARG MIRROR=http://download.altera.com/akdlm/software/acdsinst/14.1/186/ib_installers/
 ARG QUARTUS=QuartusSetupWeb-14.1.0.186-linux.run
-ARG DEVICE_FILE=cyclonev-14.1.0.186.qdz
+ARG DEVICE_FILES="cyclonev-14.1.0.186.qdz cyclone-14.1.0.186.qdz"
 
 RUN dpkg --add-architecture i386
 RUN apt-get update && apt-get install --no-install-recommends -y \
@@ -35,7 +35,7 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
 RUN cd /tmp && wget -q $MIRROR$QUARTUS && \
-        wget -q $MIRROR$DEVICE_FILE && \
+        for DEV_FILE in $DEVICE_FILES; do wget -q $MIRROR$DEV_FILE; done && \
         chmod +x $QUARTUS && \
         ./$QUARTUS --mode unattended --installdir /opt/altera/ && \
         rm /tmp/* /opt/altera/uninstall -rf
