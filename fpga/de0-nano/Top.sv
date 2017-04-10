@@ -1,5 +1,16 @@
 module Top(input logic clk,
-	   input logic rst_in_n);
+	   input logic rst_in_n,
+           output logic s_ras_n,
+           output logic s_cas_n,
+           output logic s_wr_en,
+           output logic [1:0] s_bytesel,
+           output logic [12:0] s_addr,
+           output logic s_cs_n,
+           output logic s_clken,
+           inout [15:0] s_data,
+           output logic [1:0] s_banksel,
+           output logic sdr_clk,
+           output logic [7:0] leds);
 
 wire sys_clk;
 wire reset_n;
@@ -20,6 +31,22 @@ wire [7:0] debug_addr;
 wire [15:0] debug_wr_val;
 wire [15:0] debug_val;
 wire debug_wr_en;
+wire [19:1] data_m_addr;
+wire [15:0] data_m_data_in;
+wire [15:0] data_m_data_out;
+wire data_m_access;
+reg data_m_ack;
+wire data_m_wr_en;
+wire [1:0] data_m_bytesel;
+wire d_io;
+wire sdram_access = data_m_access & ~d_io;
+
+reg instr_m_ack;
+reg instr_m_access;
+always_ff @(posedge clk)
+    instr_m_ack <= instr_m_access;
+
+assign leds = {8'b0};
 
 BitSync         ResetSync(.clk(sys_clk),
                           .d(rst_in_n),
@@ -40,17 +67,22 @@ JTAGBridge      JTAGBridge(.cpu_clk(sys_clk),
                            .*);
 
 SysPLL	SysPLL(.refclk(clk),
-	       .outclk_0(sys_clk));
+	       .outclk_0(sys_clk),
+               .outclk_1(sdr_clk));
 
-reg instr_m_ack;
-wire instr_m_access;
-always_ff @(posedge sys_clk)
-    instr_m_ack <= instr_m_access;
-
-reg data_m_ack;
-wire data_m_access;
-always_ff @(posedge sys_clk)
-    data_m_ack <= data_m_access;
+SDRAMController #(.size(32 * 1024 * 1024),
+                  .clkf(25000000))
+                SDRAMController(.clk(sys_clk),
+                                .reset(reset),
+                                .cs(sdram_access),
+                                .h_addr(data_m_addr),
+                                .h_wdata(data_m_data_out),
+                                .h_rdata(data_m_data_in),
+                                .h_wr_en(data_m_wr_en),
+                                .h_bytesel(data_m_bytesel),
+                                .h_compl(data_m_ack),
+                                .h_config_done(),
+                                .*);
 
 Core Core(.clk(sys_clk),
 	  .reset(reset),
@@ -58,14 +90,14 @@ Core Core(.clk(sys_clk),
 	  .instr_m_data_in(),
 	  .instr_m_access,
 	  .instr_m_ack,
-	  .data_m_addr(),
-	  .data_m_data_in(),
-	  .data_m_data_out(),
+	  .data_m_addr,
+	  .data_m_data_in,
+	  .data_m_data_out,
 	  .data_m_access,
 	  .data_m_ack,
-	  .data_m_wr_en(),
-	  .data_m_bytesel(),
-	  .d_io(),
+	  .data_m_wr_en,
+	  .data_m_bytesel,
+	  .d_io,
 	  .lock(),
 	  .debug_stopped,
 	  .debug_seize,

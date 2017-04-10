@@ -1,8 +1,10 @@
 module SysPLL(input wire refclk,
-	      output wire outclk_0);
+	      output wire outclk_0,
+              output wire outclk_1);
 
 wire [4:0] clks;
 assign outclk_0 = clks[0];
+assign outclk_1 = clks[1];
 
 altpll	altpll_component(
 			.inclk({1'b0, refclk}),
