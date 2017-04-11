@@ -261,8 +261,7 @@ always_ff @(posedge clk or posedge reset)
         h_compl <= 1'b0;
     else
         h_compl <=  ((state == STATE_READ && timec == cas) ||
-                     (state == STATE_WRITE && timec == tRP) ||
-                     (state == STATE_MRS && timec == tMRD - 1));
+                     (state == STATE_WRITE && timec == tRP));
 
 always_ff @(posedge clk) begin
     if (state == STATE_IDLE) begin
