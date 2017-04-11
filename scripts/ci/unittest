@@ -13,4 +13,4 @@ DOCKER_NONINTERACTIVE=1 ./docker/s80x86-build -e -c 'cd _build/unittest; \
         ../../scripts/prefix-junit Simulation. test_results/simulation.xml test_results/simulation.xml; \
         ../../scripts/prefix-junit RTL. test_results/rtl.xml test_results/rtl.xml; \
         rm -rf Testing; \
-        ctest -T Test'
+        ctest -LE JTAG -T Test'
