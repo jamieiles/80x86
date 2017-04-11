@@ -26,7 +26,10 @@ TEST_P(MovOverride, SegmentOverriden)
 
     SCOPED_TRACE(t.segment);
 
+    write_mem16(0x100, mem_init_16, DS);
     write_reg(DS, 0x2000);
+    write_mem16(0x100, mem_init_16, DS);
+
     write_reg(t.segment_register, 0x8000);
     // mov word [SEGMENT:0x0100], 0xaa55
     set_instruction({ t.prefix_byte, 0xc7, 0x06, 0x00, 0x01, 0x55, 0xaa });
@@ -34,6 +37,7 @@ TEST_P(MovOverride, SegmentOverriden)
     emulate();
 
     ASSERT_EQ(0xaa55, read_mem16(0x0100, t.segment_register));
+    EXPECT_EQ(0x2000, read_reg(DS));
     ASSERT_EQ(mem_init_16, read_mem16(0x0100, DS));
 }
 INSTANTIATE_TEST_CASE_P(SegmentOverride, MovOverride,
