@@ -146,7 +146,8 @@ public:
         size_t len = 0;
         for (auto i = 0; i < count; ++i)
              len += cpu->step();
-        ASSERT_EQ(len, instr_len);
+        if (cpu->has_instruction_length())
+            ASSERT_EQ(len, instr_len);
     }
 
     void write_flags(uint16_t val)

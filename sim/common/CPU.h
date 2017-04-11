@@ -30,6 +30,7 @@ public:
         (void)name;
     }
     virtual ~CPU() {};
+    virtual bool has_instruction_length() const = 0;
     virtual void write_coverage() {}
     virtual void write_reg(GPR regnum, uint16_t val) = 0;
     virtual uint16_t read_reg(GPR regnum) = 0;

@@ -41,6 +41,11 @@ public:
     void write_io16(uint32_t addr, uint16_t val);
     uint8_t read_io8(uint32_t addr);
     uint16_t read_io16(uint32_t addr);
+
+    virtual bool has_instruction_length() const
+    {
+        return false;
+    }
 private:
     uint16_t read_ip();
     uint16_t read_sr(GPR regnum);

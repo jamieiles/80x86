@@ -107,6 +107,11 @@ public:
     {
         return io.read<uint16_t>(addr);
     }
+
+    virtual bool has_instruction_length() const
+    {
+        return true;
+    }
 private:
     RegisterFile registers;
     Emulator emulator;
