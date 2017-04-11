@@ -8,6 +8,7 @@ configure_file(Top.qsf Top.qsf)
 set(FPGA_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/Top.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/SysPLL.v
+    ${CMAKE_CURRENT_SOURCE_DIR}/LEDSRegister.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/VirtualJTAG.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/JTAGBridge.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../sdram/Counter.sv

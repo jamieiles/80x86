@@ -37,7 +37,7 @@ wire [19:1] data_m_addr;
 wire [15:0] data_m_data_in;
 wire [15:0] data_m_data_out;
 wire data_m_access;
-wire data_m_ack;
+wire data_m_ack = data_mem_ack | io_ack;
 wire data_m_wr_en;
 wire [1:0] data_m_bytesel;
 
@@ -57,14 +57,18 @@ wire q_m_wr_en;
 wire [1:0] q_m_bytesel;
 
 wire d_io;
+
 wire sdram_access = q_m_access & ~d_io;
 
-assign leds = {8'b0};
+wire leds_access = {data_m_addr[15:1], 1'b0} == 16'hfffe & data_m_access & d_io;
+wire leds_ack;
+wire io_ack = leds_ack;
+
+wire data_mem_ack;
 
 BitSync         ResetSync(.clk(sys_clk),
                           .d(rst_in_n),
                           .q(reset_n));
-
 
 VirtualJTAG VirtualJTAG(.ir_out(),
                         .tdo(tdo),
@@ -80,6 +84,7 @@ JTAGBridge      JTAGBridge(.cpu_clk(sys_clk),
                            .*);
 
 MemArbiter MemArbiter(.clk(sys_clk),
+                      .data_m_ack(data_mem_ack),
                       .*);
 
 SysPLL	SysPLL(.refclk(clk),
@@ -99,6 +104,13 @@ SDRAMController #(.size(32 * 1024 * 1024),
                                 .h_compl(q_m_ack),
                                 .h_config_done(),
                                 .*);
+
+LEDSRegister     LEDSRegister(.cs(leds_access),
+                              .leds_val(leds),
+                              // Write to read port
+                              .data_m_data_in(data_m_data_out),
+                              .data_m_ack(leds_ack),
+                              .*);
 
 Core Core(.clk(sys_clk),
 	  .reset(reset),
