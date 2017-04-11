@@ -37,6 +37,8 @@ public:
     uint8_t read_mem8(uint16_t segment, uint16_t addr);
     uint16_t read_mem16(uint16_t segment, uint16_t addr);
     uint32_t read_mem32(uint16_t segment, uint16_t addr);
+    void write_vector8(uint16_t segment, uint16_t addr, const std::vector<uint8_t> &v);
+    void write_vector16(uint16_t segment, uint16_t addr, const std::vector<uint16_t> &v);
     void write_io8(uint32_t addr, uint8_t val);
     void write_io16(uint32_t addr, uint16_t val);
     uint8_t read_io8(uint32_t addr);

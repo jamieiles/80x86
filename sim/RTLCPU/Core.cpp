@@ -320,6 +320,43 @@ void RTLCPU<debug_enabled>::write_mem16(uint16_t segment, uint16_t addr,
 }
 
 template <bool debug_enabled>
+void RTLCPU<debug_enabled>::write_vector8(uint16_t segment, uint16_t addr,
+                                          const std::vector<uint8_t> &v)
+{
+    auto prev_ds = read_reg(DS);
+
+    write_reg(DS, segment);
+
+    uint16_t offs = 0;
+    for (auto &b: v) {
+        write_mar(addr + offs++);
+        write_mdr(b);
+        debug_run_proc(0x23); // Write mem 8
+    }
+
+    write_reg(DS, prev_ds);
+}
+
+template <bool debug_enabled>
+void RTLCPU<debug_enabled>::write_vector16(uint16_t segment, uint16_t addr,
+                                           const std::vector<uint16_t> &v)
+{
+    auto prev_ds = read_reg(DS);
+
+    write_reg(DS, segment);
+
+    uint16_t offs = 0;
+    for (auto &b: v) {
+        write_mar(addr + offs);
+        write_mdr(b);
+        debug_run_proc(0x24); // Write mem 16
+        offs += 2;
+    }
+
+    write_reg(DS, prev_ds);
+}
+
+template <bool debug_enabled>
 void RTLCPU<debug_enabled>::write_mem32(uint16_t segment, uint16_t addr,
                                         uint32_t val)
 {

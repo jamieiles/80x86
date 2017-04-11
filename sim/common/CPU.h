@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 
 #include "Memory.h"
 #include "RegisterFile.h"
@@ -51,5 +52,20 @@ public:
     virtual void write_io16(uint32_t addr, uint16_t val) = 0;
     virtual uint8_t read_io8(uint32_t addr) = 0;
     virtual uint16_t read_io16(uint32_t addr) = 0;
+
+    virtual void write_vector8(uint16_t segment, uint16_t addr, const std::vector<uint8_t> &v)
+    {
+        uint16_t offs = 0;
+        for (auto &b: v)
+            write_mem8(segment, addr + offs++, b);
+    }
+    virtual void write_vector16(uint16_t segment, uint16_t addr, const std::vector<uint16_t> &v)
+    {
+        uint16_t offs = 0;
+        for (auto &w: v) {
+            write_mem16(segment, addr + offs, w);
+            offs += 2;
+        }
+    }
 };
 

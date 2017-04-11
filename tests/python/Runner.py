@@ -12,9 +12,14 @@ class Runner(object):
         self.cpu = simtype(self.binary)
 
         with open(os.path.join('${CMAKE_CURRENT_BINARY_DIR}', 'programs', self.binary)) as b:
-            for offset, b in enumerate(b.read()):
-                self.cpu.write_mem8(self.cpu.read_reg(GPR.CS),
-                                    self.load_address + offset, ord(b))
+            bytevec = [ord(v) for v in b.read()]
+            if len(bytevec) % 2 == 1:
+                bytevec.append(0)
+            wordvec = []
+            for a, b in zip(bytevec[::2], bytevec[1::2]):
+                wordvec.append(a | (b << 8))
+            self.cpu.write_vector16(self.cpu.read_reg(GPR.CS),
+                                    self.load_address, wordvec)
 
     def run(self, max_cycles=1000):
         self.setup()
