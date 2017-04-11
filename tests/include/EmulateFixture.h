@@ -37,9 +37,7 @@ public:
 
     void set_instruction(const std::vector<uint8_t> &instr)
     {
-        for (size_t m = 0; m < instr.size(); ++m)
-            cpu->write_mem8(cpu->read_reg(CS), cpu->read_reg(IP) + m,
-                            instr[m]);
+        cpu->write_vector8(cpu->read_reg(CS), cpu->read_reg(IP), instr);
         instr_len = instr.size();
         // Force a prefetch fifo clear so we don't end up executing what was
         // there before we wrote this instruction.
