@@ -15,3 +15,8 @@ target_link_libraries(jtag-unittest
                       gtest
                       gmock
                       JTAGCPU)
+
+add_test(jtag-unittest jtag-unittest)
+set_tests_properties(jtag-unittest PROPERTIES TIMEOUT 600)
+set_tests_properties(jtag-unittest PROPERTIES RESOURCE_LOCK "JTAG")
+set_tests_properties(jtag-unittest PROPERTIES LABELS JTAG)
