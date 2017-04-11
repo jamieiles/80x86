@@ -13,6 +13,7 @@ set(FPGA_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/JTAGBridge.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../sdram/Counter.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../sdram/SDRAMController.sv
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/MemArbiter.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/cdc/BitSync.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/cdc/SyncPulse.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/cdc/MCP.sv)

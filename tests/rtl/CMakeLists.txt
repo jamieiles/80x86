@@ -83,7 +83,7 @@ add_executable(rtl-unittest
 target_link_libraries(rtl-unittest
                       VALU
                       VCSIPSync
-                      VCore
+                      VRTLCPU
                       VDivider
                       VFifo
                       VFlags

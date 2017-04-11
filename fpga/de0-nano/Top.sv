@@ -31,20 +31,33 @@ wire [7:0] debug_addr;
 wire [15:0] debug_wr_val;
 wire [15:0] debug_val;
 wire debug_wr_en;
+
+// Data bus
 wire [19:1] data_m_addr;
 wire [15:0] data_m_data_in;
 wire [15:0] data_m_data_out;
 wire data_m_access;
-reg data_m_ack;
+wire data_m_ack;
 wire data_m_wr_en;
 wire [1:0] data_m_bytesel;
-wire d_io;
-wire sdram_access = data_m_access & ~d_io;
 
-reg instr_m_ack;
-reg instr_m_access;
-always_ff @(posedge clk)
-    instr_m_ack <= instr_m_access;
+// Instruction bus
+wire [19:1] instr_m_addr;
+wire [15:0] instr_m_data_in;
+wire instr_m_access;
+wire instr_m_ack;
+
+// Multiplexed I/D bus.
+wire [19:1] q_m_addr;
+wire [15:0] q_m_data_out;
+wire [15:0] q_m_data_in;
+wire q_m_ack;
+wire q_m_access;
+wire q_m_wr_en;
+wire [1:0] q_m_bytesel;
+
+wire d_io;
+wire sdram_access = q_m_access & ~d_io;
 
 assign leds = {8'b0};
 
@@ -66,6 +79,9 @@ VirtualJTAG VirtualJTAG(.ir_out(),
 JTAGBridge      JTAGBridge(.cpu_clk(sys_clk),
                            .*);
 
+MemArbiter MemArbiter(.clk(sys_clk),
+                      .*);
+
 SysPLL	SysPLL(.refclk(clk),
 	       .outclk_0(sys_clk),
                .outclk_1(sdr_clk));
@@ -75,19 +91,19 @@ SDRAMController #(.size(32 * 1024 * 1024),
                 SDRAMController(.clk(sys_clk),
                                 .reset(reset),
                                 .cs(sdram_access),
-                                .h_addr(data_m_addr),
-                                .h_wdata(data_m_data_out),
-                                .h_rdata(data_m_data_in),
-                                .h_wr_en(data_m_wr_en),
-                                .h_bytesel(data_m_bytesel),
-                                .h_compl(data_m_ack),
+                                .h_addr(q_m_addr),
+                                .h_wdata(q_m_data_out),
+                                .h_rdata(q_m_data_in),
+                                .h_wr_en(q_m_wr_en),
+                                .h_bytesel(q_m_bytesel),
+                                .h_compl(q_m_ack),
                                 .h_config_done(),
                                 .*);
 
 Core Core(.clk(sys_clk),
 	  .reset(reset),
-	  .instr_m_addr(),
-	  .instr_m_data_in(),
+	  .instr_m_addr,
+	  .instr_m_data_in,
 	  .instr_m_access,
 	  .instr_m_ack,
 	  .data_m_addr,
