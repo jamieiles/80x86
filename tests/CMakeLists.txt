@@ -6,10 +6,10 @@ include_directories(../sim)
 include_directories(include)
 
 add_subdirectory(programs)
-add_subdirectory(jtag)
 add_subdirectory(instructions)
 add_subdirectory(integration)
 add_subdirectory(simulator)
 add_subdirectory(rtl)
+add_subdirectory(jtag)
 
 configure_file(python/Runner.py ${CMAKE_CURRENT_BINARY_DIR}/Runner.py)
