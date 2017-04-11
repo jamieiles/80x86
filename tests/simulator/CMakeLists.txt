@@ -10,6 +10,7 @@ add_library(simtests OBJECT
 add_executable(sim-unittest
                SimMain.cpp
 	       $<TARGET_OBJECTS:instructions>
+	       $<TARGET_OBJECTS:instructionsnohw>
 	       $<TARGET_OBJECTS:simtests>)
 target_link_libraries(sim-unittest
 		      8086sim

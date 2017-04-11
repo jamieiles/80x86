@@ -1,5 +1,7 @@
 include_directories(..)
 
+add_library(instructionsnohw OBJECT
+            TestIO.cpp)
 add_library(instructions OBJECT
             Arithmetic.cpp
             Shift.cpp
@@ -17,7 +19,6 @@ add_library(instructions OBJECT
             TestIncDec.cpp
             TestInt.cpp
             TestInvalid.cpp
-            TestIO.cpp
             TestLock.cpp
             TestLoop.cpp
             TestMisc.cpp
