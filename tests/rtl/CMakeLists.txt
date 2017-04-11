@@ -78,7 +78,6 @@ add_executable(rtl-unittest
                TestSegmentOverride.cpp
                TestSegmentRegisterFile.cpp
 	       $<TARGET_OBJECTS:instructions>
-	       $<TARGET_OBJECTS:instructionsnohw>
                main.cpp)
 
 target_link_libraries(rtl-unittest
