@@ -1,5 +1,6 @@
 module MemArbiter(input logic clk,
                   input logic reset,
+                  input logic d_io,
                   // Instruction bus
                   input logic [19:1] instr_m_addr,
                   output logic [15:0] instr_m_data_in,
@@ -40,7 +41,7 @@ assign data_m_ack = data_grant & q_m_ack;
 
 // Data takes priority over instruction accesses to complete instructions.
 wire instr_will_grant = instr_m_access & ~data_m_access & ~data_grant;
-wire data_will_grant = data_m_access & ~instr_grant;
+wire data_will_grant = ~d_io & data_m_access & ~instr_grant;
 
 always_ff @(posedge clk or posedge reset) begin
     if (reset) begin
