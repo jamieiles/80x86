@@ -32,7 +32,7 @@ add_custom_command(OUTPUT Top.qpf
                    DEPENDS Top.qsf)
 add_custom_command(OUTPUT Top.map.rpt
                    COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/microcode.mif .
-                   COMMAND ${QUARTUS_MAP_EXECUTABLE} ${SOURCE_ARGS} --optimize=speed Top
+                   COMMAND ${QUARTUS_MAP_EXECUTABLE} ${SOURCE_ARGS} --family ${FPGA_FAMILY} --optimize=speed Top
                    DEPENDS ${CORE_SOURCES} ${FPGA_SOURCES} Top.qpf Top.qsf generate_microcode)
 add_custom_command(OUTPUT Top.fit.rpt
                    COMMAND ${QUARTUS_FIT_EXECUTABLE} --part=${FPGA_PART} --read_settings_file=on --set=SDC_FILE=${CMAKE_CURRENT_SOURCE_DIR}/Top.sdc Top
