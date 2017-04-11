@@ -1,10 +1,9 @@
+include(Quartus)
+
 get_property(ALU_SOURCES GLOBAL PROPERTY G_ALU_SOURCES)
 get_property(CORE_SOURCES GLOBAL PROPERTY G_CORE_SOURCES)
 
 configure_file(Top.qsf Top.qsf)
-
-set(FPGA_FAMILY "Cyclone V")
-set(FPGA_PART "5CEBA4F23C7")
 
 set(FPGA_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/Top.sv
@@ -17,31 +16,20 @@ set(FPGA_SOURCES
 
 set(ALL_SOURCES ${CORE_SOURCES} ${FPGA_SOURCES})
 
-foreach(source ${ALL_SOURCES})
-    list(APPEND SOURCE_ARGS --source=${source})
-endforeach(source)
-
 set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/Microcode.v PROPERTIES
                             COMPILE_FLAGS "-DMICROCODE_ROM_PATH=\\\"${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/\\\"")
 
-add_custom_command(OUTPUT Top.qpf
-                   COMMAND ${QUARTUS_SH_EXECUTABLE} --prepare -f ${FPGA_FAMILY} -t Top Top
-                   DEPENDS Top.qsf)
-add_custom_command(OUTPUT Top.map.rpt
+add_custom_command(OUTPUT microcode.mif
                    COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/microcode.mif .
-                   COMMAND ${QUARTUS_MAP_EXECUTABLE} ${SOURCE_ARGS} --optimize=speed Top
-                   DEPENDS ${CORE_SOURCES} ${FPGA_SOURCES} Top.qpf Top.qsf generate_microcode)
-add_custom_command(OUTPUT Top.fit.rpt
-                   COMMAND ${QUARTUS_FIT_EXECUTABLE} --part=${FPGA_PART} --read_settings_file=on --set=SDC_FILE=${CMAKE_CURRENT_SOURCE_DIR}/Top.sdc Top
-                   DEPENDS Top.map.rpt Top.sdc)
-add_custom_command(OUTPUT Top.asm.rpt
-                   COMMAND ${QUARTUS_ASM_EXECUTABLE} Top
-                   DEPENDS Top.fit.rpt)
-add_custom_command(OUTPUT Top.sta.rpt Top.sof
-                   COMMAND ${QUARTUS_STA_EXECUTABLE} Top
-                   DEPENDS Top.asm.rpt)
+                   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/microcode.mif generate_microcode)
+add_fpga(PROJECT Top
+         FAMILY "Cyclone V"
+         PART "5CEBA4F23C7"
+         SOURCES ${ALL_SOURCES})
+
 add_custom_command(OUTPUT __program_de0_cv__
                    COMMAND ${QUARTUS_PGM_EXECUTABLE} --mode=jtag -o \"P\;Top.sof\"
                    DEPENDS Top.sof)
+
 add_custom_target(de0-cv DEPENDS Top.sta.rpt)
 add_custom_target(de0-cv-program DEPENDS __program_de0_cv__)
