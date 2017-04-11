@@ -9,6 +9,8 @@ class ModrmOverrideRunner(Runner):
 
     def setup(self):
         self.write_reg(GPR.IP, 1024)
+        self.cpu.write_mem16(0x2000, 0x200, 0)
+        self.cpu.write_mem16(0x3000, 0x100, 0)
 
     def validate_result(self):
         self.assert_mem_equal(0x2000, 0x200, 0xa5a5, width=16)
