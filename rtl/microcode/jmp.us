@@ -95,7 +95,7 @@ JUMP(0x7f);
 
 .auto_address;
 test_jump:
-    alu_op GETFLAGS, next_instruction, next_instruction, jmp_if_taken jmp_taken;
+    jmp_if_taken jmp_taken;
     next_instruction;
 jmp_taken:
     a_sel IP, b_sel IMMEDIATE, alu_op ADD, load_ip, next_instruction;

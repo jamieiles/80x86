@@ -304,7 +304,7 @@ Flags           Flags(.clk(clk),
                       .update_flags(update_flags));
 
 JumpTest        JumpTest(.opcode(opcode),
-                         .flags(alu_flags_out),
+                         .flags(flags),
                          .taken(jump_taken));
 
 LoadStore       LoadStore(.clk(clk),

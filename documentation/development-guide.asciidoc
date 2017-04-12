@@ -141,11 +141,10 @@ adjacent with the register based instruction appearing first.
   incremented address.  Only valid on string instructions that may be combined
   with a rep prefix.
 
-| jmp_if_zero LABEL | Jump to the target address if the Z flag of the ALU
-  output is set, otherwise continue with the adjacent instruction.  Note that
-  this uses the flags output from the ALU, not the current value of the flags
-  register, if the value in the flags register is required, use the `GETFLAGS`
-  ALU operation in combination with this field.
+| jmp_if_zero LABEL | Jump to the target address if the Z flag is set,
+  otherwise continue with the adjacent instruction.  Note that this uses the
+  flags register and not the combinational flags output of the current ALU
+  operation.
 
 | jmp_if_rep_not_taken LABEL | Check the condition for the current rep prefix
   and jump to the target if the termination condition is not met, otherwise
