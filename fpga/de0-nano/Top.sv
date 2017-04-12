@@ -92,7 +92,7 @@ SysPLL	SysPLL(.refclk(clk),
                .outclk_1(sdr_clk));
 
 SDRAMController #(.size(32 * 1024 * 1024),
-                  .clkf(25000000))
+                  .clkf(50000000))
                 SDRAMController(.clk(sys_clk),
                                 .reset(reset),
                                 .cs(sdram_access),
