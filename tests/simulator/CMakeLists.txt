@@ -19,4 +19,4 @@ target_link_libraries(sim-unittest
 
 add_test(sim-unittest ./sim-unittest --gtest_color=yes)
 set_tests_properties(sim-unittest PROPERTIES TIMEOUT 5)
-set_tests_properties(sim-unittest PROPERTIES LABEL SoftwareCPU)
+set_tests_properties(sim-unittest PROPERTIES LABELS SoftwareCPU)
