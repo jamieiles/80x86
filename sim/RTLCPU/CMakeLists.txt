@@ -14,13 +14,10 @@ set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/Micr
 get_property(ALU_SOURCES GLOBAL PROPERTY G_ALU_SOURCES)
 get_property(CORE_SOURCES GLOBAL PROPERTY G_CORE_SOURCES)
 
-verilate(TOPLEVEL RTLCPU
-         VERILOG_SOURCES
-         ${CMAKE_CURRENT_SOURCE_DIR}/RTLCPU.sv
-         ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/MemArbiter.sv
-         ${CORE_SOURCES}
-         GENERATED_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/VRTLCPU___024unit.cpp
-         ${CMAKE_CURRENT_BINARY_DIR}/VRTLCPU___024unit.h
+verilate(TOPLEVEL Core
+         VERILOG_SOURCES ${CORE_SOURCES}
+         GENERATED_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/VCore___024unit.cpp
+         ${CMAKE_CURRENT_BINARY_DIR}/VCore___024unit.h
          DEPENDS generate_microcode)
 
 add_library(rtlsim SHARED
@@ -29,9 +26,9 @@ add_library(rtlsim SHARED
 target_link_libraries(rtlsim
                       simcommon
                       verilator
-                      VRTLCPU)
+                      VCore)
 set_target_properties(rtlsim PROPERTIES LINK_FLAGS "-Wl,--export-dynamic")
 
-install(TARGETS VRTLCPU
+install(TARGETS VCore
         LIBRARY DESTINATION lib
         COMPONENT simulator)

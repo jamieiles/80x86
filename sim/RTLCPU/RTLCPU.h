@@ -3,13 +3,13 @@
 #include <string>
 
 #include <VerilogDriver.h>
-#include <VRTLCPU.h>
+#include <VCore.h>
 
 #include "CPU.h"
 #include "RegisterFile.h"
 
 template <bool debug_enabled=verilator_debug_enabled>
-class RTLCPU : public VerilogDriver<VRTLCPU, debug_enabled>,
+class RTLCPU : public VerilogDriver<VCore, debug_enabled>,
     public CPU {
 public:
     RTLCPU(const std::string &test_name);
@@ -61,7 +61,8 @@ public:
     }
 private:
     uint16_t get_microcode_address();
-    void mem_access();
+    void data_access();
+    void instruction_access();
     uint16_t read_ip();
     uint16_t read_sr(GPR regnum);
     uint16_t read_gpr(GPR regnum);
@@ -73,7 +74,8 @@ private:
     void write_mar(uint16_t v);
     void write_mdr(uint16_t v);
 
-    bool mem_in_progress;
+    bool i_in_progress;
+    bool d_in_progress;
     int mem_latency;
     std::string test_name;
     bool is_stopped;

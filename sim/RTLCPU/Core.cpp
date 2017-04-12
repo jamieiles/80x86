@@ -1,7 +1,7 @@
 #include <stdexcept>
 #include <fstream>
 #include <VerilogDriver.h>
-#include <VRTLCPU.h>
+#include <VCore.h>
 #include <boost/algorithm/string/replace.hpp>
 
 #include "svdpi.h"
@@ -26,25 +26,27 @@ double sc_time_stamp()
 
 template <bool debug_enabled>
 RTLCPU<debug_enabled>::RTLCPU(const std::string &test_name)
-    : VerilogDriver<VRTLCPU, debug_enabled>(test_name),
-    mem_in_progress(false),
-    mem_latency(16),
+    : VerilogDriver<VCore, debug_enabled>(test_name),
+    i_in_progress(false),
+    d_in_progress(false),
+    mem_latency(0),
     test_name(test_name),
     is_stopped(true)
 {
     this->dut.debug_seize = 1;
     this->reset();
 
-    this->periodic(ClockSetup, [&]{ this->mem_access(); });
+    this->periodic(ClockSetup, [&]{ this->data_access(); });
+    this->periodic(ClockSetup, [&]{ this->instruction_access(); });
     this->periodic(ClockCapture, [&]{
         auto dev = !this->dut.d_io ? &this->mem : &this->io;
-        if (this->dut.q_m_access && this->dut.q_m_wr_en) {
-            if (this->dut.q_m_bytesel & (1 << 0))
-                dev->template write<uint8_t>(this->dut.q_m_addr << 1,
-                                             this->dut.q_m_data_out & 0xff);
-            if (this->dut.q_m_bytesel & (1 << 1))
-                dev->template write<uint8_t>((this->dut.q_m_addr << 1) + 1,
-                                             (this->dut.q_m_data_out >> 8) & 0xff);
+        if (this->dut.data_m_access && this->dut.data_m_wr_en) {
+            if (this->dut.data_m_bytesel & (1 << 0))
+                dev->template write<uint8_t>(this->dut.data_m_addr << 1,
+                                             this->dut.data_m_data_out & 0xff);
+            if (this->dut.data_m_bytesel & (1 << 1))
+                dev->template write<uint8_t>((this->dut.data_m_addr << 1) + 1,
+                                             (this->dut.data_m_data_out >> 8) & 0xff);
         }
     });
     this->periodic(ClockCapture, [&]{
@@ -98,7 +100,7 @@ void RTLCPU<debug_enabled>::write_coverage()
     std::ofstream cov;
     cov.open("coverage/" + filename);
 
-    svSetScope(svGetScopeFromName("TOP.RTLCPU.Core.Microcode"));
+    svSetScope(svGetScopeFromName("TOP.Core.Microcode"));
     auto num_bins = this->dut.get_microcode_num_instructions();
     for (auto i = 0; i < num_bins; ++i) {
         auto count = this->dut.get_microcode_coverage_bin(i);
@@ -111,7 +113,7 @@ void RTLCPU<debug_enabled>::write_coverage()
 template <bool debug_enabled>
 void RTLCPU<debug_enabled>::reset()
 {
-    VerilogDriver<VRTLCPU, debug_enabled>::reset();
+    VerilogDriver<VCore, debug_enabled>::reset();
 
     while (get_microcode_address() != 0x102)
         this->cycle();
@@ -224,7 +226,7 @@ uint16_t RTLCPU<debug_enabled>::read_sr(GPR regnum)
 template <bool debug_enabled>
 size_t RTLCPU<debug_enabled>::get_and_clear_instr_length()
 {
-    svSetScope(svGetScopeFromName("TOP.RTLCPU.Core"));
+    svSetScope(svGetScopeFromName("TOP.Core"));
 
     return static_cast<size_t>(this->dut.get_and_clear_instr_length());
 }
@@ -264,23 +266,39 @@ bool RTLCPU<debug_enabled>::has_trapped()
 }
 
 template <bool debug_enabled>
-void RTLCPU<debug_enabled>::mem_access()
+void RTLCPU<debug_enabled>::instruction_access()
 {
-    if (this->dut.reset || !this->dut.q_m_access || mem_in_progress)
+    if (this->dut.reset || !this->dut.instr_m_access || i_in_progress)
         return;
 
-    this->after_n_cycles(0,[&]{
-        auto v = this->dut.d_io ?
-            this->io.template read<uint16_t>(this->dut.q_m_addr << 1) :
-            this->mem.template read<uint16_t>(this->dut.q_m_addr << 1);
-        this->dut.q_m_data_in = v;
-            });
-    mem_in_progress = true;
+    i_in_progress = true;
     this->after_n_cycles(mem_latency, [&]{
-        this->dut.q_m_ack = 1;
+        this->dut.instr_m_data_in =
+            this->mem.template read<uint16_t>(this->dut.instr_m_addr << 1);
+        this->dut.instr_m_ack = 1;
         this->after_n_cycles(1, [&]{
-            this->dut.q_m_ack = 0;
-            mem_in_progress = false;
+            this->dut.instr_m_ack = 0;
+            i_in_progress = false;
+        });
+    });
+}
+
+template <bool debug_enabled>
+void RTLCPU<debug_enabled>::data_access()
+{
+    if (this->dut.reset || !this->dut.data_m_access || d_in_progress)
+        return;
+
+    d_in_progress = true;
+    this->after_n_cycles(mem_latency, [&]{
+        auto v = this->dut.d_io ?
+            this->io.template read<uint16_t>(this->dut.data_m_addr << 1) :
+            this->mem.template read<uint16_t>(this->dut.data_m_addr << 1);
+        this->dut.data_m_data_in = v;
+        this->dut.data_m_ack = 1;
+        this->after_n_cycles(1, [&]{
+            this->dut.data_m_ack = 0;
+            d_in_progress = false;
         });
     });
 }
@@ -288,7 +306,7 @@ void RTLCPU<debug_enabled>::mem_access()
 template <bool debug_enabled>
 uint16_t RTLCPU<debug_enabled>::get_microcode_address()
 {
-    svSetScope(svGetScopeFromName("TOP.RTLCPU.Core.Microcode"));
+    svSetScope(svGetScopeFromName("TOP.Core.Microcode"));
 
     return this->dut.get_microcode_address();
 }
