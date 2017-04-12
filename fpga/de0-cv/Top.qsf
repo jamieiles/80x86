@@ -1,5 +1,7 @@
 set_global_assignment -name USE_CONFIGURATION_DEVICE OFF
 
+set_global_assignment -name SLOW_SLEW_RATE Off
+set_global_assignment -name TXPMA_SLEW_RATE Low
 set_global_assignment -name SMART_RECOMPILE ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_RETIMING ON
@@ -11,6 +13,58 @@ set_global_assignment -name OPTIMIZATION_TECHNIQUE SPEED
 set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVCMOS"
 
 set_location_assignment PIN_M9 -to clk
-set_location_assignment PIN_P22 -to rst_in
+set_location_assignment PIN_P22 -to rst_in_n
 
 set_instance_assignment -name GLOBAL_SIGNAL "GLOBAL CLOCK" -to "SysPLL:SysPLL|outclk_0"
+set_instance_assignment -name GLOBAL_SIGNAL "GLOBAL CLOCK" -to "SysPLL:SysPLL|outclk_1"
+set_instance_assignment -name MATCH_PLL_COMPENSATION_CLOCK ON -to "SysPLL:SysPLL|outclk_0"
+
+# SDRAM
+set_location_assignment PIN_AB11 -to sdr_clk
+set_location_assignment PIN_W8 -to s_addr[0]
+set_location_assignment PIN_T8 -to s_addr[1]
+set_location_assignment PIN_U11 -to s_addr[2]
+set_location_assignment PIN_Y10 -to s_addr[3]
+set_location_assignment PIN_N6 -to s_addr[4]
+set_location_assignment PIN_AB10 -to s_addr[5]
+set_location_assignment PIN_P12 -to s_addr[6]
+set_location_assignment PIN_P7 -to s_addr[7]
+set_location_assignment PIN_P8 -to s_addr[8]
+set_location_assignment PIN_R5 -to s_addr[9]
+set_location_assignment PIN_U8 -to s_addr[10]
+set_location_assignment PIN_P6 -to s_addr[11]
+set_location_assignment PIN_R7 -to s_addr[12]
+set_location_assignment PIN_Y9 -to s_data[0]
+set_location_assignment PIN_T10 -to s_data[1]
+set_location_assignment PIN_R9 -to s_data[2]
+set_location_assignment PIN_Y11 -to s_data[3]
+set_location_assignment PIN_R10 -to s_data[4]
+set_location_assignment PIN_R11 -to s_data[5]
+set_location_assignment PIN_R12 -to s_data[6]
+set_location_assignment PIN_AA12 -to s_data[7]
+set_location_assignment PIN_AA9 -to s_data[8]
+set_location_assignment PIN_AB8 -to s_data[9]
+set_location_assignment PIN_AA8 -to s_data[10]
+set_location_assignment PIN_AA7 -to s_data[11]
+set_location_assignment PIN_V10 -to s_data[12]
+set_location_assignment PIN_V9 -to s_data[13]
+set_location_assignment PIN_U10 -to s_data[14]
+set_location_assignment PIN_T9 -to s_data[15]
+set_location_assignment PIN_U6 -to s_cs_n
+set_location_assignment PIN_R6 -to s_clken
+set_location_assignment PIN_V6 -to s_cas_n
+set_location_assignment PIN_U12 -to s_bytesel[0]
+set_location_assignment PIN_N8 -to s_bytesel[1]
+set_location_assignment PIN_AB6 -to s_ras_n
+set_location_assignment PIN_AB5 -to s_wr_en
+set_location_assignment PIN_T7 -to s_banksel[0]
+set_location_assignment PIN_AB7 -to s_banksel[1]
+set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to sdr_clk
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_ras_n
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_cas_n
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_wr_en
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_bytesel
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_addr
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_data
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_banksel
+set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to s_*
