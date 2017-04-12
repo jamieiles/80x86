@@ -96,6 +96,7 @@ class JumpType(Enum):
     ZERO = 5
     REP_NOT_COMPLETE = 6
     JUMP_TAKEN = 7
+    RB_ZERO = 8
 
 class MARWrSel(Enum):
     EA = 0

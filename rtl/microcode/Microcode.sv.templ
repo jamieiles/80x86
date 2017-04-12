@@ -16,6 +16,7 @@ module Microcode(input logic clk,
                  output logic segment_override,
                  output logic [7:0] opcode,
                  input logic jump_taken,
+                 input logic rb_zero,
                  output logic lock,
                  output logic multibit_shift,
                  // Microinstruction fields.
@@ -127,6 +128,8 @@ always_comb begin
         next_addr = current.next + {{addr_bits-1{1'b0}}, ~rm_is_reg};
     else if (!do_stall && current.jump_type == JumpType_OPCODE)
         next_addr = {{addr_bits-8{1'b0}}, fifo_rd_data};
+    else if (!do_stall && current.jump_type == JumpType_RB_ZERO)
+        next_addr = rb_zero ? current.next : addr + 1'b1;
     else if (!do_stall && divide_error)
         next_addr = {{addr_bits-9{1'b0}}, 9'h101};
     else if (!do_stall && current.next_instruction && debug_seize)

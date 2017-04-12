@@ -4,10 +4,10 @@
 .auto_address;
 cmpsb:
     ra_sel DI, jmp_if_not_rep cmpsb_no_rep;
-    ra_sel CX;
+    rb_cl;
 cmpsb_rep_loop:
     ra_sel CX, a_sel RA, b_sel IMMEDIATE, immediate 0x0, alu_op SUB,
-        jmp_if_zero cmpsb_done;
+        jmp_rb_zero cmpsb_done;
     ra_sel DI, a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
         rd_sel_source MICROCODE_RD_SEL, rd_sel CX, reg_wr_en;
 cmpsb_no_rep:
@@ -25,7 +25,7 @@ cmpsb_no_rep:
     width 8, segment DS, mem_read;
     width 8, a_sel MDR, b_sel TEMP, alu_op SUB,
         update_flags OF SF ZF CF PF AF, jmp_if_not_rep cmpsb_done;
-    ra_sel CX, alu_op GETFLAGS, jmp_if_rep_not_complete cmpsb_rep_loop;
+    rb_cl, alu_op GETFLAGS, jmp_if_rep_not_complete cmpsb_rep_loop;
 cmpsb_done:
     next_instruction;
 
@@ -35,10 +35,10 @@ cmpsb_done:
 .auto_address;
 cmpsw:
     ra_sel DI, jmp_if_not_rep cmpsw_no_rep;
-    ra_sel CX;
+    rb_cl;
 cmpsw_rep_loop:
     ra_sel CX, a_sel RA, b_sel IMMEDIATE, immediate 0x0, alu_op SUB,
-        jmp_if_zero cmpsw_done;
+        jmp_rb_zero cmpsw_done;
     ra_sel DI, a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
         rd_sel_source MICROCODE_RD_SEL, rd_sel CX, reg_wr_en;
 cmpsw_no_rep:
@@ -55,6 +55,6 @@ cmpsw_no_rep:
     segment DS, mem_read;
     a_sel MDR, b_sel TEMP, alu_op SUB,
         update_flags OF SF ZF CF PF AF, jmp_if_not_rep cmpsw_done;
-    ra_sel CX, alu_op GETFLAGS, jmp_if_rep_not_complete cmpsw_rep_loop;
+    rb_cl, alu_op GETFLAGS, jmp_if_rep_not_complete cmpsw_rep_loop;
 cmpsw_done:
     next_instruction;

@@ -7,7 +7,8 @@ loop:
     ra_sel CX;
     a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
         rd_sel_source MICROCODE_RD_SEL, rd_sel CX, reg_wr_en,
-        jmp_if_zero loop_not_taken;
+        rb_cl;
+    jmp_rb_zero loop_not_taken;
     a_sel IP, b_sel IMMEDIATE, alu_op ADD, load_ip, next_instruction;
 loop_not_taken:
     next_instruction;
@@ -20,13 +21,14 @@ loop_not_taken:
 loope:
     ra_sel CX;
     a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
-        rd_sel_source MICROCODE_RD_SEL, rd_sel CX, reg_wr_en,
-        jmp_if_zero loope_not_taken;
-    alu_op GETFLAGS, jmp_if_zero loope_taken;
+        rd_sel_source MICROCODE_RD_SEL, rd_sel CX, reg_wr_en, rb_cl,
+        jmp_if_zero loope_maybe_taken;
+    jmp loope_not_taken;
+loope_maybe_taken:
+    jmp_rb_zero loope_not_taken;
+    a_sel IP, b_sel IMMEDIATE, alu_op ADD, load_ip, next_instruction;
 loope_not_taken:
     next_instruction;
-loope_taken:
-    a_sel IP, b_sel IMMEDIATE, alu_op ADD, load_ip, next_instruction;
 
 // LOOPNE
 .at 0xe0;
@@ -36,9 +38,9 @@ loope_taken:
 loopne:
     ra_sel CX;
     a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
-        rd_sel_source MICROCODE_RD_SEL, rd_sel CX, reg_wr_en,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel CX, reg_wr_en, rb_cl,
         jmp_if_zero loopne_not_taken;
-    alu_op GETFLAGS, jmp_if_zero loopne_not_taken;
+    jmp_rb_zero loopne_not_taken;
 loopne_taken:
     a_sel IP, b_sel IMMEDIATE, alu_op ADD, load_ip, next_instruction;
 loopne_not_taken:

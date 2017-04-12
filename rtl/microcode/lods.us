@@ -4,10 +4,10 @@
 .auto_address;
 lodsb:
     ra_sel SI, jmp_if_not_rep lodsb_no_rep;
-    ra_sel CX;
+    rb_cl;
 lodsb_rep_loop:
     ra_sel CX, a_sel RA, b_sel IMMEDIATE, immediate 0x0, alu_op SUB,
-        jmp_if_zero lodsb_done;
+        jmp_rb_zero lodsb_done;
     ra_sel SI, a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
         rd_sel_source MICROCODE_RD_SEL, rd_sel CX, reg_wr_en;
 lodsb_no_rep:
@@ -17,7 +17,7 @@ lodsb_no_rep:
     width 8, segment DS, mem_read;
     width 8, a_sel MDR, alu_op SELA, rd_sel_source MICROCODE_RD_SEL,
         rd_sel AL, reg_wr_en, jmp_if_not_rep lodsb_done;
-    ra_sel CX, jmp lodsb_rep_loop;
+    rb_cl, jmp lodsb_rep_loop;
 lodsb_done:
     next_instruction;
 
@@ -27,10 +27,10 @@ lodsb_done:
 .auto_address;
 lodsw:
     ra_sel SI, jmp_if_not_rep lodsw_no_rep;
-    ra_sel CX;
+    rb_cl;
 lodsw_rep_loop:
     ra_sel CX, a_sel RA, b_sel IMMEDIATE, immediate 0x0, alu_op SUB,
-        jmp_if_zero lodsw_done;
+        jmp_rb_zero lodsw_done;
     ra_sel SI, a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
         rd_sel_source MICROCODE_RD_SEL, rd_sel CX, reg_wr_en;
 lodsw_no_rep:
@@ -40,6 +40,6 @@ lodsw_no_rep:
     segment DS, mem_read;
     a_sel MDR, alu_op SELA, rd_sel_source MICROCODE_RD_SEL,
         rd_sel AX, reg_wr_en, jmp_if_not_rep lodsw_done;
-    ra_sel CX, jmp lodsw_rep_loop;
+    rb_cl, jmp lodsw_rep_loop;
 lodsw_done:
     next_instruction;

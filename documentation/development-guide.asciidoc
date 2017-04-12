@@ -146,6 +146,9 @@ adjacent with the register based instruction appearing first.
   flags register and not the combinational flags output of the current ALU
   operation.
 
+| jmp_rb_zero LABEL | Jump to the target address if RB value is zero,
+  otherwise continue with the adjacent instruction.
+
 | jmp_if_rep_not_taken LABEL | Check the condition for the current rep prefix
   and jump to the target if the termination condition is not met, otherwise
   execute the adjacent instruction.  Only valid when there is a rep prefix

@@ -160,6 +160,7 @@ wire [1:0] microcode_segment;
 wire [7:0] opcode;
 wire jump_taken;
 wire multibit_shift;
+wire rb_zero = ~|reg_rd_val[1];
 
 // Misc control signals
 wire debug_set_ip = debug_stopped && ip_wr_en;
@@ -339,11 +340,12 @@ Microcode       Microcode(.clk(clk),
                           .stall(do_stall),
                           .divide_error(divide_error),
                           .modrm_reg(regnum),
-                          .zf(alu_flags_out[ZF_IDX]),
+                          .zf(flags[ZF_IDX]),
                           .microcode_immediate(microcode_immediate),
                           .use_microcode_immediate(use_microcode_immediate),
                           .opcode(opcode),
                           .jump_taken(jump_taken),
+                          .rb_zero(rb_zero),
                           .lock(lock),
                           .multibit_shift(multibit_shift),
                           .rm_is_reg(rm_is_reg),

@@ -4,10 +4,10 @@
 .auto_address;
 scasb:
     ra_sel DI, jmp_if_not_rep scasb_no_rep;
-    ra_sel CX;
+    rb_cl;
 scasb_rep_loop:
     ra_sel CX, a_sel RA, b_sel IMMEDIATE, immediate 0x0, alu_op SUB,
-        jmp_if_zero scasb_done;
+        jmp_rb_zero scasb_done;
     ra_sel DI, a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
         rd_sel_source MICROCODE_RD_SEL, rd_sel CX, reg_wr_en;
 scasb_no_rep:
@@ -19,7 +19,7 @@ scasb_no_rep:
     width 8, a_sel RA, alu_op SELA, tmp_wr_en;
     width 8, a_sel MDR, b_sel TEMP, alu_op SUBREV,
         update_flags OF SF ZF CF PF AF, jmp_if_not_rep scasb_done;
-    ra_sel CX, alu_op GETFLAGS, jmp_if_rep_not_complete scasb_rep_loop;
+    rb_cl, alu_op GETFLAGS, jmp_if_rep_not_complete scasb_rep_loop;
 scasb_done:
     next_instruction;
 
@@ -29,10 +29,10 @@ scasb_done:
 .auto_address;
 scasw:
     ra_sel DI, jmp_if_not_rep scasw_no_rep;
-    ra_sel CX;
+    rb_cl;
 scasw_rep_loop:
     ra_sel CX, a_sel RA, b_sel IMMEDIATE, immediate 0x0, alu_op SUB,
-        jmp_if_zero scasw_done;
+        jmp_rb_zero scasw_done;
     ra_sel DI, a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
         rd_sel_source MICROCODE_RD_SEL, rd_sel CX, reg_wr_en;
 scasw_no_rep:
@@ -44,6 +44,6 @@ scasw_no_rep:
     a_sel RA, alu_op SELA, tmp_wr_en;
     a_sel MDR, b_sel TEMP, alu_op SUBREV, update_flags OF SF ZF CF PF AF,
         jmp_if_not_rep scasw_done;
-    ra_sel CX, alu_op GETFLAGS, jmp_if_rep_not_complete scasw_rep_loop;
+    rb_cl, alu_op GETFLAGS, jmp_if_rep_not_complete scasw_rep_loop;
 scasw_done:
     next_instruction;

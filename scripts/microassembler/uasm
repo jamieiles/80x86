@@ -290,6 +290,7 @@ class MicroAssembler(object):
         'jmp_if_zero': (0, partial(_jump, jump_type=JumpType.ZERO), False),
         'jmp_if_rep_not_complete': (0, partial(_jump, jump_type=JumpType.REP_NOT_COMPLETE), False),
         'jmp_if_taken': (0, partial(_jump, jump_type=JumpType.JUMP_TAKEN), False),
+        'jmp_rb_zero': (0, partial(_jump, jump_type=JumpType.RB_ZERO), False),
         'jmp': (0, partial(_jump, jump_type=JumpType.UNCONDITIONAL), False),
     }
 
