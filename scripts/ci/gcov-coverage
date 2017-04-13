@@ -1,6 +1,5 @@
 #!/bin/bash
 set -e
-./docker/build-all
 [ -d .git ] && git submodule update --init
 [ -d _build/gcov-coverage ] || mkdir -p _build/gcov-coverage
 [ -d _build/.ccache ] || mkdir -p _build/.ccache

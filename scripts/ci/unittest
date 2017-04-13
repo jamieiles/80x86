@@ -1,6 +1,5 @@
 #!/bin/bash
 set -e
-./docker/build-all
 [ -d .git ] && git submodule update --init
 [ -d _build/unittest ] || mkdir -p _build/unittest
 [ -d _build/.ccache ] || mkdir -p _build/.ccache
