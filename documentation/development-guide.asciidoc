@@ -471,6 +471,10 @@ field.
 
 === DE0-Nano
 
+To build the DE0-Nano design, configure the build with "-DBUILD_DE0_NANO=ON".
+The build target "de0-nano" will build the FPGA, and "de0-nano-program" will
+load the design into the FPGA via the Altera USB Blaster.
+
 .DE0-Nano Memory Map
 [cols="1,1,4",options="header"]
 |===
@@ -493,6 +497,10 @@ field.
 |===
 
 === DE0-CV
+
+To build the DE0-CV design, configure the build with "-DBUILD_DE0_CV=ON".
+The build target "de0-cv" will build the FPGA, and "de0-cv-program" will
+load the design into the FPGA via the Altera USB Blaster.
 
 .DE0-CV Memory Map
 [cols="1,1,4",options="header"]
