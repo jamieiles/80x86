@@ -36,10 +36,10 @@ wire [15:0] mem_data;
 
 // Data bus
 wire [19:1] data_m_addr;
-wire [15:0] data_m_data_in;
+wire [15:0] data_m_data_in = d_io ? io_data : mem_data;
 wire [15:0] data_m_data_out;
 wire data_m_access;
-wire data_m_ack = data_mem_ack;
+wire data_m_ack = data_mem_ack | io_ack;
 wire data_m_wr_en;
 wire [1:0] data_m_bytesel;
 
@@ -60,10 +60,12 @@ wire [1:0] q_m_bytesel;
 
 wire d_io;
 
+wire sdram_access = q_m_access & ~d_io;
+
 wire sdram_config_access;
 wire sdram_config_ack;
 wire sdram_config_done;
-wire sdram_config_data;
+wire [15:0] sdram_config_data;
 
 wire default_io_access;
 wire default_io_ack;
