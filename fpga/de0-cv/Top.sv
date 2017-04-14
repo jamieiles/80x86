@@ -9,7 +9,9 @@ module Top(input logic clk,
            output logic s_clken,
            inout [15:0] s_data,
            output logic [1:0] s_banksel,
-           output logic sdr_clk);
+           output logic sdr_clk,
+           input logic uart_rx,
+           output logic uart_tx);
 
 wire sys_clk;
 wire reset_n;
@@ -31,7 +33,7 @@ wire [15:0] debug_wr_val;
 wire [15:0] debug_val;
 wire debug_wr_en;
 
-wire [15:0] io_data = sdram_config_data;
+wire [15:0] io_data = sdram_config_data | uart_data;
 wire [15:0] mem_data;
 
 // Data bus
@@ -67,10 +69,15 @@ wire sdram_config_ack;
 wire sdram_config_done;
 wire [15:0] sdram_config_data;
 
+wire uart_access;
+wire uart_ack;
+wire uart_done;
+wire [15:0] uart_data;
+
 wire default_io_access;
 wire default_io_ack;
 
-wire io_ack = sdram_config_ack | default_io_ack;
+wire io_ack = sdram_config_ack | default_io_ack | uart_ack;
 
 always_ff @(posedge clk)
     default_io_ack <= default_io_access;
@@ -78,10 +85,12 @@ always_ff @(posedge clk)
 always_comb begin
     sdram_config_access = 1'b0;
     default_io_access = 1'b0;
+    uart_access = 1'b0;
 
     if (d_io && data_m_access) begin
         casez ({data_m_addr[15:1], 1'b0})
         16'hfffc: sdram_config_access = 1'b1;
+        16'hfffa: uart_access = 1'b1;
         default:  default_io_access = 1'b1;
         endcase
     end
@@ -131,6 +140,15 @@ SDRAMConfigRegister SDRAMConfigRegister(.clk(sys_clk),
                                         .data_m_data_out(sdram_config_data),
                                         .config_done(sdram_config_done),
                                         .*);
+
+UartPorts #(.clk_freq(50000000))
+          UartPorts(.rx(uart_rx),
+                    .tx(uart_tx),
+                    .cs(uart_access),
+                    .data_m_ack(uart_ack),
+                    .data_m_data_out(uart_data),
+                    .data_m_data_in(data_m_data_out),
+                    .*);
 
 SysPLL	SysPLL(.refclk(clk),
 	       .rst(1'b0),

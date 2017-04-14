@@ -467,6 +467,59 @@ reading, this bit should be polled until it returns "1".
 field.
 |===
 
+== FPGA Reference Designs
+
+=== DE0-Nano
+
+.DE0-Nano Memory Map
+[cols="1,1,4",options="header"]
+|===
+| Start | End | Description
+| 20'h0000 | 20'hfffff | SDRAM
+|===
+
+.DE0-Nano IO Port Map
+[cols="1,1,4",options="header"]
+|===
+| Address | Width (bits) | Description
+| 16'hfffc | 16 a| SDRAM configuration register:
+
+  - [15:1]: reserved
+  - [0]: SDRAM configuration complete.  The SDRAM should not be accessed until
+  this bit is set.
+
+| 16'hfffe | 16 | LED register, writing to the 8 MSBs will set the LED
+  registers on the board, a 1 is enabled, 0 is disabled.
+|===
+
+=== DE0-CV
+
+.DE0-CV Memory Map
+[cols="1,1,4",options="header"]
+|===
+| Start | End | Description
+| 20'h0000 | 20'hfffff | SDRAM
+|===
+
+.DE0-CV IO Port Map
+[cols="1,1,4",options="header"]
+|===
+| Address | Width (bits) | Description
+| 16'hfffa | 8 a| UART data register, write to transmit data, read to fetch
+the received data.
+| 16'hfffb | 8 a| UART status register:
+
+  - [7:2]: reserved.
+  - [1]: transmitter busy.
+  - [0]: receive data ready, cleared once the data register is read.
+
+| 16'hfffc | 16 a| SDRAM configuration register:
+
+  - [15:1]: reserved.
+  - [0]: SDRAM configuration complete.  The SDRAM should not be accessed until
+  this bit is set.
+|===
+
 == RTL Tests
 
 The RTL tests are written in {cpp}, using Verilator to create {cpp} models of the

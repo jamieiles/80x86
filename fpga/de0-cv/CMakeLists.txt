@@ -16,7 +16,12 @@ set(FPGA_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/MemArbiter.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/cdc/BitSync.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/cdc/SyncPulse.sv
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/cdc/MCP.sv)
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/cdc/MCP.sv
+    ${CMAKE_CURRENT_SOURCE_DIR}/../uart/BaudRateGen.sv
+    ${CMAKE_CURRENT_SOURCE_DIR}/../uart/Transmitter.sv
+    ${CMAKE_CURRENT_SOURCE_DIR}/../uart/Receiver.sv
+    ${CMAKE_CURRENT_SOURCE_DIR}/../uart/Uart.sv
+    ${CMAKE_CURRENT_SOURCE_DIR}/../uart/UartPorts.sv)
 
 set(ALL_SOURCES ${CORE_SOURCES} ${FPGA_SOURCES})
 

@@ -68,3 +68,9 @@ set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_addr
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_data
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_banksel
 set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to s_*
+
+# UART
+set_location_assignment PIN_B16 -to uart_tx
+set_location_assignment PIN_C16 -to uart_rx
+set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to uart_tx
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to uart_rx

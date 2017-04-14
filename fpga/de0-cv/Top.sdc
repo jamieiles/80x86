@@ -74,3 +74,7 @@ set_multicycle_path -setup -end -from sdram_clk -to $sys_clk 2
 
 # Reset request
 set_false_path -from [get_ports {rst_in_n}]
+
+# uart
+set_false_path -from [get_ports uart_rx]
+set_false_path -to [get_ports uart_tx]
