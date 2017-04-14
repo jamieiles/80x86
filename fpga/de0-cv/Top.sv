@@ -31,6 +31,9 @@ wire [15:0] debug_wr_val;
 wire [15:0] debug_val;
 wire debug_wr_en;
 
+wire [15:0] io_data = sdram_config_data;
+wire [15:0] mem_data;
+
 // Data bus
 wire [19:1] data_m_addr;
 wire [15:0] data_m_data_in;
@@ -57,14 +60,36 @@ wire [1:0] q_m_bytesel;
 
 wire d_io;
 
-wire sdram_access = q_m_access & ~d_io;
+wire sdram_config_access;
+wire sdram_config_ack;
+wire sdram_config_done;
+wire sdram_config_data;
+
+wire default_io_access;
+wire default_io_ack;
+
+wire io_ack = sdram_config_ack | default_io_ack;
+
+always_ff @(posedge clk)
+    default_io_ack <= default_io_access;
+
+always_comb begin
+    sdram_config_access = 1'b0;
+    default_io_access = 1'b0;
+
+    if (d_io && data_m_access) begin
+        casez ({data_m_addr[15:1], 1'b0})
+        16'hfffc: sdram_config_access = 1'b1;
+        default:  default_io_access = 1'b1;
+        endcase
+    end
+end
 
 wire data_mem_ack;
 
 BitSync         ResetSync(.clk(sys_clk),
                           .d(rst_in_n),
                           .q(reset_n));
-
 
 VirtualJTAG VirtualJTAG(.ir_out(),
                         .tdo(tdo),
@@ -80,6 +105,7 @@ JTAGBridge      JTAGBridge(.cpu_clk(sys_clk),
                            .*);
 
 MemArbiter MemArbiter(.clk(sys_clk),
+                      .data_m_data_in(mem_data),
                       .data_m_ack(data_mem_ack),
                       .*);
 
@@ -94,8 +120,15 @@ SDRAMController #(.size(64 * 1024 * 1024),
                                 .h_wr_en(q_m_wr_en),
                                 .h_bytesel(q_m_bytesel),
                                 .h_compl(q_m_ack),
-                                .h_config_done(),
+                                .h_config_done(sdram_config_done),
                                 .*);
+
+SDRAMConfigRegister SDRAMConfigRegister(.clk(sys_clk),
+                                        .cs(sdram_config_access),
+                                        .data_m_ack(sdram_config_ack),
+                                        .data_m_data_out(sdram_config_data),
+                                        .config_done(sdram_config_done),
+                                        .*);
 
 SysPLL	SysPLL(.refclk(clk),
 	       .rst(1'b0),
