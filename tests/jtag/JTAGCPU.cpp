@@ -229,9 +229,8 @@ void JTAGCPU::write_vector8(uint16_t segment, uint16_t addr,
 
     write_reg(DS, segment);
 
-    uint16_t offs = 0;
+    write_mar(addr);
     for (auto &b: v) {
-        write_mar(addr + offs++);
         write_mdr(b);
         debug_run_proc(0x23); // Write mem 8
     }
@@ -246,12 +245,10 @@ void JTAGCPU::write_vector16(uint16_t segment, uint16_t addr,
 
     write_reg(DS, segment);
 
-    uint16_t offs = 0;
+    write_mar(addr);
     for (auto &b: v) {
-        write_mar(addr + offs);
         write_mdr(b);
         debug_run_proc(0x24); // Write mem 16
-        offs += 2;
     }
 
     write_reg(DS, prev_ds);
