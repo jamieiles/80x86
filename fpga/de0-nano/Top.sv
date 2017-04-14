@@ -69,7 +69,7 @@ wire leds_ack;
 wire sdram_config_access;
 wire sdram_config_ack;
 wire sdram_config_done;
-wire sdram_config_data;
+wire [15:0] sdram_config_data;
 
 wire default_io_access;
 wire default_io_ack;
