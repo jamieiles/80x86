@@ -72,5 +72,5 @@ TEST_F(CoreFixture, SegmentRegisterFileReset)
     reset();
 
     for (auto r = static_cast<int>(ES); r <= static_cast<int>(DS); ++r)
-        EXPECT_EQ(read_reg(static_cast<GPR>(r)), 0);
+        EXPECT_EQ(read_reg(static_cast<GPR>(r)), static_cast<GPR>(r) == CS ? 0xffff : 0);
 }

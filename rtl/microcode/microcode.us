@@ -230,7 +230,7 @@ reset:
         rd_sel DI, reg_wr_en;
     b_sel IMMEDIATE, alu_op SELB, immediate 0x0, segment_force, sr_wr_sel ES,
         segment_wr_en;
-    b_sel IMMEDIATE, alu_op SELB, immediate 0x0, segment_force, sr_wr_sel CS,
+    b_sel IMMEDIATE, alu_op SELB, immediate 0xffff, segment_force, sr_wr_sel CS,
         segment_wr_en;
     b_sel IMMEDIATE, alu_op SELB, immediate 0x0, segment_force, sr_wr_sel SS,
         segment_wr_en;
