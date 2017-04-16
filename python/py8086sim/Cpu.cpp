@@ -37,6 +37,7 @@ void write_vector16(T *c, uint16_t segment, uint16_t addr,
 BOOST_PYTHON_MODULE(Cpu)
 {
     class_<SoftwareCPU, boost::noncopyable>("Sim", init<const std::string &>())
+        .def("reset", &SoftwareCPU::reset)
         .def("write_reg", &SoftwareCPU::write_reg)
         .def("read_reg", &SoftwareCPU::read_reg)
         .def("write_mem8", &SoftwareCPU::write_mem8)
@@ -56,6 +57,7 @@ BOOST_PYTHON_MODULE(Cpu)
         .def("step", &SoftwareCPU::step)
         .def("has_trapped", &SoftwareCPU::has_trapped);
     class_<rtlcpu, boost::noncopyable>("RTLCPU", init<const std::string &>())
+        .def("reset", &rtlcpu::reset)
         .def("write_reg", &rtlcpu::write_reg)
         .def("read_reg", &rtlcpu::read_reg)
         .def("write_mem8", &rtlcpu::write_mem8)
@@ -75,6 +77,7 @@ BOOST_PYTHON_MODULE(Cpu)
         .def("step", &rtlcpu::step)
         .def("has_trapped", &rtlcpu::has_trapped);
     class_<JTAGCPU, boost::noncopyable>("JTAGCPU", init<const std::string &>())
+        .def("reset", &JTAGCPU::reset)
         .def("write_reg", &JTAGCPU::write_reg)
         .def("read_reg", &JTAGCPU::read_reg)
         .def("write_mem8", &JTAGCPU::write_mem8)
