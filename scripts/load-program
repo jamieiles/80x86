@@ -5,9 +5,10 @@ import sys
 from py8086sim.Cpu import GPR
 
 
-def load(cpu, address, program, cs, ip):
+def load(cpu, program, cs, ip):
     cpu.reset()
 
+    cpu.write_reg(GPR.CS, cs)
     with open(program) as b:
         bytevec = [ord(v) for v in b.read()]
         if len(bytevec) % 2 == 1:
@@ -15,15 +16,13 @@ def load(cpu, address, program, cs, ip):
         wordvec = []
         for a, b in zip(bytevec[::2], bytevec[1::2]):
             wordvec.append(a | (b << 8))
-        cpu.write_vector16(cs, address, wordvec)
+        cpu.write_vector16(cs, ip, wordvec)
 
-    cpu.write_reg(GPR.CS, cs)
     cpu.write_reg(GPR.IP, ip)
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('backend')
-    parser.add_argument('address')
     parser.add_argument('program')
     parser.add_argument('cs')
     parser.add_argument('ip')
@@ -31,5 +30,4 @@ if __name__ == '__main__':
 
     cpu = getattr(sys.modules['py8086sim.Cpu'], args.backend)(args.program)
 
-    load(cpu, int(args.address, 0), args.program, int(args.cs, 0),
-         int(args.ip, 0))
+    load(cpu, args.program, int(args.cs, 0), int(args.ip, 0))
