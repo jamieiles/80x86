@@ -513,6 +513,21 @@ load the design into the FPGA via the Altera USB Blaster.
 [cols="1,1,4",options="header"]
 |===
 | Address | Width (bits) | Description
+| 16'hfff0 | 16 a| SPI control register:
+
+  - [15:10]: reserved.
+  - [9]: CS activate.
+  - [8:0]: clock divider.
+| 16'hfff2 | 16 a| SPI transfer register:
+
+  - [15:9]: reserved.
+  - [8]: transfer busy.
+  - [7:0]: transfer data.
+
+Writing to this register will initiate a one byte transfer.  The CPU should
+then poll until bit 8 is clear at which point [7:0] will contain the received
+data.
+
 | 16'hfffa | 8 a| UART data register, write to transmit data, read to fetch
 the received data.
 | 16'hfffb | 8 a| UART status register:

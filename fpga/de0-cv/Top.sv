@@ -11,7 +11,11 @@ module Top(input logic clk,
            output logic [1:0] s_banksel,
            output logic sdr_clk,
            input logic uart_rx,
-           output logic uart_tx);
+           output logic uart_tx,
+           output logic spi_sclk,
+           output logic spi_mosi,
+           input logic spi_miso,
+           output logic spi_ncs);
 
 wire sys_clk;
 wire reset_n;
@@ -33,7 +37,7 @@ wire [15:0] debug_wr_val;
 wire [15:0] debug_val;
 wire debug_wr_en;
 
-wire [15:0] io_data = sdram_config_data | uart_data;
+wire [15:0] io_data = sdram_config_data | uart_data | spi_data;
 wire [15:0] mem_data;
 
 // Data bus
@@ -74,10 +78,15 @@ wire uart_ack;
 wire uart_done;
 wire [15:0] uart_data;
 
+wire spi_access;
+wire spi_ack;
+wire spi_done;
+wire [15:0] spi_data;
+
 wire default_io_access;
 wire default_io_ack;
 
-wire io_ack = sdram_config_ack | default_io_ack | uart_ack;
+wire io_ack = sdram_config_ack | default_io_ack | uart_ack | spi_ack;
 
 always_ff @(posedge clk)
     default_io_ack <= default_io_access;
@@ -86,11 +95,13 @@ always_comb begin
     sdram_config_access = 1'b0;
     default_io_access = 1'b0;
     uart_access = 1'b0;
+    spi_access = 1'b0;
 
     if (d_io && data_m_access) begin
         casez ({data_m_addr[15:1], 1'b0})
-        16'hfffc: sdram_config_access = 1'b1;
-        16'hfffa: uart_access = 1'b1;
+        16'b1111_1111_1111_1100: sdram_config_access = 1'b1;
+        16'b1111_1111_1111_1010: fffa: uart_access = 1'b1;
+        16'b1111_1111_1111_00z0: spi_access = 1'b1;
         default:  default_io_access = 1'b1;
         endcase
     end
@@ -149,6 +160,17 @@ UartPorts #(.clk_freq(50000000))
                     .data_m_data_out(uart_data),
                     .data_m_data_in(data_m_data_out),
                     .*);
+
+SPIPorts SPIPorts(.cs(spi_access),
+                  .data_m_ack(spi_ack),
+                  .data_m_data_out(spi_data),
+                  .data_m_data_in(data_m_data_out),
+                  .data_m_addr(data_m_addr[1]),
+                  .miso(spi_miso),
+                  .mosi(spi_mosi),
+                  .sclk(spi_sclk),
+                  .ncs(spi_ncs),
+                  .*);
 
 SysPLL	SysPLL(.refclk(clk),
 	       .rst(1'b0),

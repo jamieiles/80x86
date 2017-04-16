@@ -21,7 +21,9 @@ set(FPGA_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../uart/Transmitter.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../uart/Receiver.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../uart/Uart.sv
-    ${CMAKE_CURRENT_SOURCE_DIR}/../uart/UartPorts.sv)
+    ${CMAKE_CURRENT_SOURCE_DIR}/../uart/UartPorts.sv
+    ${CMAKE_CURRENT_SOURCE_DIR}/../spi/SPIMaster.sv
+    ${CMAKE_CURRENT_SOURCE_DIR}/../spi/SPIPorts.sv)
 
 set(ALL_SOURCES ${CORE_SOURCES} ${FPGA_SOURCES})
 

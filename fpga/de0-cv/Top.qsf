@@ -74,3 +74,12 @@ set_location_assignment PIN_B16 -to uart_tx
 set_location_assignment PIN_C16 -to uart_rx
 set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to uart_tx
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to uart_rx
+
+# SPI
+set_location_assignment PIN_B11 -to spi_mosi
+set_location_assignment PIN_K9 -to spi_miso
+set_location_assignment PIN_C11 -to spi_ncs
+set_location_assignment PIN_H11 -to spi_sclk
+set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to spi_mosi
+set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to spi_ncs
+set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to spi_sclk
