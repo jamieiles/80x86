@@ -35,6 +35,14 @@ JTAGCPU::JTAGCPU(const std::string &test_name)
         continue;
 }
 
+JTAGCPU::~JTAGCPU()
+{
+    write_scr(STATUS_CONTROL_RUN);
+    debug_run_proc(0, false);
+    while (!(read_scr() & STATUS_CONTROL_RUN))
+        continue;
+}
+
 void JTAGCPU::write_scr(uint16_t v)
 {
     if (jtag_vir(1))
@@ -70,12 +78,15 @@ uint16_t JTAGCPU::debug_read_data()
     return static_cast<uint16_t>(v);
 }
 
-uint16_t JTAGCPU::debug_run_proc(unsigned addr)
+uint16_t JTAGCPU::debug_run_proc(unsigned addr, bool block)
 {
     if (jtag_vir(3))
         throw JTAGError("Unable to write VIR");
     if (jtag_vdr(8, addr, NULL))
         throw JTAGError("Unable to write VIR");
+
+    if (!block)
+        return 0;
 
     while (read_scr() & STATUS_CONTROL_RUN)
         continue;

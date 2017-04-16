@@ -8,6 +8,7 @@
 class JTAGCPU : public CPU {
 public:
     JTAGCPU(const std::string &test_name);
+    ~JTAGCPU();
     void reset();
     void write_reg(GPR regnum, uint16_t val);
     uint16_t read_reg(GPR regnum);
@@ -17,7 +18,7 @@ public:
     bool has_trapped();
     uint32_t idcode();
 
-    uint16_t debug_run_proc(unsigned addr);
+    uint16_t debug_run_proc(unsigned addr, bool block=true);
     void debug_seize();
     void debug_step();
     bool debug_is_stopped() const;
