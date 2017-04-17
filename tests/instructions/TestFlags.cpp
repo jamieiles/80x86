@@ -33,7 +33,7 @@ TEST_F(EmulateFixture, Pushf)
     emulate();
 
     ASSERT_EQ(read_reg(SP), 0x00fe);
-    ASSERT_EQ(0x00d7, read_mem16(0x00fe, SS));
+    ASSERT_EQ(0xf0d7, read_mem16(0x00fe, SS));
 }
 
 TEST_F(EmulateFixture, Popf)
@@ -45,5 +45,5 @@ TEST_F(EmulateFixture, Popf)
     emulate();
 
     ASSERT_EQ(read_reg(SP), 0x0100);
-    ASSERT_EQ(0x00d7, read_flags());
+    ASSERT_EQ(0xf0d7, read_flags());
 }

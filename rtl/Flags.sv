@@ -8,7 +8,7 @@ module Flags(input logic clk,
 
 reg C, P, A, Z, S, T, I, D, O;
 
-assign flags_out = {4'b0, O, D, I, T, S, Z, 1'b0, A, 1'b0, P, 1'b1, C};
+assign flags_out = {4'b1111, O, D, I, T, S, Z, 1'b0, A, 1'b0, P, 1'b1, C};
 
 always_ff @(posedge clk or posedge reset) begin
     if (reset) begin

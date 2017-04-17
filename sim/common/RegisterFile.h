@@ -52,7 +52,7 @@ enum Flag {
     OF = (1 << OF_OFFS),
 };
 
-enum { FLAGS_STUCK_BITS = 1 << 1 };
+enum { FLAGS_STUCK_BITS = 0xf000 | (1 << 1) };
 
 class RegisterFile {
 public:

@@ -25,7 +25,7 @@ TEST(RegisterFile, reset_clears)
     ASSERT_EQ(0x1234, rf.get(AX));
     rf.set_flags(0x0000);
     // Bit 1 is always 1 on 8086
-    ASSERT_EQ(0x0002, rf.get_flags());
+    ASSERT_EQ(0xf002, rf.get_flags());
 
     rf.reset();
     ASSERT_EQ(0x0000, rf.get(AX));
