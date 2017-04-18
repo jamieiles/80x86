@@ -26,7 +26,7 @@ module MemArbiter(input logic clk,
 reg instr_grant;
 reg data_grant;
 
-wire q_data = data_will_grant | (data_grant & ~data_m_ack);
+wire q_data = data_will_grant | data_grant;
 
 assign q_m_addr = q_data ? data_m_addr : instr_m_addr;
 assign q_m_data_out = data_m_data_out;

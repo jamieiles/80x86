@@ -128,6 +128,7 @@ JTAGBridge      JTAGBridge(.cpu_clk(sys_clk),
 
 MemArbiter MemArbiter(.clk(sys_clk),
                       .data_m_data_in(mem_data),
+                      .data_m_access(data_m_access & ~d_io),
                       .data_m_ack(data_mem_ack),
                       .*);
 
