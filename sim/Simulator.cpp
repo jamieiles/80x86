@@ -366,10 +366,14 @@ void Simulator<T>::disk_read()
 template <typename T>
 void Simulator<T>::disk_get_parameters()
 {
-    cpu.write_reg(AH, 0);
-    cpu.write_reg(BL, 4);
-    cpu.write_reg(DH, 0);
-    cpu.write_reg(DL, 1);
+    if (cpu.read_reg(DL) == 0) {
+        cpu.write_reg(AH, 0);
+        cpu.write_reg(BL, 4);
+        cpu.write_reg(DH, 0);
+        cpu.write_reg(DL, 1);
+    } else {
+        set_stack_flags(CF, CF);
+    }
 }
 
 template <typename T>
