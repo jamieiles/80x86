@@ -237,3 +237,17 @@ reset:
     b_sel IMMEDIATE, alu_op SELB, immediate 0x0, segment_force, sr_wr_sel DS,
         segment_wr_en;
     next_instruction, jmp opcode_fetch;
+
+// Unimplemented opcodes
+.at 0xc0;
+    next_instruction;
+.at 0xc1;
+    next_instruction;
+.at 0xc8;
+    next_instruction;
+.at 0xc9;
+    next_instruction;
+.at 0xd6;
+    next_instruction;
+.at 0xf1;
+    next_instruction;
