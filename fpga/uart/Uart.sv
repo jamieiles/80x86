@@ -19,7 +19,7 @@ Transmitter Transmitter(.clken(txclk_en),
                         .*);
 
 Receiver Receiver(.clken(rxclk_en),
-		 .data(dout),
-                 .*);
+                  .data(dout),
+                  .*);
 
 endmodule
