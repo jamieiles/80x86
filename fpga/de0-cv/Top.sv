@@ -100,7 +100,7 @@ always_comb begin
     if (d_io && data_m_access) begin
         casez ({data_m_addr[15:1], 1'b0})
         16'b1111_1111_1111_1100: sdram_config_access = 1'b1;
-        16'b1111_1111_1111_1010: fffa: uart_access = 1'b1;
+        16'b1111_1111_1111_1010: uart_access = 1'b1;
         16'b1111_1111_1111_00z0: spi_access = 1'b1;
         default:  default_io_access = 1'b1;
         endcase
