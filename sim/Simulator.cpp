@@ -258,6 +258,8 @@ template <typename T>
 void Simulator<T>::video_teletype_output()
 {
     display.write_char(cpu.read_reg(AL));
+    std::cout << (char)cpu.read_reg(AL);
+    std::cout.flush();
 }
 
 template <typename T>
