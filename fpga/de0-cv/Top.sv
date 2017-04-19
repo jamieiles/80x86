@@ -75,12 +75,10 @@ wire [15:0] sdram_config_data;
 
 wire uart_access;
 wire uart_ack;
-wire uart_done;
 wire [15:0] uart_data;
 
 wire spi_access;
 wire spi_ack;
-wire spi_done;
 wire [15:0] spi_data;
 
 wire default_io_access;
