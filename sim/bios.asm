@@ -16,6 +16,7 @@ start:
     ; load the MBR
     mov         ah, 2h
     mov         al, 1h
+    mov         cl, 1h
     mov         bx, 7c00h
     int         0x13
 

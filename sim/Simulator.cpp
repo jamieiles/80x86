@@ -353,8 +353,6 @@ void Simulator<T>::disk_read()
         cpu.write_reg(AL, 0x80);
     } else {
         auto lba = (cylinder * 2 + head) * 0x12 + (sector - 1);
-        if (lba < 0)
-            lba = 0;
         disk_image.seekg(lba * 512, std::ios::beg);
         for (unsigned offset = 0; offset < count * 512; ++offset) {
             char v;
