@@ -23,23 +23,21 @@ wire wr_en = access_data & data_m_wr_en & data_m_bytesel[0];
 
 wire [7:0] status = {6'b0, tx_busy, rdy};
 
+wire [15:0] data_val = {
+    access_status & ~data_m_wr_en ? status : 8'b0,
+    access_data & ~data_m_wr_en ? dout : 8'b0
+};
+
 Uart #(.clk_freq(clk_freq))
      Uart(.*);
 
 always_ff @(posedge clk)
     data_m_ack <= data_m_access & cs;
 
-always_ff @(posedge clk) begin
-    data_m_data_out <= 16'b0;
-
-    if (access_status && !data_m_wr_en)
-        data_m_data_out[15:8] <= status;
-
-    if (access_data && !data_m_wr_en)
-        data_m_data_out[7:0] <= dout;
-end
+always_ff @(posedge clk)
+    data_m_data_out <= data_val;
 
 always_ff @(posedge clk)
-    rdy_clr <= access_data & ~data_m_wr_en;
+    rdy_clr <= access_data && !data_m_wr_en;
 
 endmodule
