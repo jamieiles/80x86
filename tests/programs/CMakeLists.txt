@@ -1,3 +1,13 @@
-nasm_file(moves.asm moves.bin)
-nasm_file(calls_and_jumps.asm calls_and_jumps.bin)
-nasm_file(modrm_override.asm modrm_override.bin)
+include(Nasm)
+
+nasm_file(OUTPUT moves.bin
+          SOURCES moves.asm)
+add_custom_target(tests_moves.asm ALL DEPENDS moves.bin)
+
+nasm_file(OUTPUT calls_and_jumps.bin
+          SOURCES calls_and_jumps.asm)
+add_custom_target(tests_calls_and_jumps.asm ALL DEPENDS calls_and_jumps.bin)
+
+nasm_file(OUTPUT modrm_override.bin
+          SOURCES modrm_override.asm)
+add_custom_target(tests_modrm_override.asm ALL DEPENDS modrm_override.bin)

@@ -1,4 +1,5 @@
 include(Verilator)
+include(Nasm)
 
 find_package(Boost COMPONENTS program_options REQUIRED)
 find_package(SDL2 REQUIRED)
@@ -26,7 +27,8 @@ target_link_libraries(simulator
                       simdisplay
                       rtlsim
                       ${Boost_LIBRARIES})
-nasm_file(bios.asm bios.bin)
+nasm_file(OUTPUT bios.bin
+          SOURCES bios.asm)
 
 install(TARGETS simulator
         COMPONENT simulator
