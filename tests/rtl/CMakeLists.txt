@@ -103,5 +103,5 @@ target_link_libraries(rtl-unittest
                       rtlsim
                       simcommon)
 add_test(rtl-unittest rtl-unittest)
-set_tests_properties(rtl-unittest PROPERTIES TIMEOUT 20)
+set_tests_properties(rtl-unittest PROPERTIES TIMEOUT 60)
 set_tests_properties(rtl-unittest PROPERTIES LABELS RTLCPU)
