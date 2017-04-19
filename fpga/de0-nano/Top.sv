@@ -10,7 +10,13 @@ module Top(input logic clk,
            inout [15:0] s_data,
            output logic [1:0] s_banksel,
            output logic sdr_clk,
-           output logic [7:0] leds);
+           output logic [7:0] leds,
+           input logic uart_rx,
+           output logic uart_tx,
+           output logic spi_sclk,
+           output logic spi_mosi,
+           input logic spi_miso,
+           output logic spi_ncs);
 
 wire sys_clk;
 wire reset_n;
@@ -32,7 +38,7 @@ wire [15:0] debug_wr_val;
 wire [15:0] debug_val;
 wire debug_wr_en;
 
-wire [15:0] io_data = sdram_config_data;
+wire [15:0] io_data = sdram_config_data | uart_data | spi_data;
 wire [15:0] mem_data;
 
 // Data bus
@@ -71,10 +77,18 @@ wire sdram_config_ack;
 wire sdram_config_done;
 wire [15:0] sdram_config_data;
 
+wire uart_access;
+wire uart_ack;
+wire [15:0] uart_data;
+
+wire spi_access;
+wire spi_ack;
+wire [15:0] spi_data;
+
 wire default_io_access;
 wire default_io_ack;
 
-wire io_ack = leds_ack | sdram_config_ack | default_io_ack;
+wire io_ack = leds_ack | sdram_config_ack | default_io_ack | uart_ack | spi_ack;
 
 always_ff @(posedge clk)
     default_io_ack <= default_io_access;
@@ -83,11 +97,15 @@ always_comb begin
     leds_access = 1'b0;
     sdram_config_access = 1'b0;
     default_io_access = 1'b0;
+    uart_access = 1'b0;
+    spi_access = 1'b0;
 
     if (d_io && data_m_access) begin
         casez ({data_m_addr[15:1], 1'b0})
-        16'hfffe: leds_access = 1'b1;
-        16'hfffc: sdram_config_access = 1'b1;
+        16'b1111_1111_1111_1110: leds_access = 1'b1;
+        16'b1111_1111_1111_1100: sdram_config_access = 1'b1;
+        16'b1111_1111_1111_1010: uart_access = 1'b1;
+        16'b1111_1111_1111_00z0: spi_access = 1'b1;
         default:  default_io_access = 1'b1;
         endcase
     end
@@ -114,6 +132,7 @@ JTAGBridge      JTAGBridge(.cpu_clk(sys_clk),
 
 MemArbiter MemArbiter(.clk(sys_clk),
                       .data_m_data_in(mem_data),
+                      .data_m_access(data_m_access & ~d_io),
                       .data_m_ack(data_mem_ack),
                       .*);
 
@@ -142,11 +161,34 @@ SDRAMConfigRegister SDRAMConfigRegister(.clk(sys_clk),
                                         .config_done(sdram_config_done),
                                         .*);
 
-LEDSRegister     LEDSRegister(.cs(leds_access),
+LEDSRegister     LEDSRegister(.clk(sys_clk),
+                              .cs(leds_access),
                               .leds_val(leds),
                               .data_m_data_in(data_m_data_out),
                               .data_m_ack(leds_ack),
                               .*);
+
+UartPorts #(.clk_freq(50000000))
+          UartPorts(.clk(sys_clk),
+                    .rx(uart_rx),
+                    .tx(uart_tx),
+                    .cs(uart_access),
+                    .data_m_ack(uart_ack),
+                    .data_m_data_out(uart_data),
+                    .data_m_data_in(data_m_data_out),
+                    .*);
+
+SPIPorts SPIPorts(.clk(sys_clk),
+                  .cs(spi_access),
+                  .data_m_ack(spi_ack),
+                  .data_m_data_out(spi_data),
+                  .data_m_data_in(data_m_data_out),
+                  .data_m_addr(data_m_addr[1]),
+                  .miso(spi_miso),
+                  .mosi(spi_mosi),
+                  .sclk(spi_sclk),
+                  .ncs(spi_ncs),
+                  .*);
 
 Core Core(.clk(sys_clk),
 	  .lock(),

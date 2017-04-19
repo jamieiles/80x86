@@ -14,7 +14,7 @@ always_ff @(posedge clk or posedge reset)
     else if (cs && data_m_access && data_m_bytesel[0] && data_m_wr_en)
         leds_val <= data_m_data_in[7:0];
 
-always_ff @(posedge clk or posedge reset)
+always_ff @(posedge clk)
     data_m_ack <= cs & data_m_access;
 
 endmodule
