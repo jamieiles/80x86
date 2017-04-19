@@ -152,7 +152,8 @@ SDRAMConfigRegister SDRAMConfigRegister(.clk(sys_clk),
                                         .*);
 
 UartPorts #(.clk_freq(50000000))
-          UartPorts(.rx(uart_rx),
+          UartPorts(.clk(sys_clk),
+                    .rx(uart_rx),
                     .tx(uart_tx),
                     .cs(uart_access),
                     .data_m_ack(uart_ack),
@@ -160,7 +161,8 @@ UartPorts #(.clk_freq(50000000))
                     .data_m_data_in(data_m_data_out),
                     .*);
 
-SPIPorts SPIPorts(.cs(spi_access),
+SPIPorts SPIPorts(.clk(sys_clk),
+                  .cs(spi_access),
                   .data_m_ack(spi_ack),
                   .data_m_data_out(spi_data),
                   .data_m_data_in(data_m_data_out),
