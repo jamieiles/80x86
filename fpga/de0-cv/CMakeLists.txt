@@ -1,5 +1,7 @@
 include(Quartus)
 
+add_subdirectory(bios)
+
 get_property(ALU_SOURCES GLOBAL PROPERTY G_ALU_SOURCES)
 get_property(CORE_SOURCES GLOBAL PROPERTY G_CORE_SOURCES)
 
