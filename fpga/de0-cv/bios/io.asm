@@ -23,8 +23,8 @@ putchar:
     out dx, al
     inc dx
 .busy:
-    in al, dx
-    test al, 0x2
+    in ax, dx
+    test ah, 0x2
     jnz .busy
 
     pop ax
