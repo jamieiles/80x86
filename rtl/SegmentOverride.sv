@@ -21,7 +21,7 @@ always_comb begin
         sr_rd_sel = microcode_sr_rd_sel;
 end
 
-always_ff @(posedge clk, posedge reset) begin
+always_ff @(posedge clk or posedge reset) begin
     if (reset) begin
         override_active <= 1'b0;
         override <= 2'b00;
