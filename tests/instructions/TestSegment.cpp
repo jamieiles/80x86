@@ -20,7 +20,7 @@ struct MovOverrideTest {
 class MovOverride : public EmulateFixture,
     public ::testing::WithParamInterface<struct MovOverrideTest> {
 };
-TEST_P(MovOverride, SegmentOverriden)
+TEST_P(MovOverride, MemWriteSegmentOverriden)
 {
     auto t = GetParam();
 
@@ -39,6 +39,22 @@ TEST_P(MovOverride, SegmentOverriden)
     ASSERT_EQ(0xaa55, read_mem16(0x0100, t.segment_register));
     EXPECT_EQ(0x2000, read_reg(DS));
     ASSERT_EQ(mem_init_16, read_mem16(0x0100, DS));
+}
+
+TEST_P(MovOverride, MemReadSegmentOverriden)
+{
+    auto t = GetParam();
+
+    SCOPED_TRACE(t.segment);
+
+    write_reg(t.segment_register, 0x8000);
+    write_mem16(0x100, 0xa5a5, t.segment_register);
+    // mov word ax, [SEGMENT:0x0100]
+    set_instruction({ t.prefix_byte, 0xa1, 0x00, 0x01 });
+
+    emulate();
+
+    ASSERT_EQ(0xa5a5, read_reg(AX));
 }
 INSTANTIATE_TEST_CASE_P(SegmentOverride, MovOverride,
     ::testing::Values(
