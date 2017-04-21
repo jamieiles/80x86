@@ -29,6 +29,7 @@ target_link_libraries(simulator
                       ${Boost_LIBRARIES})
 nasm_file(OUTPUT bios.bin
           SOURCES bios.asm)
+add_custom_target(simbios ALL DEPENDS bios.bin)
 
 install(TARGETS simulator
         COMPONENT simulator
