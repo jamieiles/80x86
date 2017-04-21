@@ -33,7 +33,7 @@ mov8a_reg:
         rd_sel_source MODRM_REG, reg_wr_en, width 8,
         next_instruction;
 mov8a_mem:
-    segment DS, mem_read, width 8, segment DS;
+    mem_read, width 8, segment DS;
     rd_sel_source MODRM_REG, reg_wr_en, a_sel MDR, alu_op SELA, width 8,
         next_instruction;
 
