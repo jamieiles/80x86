@@ -1,5 +1,14 @@
 .code16
 
+.section .reset.text, "ax"
+.globl _reset
+_reset:
+    ljmp $0xf000, $_start
+
+.section .model, "a"
+    .byte 0xff
+    .byte 0x00
+
 .section .entry.text, "ax"
 .globl _start
 _start:
@@ -7,8 +16,8 @@ _start:
     mov %ax, %ss
     mov %ax, %ds
     mov %ax, %cs:bios_ss
-    movw $0xf000, %cs:bios_sp
-    movw $0xf000, %sp
+    movw $0xdffe, %cs:bios_sp
+    movw $0xdffe, %sp
     jmp root
 
 .section .text, "ax"

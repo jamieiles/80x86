@@ -4,11 +4,17 @@ ENTRY(_start)
 
 SECTIONS {
     . = 0x0;
-    .text : {
+    .text 0xe000 : {
         *(.entry.text);
         *(.text);
         *(.rodata*);
         *(.bss*);
         *(.data*);
+    }
+    .reset 0xfff0 : {
+        *(.reset.text);
+    }
+    .model 0xfffe : {
+        *(.model);
     }
 }
