@@ -4,5 +4,5 @@ if [ "$MIRROR" != "" ]; then
     MIRROR_ARG="--build-arg MIRROR=$MIRROR"
 fi
 docker build $MIRROR_ARG -t s80x86-build-quartus docker/build-quartus/
-docker build -t s80x86-build docker/build/
+docker build $MIRROR_ARG -t s80x86-build docker/build/
 docker build -t s80x86-dev docker/dev/
