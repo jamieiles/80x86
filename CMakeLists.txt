@@ -9,7 +9,7 @@ set(CPACK_STRIP_FILES ON)
 set(CPACK_DEB_COMPONENT_INSTALL ON)
 set(CPACK_COMPONENTS_ALL simulator)
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "libsdl2-2.0-0, libboost-python1.58.0, python3")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libboost-python1.58.0, python3")
 include(CPack)
 include(InstallRequiredSystemLibraries)
 

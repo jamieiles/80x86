@@ -77,6 +77,20 @@ Verilog models which will write VCD files for each test run.
 
 *Coverage* builds everything for coverage including {cpp} and Verilog.
 
+== Simulator
+
+The simulator can run either the software simulation (SoftwareCPU) or the RTL
+model (RTLCPU).  Typing `^]` will cause the simulator to exit.
+
+----
+Options:
+  -h [ --help ]         print this usage information and exit
+  -b [ --backend ] arg  the simulator backend module to use, either SoftwareCPU
+                        or RTLCPU, default SoftwareCPU
+  --bios arg            the bios image to use
+  --diskimage arg       the boot disk image
+----
+
 == Microcode
 
 The microcode is stored in `rtl/microcode` where microcode files have the

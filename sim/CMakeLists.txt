@@ -2,40 +2,30 @@ include(Verilator)
 include(Nasm)
 
 find_package(Boost COMPONENTS program_options REQUIRED)
-find_package(SDL2 REQUIRED)
-find_package(SDL2_ttf REQUIRED)
-include_directories(${SDL2_INCLUDE_DIR})
-include_directories(${SDL2_TTF_INCLUDE_DIR})
 include_directories(${Boost_INCLUDE_DIR})
 
 add_subdirectory(common)
 add_subdirectory(cppmodel)
 add_subdirectory(RTLCPU)
-add_subdirectory(display)
 include_directories(cppmodel
-                    display
                     common
                     RTLCPU
                     ../tests/rtl)
 include_directories(${CMAKE_CURRENT_BINARY_DIR}/RTLCPU)
 
 add_executable(simulator
-               Simulator.cpp)
+               Simulator.cpp
+               UART.h
+               UART.cpp
+               SPI.h
+               SPI.cpp)
 target_link_libraries(simulator
                       simcommon
                       8086sim
-                      simdisplay
                       rtlsim
                       ${Boost_LIBRARIES})
-nasm_file(OUTPUT bios.bin
-          SOURCES bios.asm)
-add_custom_target(simbios ALL DEPENDS bios.bin)
-
 install(TARGETS simulator
         COMPONENT simulator
         RUNTIME DESTINATION bin
         LIBRARY DESTINATION lib
         RESOURCE DESTINATION share/s80x86)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/bios.bin
-        DESTINATION share/s80x86
-        COMPONENT simulator)
