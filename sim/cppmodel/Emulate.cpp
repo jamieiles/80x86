@@ -38,7 +38,7 @@ public:
         this->mem = mem;
     }
 
-    void set_io(Memory *io)
+    void set_io(std::map<uint16_t, IOPorts *> *io)
     {
         this->io = io;
     }
@@ -298,8 +298,42 @@ private:
     GPR get_segment(bool is_stack_reference);
     void set_override_segment(GPR segment);
 
+    void write_io8(uint32_t addr, uint8_t val)
+    {
+        if (!io->count(addr & ~1))
+            return;
+
+        auto p = (*io)[addr & ~1];
+        p->write8((addr & ~1) - p->get_base(), addr & 1, val);
+    }
+    void write_io16(uint32_t addr, uint16_t val)
+    {
+        if (!io->count(addr & ~1))
+            return;
+
+        auto p = (*io)[addr & ~1];
+        p->write16((addr & ~1) - p->get_base(), val);
+    }
+
+    uint8_t read_io8(uint32_t addr)
+    {
+        if (!io->count(addr & ~1))
+            return 0;
+
+        auto p = (*io)[addr & ~1];
+        return p->read8((addr & ~1) - p->get_base(), addr & 1);
+    }
+    uint16_t read_io16(uint32_t addr)
+    {
+        if (!io->count(addr & ~1))
+            return 0;
+
+        auto p = (*io)[addr & ~1];
+        return p->read16((addr & ~1) - p->get_base());
+    }
+
     Memory *mem;
-    Memory *io;
+    std::map<uint16_t, IOPorts *> *io;
     RegisterFile *registers;
     size_t instr_length = 0;
     std::unique_ptr<ModRMDecoder> modrm_decoder;
@@ -1172,7 +1206,7 @@ void Emulator::set_memory(Memory *mem)
     pimpl->set_memory(mem);
 }
 
-void Emulator::set_io(Memory *io)
+void Emulator::set_io(std::map<uint16_t, IOPorts *> *io)
 {
     pimpl->set_io(io);
 }

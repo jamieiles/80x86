@@ -202,7 +202,7 @@ TEST_F(EmulateFixture, MovsbDec)
     write_reg(DI, 0x403);
     write_reg(CX, 0x4);
     write_cstring(0x800, "8086");
-    write_mem8(0x404, 0);
+    write_mem8(0x404, 0, ES);
 
     // repne movsb
     set_instruction({ 0xf3, 0xa4 });

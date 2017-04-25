@@ -76,6 +76,53 @@ static std::map<int, char> key_to_scancode_map = {
     { SDLK_SEMICOLON, 0x27 },
 };
 
+class SDRAMConfigRegister : public IOPorts {
+public:
+    SDRAMConfigRegister()
+        : IOPorts(0xfffc, 1)
+    {}
+
+    void write8(uint16_t __unused port_num, unsigned __unused offs,
+                uint8_t __unused v) {}
+    void write16(uint16_t __unused port_num, uint16_t __unused v) {}
+    uint8_t read8(uint16_t __unused port_num, unsigned offs)
+    {
+        return offs == 0 ? 0x1 : 0;
+    }
+    uint16_t read16(uint16_t __unused port_num)
+    {
+        return 1;
+    }
+};
+
+class UART : public IOPorts {
+public:
+    UART()
+        : IOPorts(0xfffa, 1)
+    {}
+
+    void write8(uint16_t __unused port_num, unsigned offs, uint8_t v)
+    {
+        if (offs == 0) {
+            std::cout << static_cast<char>(v);
+            std::cout.flush();
+        }
+    }
+    void write16(uint16_t __unused port_num, uint16_t v)
+    {
+        write8(port_num, 0, v);
+        write8(port_num, 1, v >> 8);
+    }
+    uint8_t read8(uint16_t __unused port_num, unsigned __unused offs)
+    {
+        return 0;
+    }
+    uint16_t read16(uint16_t __unused port_num)
+    {
+        return 0;
+    }
+};
+
 template <typename T>
 class Simulator {
 public:
@@ -125,6 +172,8 @@ private:
     std::ifstream disk_image;
     std::chrono::time_point<std::chrono::system_clock> start_time;
     std::deque<SDL_Event> active_keypresses;
+    SDRAMConfigRegister sdram_config_register;
+    UART uart;
 };
 
 template <typename T>
@@ -134,6 +183,8 @@ Simulator<T>::Simulator(const std::string &bios_path,
     disk_image(disk_image_path, std::ios::binary),
     start_time(std::chrono::system_clock::now())
 {
+    cpu.add_ioport(&sdram_config_register);
+    cpu.add_ioport(&uart);
     cpu.reset();
     load_bios(bios_path);
 }
@@ -145,14 +196,14 @@ void Simulator<T>::load_bios(const std::string &bios_path)
     for (unsigned offs = 0; !bios.eof(); ++offs) {
         char v;
         bios.read(&v, 1);
-        cpu.write_mem8(0xff00, offs, v);
+        cpu.write_mem8(0xfe00, offs, v);
     }
 
     cpu.write_mem8(0xf000, 0xfffe, 0xff);
     cpu.write_mem8(0xf000, 0x0002, 0xff);
     cpu.write_mem8(0xf000, 0x0000, 8);
 
-    cpu.write_reg(CS, 0xff00);
+    cpu.write_reg(CS, 0xffff);
     cpu.write_reg(IP, 0x0000);
 }
 

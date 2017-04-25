@@ -1,5 +1,6 @@
 #pragma once
 
+#include <map>
 #include <string>
 
 #include <VerilogDriver.h>
@@ -32,13 +33,12 @@ public:
 
     bool instruction_had_side_effects() const
     {
-        return mem.has_written() || io.has_written();
+        return mem.has_written();
     }
 
     void clear_side_effects()
     {
         mem.clear_has_written();
-        io.clear_has_written();
     }
 
     void write_mem8(uint16_t segment, uint16_t addr, uint8_t val);
@@ -51,6 +51,11 @@ public:
     void write_io16(uint32_t addr, uint16_t val);
     uint8_t read_io8(uint32_t addr);
     uint16_t read_io16(uint32_t addr);
+    void add_ioport(IOPorts *p)
+    {
+        for (size_t m = 0; m < p->get_num_ports(); ++m)
+            io[p->get_base() + m * sizeof(uint16_t)] = p;
+    }
 
     void write_vector8(uint16_t segment, uint16_t addr, const std::vector<uint8_t> &v);
     void write_vector16(uint16_t segment, uint16_t addr, const std::vector<uint16_t> &v);
@@ -80,5 +85,5 @@ private:
     std::string test_name;
     bool is_stopped;
     Memory mem;
-    Memory io;
+    std::map<uint16_t, IOPorts *> io;
 };

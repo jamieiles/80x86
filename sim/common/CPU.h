@@ -1,10 +1,13 @@
 #pragma once
 
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "Memory.h"
 #include "RegisterFile.h"
+
+#define __unused __attribute__((unused))
 
 enum InterruptVectorOffset {
     VEC_DIVIDE_ERROR = 0,
@@ -19,6 +22,30 @@ static inline phys_addr get_phys_addr(uint16_t segment,
 {
     return ((static_cast<uint32_t>(segment) << 4) + displacement) % (1 * 1024 * 1024);
 }
+
+class IOPorts {
+public:
+    IOPorts(uint16_t base, size_t num_ports)
+        : base(base),
+        num_ports(num_ports)
+    {}
+    virtual uint8_t read8(uint16_t port_num,
+                          unsigned offs) = 0;
+    virtual uint16_t read16(uint16_t port_num) = 0;
+    virtual void write8(uint16_t port_num, unsigned offs, uint8_t v) = 0;
+    virtual void write16(uint16_t port_num, uint16_t v) = 0;
+    uint16_t get_base() const
+    {
+        return base;
+    }
+    size_t get_num_ports() const
+    {
+        return num_ports;
+    }
+private:
+    uint16_t base;
+    size_t num_ports;
+};
 
 class CPU {
 public:
@@ -52,6 +79,7 @@ public:
     virtual void write_io16(uint32_t addr, uint16_t val) = 0;
     virtual uint8_t read_io8(uint32_t addr) = 0;
     virtual uint16_t read_io16(uint32_t addr) = 0;
+    virtual void add_ioport(IOPorts *p) = 0;
 
     virtual void write_vector8(uint16_t segment, uint16_t addr, const std::vector<uint8_t> &v)
     {
@@ -68,4 +96,3 @@ public:
         }
     }
 };
-

@@ -49,6 +49,11 @@ public:
     {
         return false;
     }
+    void add_ioport(IOPorts *p)
+    {
+        (void)p;
+        // No emulated IO for hardware, those tests don't run.
+    }
 private:
     uint16_t read_ip();
     uint16_t read_sr(GPR regnum);

@@ -1,4 +1,6 @@
 #pragma once
+#include <map>
+
 #include "CPU.h"
 #include "Emulate.h"
 
@@ -54,14 +56,13 @@ public:
 
     bool instruction_had_side_effects() const
     {
-        return mem.has_written() || io.has_written() || registers.has_written();
+        return mem.has_written() || registers.has_written();
     }
 
     void clear_side_effects()
     {
         registers.clear_has_written();
         mem.clear_has_written();
-        io.clear_has_written();
     }
 
     void write_mem8(uint16_t segment, uint16_t addr, uint8_t val)
@@ -92,29 +93,52 @@ public:
 
     void write_io8(uint32_t addr, uint8_t val)
     {
-        io.write<uint8_t>(addr, val);
+        if (!io.count(addr & ~1))
+            return;
+
+        auto p = io[addr & ~1];
+        p->write8((addr & -1) - p->get_base(), addr & 1, val);
     }
     void write_io16(uint32_t addr, uint16_t val)
     {
-        io.write<uint16_t>(addr, val);
+        if (!io.count(addr & ~1))
+            return;
+
+        auto p = io[addr & ~1];
+        p->write16((addr & -1) - p->get_base(), val);
     }
 
     uint8_t read_io8(uint32_t addr)
     {
-        return io.read<uint8_t>(addr);
+        if (!io.count(addr & ~1))
+            return 0;
+
+        auto p = io[addr & ~1];
+        return p->read8((addr & -1) - p->get_base(), addr & 1);
     }
     uint16_t read_io16(uint32_t addr)
     {
-        return io.read<uint16_t>(addr);
+        if (!io.count(addr & ~1))
+            return 0;
+
+        auto p = io[addr & ~1];
+        return p->read16((addr & -1) - p->get_base());
     }
 
     virtual bool has_instruction_length() const
     {
         return true;
     }
+
+    virtual void add_ioport(IOPorts *p)
+    {
+        for (size_t m = 0; m < p->get_num_ports(); ++m)
+            io[p->get_base() + m * sizeof(uint16_t)] = p;
+    }
 private:
     RegisterFile registers;
     Emulator emulator;
     Memory mem;
-    Memory io;
+
+    std::map<uint16_t, IOPorts *> io;
 };

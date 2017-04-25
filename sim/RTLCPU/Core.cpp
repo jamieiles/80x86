@@ -50,14 +50,17 @@ RTLCPU<debug_enabled>::RTLCPU(const std::string &test_name)
         }
     });
     this->periodic(ClockCapture, [&]{
-        auto dev = &this->io;
-        if (this->dut.io_m_access && this->dut.d_io && this->dut.io_m_wr_en) {
-            if (this->dut.io_m_bytesel & (1 << 0))
-                dev->template write<uint8_t>(this->dut.io_m_addr << 1,
-                                             this->dut.io_m_data_out & 0xff);
-            if (this->dut.io_m_bytesel & (1 << 1))
-                dev->template write<uint8_t>((this->dut.io_m_addr << 1) + 1,
-                                             (this->dut.io_m_data_out >> 8) & 0xff);
+        if (this->dut.io_m_access && this->dut.d_io && this->dut.io_m_wr_en && !io_in_progress) {
+            if (!this->io.count(this->dut.io_m_addr << 1))
+                return;
+            auto addr = this->dut.io_m_addr << 1;
+            auto p = this->io[this->dut.io_m_addr << 1];
+            if (this->dut.io_m_bytesel == 0x3)
+                p->write16(addr - p->get_base(), this->dut.io_m_data_out);
+            else if (this->dut.io_m_bytesel & (1 << 0))
+                p->write8(addr - p->get_base(), 0, this->dut.io_m_data_out);
+            else if (this->dut.io_m_bytesel & (1 << 1))
+                p->write8(addr - p->get_base(), 1, this->dut.io_m_data_out >> 8);
         }
     });
     this->periodic(ClockCapture, [&]{
@@ -305,8 +308,19 @@ void RTLCPU<debug_enabled>::io_access()
         return;
 
     this->after_n_cycles(0,[&]{
-        auto v = this->io.template read<uint16_t>(this->dut.io_m_addr << 1);
-        this->dut.io_m_data_in = v;
+        if (!this->io.count(this->dut.io_m_addr << 1)) {
+            this->dut.io_m_data_in = 0;
+            return;
+            }
+
+        auto addr = this->dut.io_m_addr << 1;
+        auto p = this->io[this->dut.io_m_addr << 1];
+        if (this->dut.io_m_bytesel == 0x3)
+            this->dut.io_m_data_in = p->read16(addr - p->get_base());
+        else if (this->dut.io_m_bytesel & 0x1)
+            this->dut.io_m_data_in = p->read8(addr - p->get_base(), 0);
+        else if (this->dut.io_m_bytesel & 0x2)
+            this->dut.io_m_data_in = p->read8(addr - p->get_base(), 1) << 8;
     });
     io_in_progress = true;
     this->after_n_cycles(mem_latency, [&]{

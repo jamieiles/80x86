@@ -10,17 +10,65 @@
 
 extern std::unique_ptr<CPU> get_cpu(const std::string &test_name);
 
+class DummyIO : public IOPorts {
+public:
+    DummyIO(uint16_t addr, size_t num_ports)
+        : IOPorts(addr, num_ports),
+        val(0)
+    {}
+
+    uint8_t read8(uint16_t port_num, unsigned offs)
+    {
+        (void)port_num;
+        return (val >> (offs * 8)) & 0xff;
+    }
+
+    uint16_t read16(uint16_t port_num)
+    {
+        (void)port_num;
+        return val;
+    }
+
+    void write8(uint16_t port_num, unsigned offs, uint8_t v)
+    {
+        (void)port_num;
+        uint16_t mask = 0xff << (8 * offs);
+
+        val &= ~mask;
+        val |= (static_cast<uint16_t>(v) << (8 * offs));
+    }
+
+    void write16(uint16_t port_num, uint16_t v)
+    {
+        (void)port_num;
+        val = v;
+    }
+private:
+    uint16_t val;
+};
+
 class EmulateFixture : public ::testing::Test {
 public:
     EmulateFixture()
-        : cpu(get_cpu(current_test_name()))
+        : cpu(get_cpu(current_test_name())),
+          io100(0x100, 1),
+          io80(0x80, 1),
+          io10(0x10, 1)
     {
+        add_ioport(&io100);
+        add_ioport(&io80);
+        add_ioport(&io10);
         reset();
     }
 
     ~EmulateFixture()
     {
         cpu->write_coverage();
+    }
+
+    void add_ioport(IOPorts *p)
+    {
+        cpu->add_ioport(p);
     }
 
     void reset()
@@ -166,4 +214,7 @@ public:
 protected:
     size_t instr_len;
     std::unique_ptr<CPU> cpu;
+    DummyIO io100;
+    DummyIO io80;
+    DummyIO io10;
 };
