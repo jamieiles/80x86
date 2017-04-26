@@ -21,9 +21,9 @@ reg [ptr_bits-1:0] rd_ptr;
 reg [ptr_bits-1:0] wr_ptr;
 reg [ptr_bits:0] count;
 
-assign empty = count == 0;
-assign full = count == depth;
-assign nearly_full = count > depth - full_threshold;
+assign empty = reset || count == 0;
+assign full = count == depth && !reset;
+assign nearly_full = !reset && count > depth - full_threshold;
 
 always_ff @(posedge clk or posedge reset) begin
     if (reset) begin
