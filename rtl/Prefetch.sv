@@ -24,8 +24,8 @@ module Prefetch(input logic clk,
                 input logic [15:0] mem_data);
 
 // verilator lint_off BLKANDNBLK
-reg [15:0] fetch_address;
-reg [15:0] cs;
+reg [15:0] next_fetch_address, fetch_address;
+reg [15:0] next_cs, cs;
 reg abort_cur;
 // verilator lint_on BLKANDNBLK
 reg [7:0] fetched_high_byte;
@@ -40,7 +40,7 @@ assign mem_address = {cs, 3'b0} + {4'b0, next_address[15:1]};
 assign mem_access = !reset && !fifo_full && !mem_ack && !write_second;
 
 assign fifo_wr_en = !abort_cur && !load_new_ip && (mem_ack || write_second);
-assign fifo_reset = load_new_ip;
+assign fifo_reset = load_new_ip | (abort_cur & mem_ack);
 assign fifo_wr_data = mem_ack ?
     (fetch_address[0] ? mem_data[15:8] : mem_data[7:0]) : fetched_high_byte;
 
@@ -60,17 +60,34 @@ always_ff @(posedge clk or posedge reset)
 
 always_ff @(posedge clk or posedge reset)
     if (reset)
-        cs <= 16'b0;
-    else if (load_new_ip)
+        cs <= 16'hffff;
+    else if (abort_cur && mem_ack)
+        cs <= next_cs;
+    else if (load_new_ip && !mem_access)
         cs <= new_cs;
+
+always_ff @(posedge clk or posedge reset)
+    if (reset)
+        next_cs <= 16'hffff;
+    else if (load_new_ip)
+        next_cs <= new_cs;
 
 always_ff @(posedge clk or posedge reset) begin
     if (reset)
         fetch_address <= 16'b0;
-    else if (load_new_ip)
+    else if (abort_cur && mem_ack)
+        fetch_address <= next_fetch_address;
+    else if (load_new_ip && !mem_access)
         fetch_address <= new_ip;
-    else if (!abort_cur && (mem_ack || write_second))
+    else if (!abort_cur && !load_new_ip && (mem_ack || write_second))
         fetch_address <= fetch_address + 1'b1;
+end
+
+always_ff @(posedge clk or posedge reset) begin
+    if (reset)
+        next_fetch_address <= 16'b0;
+    else if (load_new_ip)
+        next_fetch_address <= new_ip;
 end
 
 always_ff @(posedge clk)

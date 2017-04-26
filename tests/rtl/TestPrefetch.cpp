@@ -64,8 +64,8 @@ TEST_F(PrefetchTestFixture, empty_fifo_triggers_fetch)
 
 TEST_F(PrefetchTestFixture, fetch_writes_to_fifo)
 {
-    memory[0] = 0xaa55;
-    memory[2] = 0xdead;
+    memory[0xffff0 + 0] = 0xaa55;
+    memory[0xffff0 + 2] = 0xdead;
     dut.fifo_full = 0;
 
     cycle(3);
@@ -105,7 +105,7 @@ TEST_F(PrefetchTestFixture, odd_fetch_address_writes_one)
 
 TEST_F(PrefetchTestFixture, back_to_back_reads)
 {
-    memory[0x000] = 0xbeef;
+    memory[0xffff0 + 0x000] = 0xbeef;
     memory[0x100] = 0x12aa;
     memory[0x102] = 0x5634;
     memory[0x104] = 0xffff;
@@ -133,7 +133,7 @@ TEST_F(PrefetchTestFixture, address_generation)
 TEST_F(PrefetchTestFixture, new_ip_discards_current_fetch)
 {
     mem_latency = 5;
-    memory[0x00000] = 0xffff;
+    memory[0xffff0 + 0x00000] = 0xffff;
     memory[0xdead8] = 0xf00d;
     memory[0xdeada] = 0xface;
     memory[0xdeadc] = 0x5555;
@@ -150,7 +150,7 @@ TEST_F(PrefetchTestFixture, new_ip_discards_current_fetch)
 TEST_F(PrefetchTestFixture, filled_fifo_doesnt_skip)
 {
     for (uint32_t m = 0; m < 32; m += 2)
-        memory[m] = m;
+        memory[0xffff0 + m] = m;
 
     while (fifo_bytes.size() != 6)
         cycle();
