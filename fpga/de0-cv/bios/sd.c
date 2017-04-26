@@ -7,7 +7,7 @@
 #define SPI_XFER_BUSY (1 << 8)
 #define SPI_CS_DEACTIVATE (1 << 9)
 
-static char spi_xfer_buf[1024];
+static char spi_xfer_buf[1280];
 
 static void spi_xfer_buf_set(int offs, unsigned char v)
 {
