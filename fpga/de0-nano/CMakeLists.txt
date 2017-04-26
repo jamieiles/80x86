@@ -6,11 +6,13 @@ get_property(CORE_SOURCES GLOBAL PROPERTY G_CORE_SOURCES)
 configure_file(Top.qsf Top.qsf)
 
 set(FPGA_SOURCES
-    ${CMAKE_CURRENT_SOURCE_DIR}/Top.sv
+    ${CMAKE_CURRENT_SOURCE_DIR}/defines.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/SysPLL.v
     ${CMAKE_CURRENT_SOURCE_DIR}/LEDSRegister.sv
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/Top.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/VirtualJTAG.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/JTAGBridge.sv
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/BIOS.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../sdram/Counter.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../sdram/SDRAMController.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../sdram/SDRAMConfigRegister.sv

@@ -10,6 +10,9 @@ module Top(input logic clk,
            inout [15:0] s_data,
            output logic [1:0] s_banksel,
            output logic sdr_clk,
+`ifdef CONFIG_LEDS
+           output logic [7:0] leds,
+`endif // CONFIG_LEDS
            input logic uart_rx,
            output logic uart_tx,
            output logic spi_sclk,
@@ -70,6 +73,11 @@ wire sdram_access;
 wire sdram_ack;
 wire [15:0] sdram_data;
 
+`ifdef CONFIG_LEDS
+wire leds_access;
+wire leds_ack;
+`endif // CONFIG_LEDS
+
 wire bios_access;
 wire bios_ack;
 wire [15:0] bios_data;
@@ -90,12 +98,21 @@ wire [15:0] spi_data;
 wire default_io_access;
 wire default_io_ack;
 
-wire io_ack = sdram_config_ack | default_io_ack | uart_ack | spi_ack;
+wire io_ack = sdram_config_ack |
+              default_io_ack |
+              uart_ack |
+`ifdef CONFIG_LEDS
+              leds_ack |
+`endif // CONFIG_LEDS
+              spi_ack;
 
 always_ff @(posedge clk)
     default_io_ack <= default_io_access;
 
 always_comb begin
+`ifdef CONFIG_LEDS
+    leds_access = 1'b0;
+`endif // CONFIG_LEDS
     sdram_config_access = 1'b0;
     default_io_access = 1'b0;
     uart_access = 1'b0;
@@ -103,6 +120,9 @@ always_comb begin
 
     if (d_io && data_m_access) begin
         casez ({data_m_addr[15:1], 1'b0})
+`ifdef CONFIG_LEDS
+        16'b1111_1111_1111_1110: leds_access = 1'b1;
+`endif // CONFIG_LEDS
         16'b1111_1111_1111_1100: sdram_config_access = 1'b1;
         16'b1111_1111_1111_1010: uart_access = 1'b1;
         16'b1111_1111_1111_00z0: spi_access = 1'b1;
@@ -148,7 +168,7 @@ MemArbiter MemArbiter(.clk(sys_clk),
                       .data_m_ack(data_mem_ack),
                       .*);
 
-SDRAMController #(.size(64 * 1024 * 1024),
+SDRAMController #(.size(`CONFIG_SDRAM_SIZE),
                   .clkf(50000000))
                 SDRAMController(.clk(sys_clk),
                                 .reset(reset),
@@ -180,6 +200,15 @@ SDRAMConfigRegister SDRAMConfigRegister(.clk(sys_clk),
                                         .data_m_data_out(sdram_config_data),
                                         .config_done(sdram_config_done),
                                         .*);
+
+`ifdef CONFIG_LEDS
+LEDSRegister     LEDSRegister(.clk(sys_clk),
+                              .cs(leds_access),
+                              .leds_val(leds),
+                              .data_m_data_in(data_m_data_out),
+                              .data_m_ack(leds_ack),
+                              .*);
+`endif // CONFIG_LEDS
 
 UartPorts #(.clk_freq(50000000))
           UartPorts(.clk(sys_clk),
