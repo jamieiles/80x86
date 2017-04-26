@@ -172,7 +172,7 @@ static void install_vectors(void)
 
 void root(void)
 {
-    putstr("s80x86 DE0-CV BIOS, (C) Jamie Iles 2017\r\n");
+    putstr("s80x86 DE0-CV BIOS, (C) Jamie Iles 2017, " __DATE__ " " __TIME__ "\r\n");
 
     keyboard_init();
     install_vectors();
