@@ -1,7 +1,5 @@
 include(Quartus)
 
-add_subdirectory(bios)
-
 get_property(ALU_SOURCES GLOBAL PROPERTY G_ALU_SOURCES)
 get_property(CORE_SOURCES GLOBAL PROPERTY G_CORE_SOURCES)
 
@@ -37,8 +35,8 @@ add_custom_command(OUTPUT microcode.mif
                    COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/microcode.mif .
                    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/microcode.mif generate_microcode)
 add_custom_command(OUTPUT bios.mif
-                   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/make-bios-mif ${CMAKE_CURRENT_BINARY_DIR}/bios/bios bios.mif
-                   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/bios/bios)
+                   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/make-bios-mif ${CMAKE_CURRENT_BINARY_DIR}/../../bios/bios bios.mif
+                   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/../../bios/bios)
 add_fpga(PROJECT Top
          FAMILY "Cyclone V"
          PART "5CEBA4F23C7"
