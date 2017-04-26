@@ -10,6 +10,7 @@ class Runner(object):
     def __init__(self, simname):
         simtype = getattr(sys.modules['py8086sim.Cpu'], simname)
         self.cpu = simtype(self.binary)
+        self.cpu.reset()
         self.cpu.write_reg(GPR.CS, 0x0000)
 
         with open(os.path.join('${CMAKE_CURRENT_BINARY_DIR}', 'programs', self.binary)) as b:

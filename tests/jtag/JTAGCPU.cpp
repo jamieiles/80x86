@@ -28,8 +28,6 @@ JTAGCPU::JTAGCPU(const std::string &test_name)
     if (jtag_open_virtual_device(0x00))
         throw JTAGError("Failed to open Virtual JTAG");
 
-    this->reset();
-
     write_scr(0);
     while (read_scr() & STATUS_CONTROL_RUN)
         continue;
@@ -103,6 +101,8 @@ void JTAGCPU::reset()
 {
     write_scr(STATUS_CONTROL_RESET);
     write_scr(0);
+    while (read_scr() & STATUS_CONTROL_RUN)
+        continue;
 }
 
 void JTAGCPU::write_reg(GPR regnum, uint16_t val)
