@@ -81,7 +81,7 @@ assign s_cs_n           = cmd[3];
 assign s_ras_n          = cmd[2];
 assign s_cas_n          = cmd[1];
 assign s_wr_en          = cmd[0];
-assign s_data           = state == STATE_WRITE && timec < 2'd2 ? outdata : {16{1'bz}};
+assign s_data           = state == STATE_WRITE && timec < {{timec_width-2{1'b0}}, 2'd2} ? outdata : {16{1'bz}};
 assign s_bytesel        = outbytesel;
 assign s_clken          = 1'b1;
 
@@ -243,18 +243,17 @@ always_ff @(posedge clk or posedge reset) begin
             STATE_AUTOREF: begin
                 cmd <= CMD_REF;
             end
+            default: ;
             endcase
         end
     end
 end
 
-always_ff @(posedge clk) begin
-    if (state == STATE_IDLE)
-        h_rdata <= 16'h0;
-
-    if (state == STATE_READ)
-        if (timec == cas)
-            h_rdata <= s_data;
+always_ff @(posedge clk or posedge reset) begin
+    if (reset)
+        h_rdata <= 16'b0;
+    else
+        h_rdata <= state == STATE_READ && timec == cas ? s_data : 16'b0;
 end
 
 always_ff @(posedge clk or posedge reset)
