@@ -58,15 +58,21 @@ wire instr_m_ack;
 // Multiplexed I/D bus.
 wire [19:1] q_m_addr;
 wire [15:0] q_m_data_out;
-wire [15:0] q_m_data_in;
-wire q_m_ack;
+wire [15:0] q_m_data_in = sdram_data | bios_data;
+wire q_m_ack = sdram_ack | bios_ack;
 wire q_m_access;
 wire q_m_wr_en;
 wire [1:0] q_m_bytesel;
 
 wire d_io;
 
-wire sdram_access = q_m_access & ~d_io;
+wire sdram_access;
+wire sdram_ack;
+wire [15:0] sdram_data;
+
+wire bios_access;
+wire bios_ack;
+wire [15:0] bios_data;
 
 wire sdram_config_access;
 wire sdram_config_ack;
@@ -105,6 +111,18 @@ always_comb begin
     end
 end
 
+always_comb begin
+    sdram_access = 1'b0;
+    bios_access = 1'b0;
+
+    if (q_m_access) begin
+        casez ({q_m_addr, 1'b0})
+        20'b1111_111?_????_????_????: bios_access = 1'b1;
+        default: sdram_access = 1'b1;
+        endcase
+    end
+end
+
 wire data_mem_ack;
 
 BitSync         ResetSync(.clk(sys_clk),
@@ -138,12 +156,23 @@ SDRAMController #(.size(64 * 1024 * 1024),
                                 .cs(sdram_access),
                                 .h_addr(q_m_addr),
                                 .h_wdata(q_m_data_out),
-                                .h_rdata(q_m_data_in),
+                                .h_rdata(sdram_data),
                                 .h_wr_en(q_m_wr_en),
                                 .h_bytesel(q_m_bytesel),
-                                .h_compl(q_m_ack),
+                                .h_compl(sdram_ack),
                                 .h_config_done(sdram_config_done),
                                 .*);
+
+BIOS #(.depth(4096))
+     BIOS(.clk(sys_clk),
+          .cs(bios_access),
+          .data_m_access(q_m_access),
+          .data_m_ack(bios_ack),
+          .data_m_addr(q_m_addr),
+          .data_m_wr_en(q_m_wr_en),
+          .data_m_data_out(bios_data),
+          .data_m_data_in(q_m_data_out),
+          .data_m_bytesel(q_m_bytesel));
 
 SDRAMConfigRegister SDRAMConfigRegister(.clk(sys_clk),
                                         .cs(sdram_config_access),
