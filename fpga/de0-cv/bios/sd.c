@@ -273,8 +273,10 @@ int read_sector(unsigned long address, unsigned short dseg,
     }
 
     data_start = find_data_start(r1offs);
-    if (data_start < 0)
+    if (data_start < 0) {
+        putstr("No data start token\n\r");
         return -1;
+    }
 
     memcpy_seg(dseg, (void *)daddr, get_cs(), spi_xfer_buf + data_start,
                512);
@@ -302,7 +304,8 @@ void sd_init(void)
 
 void sd_boot(void)
 {
-    read_sector(0, 0, 0x7c00);
+    if (read_sector(0, 0, 0x7c00))
+        panic("Failed to read boot sector\n\r");
 
     putstr("Booting from SD card...\n\r");
     asm volatile("mov $0, %dl\n"
