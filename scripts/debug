@@ -1,0 +1,61 @@
+#!/usr/bin/env python
+import cmd
+import distorm3
+
+from py8086sim.Cpu import JTAGCPU, GPR, Flag
+
+
+class Debugger(cmd.Cmd):
+    def __init__(self):
+        cmd.Cmd.__init__(self)
+        self.c = JTAGCPU("debugger")
+        self._update_prompt()
+
+    def _update_prompt(self):
+        self.prompt = 'debug {0:04x}:{1:04x}> '.format(
+            self.c.read_reg(GPR.CS), self.c.read_reg(GPR.IP))
+
+    def do_reset(self, line):
+        '''Reset the CPU'''
+        self.c.reset()
+        self._update_prompt()
+        return False
+
+    def do_disassemble(self, line):
+        '''Disassemble the instruction at CS:IP'''
+        cs = self.c.read_reg(GPR.CS)
+        ip = self.c.read_reg(GPR.IP)
+
+        buf = [chr(self.c.read_mem8(cs, ip + i)) for i in xrange(15)]
+        instruction = distorm3.Decode(ip, ''.join(buf), distorm3.Decode16Bits)[0]
+        _, size, instruction, _ = instruction
+        hexbytes = ['{0:02x}'.format(ord(b)) for b in buf[:size]]
+        print('{0:s}\t{1:s}'.format(' '.join(hexbytes), instruction.lower()))
+
+        return False
+
+    def do_regs(self, line):
+        '''Display the CPU registers'''
+        regnames = ['AX', 'CX', 'DX', 'BX', 'SP', 'BP', 'SI', 'DI', 'ES',
+                    'CS', 'SS', 'DS', 'IP']
+        for name in regnames:
+            print('{name}: {val:04x}'.format(name=name,
+                                             val=self.c.read_reg(GPR.names[name])))
+        flagnames = ['CF', 'PF', 'AF', 'ZF', 'SF', 'TF', 'IF', 'DF', 'OF']
+        flags = self.c.read_flags()
+        set_flags = filter(lambda x: flags & Flag.names[x], flagnames)
+        print('FLAGS: {0:04x} {1:s}'.format(self.c.read_flags(),
+                                            ' '.join(set_flags)))
+        return False
+
+    def do_step(self, line):
+        '''Single step the CPU'''
+        self.c.step()
+        self._update_prompt()
+        return False
+
+    def do_EOF(self, line):
+        print('')
+        return True
+
+Debugger().cmdloop()
