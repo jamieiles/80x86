@@ -7,10 +7,10 @@ module  SysPLL(
 	input wire rst,
 
 	// interface 'outclk0'
-	output wire outclk_0,
+	output wire sdr_clk,
 
 	// interface 'outclk1'
-	output wire outclk_1,
+	output wire sys_clk,
 
 	// interface 'locked'
 	output wire locked
@@ -79,7 +79,7 @@ module  SysPLL(
 		.pll_subtype("General")
 	) altera_pll_i (
 		.rst	(rst),
-		.outclk	({outclk_1, outclk_0}),
+		.outclk	({sys_clk, sdr_clk}),
 		.locked	(locked),
 		.fboutclk	( ),
 		.fbclk	(1'b0),

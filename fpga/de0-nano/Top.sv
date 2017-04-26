@@ -136,10 +136,6 @@ MemArbiter MemArbiter(.clk(sys_clk),
                       .data_m_ack(data_mem_ack),
                       .*);
 
-SysPLL	SysPLL(.refclk(clk),
-	       .outclk_0(sys_clk),
-               .outclk_1(sdr_clk));
-
 SDRAMController #(.size(32 * 1024 * 1024),
                   .clkf(50000000))
                 SDRAMController(.clk(sys_clk),
@@ -190,6 +186,11 @@ SPIPorts SPIPorts(.clk(sys_clk),
                   .sclk(spi_sclk),
                   .ncs(spi_ncs),
                   .*);
+
+SysPLL	SysPLL(.refclk(clk),
+               .rst(1'b0),
+               .locked(),
+               .*);
 
 Core Core(.clk(sys_clk),
 	  .lock(),

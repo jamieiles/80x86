@@ -205,8 +205,8 @@ SPIPorts SPIPorts(.clk(sys_clk),
 
 SysPLL	SysPLL(.refclk(clk),
 	       .rst(1'b0),
-	       .outclk_0(sdr_clk),
-               .outclk_1(sys_clk));
+               .locked(),
+               .*);
 
 Core Core(.clk(sys_clk),
 	  .lock(),

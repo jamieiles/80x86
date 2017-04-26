@@ -1,16 +1,18 @@
 module SysPLL(input wire refclk,
-	      output wire outclk_0,
-              output wire outclk_1);
+              input wire rst,
+	      output wire sys_clk,
+              output wire sdr_clk,
+              output wire locked);
 
 wire [4:0] clks;
-assign outclk_0 = clks[0];
-assign outclk_1 = clks[1];
+assign sys_clk = clks[0];
+assign sdr_clk = clks[1];
 
 altpll	altpll_component(
 			.inclk({1'b0, refclk}),
 			.clk(clks),
 			.activeclock(),
-			.areset(1'b0),
+			.areset(rst),
 			.clkbad(),
 			.clkena({6{1'b1}}),
 			.clkloss(),
@@ -25,7 +27,7 @@ altpll	altpll_component(
 			.fbout(),
 			.fref(),
 			.icdrclk(),
-			.locked(),
+			.locked(locked),
 			.pfdena(1'b1),
 			.phasecounterselect({4{1'b1}}),
 			.phasedone(),
