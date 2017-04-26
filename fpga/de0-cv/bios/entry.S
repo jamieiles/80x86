@@ -19,6 +19,11 @@ _start:
     in (%dx), %ax
     cmp $0x1, %ax
     jne 1b
+    xor %ax, %ax
+    xor %dx, %dx
+    // Clear flags for C entry.
+    push %ax
+    popf
 
     mov %cs, %ax
     mov %ax, %ss
@@ -67,6 +72,10 @@ saved_sp:
     // by address.
     mov %ss, %bp
     mov %bp, %ds
+
+    xor %ax, %ax
+    push %ax
+    popf
 
     call \function
     add $2, %sp
