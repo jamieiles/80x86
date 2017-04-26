@@ -12,6 +12,14 @@ _reset:
 .section .entry.text, "ax"
 .globl _start
 _start:
+    // Wait for SDRAM to initialize
+    mov $0xfffc, %dx
+    mov $1, %ax
+1:
+    in (%dx), %ax
+    cmp $0x1, %ax
+    jne 1b
+
     mov %cs, %ax
     mov %ax, %ss
     mov %ax, %ds
