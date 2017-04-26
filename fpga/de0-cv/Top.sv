@@ -134,6 +134,7 @@ SDRAMController #(.size(64 * 1024 * 1024),
                   .clkf(50000000))
                 SDRAMController(.clk(sys_clk),
                                 .reset(reset),
+                                .data_m_access(q_m_access),
                                 .cs(sdram_access),
                                 .h_addr(q_m_addr),
                                 .h_wdata(q_m_data_out),

@@ -6,6 +6,7 @@ module SDRAMController #(parameter size = 32 * 1024 * 1024,
                          parameter clkf = 25000000)
                         (input logic clk,
                          input logic reset,
+                         input logic data_m_access,
                          input logic cs,
                          /* Host interface. */
                          input logic [25:1] h_addr,
@@ -166,7 +167,7 @@ always_comb begin
          */
         if (!h_compl && autorefresh_pending)
             next_state = STATE_AUTOREF;
-        else if (!h_compl && cs)
+        else if (!h_compl && cs && data_m_access)
             next_state = STATE_ACT;
     end
     STATE_ACT: begin
