@@ -245,7 +245,7 @@ static int find_data_start(int r1offs)
     return r1offs == sizeof(spi_xfer_buf) ? -1 : r1offs + 1;
 }
 
-int read_sector(unsigned long address, unsigned short dseg,
+int read_sector(unsigned short sector, unsigned short dseg,
                 unsigned short daddr)
 {
     struct spi_cmd cmd = {
@@ -255,6 +255,9 @@ int read_sector(unsigned long address, unsigned short dseg,
     };
     struct r1_response r1;
     int r1offs, data_start;
+    unsigned long address = sector;
+
+    address *= 512;
 
     cmd.arg[0] = (address >> 24) & 0xff;
     cmd.arg[1] = (address >> 16) & 0xff;

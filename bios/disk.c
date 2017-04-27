@@ -18,7 +18,7 @@ static void disk_read(struct callregs *regs)
     unsigned short dst = regs->bx.x;
 
     for (i = 0; i < regs->ax.l; ++i) {
-        read_sector((unsigned long)lba * 512UL, get_es(), dst);
+        read_sector(lba, get_es(), dst);
         ++lba;
         dst += 512;
     }
