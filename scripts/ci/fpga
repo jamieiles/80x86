@@ -1,0 +1,9 @@
+#!/bin/bash
+set -e
+FPGA=$1
+FPGA_CONFIG=$(echo $FPGA | tr "[a-z]" "[A-Z]" | tr - _)
+[ -d _build/fpga-$FPGA ] || mkdir -p _build/fpga-$FPGA
+[ -d _build/.ccache ] || mkdir -p _build/.ccache
+DOCKER_NONINTERACTIVE=1 ./docker/s80x86-build -e -c "cd _build/fpga-$FPGA; \
+        cmake -DBUILD_${FPGA_CONFIG}=ON ../..; \
+        make -j8 $FPGA;"
