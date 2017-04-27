@@ -23,11 +23,9 @@ module Prefetch(input logic clk,
                 output logic [19:1] mem_address,
                 input logic [15:0] mem_data);
 
-// verilator lint_off BLKANDNBLK
 reg [15:0] next_fetch_address, fetch_address;
 reg [15:0] next_cs, cs;
 reg abort_cur;
-// verilator lint_on BLKANDNBLK
 reg [7:0] fetched_high_byte;
 reg write_second;
 wire should_write_second_byte = mem_ack && !abort_cur && !fetch_address[0] && !fifo_reset;

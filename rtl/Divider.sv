@@ -1,5 +1,4 @@
 // Non-restoring division
-// verilator lint_off UNUSED
 module Divider(input logic clk,
                input logic reset,
                input logic start,
