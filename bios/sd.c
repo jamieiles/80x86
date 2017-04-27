@@ -8,6 +8,7 @@
 #define SPI_CS_DEACTIVATE (1 << 9)
 
 static char spi_xfer_buf[1280];
+static char sd_is_sdhc;
 
 static void spi_xfer_buf_set(int offs, unsigned char v)
 {
@@ -170,8 +171,26 @@ static int sd_send_read_ocr(void)
     struct r1_response r1;
 
     spi_do_command(&cmd);
-    if (find_r1_response(&r1) < 0)
+    int r1_offs = find_r1_response(&r1);
+    if (r1_offs < 0)
         return -1;
+
+    union {
+        unsigned char u8[4];
+        unsigned long u32;
+    } converter = {
+        .u8 = {
+            spi_xfer_buf_get(r1_offs + 4),
+            spi_xfer_buf_get(r1_offs + 3),
+            spi_xfer_buf_get(r1_offs + 2),
+            spi_xfer_buf_get(r1_offs + 1),
+        },
+    };
+
+    if (converter.u32 & (1LU << 30))
+        write_csbyte(&sd_is_sdhc, 1);
+    else
+        write_csbyte(&sd_is_sdhc, 0);
 
     return r1.v & R1_ERROR_MASK;
 }
@@ -257,7 +276,8 @@ int read_sector(unsigned short sector, unsigned short dseg,
     int r1offs, data_start;
     unsigned long address = sector;
 
-    address *= 512;
+    if (!read_csbyte(&sd_is_sdhc))
+        address *= 512;
 
     cmd.arg[0] = (address >> 24) & 0xff;
     cmd.arg[1] = (address >> 16) & 0xff;
@@ -299,6 +319,8 @@ void sd_init(void)
         panic("Failed to read OCR for SD card");
     if (sd_wait_ready())
         panic("Failed to wait for SD card init");
+    if (sd_send_read_ocr())
+        panic("Failed to re-read OCR for SD card");
     if (sd_set_blocklen())
         panic("Failed to wait for SD card init");
 
