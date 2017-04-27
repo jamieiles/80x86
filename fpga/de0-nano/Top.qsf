@@ -13,9 +13,6 @@ set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVCMOS"
 set_location_assignment PIN_R8 -to clk
 set_location_assignment PIN_J15 -to rst_in_n
 
-set_instance_assignment -name GLOBAL_SIGNAL "GLOBAL CLOCK" -to "SysPLL:SysPLL|altpll:altpll_component|sys_pll_altpll:auto_generated|pll1|clk[0]"
-set_instance_assignment -name GLOBAL_SIGNAL "GLOBAL CLOCK" -to "SysPLL:SysPLL|altpll:altpll_component|sys_pll_altpll:auto_generated|pll1|clk[1]"
-
 # SDRAM
 set_location_assignment PIN_P2 -to s_addr[0]
 set_location_assignment PIN_N5 -to s_addr[1]

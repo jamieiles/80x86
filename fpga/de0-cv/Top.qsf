@@ -15,9 +15,9 @@ set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVCMOS"
 set_location_assignment PIN_M9 -to clk
 set_location_assignment PIN_P22 -to rst_in_n
 
-set_instance_assignment -name GLOBAL_SIGNAL "GLOBAL CLOCK" -to "SysPLL:SysPLL|outclk_0"
-set_instance_assignment -name GLOBAL_SIGNAL "GLOBAL CLOCK" -to "SysPLL:SysPLL|outclk_1"
-set_instance_assignment -name MATCH_PLL_COMPENSATION_CLOCK ON -to "SysPLL:SysPLL|outclk_0"
+set_instance_assignment -name GLOBAL_SIGNAL "GLOBAL CLOCK" -to "SysPLL:SysPLL|sdr_clk"
+set_instance_assignment -name GLOBAL_SIGNAL "GLOBAL CLOCK" -to "SysPLL:SysPLL|sys_clk"
+set_instance_assignment -name MATCH_PLL_COMPENSATION_CLOCK ON -to "SysPLL:SysPLL|sdr_clk"
 
 # SDRAM
 set_location_assignment PIN_AB11 -to sdr_clk
@@ -64,7 +64,6 @@ set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_ras_n
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_cas_n
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_wr_en
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_bytesel
-set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_addr
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_data
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_banksel
 set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to s_*

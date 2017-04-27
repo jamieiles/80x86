@@ -4,6 +4,7 @@ get_property(ALU_SOURCES GLOBAL PROPERTY G_ALU_SOURCES)
 get_property(CORE_SOURCES GLOBAL PROPERTY G_CORE_SOURCES)
 
 configure_file(Top.qsf Top.qsf)
+configure_file(Top.srf Top.srf)
 
 set(FPGA_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/defines.sv
