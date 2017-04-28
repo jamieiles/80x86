@@ -16,15 +16,19 @@ static void disk_read(struct callregs *regs)
     unsigned short lba = (cylinder * 2 + head) * 0x12 + (sector - 1);
     unsigned short i;
     unsigned short dst = regs->bx.x;
+    unsigned short count = regs->ax.l;
 
-    for (i = 0; i < regs->ax.l; ++i) {
+    regs->ax.l = 0;
+    regs->flags &= ~CF;
+
+    for (i = 0; i < count; ++i) {
         read_sector(lba, get_es(), dst);
         ++lba;
         dst += 512;
+        ++regs->ax.l;
     }
 
-    regs->ax.h = 0;
-    regs->flags &= ~CF;
+    regs->ax.h = regs->ax.l != count ? 0x20 : 0x00;
 }
 
 static void disk_status(struct callregs *regs)
