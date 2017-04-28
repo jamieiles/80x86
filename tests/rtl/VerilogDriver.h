@@ -204,7 +204,9 @@ void VerilogDriver<T, debug_enabled>::run_periodic_events(PeriodicEventType edge
 template <typename T, bool debug_enabled>
 void VerilogDriver<T, debug_enabled>::run_deferred_events()
 {
-    for (auto &e: deferred_events[cycle_num])
+    auto events = deferred_events[cycle_num];
+    deferred_events.erase(cycle_num);
+    for (auto &e: events)
         e();
 }
 
