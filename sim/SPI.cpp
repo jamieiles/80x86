@@ -2,6 +2,7 @@
 #include "CPU.h"
 
 #include <iostream>
+#include <iomanip>
 #include <stdint.h>
 
 SPI::SPI(const std::string &disk_image_path)
@@ -9,7 +10,9 @@ SPI::SPI(const std::string &disk_image_path)
     control_reg(0),
     rx_val(0),
     state(STATE_IDLE),
-    disk_image(disk_image_path, std::ios::binary)
+    disk_image(disk_image_path,
+               std::ios::binary | std::ios::in | std::ios::out),
+    do_write(false)
 {}
 
 void SPI::write8(uint16_t port_num, unsigned offs, uint8_t v)
@@ -52,6 +55,7 @@ void SPI::transfer(uint8_t mosi_val)
 {
     switch (state) {
     case STATE_IDLE:
+        do_write = false;
         if (mosi_val != 0xff && !(control_reg & (1 << 9))) {
             state = STATE_RECEIVING;
             mosi_buf.push_back(mosi_val);
@@ -67,12 +71,30 @@ void SPI::transfer(uint8_t mosi_val)
     case STATE_TRANSMITTING:
         if (miso_buf.size() == 0) {
             rx_val = 0xff;
-            state = STATE_IDLE;
+            state = do_write ? STATE_WAIT_FOR_DATA : STATE_IDLE;
             mosi_buf.clear();
         } else {
             rx_val = miso_buf[0];
             miso_buf.pop_front();
         }
+        break;
+    case STATE_WAIT_FOR_DATA:
+        rx_val = 0xff;
+        if (mosi_val == 0xfe)
+            state = STATE_DO_WRITE_BLOCK;
+        break;
+    case STATE_DO_WRITE_BLOCK:
+        if (write_count < 512) {
+            disk_image.put(mosi_val);
+            rx_val = 0xff;
+        } else if (write_count < 514) {
+            // CRC
+            rx_val = 0xff;
+        } else {
+            rx_val = 0x5; // Received OK.
+            state = STATE_IDLE;
+        }
+        ++write_count;
         break;
     };
 }
@@ -100,6 +122,12 @@ bool SPI::transmit_ready()
     case 0x51: // Read block
         if (mosi_buf.size() >= 7) {
             read_block();
+            return true;
+        }
+        break;
+    case 0x58: // Write block
+        if (mosi_buf.size() >= 7) {
+            write_block();
             return true;
         }
         break;
@@ -133,12 +161,27 @@ void SPI::read_block()
     miso_buf = { 0xff, 0xff, 0x00, 0xff, 0xfe  };
     // Data
     disk_image.seekg(converter.u32, std::ios::beg);
-    for (auto m = 0; m < 512; ++m) {
-        char c;
-        disk_image.read(&c, 1);
-        miso_buf.push_back(c);
-    }
+    for (auto m = 0; m < 512; ++m)
+        miso_buf.push_back(disk_image.get());
     // CRC
     for (auto m = 0; m < 2; ++m)
         miso_buf.push_back(0x77);
+}
+
+void SPI::write_block()
+{
+    union {
+        uint8_t u8[4];
+        uint32_t u32;
+    } converter = {
+        .u8 = {
+            mosi_buf[4], mosi_buf[3], mosi_buf[2], mosi_buf[1]
+        },
+    };
+
+    // Padding, R1, padding, Accepted
+    miso_buf = { 0xff, 0x00, 0xff, 0xff, 0x05, };
+    do_write = true;
+    write_count = 0;
+    disk_image.seekg(converter.u32, std::ios::beg);
 }

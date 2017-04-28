@@ -1,6 +1,7 @@
 #include "bios.h"
 #include "sd.h"
 #include "io.h"
+#include "serial.h"
 
 static void disk_read(struct callregs *regs)
 {
@@ -23,6 +24,38 @@ static void disk_read(struct callregs *regs)
 
     for (i = 0; i < count; ++i) {
         read_sector(lba, get_es(), dst);
+        ++lba;
+        dst += 512;
+        ++regs->ax.l;
+    }
+
+    regs->ax.h = regs->ax.l != count ? 0x20 : 0x00;
+}
+
+static void disk_write(struct callregs *regs)
+{
+    if (regs->dx.l != 0) {
+        regs->ax.l = 0x80;
+        return;
+    }
+
+    unsigned short cylinder = regs->cx.h |
+        (((unsigned short)regs->cx.l & 0xc0) << 2);
+    unsigned short head = regs->dx.h;
+    unsigned short sector = regs->cx.l & 0x3f;
+    unsigned short lba = (cylinder * 2 + head) * 0x12 + (sector - 1);
+    unsigned short i;
+    unsigned short dst = regs->bx.x;
+    unsigned short count = regs->ax.l;
+
+    regs->ax.l = 0;
+    regs->flags &= ~CF;
+
+    for (i = 0; i < count; ++i) {
+        if (write_sector(lba, get_es(), dst)) {
+            regs->flags |= CF;
+            break;
+        }
         ++lba;
         dst += 512;
         ++regs->ax.l;
@@ -99,13 +132,14 @@ void int13_function(struct callregs *regs)
     case 0x02:
         disk_read(regs);
         break;
+    case 0x03:
+        disk_write(regs);
+        break;
     case 0x08:
         disk_parameters(regs);
         break;
     case 0x15:
         disk_get_type(regs);
-        break;
-    default:
         break;
     }
 }

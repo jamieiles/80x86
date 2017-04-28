@@ -16,7 +16,9 @@ private:
     enum SPIState {
         STATE_IDLE,
         STATE_RECEIVING,
-        STATE_TRANSMITTING
+        STATE_TRANSMITTING,
+        STATE_WAIT_FOR_DATA,
+        STATE_DO_WRITE_BLOCK,
     };
 public:
     SPI(const std::string &disk_image_path);
@@ -28,10 +30,13 @@ private:
     void transfer(uint8_t mosi_val);
     bool transmit_ready();
     void read_block();
+    void write_block();
     uint16_t control_reg;
     uint8_t rx_val;
     SPIState state;
     std::vector<uint8_t> mosi_buf;
     std::deque<uint8_t> miso_buf;
-    std::ifstream disk_image;
+    std::fstream disk_image;
+    bool do_write;
+    unsigned write_count;
 };

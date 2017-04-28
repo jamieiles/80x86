@@ -10,12 +10,13 @@
 static char spi_xfer_buf[1280];
 static char sd_is_sdhc;
 
-static void spi_xfer_buf_set(int offs, unsigned char v)
+static void __attribute__((noinline))
+spi_xfer_buf_set(int offs, unsigned char v)
 {
     write_csbyte(spi_xfer_buf + offs, v);
 }
 
-static unsigned char spi_xfer_buf_get(int offs)
+static unsigned char __attribute__((noinline)) spi_xfer_buf_get(int offs)
 {
     return read_csbyte(spi_xfer_buf + offs);
 }
@@ -66,7 +67,8 @@ struct spi_cmd {
     unsigned char arg[4];
     unsigned char crc;
 
-    const unsigned char *data;
+    unsigned short data_seg;
+    const void *data_addr;
     unsigned short tx_datalen;
     unsigned short rx_datalen;
 };
@@ -100,8 +102,8 @@ static void spi_do_command(const struct spi_cmd *cmd)
         spi_xfer_buf_set(2 + m, cmd->arg[m]);
     spi_xfer_buf_set(6, cmd->crc);
     // Transmit data.
-    for (m = 0; m < cmd->tx_datalen; ++m)
-        spi_xfer_buf_set(7 + m, cmd->data[m]);
+    memcpy_seg(get_cs(), spi_xfer_buf + 7, cmd->data_seg, cmd->data_addr,
+               cmd->tx_datalen);
     // Initialize receive buffer so we don't shift out new, garbage data.
     for (m = 7 + cmd->tx_datalen; m < cmdlen; ++m)
         spi_xfer_buf_set(m, 0xff);
@@ -262,6 +264,81 @@ static int find_data_start(int r1offs)
         ++r1offs;
 
     return r1offs == sizeof(spi_xfer_buf) ? -1 : r1offs + 1;
+}
+
+static int __attribute__((noinline))
+sd_make_write_request(unsigned long address)
+{
+    struct spi_cmd cmd = {
+        .cmd = 0x58,
+        .rx_datalen = 1,
+    };
+    struct r1_response r1;
+
+    cmd.arg[0] = (address >> 24) & 0xff;
+    cmd.arg[1] = (address >> 16) & 0xff;
+    cmd.arg[2] = (address >> 8)  & 0xff;
+    cmd.arg[3] = (address >> 0)  & 0xff;
+
+    spi_do_command(&cmd);
+    if (find_r1_response(&r1) < 0)
+        return -1;
+
+    return r1.v & R1_ERROR_MASK;
+}
+
+static void __attribute__((noinline))
+sd_write_block(unsigned short sseg, unsigned short saddr)
+{
+    spi_xfer_buf_set(0, 0xff); // Gap
+    spi_xfer_buf_set(1, 0xfe); // Data start token
+    memcpy_seg(get_cs(), spi_xfer_buf + 2, sseg, (const void *)saddr, 512);
+    spi_xfer_buf_set(2 + 512, 0x0); // CRC1
+    spi_xfer_buf_set(3 + 512, 0x0); // CRC2
+    spi_xfer_buf_set(4 + 512, 0xff); // Packet response
+
+    spi_xfer(5 + 512);
+}
+
+static int __attribute__((noinline))
+write_received(unsigned char packet_response)
+{
+    return (packet_response & 0x1) && ((packet_response >> 1) & 0x7) == 0x2;
+}
+
+static int __attribute__((noinline))
+wait_for_write_completion(void)
+{
+    int i = 0;
+
+    for (i = 0; i < 4096; ++i) {
+        spi_xfer_buf_set(0, 0xff);
+        spi_xfer(1);
+        if (spi_xfer_buf_get(0) != 0)
+            return 0;
+    }
+
+    return -1;
+}
+
+int write_sector(unsigned short sector, unsigned short sseg,
+                 unsigned short saddr)
+{
+    unsigned long address = sector;
+
+    if (!read_csbyte(&sd_is_sdhc))
+        address *= 512;
+
+    if (sd_make_write_request(address))
+        return -1;
+
+    sd_write_block(sseg, saddr);
+
+    unsigned char packet_response = spi_xfer_buf_get(4 + 512);
+    if (!write_received(packet_response))
+        return -1;
+
+    return wait_for_write_completion();
 }
 
 int read_sector(unsigned short sector, unsigned short dseg,
