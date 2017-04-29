@@ -64,5 +64,6 @@ void int16_function(struct callregs *regs)
 
 void keyboard_init(void)
 {
-    write_csbyte(&last_key, 0);
+    // Start of with a delete to stop DOS fom waiting for a keypress.
+    write_csbyte(&last_key, 0x7f);
 }
