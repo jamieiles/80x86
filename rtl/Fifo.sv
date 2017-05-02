@@ -16,7 +16,7 @@ parameter full_threshold = 2; // Number of entries free to be not-full
 
 localparam ptr_bits = $clog2(depth);
 
-reg [data_width-1:0] mem[depth-1:0];
+reg [data_width-1:0] mem[depth-1:0] /* synthesis syn_ramstyle = "no_rw_check" */;
 reg [ptr_bits-1:0] rd_ptr;
 reg [ptr_bits-1:0] wr_ptr;
 reg [ptr_bits:0] count;
