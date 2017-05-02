@@ -1,8 +1,25 @@
 #!/usr/bin/env python
 import cmd
+from shlex import split
 import distorm3
 
 from py8086sim.Cpu import JTAGCPU, GPR, Flag
+
+regdict = {
+    'AX': GPR.AX,
+    'CX': GPR.CX,
+    'DX': GPR.DX,
+    'BX': GPR.BX,
+    'SP': GPR.SP,
+    'BP': GPR.BP,
+    'SI': GPR.SI,
+    'DI': GPR.DI,
+    'ES': GPR.ES,
+    'CS': GPR.CS,
+    'SS': GPR.SS,
+    'DS': GPR.DS,
+    'IP': GPR.IP
+}
 
 
 class Debugger(cmd.Cmd):
@@ -51,6 +68,16 @@ class Debugger(cmd.Cmd):
     def do_step(self, line):
         '''Single step the CPU'''
         self.c.step()
+        self._update_prompt()
+        return False
+
+    def do_write_reg(self, line):
+        '''Write a GPR
+
+        REG := VAL'''
+        tokens = split(line)
+        assert len(tokens) == 2
+        self.c.write_reg(regdict[tokens[0]], int(tokens[1], 16))
         self._update_prompt()
         return False
 
