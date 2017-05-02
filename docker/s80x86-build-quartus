@@ -6,8 +6,10 @@ if [ -z "$DOCKER_NONINTERACTIVE" ]; then
         DOCKER_INTERACTIVE_FLAGS="$DOCKER_INTERACTIVE_FLAGS -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=unix$DISPLAY"
     fi
 fi
+# Quartus 16.1 needs /sys bind mounted to avoid a segfault in libudev when
+# doing the flexlm licensing.
 if [[ $# -ge 1 ]]; then
-    docker run -e CCACHE_DIR=/build/_build/.ccache --rm $DOCKER_INTERACTIVE_FLAGS -v ${HERE}/../:/build -u $(id -u):$(id -g) s80x86-build-quartus:latest /bin/bash "$@"
+    docker run -e CCACHE_DIR=/build/_build/.ccache --rm $DOCKER_INTERACTIVE_FLAGS -v /sys:/sys:ro -v ${HERE}/../:/build -u $(id -u):$(id -g) s80x86-build-quartus:latest /bin/bash "$@"
 else
-    docker run -e CCACHE_DIR=/build/_build/.ccache --rm $DOCKER_INTERACTIVE_FLAGS -v ${HERE}/../:/build -u $(id -u):$(id -g) s80x86-build-quartus:latest /bin/bash
+    docker run -e CCACHE_DIR=/build/_build/.ccache --rm $DOCKER_INTERACTIVE_FLAGS -v /sys:/sys:ro -v ${HERE}/../:/build -u $(id -u):$(id -g) s80x86-build-quartus:latest /bin/bash
 fi

@@ -1,9 +1,12 @@
 #!/bin/bash
 DOCKER_INTERACTIVE_FLAGS="-it -v /tmp/.X11-unix:/tmp/.X11-unix -e DISPLAY=unix$DISPLAY"
+# Quartus 16.1 needs /sys bind mounted to avoid a segfault in libudev when
+# doing the flexlm licensing.
 docker run -w $(pwd) \
     --privileged \
     --rm \
     $DOCKER_INTERACTIVE_FLAGS \
+    -v /sys:/sys:ro \
     -v /etc/machine-id:/etc/machine-id \
     -v /home:/home \
     -e S80X86_DEV_USER=$(id -u -n) \
