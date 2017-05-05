@@ -500,19 +500,25 @@ load the design into the FPGA via the Altera USB Blaster.
 [cols="1,1,4",options="header"]
 |===
 | Address | Width (bits) | Description
-| 16'hfffc | 16 a| SDRAM configuration register:
+| 16'hfff0 | 16 a| SPI control register:
 
-  - [15:1]: reserved
-  - [0]: SDRAM configuration complete.  The SDRAM should not be accessed until
-  this bit is set.
-
-| 16'hfffe | 16 | LED register, writing to the 8 MSBs will set the LED
-  registers on the board, a 1 is enabled, 0 is disabled.
+  - [15:10]: reserved.
+  - [9]: CS activate.
+  - [8:0]: clock divider.
 | 16'hfff2 | 16 a| SPI transfer register:
 
   - [15:9]: reserved.
   - [8]: transfer busy.
   - [7:0]: transfer data.
+
+| 16'hfff4 | 8 a| IRQ enable register:
+  - [7:0]: write 1 to enable interrupt.  Lower numbered interrupts take a
+  higher priority.
+| 16'hfff5 | 8 a| IRQ base register:
+  - [7:0]: offset to add to the active interrupt number to send to the core.
+| 16'ffff6 | 8 a| IRQ test register:
+  - [7]: write a 1 to raise NMI, 0 to clear NMI.
+  - [6:0]: write a 1 to raise interrupt N.
 
 Writing to this register will initiate a one byte transfer.  The CPU should
 then poll until bit 8 is clear at which point [7:0] will contain the received
@@ -531,6 +537,9 @@ the received data.
   - [15:1]: reserved.
   - [0]: SDRAM configuration complete.  The SDRAM should not be accessed until
   this bit is set.
+
+| 16'hfffe | 16 | LED register, writing to the 8 MSBs will set the LED
+  registers on the board, a 1 is enabled, 0 is disabled.
 |===
 
 === DE0-CV

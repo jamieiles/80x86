@@ -31,7 +31,7 @@ class EmulatorPimpl {
 public:
     EmulatorPimpl(RegisterFile *registers);
 
-    size_t emulate();
+    size_t step();
 
     void set_memory(Memory *mem)
     {
@@ -53,7 +53,11 @@ public:
     }
 
     void reset();
+    void raise_nmi();
+    void raise_irq(int irq_num);
+    void clear_irq(int irq_num);
 private:
+    size_t emulate_insn();
     void mov88();
     void mov89();
     void mov8a();
@@ -332,6 +336,13 @@ private:
         return p->read16((addr & ~1) - p->get_base());
     }
 
+    void do_rep(std::function<void()> primitive,
+                std::function<bool()> should_terminate);
+    bool string_rep_complete();
+
+    void handle_nmi();
+    void handle_irq();
+
     Memory *mem;
     std::map<uint16_t, IOPorts *> *io;
     RegisterFile *registers;
@@ -345,10 +356,9 @@ private:
 
     RepMode rep_mode;
     bool has_rep_prefix;
-
-    void do_rep(std::function<void()> primitive,
-                std::function<bool()> should_terminate);
-    bool string_rep_complete();
+    bool nmi_pending;
+    bool ext_int_inhibit;
+    uint8_t pending_irqs;
 };
 
 void EmulatorPimpl::do_rep(std::function<void()> primitive,
@@ -392,9 +402,99 @@ void EmulatorPimpl::reset()
     registers->reset();
     opcode = 0;
     instr_length = 0;
+    nmi_pending = false;
+    ext_int_inhibit = false;
+    pending_irqs = 0;
 }
 
-size_t EmulatorPimpl::emulate()
+void EmulatorPimpl::raise_nmi()
+{
+    nmi_pending = true;
+}
+
+void EmulatorPimpl::raise_irq(int irq_num)
+{
+    assert(irq_num >= 0 && irq_num < 8);
+    pending_irqs |= (1 << irq_num);
+}
+
+void EmulatorPimpl::clear_irq(int irq_num)
+{
+    assert(irq_num >= 0 && irq_num < 8);
+    pending_irqs &= ~(1 << irq_num);
+}
+
+void EmulatorPimpl::handle_nmi()
+{
+    nmi_pending = false;
+
+    auto flags = registers->get_flags();
+
+    push_word(flags);
+    push_word(registers->get(CS));
+    push_word(registers->get(IP));
+
+    flags &= ~(IF | TF);
+    registers->set_flags(flags, IF | TF);
+
+    auto new_cs = mem->read<uint16_t>(VEC_NMI + 2);
+    auto new_ip = mem->read<uint16_t>(VEC_NMI + 0);
+
+    registers->set(CS, new_cs);
+    registers->set(IP, new_ip);
+    jump_taken = true;
+}
+
+void EmulatorPimpl::handle_irq()
+{
+    assert(pending_irqs);
+
+    int irq_num;
+    for (irq_num = 0; irq_num < 8; ++irq_num)
+         if (pending_irqs & (1 << irq_num))
+            break;
+
+    auto flags = registers->get_flags();
+
+    push_word(flags);
+    push_word(registers->get(CS));
+    push_word(registers->get(IP));
+
+    flags &= ~(IF | TF);
+    registers->set_flags(flags, IF | TF);
+
+    auto new_cs = mem->read<uint16_t>((32 + irq_num) * 4 + 2);
+    auto new_ip = mem->read<uint16_t>((32 + irq_num) * 4 + 0);
+
+    registers->set(CS, new_cs);
+    registers->set(IP, new_ip);
+    jump_taken = true;
+}
+
+size_t EmulatorPimpl::step()
+{
+    if (nmi_pending && !ext_int_inhibit) {
+        handle_nmi();
+        return 0;
+    } else if (pending_irqs && !ext_int_inhibit && registers->get_flag(IF)) {
+        handle_irq();
+        return 0;
+    }
+
+    auto len = emulate_insn();
+    // Hardware also processes interrupt entry at the tail of an instruction
+    // rather than a conditional check at the start of each instruction.  So
+    // when single stepping, stepping an instruction may retire that
+    // instruction and then jump to the NMI/INT handler.
+    if (nmi_pending && !ext_int_inhibit)
+        handle_nmi();
+    else if (pending_irqs && !ext_int_inhibit && registers->get_flag(IF))
+        handle_irq();
+
+    return len;
+}
+
+size_t EmulatorPimpl::emulate_insn()
 {
     instr_length = 0;
     bool processing_prefixes;
@@ -402,6 +502,7 @@ size_t EmulatorPimpl::emulate()
     has_rep_prefix = false;
     modrm_decoder->clear();
     jump_taken = false;
+    ext_int_inhibit = false;
 
     do {
         processing_prefixes = false;
@@ -1196,9 +1297,9 @@ Emulator::~Emulator()
 {
 }
 
-size_t Emulator::emulate()
+size_t Emulator::step()
 {
-    return pimpl->emulate();
+    return pimpl->step();
 }
 
 void Emulator::set_memory(Memory *mem)
@@ -1219,4 +1320,19 @@ bool Emulator::has_trapped() const
 void Emulator::reset()
 {
     pimpl->reset();
+}
+
+void Emulator::raise_nmi()
+{
+    pimpl->raise_nmi();
+}
+
+void Emulator::raise_irq(int irq_num)
+{
+    pimpl->raise_irq(irq_num);
+}
+
+void Emulator::clear_irq(int irq_num)
+{
+    pimpl->clear_irq(irq_num);
 }

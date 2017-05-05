@@ -45,6 +45,7 @@ set(CORE_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/JumpTest.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/LoadStore.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/ModRMDecode.sv
+    ${CMAKE_CURRENT_SOURCE_DIR}/PosedgeToPulse.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/Prefetch.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/RegisterFile.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/SegmentOverride.sv

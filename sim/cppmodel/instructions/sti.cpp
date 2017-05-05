@@ -5,4 +5,5 @@ void EmulatorPimpl::stifb()
     flags |= IF;
 
     registers->set_flags(flags, IF);
+    ext_int_inhibit = true;
 }

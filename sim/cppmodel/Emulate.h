@@ -18,12 +18,14 @@ class Emulator {
 public:
     Emulator(RegisterFile *registers);
     virtual ~Emulator();
-    size_t emulate();
+    size_t step();
     void set_memory(Memory *mem);
     void set_io(std::map<uint16_t, IOPorts *> *io);
     bool has_trapped() const;
     void reset();
-
+    void raise_nmi();
+    void raise_irq(int irq_num);
+    void clear_irq(int irq_num);
 private:
     std::unique_ptr<EmulatorPimpl> pimpl;
 };

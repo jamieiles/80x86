@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -47,21 +48,38 @@ private:
     size_t num_ports;
 };
 
+using NotImplemented = std::runtime_error;
+
 class CPU {
 public:
     CPU()
         : CPU("default")
     {
     }
-    CPU(const std::string &name)
+    CPU(const std::string __unused &name)
     {
-        (void)name;
     }
     virtual ~CPU() {};
     virtual bool has_instruction_length() const = 0;
     virtual void write_coverage() {}
     virtual void write_reg(GPR regnum, uint16_t val) = 0;
     virtual uint16_t read_reg(GPR regnum) = 0;
+    virtual void cycle_cpu()
+    {
+        throw NotImplemented("cycle not implemented");
+    }
+    virtual void start_instruction()
+    {
+        throw NotImplemented("start_instruction not implemented");
+    }
+    virtual void complete_instruction()
+    {
+        throw NotImplemented("complete_instruction not implemented");
+    }
+    virtual bool int_yield_ready()
+    {
+        throw NotImplemented("int_yield_ready not implemented");
+    }
     virtual size_t step() = 0;
     virtual void write_flags(uint16_t val) = 0;
     virtual uint16_t read_flags() = 0;
@@ -95,4 +113,7 @@ public:
             offs += 2;
         }
     }
+    virtual void raise_nmi() = 0;
+    virtual void raise_irq(int irq_num) = 0;
+    virtual void clear_irq(int irq_num) = 0;
 };

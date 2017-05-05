@@ -181,11 +181,11 @@ dispatch_8e:
     next_instruction; // reg == 7
 mov8e_reg:
     segment_wr_en, rd_sel_source MODRM_REG, a_sel RA, alu_op SELA,
-        next_instruction;
+        ext_int_inhibit, next_instruction;
 mov8e_mem:
     segment DS, mem_read;
     rd_sel_source MODRM_REG, segment_wr_en, a_sel MDR, alu_op SELA,
-        next_instruction;
+        ext_int_inhibit, next_instruction;
 
 // MOV 0x8c     reg/mem := sr
 .at 0x8c;

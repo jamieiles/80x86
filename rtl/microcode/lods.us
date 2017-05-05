@@ -17,7 +17,7 @@ lodsb_no_rep:
     width 8, segment DS, mem_read;
     width 8, a_sel MDR, alu_op SELA, rd_sel_source MICROCODE_RD_SEL,
         rd_sel AL, reg_wr_en, jmp_if_not_rep lodsb_done;
-    rb_cl, jmp lodsb_rep_loop;
+    rb_cl, ext_int_yield, jmp lodsb_rep_loop;
 lodsb_done:
     next_instruction;
 
@@ -40,6 +40,6 @@ lodsw_no_rep:
     segment DS, mem_read;
     a_sel MDR, alu_op SELA, rd_sel_source MICROCODE_RD_SEL,
         rd_sel AX, reg_wr_en, jmp_if_not_rep lodsw_done;
-    rb_cl, jmp lodsw_rep_loop;
+    rb_cl, ext_int_yield, jmp lodsw_rep_loop;
 lodsw_done:
     next_instruction;

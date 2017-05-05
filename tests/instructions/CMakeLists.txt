@@ -1,5 +1,7 @@
 include_directories(..)
 
+add_library(instructionsRTL OBJECT
+            TestStringInterrupt.cpp)
 add_library(instructionsnohw OBJECT
             TestIO.cpp)
 add_library(instructions OBJECT

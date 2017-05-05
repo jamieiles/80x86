@@ -103,6 +103,9 @@ void JTAGCPU::reset()
     write_scr(0);
     while (read_scr() & STATUS_CONTROL_RUN)
         continue;
+
+    // All interrupts offset by 32 to not conflict with reserved vectors.
+    write_io8(0xfff5, 32);
 }
 
 void JTAGCPU::write_reg(GPR regnum, uint16_t val)

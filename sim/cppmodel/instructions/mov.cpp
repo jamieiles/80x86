@@ -140,6 +140,7 @@ void EmulatorPimpl::mov8e()
     auto reg = static_cast<GPR>(static_cast<int>(ES) + segnum);
 
     registers->set(reg, val);
+    ext_int_inhibit = true;
 }
 
 // mov r/m, sr

@@ -17,7 +17,7 @@ stosb_no_rep:
     width 8, ra_sel AL;
     width 8, alu_op SELA, mdr_write, segment ES, segment_force;
     width 8, segment ES, segment_force, mem_write, jmp_if_not_rep stosb_done;
-    rb_cl, jmp stosb_rep_loop;
+    rb_cl, ext_int_yield, jmp stosb_rep_loop;
 stosb_done:
     next_instruction;
 
@@ -40,6 +40,6 @@ stosw_no_rep:
     ra_sel AL;
     alu_op SELA, mdr_write, segment ES, segment_force;
     segment ES, segment_force, mem_write, jmp_if_not_rep stosw_done;
-    rb_cl, jmp stosw_rep_loop;
+    rb_cl, ext_int_yield, jmp stosw_rep_loop;
 stosw_done:
     next_instruction;

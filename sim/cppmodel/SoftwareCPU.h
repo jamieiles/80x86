@@ -31,7 +31,7 @@ public:
 
     size_t step()
     {
-        return emulator.emulate();
+        return emulator.step();
     }
 
     void write_flags(uint16_t val)
@@ -134,6 +134,21 @@ public:
     {
         for (size_t m = 0; m < p->get_num_ports(); ++m)
             io[p->get_base() + m * sizeof(uint16_t)] = p;
+    }
+
+    virtual void raise_nmi()
+    {
+        emulator.raise_nmi();
+    }
+
+    virtual void raise_irq(int irq_num)
+    {
+        emulator.raise_irq(irq_num);
+    }
+
+    virtual void clear_irq(int irq_num)
+    {
+        emulator.clear_irq(irq_num);
     }
 private:
     RegisterFile registers;

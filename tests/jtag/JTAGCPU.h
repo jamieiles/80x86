@@ -1,5 +1,6 @@
 #pragma once
 
+#include <cassert>
 #include <string>
 
 #include "CPU.h"
@@ -49,10 +50,29 @@ public:
     {
         return false;
     }
+
     void add_ioport(IOPorts *p)
     {
         (void)p;
         // No emulated IO for hardware, those tests don't run.
+    }
+
+    virtual void raise_nmi()
+    {
+        write_io8(0xfff6, 0x00);
+        write_io8(0xfff6, 0x80);
+    }
+
+    virtual void raise_irq(int irq_num)
+    {
+        assert(irq_num >= 0 && irq_num < 7);
+        write_io8(0xfff6, 1 << irq_num);
+    }
+
+    virtual void clear_irq(int irq_num)
+    {
+        assert(irq_num >= 0 && irq_num < 7);
+        write_io8(0xfff6, ~(1 << irq_num));
     }
 private:
     uint16_t read_ip();

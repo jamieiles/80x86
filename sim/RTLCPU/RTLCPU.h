@@ -18,6 +18,13 @@ public:
     void reset();
     void write_reg(GPR regnum, uint16_t val);
     uint16_t read_reg(GPR regnum);
+    void start_instruction();
+    void cycle_cpu()
+    {
+        this->cycle();
+    }
+    void complete_instruction();
+    bool int_yield_ready();
     size_t step();
     void write_flags(uint16_t val);
     uint16_t read_flags();
@@ -64,6 +71,31 @@ public:
     {
         return true;
     }
+
+    virtual void raise_nmi()
+    {
+        this->after_n_cycles(0, [this]{
+            this->dut.nmi = 1;
+            this->after_n_cycles(1, [this]{
+                this->dut.nmi = 0;
+            });
+        });
+        this->cycle();
+    }
+
+    virtual void raise_irq(int irq_num)
+    {
+        assert(irq_num >= 0 && irq_num < 8);
+
+        pending_irqs |= (1 << irq_num);
+    }
+
+    virtual void clear_irq(int irq_num)
+    {
+        assert(irq_num >= 0 && irq_num < 8);
+
+        pending_irqs &= ~(1 << irq_num);
+    }
 private:
     uint16_t get_microcode_address();
     void mem_access();
@@ -86,4 +118,6 @@ private:
     bool is_stopped;
     Memory mem;
     std::map<uint16_t, IOPorts *> io;
+    uint8_t pending_irqs;
+    bool int_in_progress;
 };

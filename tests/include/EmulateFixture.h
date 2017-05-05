@@ -197,6 +197,12 @@ public:
             ASSERT_EQ(len, instr_len);
     }
 
+    void wait_for_int_yield()
+    {
+        while (!cpu->int_yield_ready())
+            cpu->cycle_cpu();
+    }
+
     void write_flags(uint16_t val)
     {
         cpu->write_flags(val);
@@ -210,6 +216,21 @@ public:
     bool instruction_had_side_effects()
     {
         return cpu->instruction_had_side_effects();
+    }
+
+    void raise_nmi()
+    {
+        cpu->raise_nmi();
+    }
+
+    void raise_irq(int irq_num)
+    {
+        cpu->raise_irq(irq_num);
+    }
+
+    void clear_irq(int irq_num)
+    {
+        cpu->clear_irq(irq_num);
     }
 protected:
     size_t instr_len;

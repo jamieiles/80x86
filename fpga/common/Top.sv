@@ -95,6 +95,13 @@ wire spi_access;
 wire spi_ack;
 wire [15:0] spi_data;
 
+wire nmi;
+wire intr;
+wire [7:0] irq;
+wire irq_control_access;
+wire irq_control_ack;
+wire irq_control_data;
+
 wire default_io_access;
 wire default_io_ack;
 
@@ -104,7 +111,8 @@ wire io_ack = sdram_config_ack |
 `ifdef CONFIG_LEDS
               leds_ack |
 `endif // CONFIG_LEDS
-              spi_ack;
+              spi_ack |
+              irq_control_ack;
 
 always_ff @(posedge clk)
     default_io_ack <= default_io_access;
@@ -117,6 +125,7 @@ always_comb begin
     default_io_access = 1'b0;
     uart_access = 1'b0;
     spi_access = 1'b0;
+    irq_control_access = 1'b0;
 
     if (d_io && data_m_access) begin
         casez ({data_m_addr[15:1], 1'b0})
@@ -126,6 +135,7 @@ always_comb begin
         16'b1111_1111_1111_1100: sdram_config_access = 1'b1;
         16'b1111_1111_1111_1010: uart_access = 1'b1;
         16'b1111_1111_1111_00z0: spi_access = 1'b1;
+        16'b1111_1111_1111_01z0: irq_control_access = 1'b1;
         default:  default_io_access = 1'b1;
         endcase
     end
@@ -239,6 +249,17 @@ SysPLL	SysPLL(.refclk(clk),
 
 Core Core(.clk(sys_clk),
 	  .lock(),
+          // No need to ack the interrupts with the simple IRQ controller,
+          // everything is in the same clock domain as the CPU.
+          .inta(),
           .*);
+
+IRQController IRQController(.clk(sys_clk),
+                            .cs(irq_control_access),
+                            .data_m_ack(irq_control_ack),
+                            .data_m_data_out(irq_control_data),
+                            .data_m_data_in(data_m_data_out),
+                            .data_m_addr(data_m_addr),
+                            .*);
 
 endmodule

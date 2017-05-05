@@ -1,5 +1,10 @@
 module Core(input logic clk,
             input logic reset,
+            // Interrupts
+            input logic nmi,
+            input logic intr,
+            input logic [7:0] irq,
+            output logic inta,
             // Instruction bus
             output logic [19:1] instr_m_addr,
             input logic [15:0] instr_m_data_in,
@@ -115,7 +120,9 @@ wire [8:0] update_flags;
 // LoadStore
 wire [15:0] mar;
 wire [15:0] mdr;
-wire write_mdr;
+wire microcode_write_mdr;
+wire write_mdr = microcode_write_mdr | irq_to_mdr;
+wire [15:0] mdr_in = microcode_write_mdr ? alu_out[15:0] : {8'b0, irq};
 wire write_mar;
 wire mem_read;
 wire mem_write;
@@ -161,14 +168,19 @@ wire [7:0] opcode;
 wire jump_taken;
 wire multibit_shift;
 wire rb_zero = ~|reg_rd_val[1];
+wire nmi_pulse;
+wire ext_int_yield;
+wire irq_to_mdr;
 
 // Misc control signals
 wire debug_set_ip = debug_stopped && ip_wr_en;
 wire do_next_instruction = (next_instruction & ~do_stall) | debug_set_ip;
 wire do_stall = modrm_busy | immed_busy | loadstore_busy | divide_busy | alu_busy;
+wire start_interrupt;
 
 // IP
-wire ip_inc = fifo_rd_en & ~fifo_empty;
+wire ip_inc = fifo_rd_en & ~fifo_empty & ~start_interrupt;
+wire ip_rollback = start_interrupt & ext_int_yield;
 
 // Divider
 wire [31:0] dividend8 = divide_signed ? {{16{tmp_val[15]}}, tmp_val} : {16'b0, tmp_val};
@@ -318,7 +330,7 @@ LoadStore       LoadStore(.clk(clk),
                           .mar_out(mar),
                           .mdr_out(mdr),
                           .write_mdr(write_mdr),
-                          .mdr_in(alu_out[15:0]),
+                          .mdr_in(mdr_in),
                           // Memory bus
                           .m_addr(data_m_addr),
                           .m_data_in(data_m_data_in),
@@ -335,11 +347,22 @@ LoadStore       LoadStore(.clk(clk),
                           .complete(loadstore_complete),
                           .io(io_operation));
 
+PosedgeToPulse PosedgeToPulse(.d(nmi),
+                              .q(nmi_pulse),
+                              .*);
+
 Microcode       Microcode(.clk(clk),
                           .reset(reset),
+                          .nmi_pulse(nmi_pulse),
+                          .intr(intr),
+                          .irq(irq),
+                          .inta(inta),
+                          .irq_to_mdr(irq_to_mdr),
+                          .start_interrupt(start_interrupt),
                           .stall(do_stall),
                           .divide_error(divide_error),
                           .modrm_reg(regnum),
+                          .int_enabled(flags[IF_IDX]),
                           .zf(flags[ZF_IDX]),
                           .microcode_immediate(microcode_immediate),
                           .use_microcode_immediate(use_microcode_immediate),
@@ -352,13 +375,14 @@ Microcode       Microcode(.clk(clk),
                           .a_sel(a_sel),
                           .alu_op(alu_op),
                           .b_sel(b_sel),
+                          .ext_int_yield(ext_int_yield),
                           .io(io_operation),
                           .next_instruction(next_instruction),
                           .read_immed(microcode_immed_start),
                           .load_ip(ip_wr_en),
                           .mar_wr_sel(mar_wr_sel),
                           .mar_write(write_mar),
-                          .mdr_write(write_mdr),
+                          .mdr_write(microcode_write_mdr),
                           .mem_read(mem_read),
                           .mem_write(mem_write),
                           .modrm_start(modrm_start),
@@ -390,6 +414,8 @@ Microcode       Microcode(.clk(clk),
 IP              IP(.clk(clk),
                    .reset(reset),
                    .inc(ip_inc),
+                   .start_instruction(next_instruction),
+                   .rollback(ip_rollback),
                    .wr_en(prefetch_load_new_ip),
                    .wr_val(prefetch_new_ip),
                    .val(ip_current));

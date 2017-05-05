@@ -34,6 +34,7 @@ void EmulatorPimpl::popsr()
 
     registers->set(reg, val);
     registers->set(SP, registers->get(SP) + 2);
+    ext_int_inhibit = true;
 }
 
 // popf

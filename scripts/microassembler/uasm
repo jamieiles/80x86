@@ -277,6 +277,8 @@ class MicroAssembler(object):
         'read_immed': (1, _boolean, True),
         'io': (1, _boolean, True),
         'lock': (1, _boolean, False),
+        'ext_int_yield': (1, _boolean, True),
+        'ext_int_inhibit': (1, _boolean, False),
         'immediate': (0, _immediate, False),
         # Internal keywords, generated from others
         'jump_type': (num_bits(len(JumpType)), _reserved, False),

@@ -25,7 +25,8 @@ cmpsb_no_rep:
     width 8, segment DS, mem_read;
     width 8, a_sel MDR, b_sel TEMP, alu_op SUB,
         update_flags OF SF ZF CF PF AF, jmp_if_not_rep cmpsb_done;
-    rb_cl, alu_op GETFLAGS, jmp_if_rep_not_complete cmpsb_rep_loop;
+    rb_cl, alu_op GETFLAGS, ext_int_yield,
+        jmp_if_rep_not_complete cmpsb_rep_loop;
 cmpsb_done:
     next_instruction;
 
@@ -55,6 +56,7 @@ cmpsw_no_rep:
     segment DS, mem_read;
     a_sel MDR, b_sel TEMP, alu_op SUB,
         update_flags OF SF ZF CF PF AF, jmp_if_not_rep cmpsw_done;
-    rb_cl, alu_op GETFLAGS, jmp_if_rep_not_complete cmpsw_rep_loop;
+    rb_cl, alu_op GETFLAGS, ext_int_yield,
+        jmp_if_rep_not_complete cmpsw_rep_loop;
 cmpsw_done:
     next_instruction;

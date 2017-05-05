@@ -24,7 +24,7 @@ movsb_no_rep:
         segment ES, segment_force;
     width 8, segment ES, segment_force, mem_write, jmp_if_not_rep movsb_done;
 
-    rb_cl, jmp movsb_rep_loop;
+    rb_cl, ext_int_yield, jmp movsb_rep_loop;
 movsb_done:
     next_instruction;
 
@@ -54,6 +54,6 @@ movsw_no_rep:
         segment ES, segment_force;
     segment ES, segment_force, mem_write, jmp_if_not_rep movsw_done;
 
-    rb_cl, jmp movsw_rep_loop;
+    rb_cl, ext_int_yield, jmp movsw_rep_loop;
 movsw_done:
     next_instruction;

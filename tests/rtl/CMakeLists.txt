@@ -58,6 +58,8 @@ verilate(TOPLEVEL SegmentRegisterFile
          ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/SegmentRegisterFile.sv)
 verilate(TOPLEVEL Divider
          VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/Divider.sv)
+verilate(TOPLEVEL PosedgeToPulse
+         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/PosedgeToPulse.sv)
 
 add_executable(rtl-unittest
                TestALU.cpp
@@ -73,12 +75,14 @@ add_executable(rtl-unittest
                TestMicrocode.cpp
                TestModRMDecode.cpp
                TestModRMDecode.cpp
+               TestPosedgeToPulse.cpp
                TestPrefetch.cpp
                TestRegisterFile.cpp
                TestSegmentOverride.cpp
                TestSegmentRegisterFile.cpp
 	       $<TARGET_OBJECTS:instructions>
 	       $<TARGET_OBJECTS:instructionsnohw>
+	       $<TARGET_OBJECTS:instructionsRTL>
                main.cpp)
 
 target_link_libraries(rtl-unittest
@@ -93,6 +97,7 @@ target_link_libraries(rtl-unittest
                       VLoadStore
                       VMicrocode
                       VModRMTestbench
+                      VPosedgeToPulse
                       VPrefetch
                       VRegisterFile
                       VSegmentOverride

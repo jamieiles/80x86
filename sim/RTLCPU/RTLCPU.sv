@@ -1,5 +1,10 @@
 module RTLCPU(input logic clk,
               input logic reset,
+              // Interrupts
+              input logic nmi,
+              input logic intr,
+              input logic [7:0] irq,
+              output logic inta,
               // Memory bus
               output logic [19:1] q_m_addr,
               input logic [15:0] q_m_data_in,

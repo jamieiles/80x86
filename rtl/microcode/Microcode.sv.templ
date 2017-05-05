@@ -5,10 +5,19 @@
 
 module Microcode(input logic clk,
                  input logic reset,
+                 input logic nmi_pulse,
+                 // verilator lint_off UNUSED
+                 // verilator lint_off UNDRIVEN
+                 input logic intr,
+                 input logic [7:0] irq,
+                 output logic inta,
+                 output logic irq_to_mdr,
+                 output logic start_interrupt,
                  input logic stall,
                  input logic divide_error,
                  input logic rm_is_reg,
                  input logic [2:0] modrm_reg,
+                 input logic int_enabled,
                  input logic zf,
                  output logic [15:0] microcode_immediate,
                  output logic use_microcode_immediate,
@@ -35,6 +44,11 @@ module Microcode(input logic clk,
 localparam num_instructions = <%num_instructions%>;
 localparam addr_bits = <%addr_bits%>;
 localparam reset_address = <%addr_bits%>'h129;
+localparam nmi_address = <%addr_bits%>'h12a;
+localparam irq_address = <%addr_bits%>'h12b;
+localparam divide_error_address = <%addr_bits%>'h101;
+localparam next_instruction_address = <%addr_bits%>'h100;
+localparam debug_wait_address = <%addr_bits%>'h102;
 
 typedef struct packed {
 <%#fields%>
@@ -63,8 +77,12 @@ end
 assign <%name%> = current.<%name%>;
 <%/exported_fields%>
 
-assign fifo_rd_en = ~reset & current.fifo_pop & ~opcode_popped & ~fifo_empty;
-wire do_stall = stall | fifo_rd_en | (current.fifo_pop & !opcode_popped);
+wire will_ext_int_yield = current.ext_int_yield & (take_nmi | take_irq);
+
+assign fifo_rd_en = ~reset & current.fifo_pop & ~opcode_popped &
+    ~fifo_empty & ~will_ext_int_yield;
+wire do_stall = stall | fifo_rd_en |
+    (current.fifo_pop & !opcode_popped & !will_ext_int_yield);
 
 reg opcode_popped;
 reg [1:0] rep_prefix_type;
@@ -74,6 +92,23 @@ reg rep_complete;
 
 assign debug_stopped = addr == {{addr_bits-9{1'b0}}, 9'h102};
 assign multibit_shift = opcode == 8'hd2 || opcode == 8'hd3;
+
+reg nmi_pending;
+reg ext_int_inhibit;
+wire take_nmi = (nmi_pending | nmi_pulse) & !ext_int_inhibit;
+wire take_irq = intr & int_enabled & !ext_int_inhibit;
+assign start_interrupt = next_addr == nmi_address ||
+                         next_addr == irq_address;
+assign inta = next_addr == irq_address;
+assign irq_to_mdr = inta;
+
+always_ff @(posedge clk or posedge reset)
+    if (reset)
+        ext_int_inhibit <= 1'b0;
+    else if (current.ext_int_inhibit)
+        ext_int_inhibit <= 1'b1;
+    else if (current.fifo_pop && !do_stall)
+        ext_int_inhibit <= 1'b0;
 
 `ifdef verilator
 initial $readmemb({{`MICROCODE_ROM_PATH, "/microcode.bin"}}, mem);
@@ -86,6 +121,14 @@ always_comb begin
     default: rep_complete = 1'b0;
     endcase
 end
+
+always_ff @(posedge clk or posedge reset)
+    if (reset)
+        nmi_pending <= 1'b0;
+    else if (nmi_pulse)
+        nmi_pending <= 1'b1;
+    else if (next_addr == nmi_address)
+        nmi_pending <= 1'b0;
 
 always_ff @(posedge clk or posedge reset)
     if (reset)
@@ -113,6 +156,10 @@ always_comb begin
         next_addr = reset_address;
     else if (debug_stopped && debug_run)
         next_addr = {{addr_bits - 9{1'b0}}, 1'b1, debug_addr};
+    else if (!do_stall && current.ext_int_yield && take_nmi)
+        next_addr = nmi_address;
+    else if (!do_stall && current.ext_int_yield && take_irq)
+        next_addr = irq_address;
     else if (!do_stall && current.jump_type == JumpType_JUMP_TAKEN)
         next_addr = jump_taken ? current.next : addr + 1'b1;
     else if (!do_stall && current.jump_type == JumpType_ZERO)
@@ -130,11 +177,15 @@ always_comb begin
     else if (!do_stall && current.jump_type == JumpType_RB_ZERO)
         next_addr = rb_zero ? current.next : addr + 1'b1;
     else if (!do_stall && divide_error)
-        next_addr = {{addr_bits-9{1'b0}}, 9'h101};
+        next_addr = divide_error_address;
+    else if (!do_stall && current.next_instruction && take_nmi)
+        next_addr = nmi_address;
+    else if (!do_stall && current.next_instruction && take_irq)
+        next_addr = irq_address;
     else if (!do_stall && current.next_instruction && debug_seize)
-        next_addr = {{addr_bits-9{1'b0}}, 9'h102};
+        next_addr = debug_wait_address;
     else if (!do_stall && current.next_instruction)
-        next_addr = {{addr_bits-9{1'b0}}, 9'h100};
+        next_addr = next_instruction_address;
     else if (!do_stall)
         next_addr = current.next;
     else
@@ -160,6 +211,12 @@ export "DPI-C" function get_microcode_address;
 
 function [addr_bits-1:0] get_microcode_address;
     get_microcode_address = addr;
+endfunction
+
+export "DPI-C" function get_ext_int_yield;
+
+function logic get_ext_int_yield;
+    get_ext_int_yield = current.ext_int_yield;
 endfunction
 
 int microcode_coverage[num_instructions];

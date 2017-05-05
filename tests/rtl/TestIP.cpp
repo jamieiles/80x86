@@ -8,6 +8,8 @@ class IPTestFixture : public VerilogTestbench<VIP>,
 public:
     void inc();
     uint16_t get();
+    void commit();
+    void rollback();
     void set(uint16_t v);
 };
 
@@ -35,6 +37,24 @@ void IPTestFixture::set(uint16_t val)
     cycle();
 }
 
+void IPTestFixture::commit()
+{
+    this->dut.start_instruction = 1;
+    after_n_cycles(1, [&]{
+        this->dut.start_instruction = 0;
+    });
+    cycle();
+}
+
+void IPTestFixture::rollback()
+{
+    this->dut.rollback = 1;
+    after_n_cycles(1, [&]{
+        this->dut.rollback = 0;
+    });
+    cycle();
+}
+
 TEST_F(IPTestFixture, IncrementAndReset)
 {
     ASSERT_EQ(0U, get());
@@ -54,4 +74,17 @@ TEST_F(IPTestFixture, SetNewValue)
     set(0xa55a);
 
     ASSERT_EQ(0xa55a, get());
+}
+
+TEST_F(IPTestFixture, Rollback)
+{
+    set(0x0100);
+    inc();
+    inc();
+    commit();
+    inc();
+    inc();
+    rollback();
+
+    ASSERT_EQ(0x0102, get());
 }

@@ -13,6 +13,7 @@ set(FPGA_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/VirtualJTAG.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/JTAGBridge.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/BIOS.sv
+    ${CMAKE_CURRENT_SOURCE_DIR}/../irq/IRQControl.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../sdram/Counter.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../sdram/SDRAMController.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../sdram/SDRAMConfigRegister.sv

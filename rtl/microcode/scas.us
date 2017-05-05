@@ -19,7 +19,8 @@ scasb_no_rep:
     width 8, a_sel RA, alu_op SELA, tmp_wr_en;
     width 8, a_sel MDR, b_sel TEMP, alu_op SUBREV,
         update_flags OF SF ZF CF PF AF, jmp_if_not_rep scasb_done;
-    rb_cl, alu_op GETFLAGS, jmp_if_rep_not_complete scasb_rep_loop;
+    rb_cl, alu_op GETFLAGS, ext_int_yield,
+        jmp_if_rep_not_complete scasb_rep_loop;
 scasb_done:
     next_instruction;
 
@@ -44,6 +45,7 @@ scasw_no_rep:
     a_sel RA, alu_op SELA, tmp_wr_en;
     a_sel MDR, b_sel TEMP, alu_op SUBREV, update_flags OF SF ZF CF PF AF,
         jmp_if_not_rep scasw_done;
-    rb_cl, alu_op GETFLAGS, jmp_if_rep_not_complete scasw_rep_loop;
+    rb_cl, alu_op GETFLAGS, ext_int_yield,
+        jmp_if_rep_not_complete scasw_rep_loop;
 scasw_done:
     next_instruction;
