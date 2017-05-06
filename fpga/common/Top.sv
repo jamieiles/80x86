@@ -20,9 +20,10 @@ module Top(input logic clk,
            input logic spi_miso,
            output logic spi_ncs);
 
+reg poweron_reset = 1'b1;
 wire sys_clk;
 wire reset_n;
-wire reset = ~reset_n | debug_reset;
+wire reset = ~reset_n | debug_reset | poweron_reset;
 
 wire [1:0] ir;
 wire tdo;
@@ -261,5 +262,8 @@ IRQController IRQController(.clk(sys_clk),
                             .data_m_data_in(data_m_data_out),
                             .data_m_addr(data_m_addr),
                             .*);
+
+always_ff @(posedge clk)
+    poweron_reset <= 1'b0;
 
 endmodule
