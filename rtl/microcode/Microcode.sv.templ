@@ -201,7 +201,7 @@ always @(posedge clk)
 always_ff @(posedge clk or posedge reset)
     if (reset)
         lock <= 1'b0;
-    else if (reset)
+    else if (!do_stall && current.next_instruction)
         lock <= 1'b0;
     else if (current.lock)
         lock <= 1'b1;
