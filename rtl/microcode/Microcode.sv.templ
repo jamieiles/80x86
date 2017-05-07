@@ -19,6 +19,7 @@ module Microcode(input logic clk,
                  input logic [2:0] modrm_reg,
                  input logic int_enabled,
                  input logic zf,
+                 input logic tf,
                  output logic [15:0] microcode_immediate,
                  output logic use_microcode_immediate,
                  output logic segment_override,
@@ -46,6 +47,7 @@ localparam addr_bits = <%addr_bits%>;
 localparam reset_address = <%addr_bits%>'h129;
 localparam nmi_address = <%addr_bits%>'h12a;
 localparam irq_address = <%addr_bits%>'h12b;
+localparam single_step_address = <%addr_bits%>'h12c;
 localparam divide_error_address = <%addr_bits%>'h101;
 localparam next_instruction_address = <%addr_bits%>'h100;
 localparam debug_wait_address = <%addr_bits%>'h102;
@@ -97,15 +99,26 @@ reg nmi_pending;
 reg ext_int_inhibit;
 wire take_nmi = (nmi_pending | nmi_pulse) & !ext_int_inhibit;
 wire take_irq = intr & int_enabled & !ext_int_inhibit;
+wire do_single_step = current.next_instruction & !ext_int_inhibit &
+    trap_flag_set & current.next != debug_wait_address;
 assign start_interrupt = next_addr == nmi_address ||
                          next_addr == irq_address;
 assign inta = next_addr == irq_address;
 assign irq_to_mdr = inta;
+reg trap_flag_set;
+
+always_ff @(posedge clk or posedge reset)
+    if (reset)
+        trap_flag_set <= 1'b0;
+    else if (next_addr == single_step_address)
+        trap_flag_set <= 1'b0;
+    else if (opcode_popped)
+        trap_flag_set <= tf;
 
 always_ff @(posedge clk or posedge reset)
     if (reset)
         ext_int_inhibit <= 1'b0;
-    else if (current.ext_int_inhibit)
+    else if (current.ext_int_inhibit && current.next != debug_wait_address)
         ext_int_inhibit <= 1'b1;
     else if (current.fifo_pop && !do_stall)
         ext_int_inhibit <= 1'b0;
@@ -182,6 +195,8 @@ always_comb begin
         next_addr = nmi_address;
     else if (!do_stall && current.next_instruction && take_irq)
         next_addr = irq_address;
+    else if (!do_stall && current.next_instruction && do_single_step)
+        next_addr = single_step_address;
     else if (!do_stall && current.next_instruction && debug_seize)
         next_addr = debug_wait_address;
     else if (!do_stall && current.next_instruction)

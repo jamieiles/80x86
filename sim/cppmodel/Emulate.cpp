@@ -342,6 +342,7 @@ private:
 
     void handle_nmi();
     void handle_irq();
+    void single_step();
 
     Memory *mem;
     std::map<uint16_t, IOPorts *> *io;
@@ -359,6 +360,7 @@ private:
     bool nmi_pending;
     bool ext_int_inhibit;
     uint8_t pending_irqs;
+    bool tf_was_set;
 };
 
 void EmulatorPimpl::do_rep(std::function<void()> primitive,
@@ -443,6 +445,8 @@ void EmulatorPimpl::handle_nmi()
     registers->set(CS, new_cs);
     registers->set(IP, new_ip);
     jump_taken = true;
+
+    single_step();
 }
 
 void EmulatorPimpl::handle_irq()
@@ -469,10 +473,34 @@ void EmulatorPimpl::handle_irq()
     registers->set(CS, new_cs);
     registers->set(IP, new_ip);
     jump_taken = true;
+
+    single_step();
+}
+
+void EmulatorPimpl::single_step()
+{
+    if (!tf_was_set || ext_int_inhibit)
+        return;
+
+    auto flags = registers->get_flags();
+    push_word(flags);
+    push_word(registers->get(CS));
+    push_word(registers->get(IP));
+
+    flags &= ~(IF | TF);
+    registers->set_flags(flags, IF | TF);
+
+    auto new_cs = mem->read<uint16_t>(VEC_SINGLE_STEP + 2);
+    auto new_ip = mem->read<uint16_t>(VEC_SINGLE_STEP + 0);
+
+    registers->set(CS, new_cs);
+    registers->set(IP, new_ip);
+    jump_taken = true;
 }
 
 size_t EmulatorPimpl::step()
 {
+    tf_was_set = registers->get_flag(TF);
     if (nmi_pending && !ext_int_inhibit) {
         handle_nmi();
         return 0;
@@ -490,6 +518,8 @@ size_t EmulatorPimpl::step()
         handle_nmi();
     else if (pending_irqs && !ext_int_inhibit && registers->get_flag(IF))
         handle_irq();
+    else if (!ext_int_inhibit)
+        single_step();
 
     return len;
 }

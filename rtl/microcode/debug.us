@@ -32,7 +32,7 @@ DEBUG_READ_SR(DS, 0x10e)
 .at addr; \
     b_sel TEMP, alu_op SELB, segment_force, segment_wr_en, \
         segment_force, sr_wr_sel reg, next_instruction, \
-        jmp debug_wait;
+        ext_int_inhibit, jmp debug_wait;
 
 DEBUG_WRITE_GPR(AX, 0x113)
 DEBUG_WRITE_GPR(CX, 0x114)
@@ -64,7 +64,8 @@ debug_read_sr:
 
 // Set IP
 .at 0x111;
-    b_sel TEMP, alu_op SELB, load_ip, next_instruction, jmp debug_wait;
+    b_sel TEMP, alu_op SELB, load_ip, next_instruction, ext_int_inhibit,
+        jmp debug_wait;
 
 // Set flags
 .at 0x112;

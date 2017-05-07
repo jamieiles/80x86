@@ -15,7 +15,7 @@ TEST_F(EmulateFixture, Int3)
     write_reg(SP, 0x100);
     write_reg(CS, 0x7c00);
     write_reg(IP, 0x0001);
-    write_flags(CF | IF | TF);
+    write_flags(CF | IF);
 
     set_instruction({ 0xcc });
     emulate();
@@ -26,7 +26,7 @@ TEST_F(EmulateFixture, Int3)
     ASSERT_EQ(read_reg(IP), 0x0100);
     ASSERT_EQ(read_reg(SP), 0x0100 - 6);
 
-    ASSERT_EQ(read_mem16(0x100 - 2, SS), FLAGS_STUCK_BITS | CF | IF | TF);
+    ASSERT_EQ(read_mem16(0x100 - 2, SS), FLAGS_STUCK_BITS | CF | IF);
     ASSERT_EQ(read_mem16(0x100 - 4, SS), 0x7c00);
     // Return to the following instruction
     ASSERT_EQ(read_mem16(0x100 - 6, SS), 0x0002);
@@ -41,7 +41,7 @@ TEST_F(EmulateFixture, IntN)
     write_reg(SP, 0x100);
     write_reg(CS, 0x7c00);
     write_reg(IP, 0x0001);
-    write_flags(CF | IF | TF);
+    write_flags(CF | IF);
 
     set_instruction({ 0xcd, 0x03 });
     emulate();
@@ -52,7 +52,7 @@ TEST_F(EmulateFixture, IntN)
     EXPECT_EQ(read_reg(IP), 0x0100);
     EXPECT_EQ(read_reg(SP), 0x0100 - 6);
 
-    EXPECT_EQ(read_mem16(0x100 - 2, SS), FLAGS_STUCK_BITS | CF | IF | TF);
+    EXPECT_EQ(read_mem16(0x100 - 2, SS), FLAGS_STUCK_BITS | CF | IF);
     EXPECT_EQ(read_mem16(0x100 - 4, SS), 0x7c00);
     // Return to the following instruction
     EXPECT_EQ(read_mem16(0x100 - 6, SS), 0x0003);
@@ -64,7 +64,7 @@ TEST_F(EmulateFixture, IntoNotTaken)
     write_reg(SP, 0x100);
     write_reg(CS, 0x7c00);
     write_reg(IP, 0x0001);
-    write_flags(CF | IF | TF);
+    write_flags(CF | IF );
 
     set_instruction({ 0xce });
     emulate();
@@ -82,7 +82,7 @@ TEST_F(EmulateFixture, IntoTaken)
     write_reg(SP, 0x100);
     write_reg(CS, 0x7c00);
     write_reg(IP, 0x0001);
-    write_flags(CF | IF | TF | OF);
+    write_flags(CF | IF  | OF);
 
     set_instruction({ 0xce });
     emulate();
@@ -93,7 +93,7 @@ TEST_F(EmulateFixture, IntoTaken)
     ASSERT_EQ(read_reg(IP), 0x0100);
     ASSERT_EQ(read_reg(SP), 0x0100 - 6);
 
-    ASSERT_EQ(read_mem16(0x100 - 2, SS), FLAGS_STUCK_BITS | CF | IF | TF | OF);
+    ASSERT_EQ(read_mem16(0x100 - 2, SS), FLAGS_STUCK_BITS | CF | IF  | OF);
     ASSERT_EQ(read_mem16(0x100 - 4, SS), 0x7c00);
     // Return to the following instruction
     ASSERT_EQ(read_mem16(0x100 - 6, SS), 0x0002);
@@ -291,4 +291,30 @@ TEST_F(EmulateFixture, PopSRInhibitsInterrupts)
     EXPECT_EQ(read_mem16(0x100 - 4, SS), 0x7c00);
     // Return to the instruction that would have been executed next
     EXPECT_EQ(read_mem16(0x100 - 6, SS), 0x0003);
+}
+
+TEST_F(EmulateFixture, SingleStepTaken)
+{
+    write_mem16(VEC_SINGLE_STEP + 2, 0x8000, CS); // CS
+    write_mem16(VEC_SINGLE_STEP + 0, 0x0100, CS); // IP
+
+    write_reg(SP, 0x100);
+    write_reg(CS, 0x7c00);
+    write_reg(IP, 0x0001);
+
+    write_flags(TF);
+
+    set_instruction({ 0x90 });
+    emulate();
+
+    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        FLAGS_STUCK_BITS);
+    EXPECT_EQ(read_reg(CS), 0x8000);
+    EXPECT_EQ(read_reg(IP), 0x0100);
+    EXPECT_EQ(read_reg(SP), 0x0100 - 6);
+
+    EXPECT_EQ(read_mem16(0x100 - 2, SS), FLAGS_STUCK_BITS | TF);
+    EXPECT_EQ(read_mem16(0x100 - 4, SS), 0x7c00);
+    // Return to the instruction that would have been executed next
+    EXPECT_EQ(read_mem16(0x100 - 6, SS), 0x0002);
 }

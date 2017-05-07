@@ -15,3 +15,7 @@ add_custom_target(tests_modrm_override.asm ALL DEPENDS modrm_override.bin)
 nasm_file(OUTPUT irq.bin
           SOURCES irq.asm)
 add_custom_target(tests_irq.asm ALL DEPENDS irq.bin)
+
+nasm_file(OUTPUT singlestep.bin
+          SOURCES singlestep.asm)
+add_custom_target(tests_singlestep.asm ALL DEPENDS singlestep.bin)
