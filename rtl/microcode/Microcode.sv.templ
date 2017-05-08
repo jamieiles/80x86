@@ -138,10 +138,10 @@ end
 always_ff @(posedge clk or posedge reset)
     if (reset)
         nmi_pending <= 1'b0;
-    else if (nmi_pulse)
-        nmi_pending <= 1'b1;
     else if (next_addr == nmi_address)
         nmi_pending <= 1'b0;
+    else if (nmi_pulse)
+        nmi_pending <= 1'b1;
 
 always_ff @(posedge clk or posedge reset)
     if (reset)
