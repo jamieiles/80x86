@@ -47,3 +47,23 @@ TEST_F(EmulateFixture, Popf)
     ASSERT_EQ(read_reg(SP), 0x0100);
     ASSERT_EQ(0xf0d7, read_flags());
 }
+
+TEST_F(EmulateFixture, Setalc0)
+{
+    set_instruction({ 0xd6 });
+
+    emulate();
+
+    ASSERT_EQ(0x0, read_reg(AL));
+}
+
+TEST_F(EmulateFixture, Setalc1)
+{
+    write_flags(CF);
+
+    set_instruction({ 0xd6 });
+
+    emulate();
+
+    ASSERT_EQ(0xff, read_reg(AL));
+}

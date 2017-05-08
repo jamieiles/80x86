@@ -348,7 +348,5 @@ reset:
     next_instruction;
 .at 0xc9;
     next_instruction;
-.at 0xd6;
-    next_instruction;
 .at 0xf1;
     next_instruction;

@@ -89,6 +89,7 @@ private:
     void oute7();
     void outee();
     void outef();
+    void setalcd6();
     void xlatd7();
     void lea8d();
     void ldsc5();
@@ -696,6 +697,7 @@ size_t EmulatorPimpl::emulate_insn()
         case 0xd3: shiftd3(); break;
         case 0xd4: aamd4(); break;
         case 0xd5: aadd5(); break;
+        case 0xd6: setalcd6(); break;
         case 0xd7: xlatd7(); break;
         case 0xd8 ... 0xdf: escd8(); break;
         case 0xe0: loopnze0(); break;
@@ -1224,6 +1226,7 @@ void EmulatorPimpl::shiftd3()
 #include "instructions/clc.cpp"
 #include "instructions/cmc.cpp"
 #include "instructions/stc.cpp"
+#include "instructions/setalc.cpp"
 #include "instructions/cld.cpp"
 #include "instructions/std.cpp"
 #include "instructions/cli.cpp"

@@ -44,3 +44,11 @@
 .auto_address;
 sahf:
     a_sel RA, alu_op SETFLAGSA, update_flags CF PF AF ZF SF, next_instruction;
+
+// SETALC
+.at 0xd6;
+    ra_sel CX, rb_cl, jmp setalc;
+.auto_address;
+setalc:
+    width 8, a_sel RA, b_sel RB, alu_op SBB,
+        rd_sel_source MICROCODE_RD_SEL, reg_wr_en, rd_sel AL, next_instruction;
