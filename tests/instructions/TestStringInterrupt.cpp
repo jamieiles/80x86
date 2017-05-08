@@ -260,3 +260,24 @@ TEST_F(StringIntTest, StoswInt)
 
     assert_nmi_taken();
 }
+
+TEST_F(StringIntTest, HltBlocks)
+{
+    setup_nmi_handler();
+
+    write_flags(0);
+
+    set_instruction({ 0xf4 });
+
+    cpu->start_instruction();
+
+    // Skip over the opcode_fetch yield point
+    wait_for_int_yield();
+    for (auto i = 0; i < 256; ++i)
+        cpu->cycle_cpu();
+    cpu->raise_nmi();
+
+    cpu->complete_instruction();
+
+    assert_nmi_taken();
+}

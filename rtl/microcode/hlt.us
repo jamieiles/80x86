@@ -1,2 +1,3 @@
 .at 0xf4;
-    next_instruction;
+hlt:
+    jmp hlt, ext_int_yield;
