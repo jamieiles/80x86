@@ -21,6 +21,7 @@ module Microcode(input logic clk,
                  input logic zf,
                  input logic tf,
                  output logic [15:0] microcode_immediate,
+                 output logic [8:0] update_flags,
                  output logic use_microcode_immediate,
                  output logic segment_override,
                  output logic [7:0] opcode,
@@ -72,6 +73,15 @@ always_comb begin
     <%idx%>: microcode_immediate = 16'h<%val%>;
 <%/immediates%>
     default: microcode_immediate = 16'h0;
+    endcase
+end
+
+always_comb begin
+    case (current.update_flags)
+<%#flags%>
+    <%idx%>: update_flags = 9'h<%val%>;
+<%/flags%>
+    default: update_flags = 9'h0;
     endcase
 end
 
