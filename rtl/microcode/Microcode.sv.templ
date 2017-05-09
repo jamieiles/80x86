@@ -102,7 +102,7 @@ wire has_rep_prefix = (rep_prefix_type == PrefixType_REPE ||
                        rep_prefix_type == PrefixType_REPNE);
 reg rep_complete;
 
-assign debug_stopped = addr == {{addr_bits-9{1'b0}}, 9'h102};
+assign debug_stopped = addr == debug_wait_address;
 assign multibit_shift = opcode == 8'hd2 || opcode == 8'hd3;
 
 reg nmi_pending;
@@ -116,6 +116,9 @@ assign start_interrupt = next_addr == nmi_address ||
 assign inta = next_addr == irq_address;
 assign irq_to_mdr = inta;
 reg trap_flag_set;
+
+reg seized;
+wire seizing = debug_seize & ~seized;
 
 always_ff @(posedge clk or posedge reset)
     if (reset)
@@ -174,11 +177,21 @@ always_ff @(posedge clk or posedge reset)
              current.prefix_type == PrefixType_REPE)
         rep_prefix_type <= current.prefix_type;
 
+always_ff @(posedge clk or posedge reset)
+    if (reset)
+        seized <= 1'b0;
+    else if (debug_stopped)
+        seized <= 1'b1;
+    else if (!debug_seize)
+        seized <= 1'b0;
+
 always_comb begin
     if (reset)
         next_addr = reset_address;
     else if (debug_stopped && debug_run)
         next_addr = {{addr_bits - 9{1'b0}}, 1'b1, debug_addr};
+    else if (!do_stall && current.ext_int_yield && seizing)
+        next_addr = debug_wait_address;
     else if (!do_stall && current.ext_int_yield && take_nmi)
         next_addr = nmi_address;
     else if (!do_stall && current.ext_int_yield && take_irq)
