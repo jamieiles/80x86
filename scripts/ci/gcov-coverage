@@ -7,7 +7,15 @@ DOCKER_NONINTERACTIVE=1 ./docker/s80x86-build -e -c 'cd _build/gcov-coverage; \
         cmake ../.. -DCMAKE_BUILD_TYPE=Coverage; \
         make -j6; \
         ctest --output-on-failure -R "sim-unittest|rtl-unittest"; \
-        ../../scripts/gcovr --delete --output=coverage.xml --exclude="_build/*" --exclude=".*googletest.*" --exclude="tests.*" --root=../.. --xml-pretty --exclude-unreachable-branches .; \
+        ../../scripts/gcovr --delete --output=coverage.xml \
+            --exclude="_build/*" \
+            --exclude=".*googletest.*" \
+            --exclude=".*Simulator.*" \
+            --exclude=".*SPI.*" \
+            --exclude=".*UART.*" \
+            --exclude="python.*" \
+            --exclude="tests.*" \
+            --root=../.. --xml-pretty --exclude-unreachable-branches .; \
         verilator_coverage -write rtl-merged-coverage.dat tests/rtl/coverage/*.dat; \
         ../../scripts/verilator-cobertura --output=coverage-rtl-unittest.xml --source-root=../.. ./rtl-merged-coverage.dat; \
         rm ../../*.gcov -f'
