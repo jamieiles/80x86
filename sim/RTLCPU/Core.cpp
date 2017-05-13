@@ -127,6 +127,10 @@ void RTLCPU<debug_enabled>::start_instruction()
 {
     assert(is_stopped);
 
+    // Give the FIFO sufficient time to fill so that we go straight to the
+    // instruction and can detect the first real yield.
+    this->cycle(mem_latency * 128);
+
     this->after_n_cycles(0, [&]{
         this->dut.debug_addr = 0;
         this->dut.debug_run = 1;

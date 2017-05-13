@@ -22,10 +22,6 @@ void StringIntTest::inject_nmi()
 {
     cpu->start_instruction();
 
-    // Skip over the opcode_fetch yield point
-    wait_for_int_yield();
-    cpu->cycle_cpu();
-
     // yield point inside the string instruction
     wait_for_int_yield();
     cpu->raise_nmi();

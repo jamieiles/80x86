@@ -34,11 +34,11 @@ MicrocodeTestbench::MicrocodeTestbench()
 
     periodic(ClockSetup, [&]{
         this->dut.fifo_empty = this->stream.size() == 0;
+        this->dut.fifo_rd_data = this->stream.size() > 0 ?
+            this->stream[0] : 0;
         if (!this->dut.reset && this->dut.fifo_rd_en &&
             this->stream.size() > 0) {
             after_n_cycles(0, [&]{
-                this->dut.fifo_rd_data = this->stream.size() > 0 ?
-                    this->stream[0] : 0;
                 this->stream.pop_front();
             });
         }

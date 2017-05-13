@@ -13,51 +13,61 @@ public:
     void add_bytes(const std::vector<uint8_t> bytes)
     {
         stream.insert(stream.end(), bytes.begin(), bytes.end());
+        this->cycle();
     }
 
     void fetch()
     {
-        dut.start = 1;
-        cycle();
-        dut.start = 0;
+        after_n_cycles(0, [&]{
+            this->dut.start = 1;
+            after_n_cycles(1, [&]{
+                this->dut.start = 0;
+            });
+        });
 
         for (auto i = 0; i < 1000; ++i) {
             cycle();
-            if (!dut.complete) {
-                ASSERT_TRUE(dut.busy);
-            } else {
-                ASSERT_FALSE(dut.busy);
+            if (complete)
                 return;
-            }
         }
 
         FAIL() << "failed to complete immediate fetch" << std::endl;
     }
 
+    bool is_complete() const
+    {
+        return complete;
+    }
+
 private:
     std::deque<uint8_t> stream;
+    bool complete;
 };
 
 ImmediateReaderTestbench::ImmediateReaderTestbench()
+    : complete(false)
 {
     dut.reset = 0;
     reset();
 
     periodic(ClockSetup, [&]{
         this->dut.fifo_empty = this->stream.size() == 0;
+
         if (!this->dut.reset && this->dut.fifo_rd_en &&
             this->stream.size() == 0)
             FAIL() << "fifo underflow" << std::endl;
 
+    });
+
+    periodic(ClockCapture, [&]{
+        this->complete = this->dut.complete;
         if (!this->dut.reset && this->dut.fifo_rd_en &&
             this->stream.size() > 0) {
-            after_n_cycles(0, [&]{
-                this->dut.fifo_empty = this->stream.size() == 0;
-                this->dut.fifo_rd_data = this->stream.size() > 0 ?
-                    this->stream[0] : 0;
-                this->stream.pop_front();
-            });
+            this->stream.pop_front();
         }
+        after_n_cycles(1, [&]{
+            this->dut.fifo_rd_data = this->stream[0];
+        });
     });
 }
 
@@ -68,7 +78,7 @@ TEST_F(ImmediateReaderTestbench, Immed8PopsOne)
 
     fetch();
 
-    ASSERT_EQ(dut.immediate, 0xff80LU);
+    EXPECT_EQ(dut.immediate, 0xff80LU);
 }
 
 TEST_F(ImmediateReaderTestbench, Immed8SignExtendPositive)
@@ -78,7 +88,7 @@ TEST_F(ImmediateReaderTestbench, Immed8SignExtendPositive)
 
     fetch();
 
-    ASSERT_EQ(dut.immediate, 0x007f);
+    EXPECT_EQ(dut.immediate, 0x007f);
 }
 
 TEST_F(ImmediateReaderTestbench, Immed16PopsTwo)
@@ -88,7 +98,7 @@ TEST_F(ImmediateReaderTestbench, Immed16PopsTwo)
 
     fetch();
 
-    ASSERT_EQ(dut.immediate, 0x55aaLU);
+    EXPECT_EQ(dut.immediate, 0x55aaLU);
 }
 
 TEST_F(ImmediateReaderTestbench, ImmedPersistsAfterCompletion)
@@ -101,5 +111,5 @@ TEST_F(ImmediateReaderTestbench, ImmedPersistsAfterCompletion)
     dut.fifo_rd_data = 0;
     cycle(2);
 
-    ASSERT_EQ(dut.immediate, 0x55aaLU);
+    EXPECT_EQ(dut.immediate, 0x55aaLU);
 }

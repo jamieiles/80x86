@@ -89,7 +89,7 @@ wire prefetch_load_new_ip;
 wire [15:0] prefetch_new_ip;
 
 // Immediate Reader
-wire immed_start = (modrm_immed_start | microcode_immed_start) & ~immed_complete;
+wire immed_start = modrm_immed_start | microcode_immed_start;
 wire immed_busy;
 wire immed_complete;
 wire modrm_immed_is_8bit;
@@ -406,6 +406,7 @@ Microcode       Microcode(.clk(clk),
                           .fifo_rd_en(microcode_fifo_rd_en),
                           .fifo_rd_data(fifo_rd_data),
                           .fifo_empty(fifo_empty),
+                          .fifo_resetting(fifo_reset),
                           // Debug
                           .debug_stopped(debug_stopped),
                           .debug_seize(debug_seize),

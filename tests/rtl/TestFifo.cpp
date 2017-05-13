@@ -8,33 +8,63 @@ class FifoTestFixture : public VerilogTestbench<VFifo>,
 public:
     FifoTestFixture();
     void push(uint32_t val);
+    bool is_empty() const
+    {
+        return empty;
+    }
+    uint32_t get_head() const
+    {
+        return head;
+    }
     uint32_t pop();
+private:
+    bool empty;
+    uint32_t head;
 };
 
 FifoTestFixture::FifoTestFixture()
+    : empty(true),
+    head(0x7777)
 {
     dut.wr_en = 0;
     dut.wr_data = 0LU;
     dut.rd_en = 0;
+
+    periodic(ClockCapture, [&]{
+        this->empty = this->dut.empty;
+        this->head = this->dut.rd_data;
+    });
 
     reset();
 }
 
 void FifoTestFixture::push(uint32_t val)
 {
-    dut.wr_data = val;
-    dut.wr_en = 1;
-    cycle();
-    dut.wr_en = 0;
+    after_n_cycles(0, [&]{
+        this->dut.wr_data = val;
+        this->dut.wr_en = 1;
+        after_n_cycles(1, [&]{
+            this->dut.wr_en = 0;
+        });
+    });
+    cycle(2);
 }
 
 uint32_t FifoTestFixture::pop()
 {
-    dut.rd_en = 1;
-    cycle();
-    dut.rd_en = 0;
+    while (is_empty())
+        cycle();
+    auto v = head;
 
-    return dut.rd_data;
+    after_n_cycles(0, [&]{
+        this->dut.rd_en = 1;
+        after_n_cycles(1, [&]{
+            this->dut.rd_en = 0;
+        });
+    });
+    cycle(2);
+
+    return v;
 }
 
 TEST_F(FifoTestFixture, empty_fifo_not_full)
@@ -45,9 +75,10 @@ TEST_F(FifoTestFixture, empty_fifo_not_full)
 
 TEST_F(FifoTestFixture, one_push_not_empty)
 {
-    ASSERT_TRUE(dut.empty);
+    ASSERT_TRUE(is_empty());
     push(0xdeadbeef);
-    ASSERT_FALSE(dut.empty);
+    cycle();
+    ASSERT_FALSE(is_empty());
 }
 
 TEST_F(FifoTestFixture, one_push_one_pop)
@@ -56,6 +87,7 @@ TEST_F(FifoTestFixture, one_push_one_pop)
     ASSERT_EQ(dut.rd_data, 0LU);
 
     push(0xdeadbeef);
+    cycle();
     ASSERT_FALSE(dut.empty);
 
     auto v = pop();
@@ -77,13 +109,6 @@ TEST_F(FifoTestFixture, push3pop3)
     ASSERT_TRUE(dut.empty);
 }
 
-TEST_F(FifoTestFixture, underflow_still_empty)
-{
-    ASSERT_TRUE(dut.empty);
-    pop();
-    ASSERT_TRUE(dut.empty);
-}
-
 TEST_F(FifoTestFixture, overflow_no_corrupt)
 {
     for (uint32_t m = 0; m < 8; ++m)
@@ -94,7 +119,8 @@ TEST_F(FifoTestFixture, overflow_no_corrupt)
 
     for (uint32_t m = 0; m < 6; ++m)
         ASSERT_EQ(pop(), m);
-    ASSERT_TRUE(dut.empty);
+    cycle();
+    ASSERT_TRUE(is_empty());
     ASSERT_FALSE(dut.full);
 }
 
@@ -102,14 +128,16 @@ TEST_F(FifoTestFixture, read_during_write)
 {
     push(0x1234);
 
-    dut.wr_en = 1;
-    dut.wr_data = 0xaa55;
-    dut.rd_en = 1;
-    cycle();
-    dut.wr_en = 0;
-
-    ASSERT_EQ(dut.rd_data, 0x1234LU);
-    cycle();
+    after_n_cycles(0, [&]{
+        this->dut.wr_en = 1;
+        this->dut.wr_data = 0xaa55;
+        this->dut.rd_en = 1;
+        after_n_cycles(1, [&]{
+            this->dut.wr_en = 0;
+            this->dut.rd_en = 0;
+        });
+    });
+    ASSERT_EQ(pop(), 0x1234LU);
     ASSERT_EQ(pop(), 0xaa55LU);
 }
 
@@ -119,9 +147,9 @@ TEST_F(FifoTestFixture, fill_at_threshold)
 
     for (;;) {
         push(1);
+        ++pushed;
         if (dut.nearly_full)
             break;
-        ++pushed;
     }
 
     ASSERT_EQ(pushed, 4);

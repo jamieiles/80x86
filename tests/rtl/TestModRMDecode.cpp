@@ -16,6 +16,8 @@ public:
     {
         stream.clear();
         stream.insert(stream.end(), bytes.begin(), bytes.end());
+        stream.push_back(0x99);
+        this->cycle();
     }
 
     void set_width(OperandWidth width)
@@ -25,18 +27,17 @@ public:
 
     void decode()
     {
-        dut.start = 1;
-        cycle();
-        dut.start = 0;
+        after_n_cycles(0, [&]{
+            this->dut.start = 1;
+            after_n_cycles(1, [&]{
+                this->dut.start = 0;
+            });
+        });
 
         for (auto i = 0; i < 1000; ++i) {
             cycle();
-            if (!dut.complete) {
-                ASSERT_TRUE(dut.busy);
-            } else {
-                ASSERT_FALSE(dut.busy);
+            if (complete)
                 return;
-            }
         }
 
         FAIL() << "failed to complete decode" << std::endl;
@@ -63,13 +64,20 @@ public:
         return is_8bit ? static_cast<GPR>(dut.rm_regnum + static_cast<int>(AL)) :
             static_cast<GPR>(dut.rm_regnum);
     }
+
+    bool is_complete() const
+    {
+        return complete;
+    }
 private:
     std::deque<uint8_t> stream;
     bool is_8bit;
+    bool complete;
 };
 
 RTLModRMDecoderTestbench::RTLModRMDecoderTestbench()
-    : is_8bit(false)
+    : is_8bit(false),
+    complete(false)
 {
     reset();
 
@@ -77,18 +85,24 @@ RTLModRMDecoderTestbench::RTLModRMDecoderTestbench()
     dut.fifo_rd_en = 0;
 
     periodic(ClockSetup, [&]{
-        if (!this->dut.reset && this->dut.fifo_rd_en &&
-            this->stream.size() > 0) {
-            after_n_cycles(0, [&]{
-                this->dut.fifo_empty = this->stream.size() == 0;
-                this->dut.fifo_rd_data = this->stream.size() > 0 ?
-                    this->stream[0] : 0;
-                this->stream.pop_front();
-            });
-        }
+        this->dut.fifo_empty = this->stream.size() == 0;
+
         if (!this->dut.reset && this->dut.fifo_rd_en &&
             this->stream.size() == 0)
             FAIL() << "fifo underflow" << std::endl;
+
+    });
+
+    periodic(ClockCapture, [&]{
+        this->complete = this->dut.complete;
+
+        if (!this->dut.reset && this->dut.fifo_rd_en &&
+            this->stream.size() > 0) {
+            this->stream.pop_front();
+        }
+        after_n_cycles(1, [&]{
+            this->dut.fifo_rd_data = this->stream[0];
+        });
     });
 
     periodic(ClockSetup, [&]{
@@ -105,26 +119,6 @@ INSTANTIATE_TYPED_TEST_CASE_P(RTL, ModRMTestFixture, ModRMImplTypes);
 class ModRMFixture : public RTLModRMDecoderTestbench,
     public ::testing::Test {
 };
-
-TEST_F(ModRMFixture, StartHeldDoesntClearModrm)
-{
-    set_instruction({ 0xd8, 0xff });
-
-    dut.start = 1;
-    cycle();
-
-    after_n_cycles(0, [&]{
-        this->dut.start = 1;
-        after_n_cycles(1, [&]{
-            this->dut.start = 0;
-            this->dut.fifo_rd_data = 0;
-            after_n_cycles(1, [&]{ this->dut.fifo_rd_data = 0; });
-        });
-    });
-    cycle(3);
-
-    ASSERT_EQ(this->dut.regnum, 0x3);
-}
 
 TEST_F(ModRMFixture, BPBaseInfersSS)
 {

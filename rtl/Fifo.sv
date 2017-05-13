@@ -16,14 +16,16 @@ parameter full_threshold = 2; // Number of entries free to be not-full
 
 localparam ptr_bits = $clog2(depth);
 
-reg [data_width-1:0] mem[depth-1:0] /* synthesis syn_ramstyle = "no_rw_check" */;
+reg [data_width-1:0] mem[depth-1:0];
 reg [ptr_bits-1:0] rd_ptr;
 reg [ptr_bits-1:0] wr_ptr;
 reg [ptr_bits:0] count;
 
-assign empty = reset || count == 0;
-assign full = count == depth && !reset;
-assign nearly_full = !reset && count > depth - full_threshold;
+assign empty = count == 0;
+assign full = count == depth;
+assign nearly_full = count + {{ptr_bits-1{1'b0}}, (wr_en & ~rd_en)} >= depth - full_threshold;
+
+assign rd_data = mem[rd_ptr];
 
 always_ff @(posedge clk or posedge reset) begin
     if (reset) begin
@@ -39,9 +41,7 @@ end
 always_ff @(posedge clk or posedge reset) begin
     if (reset) begin
         rd_ptr <= {ptr_bits{1'b0}};
-        rd_data <= {data_width{1'b0}};
     end else if (rd_en && !empty) begin
-        rd_data <= mem[rd_ptr];
         rd_ptr <= rd_ptr + 1'b1;
         if (rd_ptr == depth[ptr_bits-1:0] - 1'b1)
             rd_ptr <= {ptr_bits{1'b0}};

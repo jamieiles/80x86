@@ -37,6 +37,7 @@ module Microcode(input logic clk,
                  output logic fifo_rd_en,
                  input logic [7:0] fifo_rd_data,
                  input logic fifo_empty,
+                 input logic fifo_resetting,
                  // Debug
                  output logic debug_stopped,
                  input logic debug_seize,
@@ -89,14 +90,8 @@ end
 assign <%name%> = current.<%name%>;
 <%/exported_fields%>
 
-wire will_ext_int_yield = current.ext_int_yield & (take_nmi | take_irq);
+assign fifo_rd_en = !stall && next_addr == {{addr_bits-8{1'b0}}, fifo_rd_data};
 
-assign fifo_rd_en = ~reset & current.fifo_pop & ~opcode_popped &
-    ~fifo_empty & ~will_ext_int_yield;
-wire do_stall = stall | fifo_rd_en |
-    (current.fifo_pop & !opcode_popped & !will_ext_int_yield);
-
-reg opcode_popped;
 reg [1:0] rep_prefix_type;
 wire has_rep_prefix = (rep_prefix_type == PrefixType_REPE ||
                        rep_prefix_type == PrefixType_REPNE);
@@ -110,7 +105,8 @@ reg ext_int_inhibit;
 wire take_nmi = (nmi_pending | nmi_pulse) & !ext_int_inhibit;
 wire take_irq = intr & int_enabled & !ext_int_inhibit;
 wire do_single_step = current.next_instruction & !ext_int_inhibit &
-    trap_flag_set & current.next != debug_wait_address;
+    (trap_flag_set | (start_instruction & tf)) &
+     current.next != debug_wait_address;
 assign start_interrupt = next_addr == nmi_address ||
                          next_addr == irq_address;
 assign inta = next_addr == irq_address;
@@ -120,12 +116,20 @@ reg trap_flag_set;
 reg seized;
 wire seizing = debug_seize & ~seized;
 
+reg start_instruction;
+
+always_ff @(posedge clk or posedge reset)
+    if (reset)
+        start_instruction <= 1'b0;
+    else
+        start_instruction <= fifo_rd_en;
+
 always_ff @(posedge clk or posedge reset)
     if (reset)
         trap_flag_set <= 1'b0;
     else if (next_addr == single_step_address)
         trap_flag_set <= 1'b0;
-    else if (opcode_popped)
+    else if (start_instruction)
         trap_flag_set <= tf;
 
 always_ff @(posedge clk or posedge reset)
@@ -133,7 +137,7 @@ always_ff @(posedge clk or posedge reset)
         ext_int_inhibit <= 1'b0;
     else if (current.ext_int_inhibit && current.next != debug_wait_address)
         ext_int_inhibit <= 1'b1;
-    else if (current.fifo_pop && !do_stall)
+    else if (fifo_rd_en && !stall)
         ext_int_inhibit <= 1'b0;
 
 `ifdef verilator
@@ -158,14 +162,8 @@ always_ff @(posedge clk or posedge reset)
 
 always_ff @(posedge clk or posedge reset)
     if (reset)
-        opcode_popped <= 1'b0;
-    else if (!do_stall)
-        opcode_popped <= 1'b0;
+        opcode <= 8'b0;
     else if (fifo_rd_en)
-        opcode_popped <= 1'b1;
-
-always_ff @(posedge clk)
-    if (opcode_popped)
         opcode <= fifo_rd_data;
 
 always_ff @(posedge clk or posedge reset)
@@ -188,46 +186,47 @@ always_ff @(posedge clk or posedge reset)
 always_comb begin
     if (reset)
         next_addr = reset_address;
+    else if (stall)
+        next_addr = addr;
     else if (debug_stopped && debug_run)
         next_addr = {{addr_bits - 9{1'b0}}, 1'b1, debug_addr};
-    else if (!do_stall && current.ext_int_yield && seizing)
+    else if (current.ext_int_yield && seizing)
         next_addr = debug_wait_address;
-    else if (!do_stall && current.ext_int_yield && take_nmi)
+    else if (current.ext_int_yield && take_nmi)
         next_addr = nmi_address;
-    else if (!do_stall && current.ext_int_yield && take_irq)
+    else if (current.ext_int_yield && take_irq)
         next_addr = irq_address;
-    else if (!do_stall && current.jump_type == JumpType_JUMP_TAKEN)
+    else if (current.jump_type == JumpType_JUMP_TAKEN)
         next_addr = jump_taken ? current.next : addr + 1'b1;
-    else if (!do_stall && current.jump_type == JumpType_ZERO)
+    else if (current.jump_type == JumpType_ZERO)
         next_addr = zf ? current.next : addr + 1'b1;
-    else if (!do_stall && current.jump_type == JumpType_HAS_NO_REP_PREFIX)
+    else if (current.jump_type == JumpType_HAS_NO_REP_PREFIX)
         next_addr = ~has_rep_prefix ? current.next : addr + 1'b1;
-    else if (!do_stall && current.jump_type == JumpType_REP_NOT_COMPLETE)
+    else if (current.jump_type == JumpType_REP_NOT_COMPLETE)
         next_addr = !rep_complete ? current.next : addr + 1'b1;
-    else if (!do_stall && current.jump_type == JumpType_DISPATCH_REG)
+    else if (current.jump_type == JumpType_DISPATCH_REG)
         next_addr = current.next + {{addr_bits-3{1'b0}}, modrm_reg};
-    else if (!do_stall && current.jump_type == JumpType_RM_REG_MEM)
+    else if (current.jump_type == JumpType_RM_REG_MEM)
         next_addr = current.next + {{addr_bits-1{1'b0}}, ~rm_is_reg};
-    else if (!do_stall && current.jump_type == JumpType_OPCODE)
-        next_addr = {{addr_bits-8{1'b0}}, fifo_rd_data};
-    else if (!do_stall && current.jump_type == JumpType_RB_ZERO)
+    else if (current.jump_type == JumpType_OPCODE)
+        next_addr = !fifo_empty ? {{addr_bits-8{1'b0}}, fifo_rd_data} : addr;
+    else if (current.jump_type == JumpType_RB_ZERO)
         next_addr = rb_zero ? current.next : addr + 1'b1;
-    else if (!do_stall && divide_error)
+    else if (divide_error)
         next_addr = divide_error_address;
-    else if (!do_stall && current.next_instruction && take_nmi)
+    else if (current.next_instruction && take_nmi)
         next_addr = nmi_address;
-    else if (!do_stall && current.next_instruction && take_irq)
+    else if (current.next_instruction && take_irq)
         next_addr = irq_address;
-    else if (!do_stall && current.next_instruction && do_single_step)
+    else if (current.next_instruction && do_single_step)
         next_addr = single_step_address;
-    else if (!do_stall && current.next_instruction && debug_seize)
+    else if (current.next_instruction && debug_seize)
         next_addr = debug_wait_address;
-    else if (!do_stall && current.next_instruction)
-        next_addr = next_instruction_address;
-    else if (!do_stall)
-        next_addr = current.next;
+    else if (current.next_instruction)
+        next_addr = !fifo_empty && !fifo_resetting ?
+            {{addr_bits-8{1'b0}}, fifo_rd_data} : next_instruction_address;
     else
-        next_addr = addr;
+        next_addr = current.next;
 end
 
 always @(posedge clk)
@@ -239,7 +238,7 @@ always @(posedge clk)
 always_ff @(posedge clk or posedge reset)
     if (reset)
         lock <= 1'b0;
-    else if (!do_stall && current.next_instruction)
+    else if (!stall && current.next_instruction)
         lock <= 1'b0;
     else if (current.lock)
         lock <= 1'b1;

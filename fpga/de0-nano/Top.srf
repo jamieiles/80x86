@@ -1,4 +1,4 @@
-{ "" "" "" "Verilog HDL warning at Microcode.sv(101): object mem used but never assigned" {  } {  } 0 10858 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "Verilog HDL warning at Microcode.sv(121): object mem used but never assigned" {  } {  } 0 10858 "" 0 0 "Quartus II" 0 -1 0 ""}
 { "" "" "" "Synthesized away node \"Core:Core\|Microcode:Microcode\|altsyncram:mem_rtl_0\|altsyncram_jq41:auto_generated\|ram_block1a41\"" {  } {  } 0 14320 "" 0 0 "Quartus II" 0 -1 0 ""}
 { "" "" "" "Pin \"s_addr\[11\]\" is stuck at GND" {  } {  } 0 13410 "" 0 0 "Quartus II" 0 -1 0 ""}
 { "" "" "" "Pin \"s_cs_n\" is stuck at GND" {  } {  } 0 13410 "" 0 0 "Quartus II" 0 -1 0 ""}
