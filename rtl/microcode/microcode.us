@@ -1,6 +1,6 @@
 .at 0x100;
 opcode_fetch:
-    ext_int_yield, fifo_pop, jmp_opcode;
+    ext_int_yield, jmp_opcode;
 
 // See 0xcc in int.us for more details, this is the same thing but for a
 // divide error.

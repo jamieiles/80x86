@@ -254,8 +254,6 @@ adjacent with the register based instruction appearing first.
 
 will update the carry, overflow, zero and adjust flags to the result of the
 ALU operation.
-| fifo_pop | Pop a single byte from the prefetch FIFO, used in combination
-with `jmp_opcode` to implement opcode dispatch.
 | modrm_start | Trigger the mod r/m decoding.  This will stall until complete
   and calculate any effective addresses required.
 | rd_sel_source a| The source of the destination register number:
