@@ -39,7 +39,8 @@ template <typename T>
 class Simulator {
 public:
     Simulator<T>(const std::string &bios_path,
-                 const std::string &disk_image_path);
+                 const std::string &disk_image_path,
+                 bool detached);
     void run();
 private:
     void load_bios(const std::string &bios_path);
@@ -50,14 +51,17 @@ private:
     UART uart;
     SPI spi;
     bool got_exit;
+    bool detached;
 };
 
 template <typename T>
 Simulator<T>::Simulator(const std::string &bios_path,
-                        const std::string &disk_image_path)
+                        const std::string &disk_image_path,
+                        bool detached)
     : cpu("simulator"),
     spi(disk_image_path),
-    got_exit(false)
+    got_exit(false),
+    detached(detached)
 {
     cpu.add_ioport(&sdram_config_register);
     cpu.add_ioport(&uart);
@@ -101,10 +105,15 @@ void Simulator<T>::run()
 {
     unsigned cycle_count = 0;
 
+    if (detached)
+        cpu.debug_detach();
     while (!got_exit) {
         if (++cycle_count % 1000)
             process_io();
-        cpu.step();
+        if (detached)
+            cpu.cycle_cpu();
+        else
+            cpu.step();
     }
 }
 
@@ -114,12 +123,15 @@ int main(int argc, char **argv)
     std::string bios_image;
     std::string disk_image;
     std::string backend = "SoftwareCPU";
+    bool detached;
 
     po::options_description desc("Options");
     desc.add_options()
         ("help,h", "print this usage information and exit")
         ("backend,b", po::value<std::string>(&backend),
          "the simulator backend module to use, either SoftwareCPU or RTLCPU, default SoftwareCPU")
+        ("detached,d",
+         "run the simulation in free-running mode")
         ("bios", po::value<std::string>(&bios_image)->required(),
          "the bios image to use")
         ("diskimage", po::value<std::string>(&disk_image)->required(),
@@ -139,6 +151,8 @@ int main(int argc, char **argv)
             return 0;
         }
 
+        detached = variables_map.count("detached");
+
         po::notify(variables_map);
     } catch (boost::program_options::required_option &e) {
         std::cerr << "Error: missing arguments " << e.what() << std::endl;
@@ -149,10 +163,10 @@ int main(int argc, char **argv)
     }
 
     if (backend == "SoftwareCPU") {
-        Simulator<SoftwareCPU> sim(bios_image, disk_image);
+        Simulator<SoftwareCPU> sim(bios_image, disk_image, detached);
         sim.run();
     } else if (backend == "RTLCPU") {
-        Simulator<RTLCPU<verilator_debug_enabled>> sim(bios_image, disk_image);
+        Simulator<RTLCPU<verilator_debug_enabled>> sim(bios_image, disk_image, detached);
         sim.run();
     } else {
         std::cerr << "Error: invalid simulation backend \"" << backend << "\"" << std::endl;

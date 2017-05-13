@@ -123,6 +123,19 @@ void RTLCPU<debug_enabled>::debug_step()
 }
 
 template <bool debug_enabled>
+void RTLCPU<debug_enabled>::debug_detach()
+{
+    this->after_n_cycles(0, [&]{
+        this->dut.debug_seize = 0;
+        this->dut.debug_addr = 0;
+        this->dut.debug_run = 1;
+        this->after_n_cycles(1, [&] {
+            this->dut.debug_run = 0;
+        });
+    });
+}
+
+template <bool debug_enabled>
 void RTLCPU<debug_enabled>::start_instruction()
 {
     assert(is_stopped);

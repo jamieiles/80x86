@@ -25,6 +25,7 @@ public:
     }
     void complete_instruction();
     bool int_yield_ready();
+    void debug_detach();
     size_t step();
     void write_flags(uint16_t val);
     uint16_t read_flags();

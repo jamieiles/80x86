@@ -80,6 +80,9 @@ public:
     {
         throw NotImplemented("int_yield_ready not implemented");
     }
+    virtual void debug_detach()
+    {
+    }
     virtual size_t step() = 0;
     virtual void write_flags(uint16_t val) = 0;
     virtual uint16_t read_flags() = 0;
