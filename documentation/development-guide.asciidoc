@@ -290,8 +290,6 @@ ALU operation.
 | io | Combined with `mem_read`/`mem_write` to indicate that the operation
   should use the I/O address space.  This will cause the segment to be ignored
   and the io pin to be asserted for the duration of this microinstruction.
-| lock | Sets the lock prefix, the lock pin will be asserted for the remainder
-  of the microprogram.
 | ext_int_inhibit | Used at the end of a microprogram, this flag indicates
   that the microsequencer should not check for interrupts after this
   instruction.  This is used for instructions like `mov ss, bx` where the

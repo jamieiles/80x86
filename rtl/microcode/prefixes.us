@@ -24,4 +24,4 @@
 
 // LOCK prefix
 .at 0xf0;
-    lock, jmp_opcode;
+    jmp_opcode;

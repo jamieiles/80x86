@@ -240,7 +240,7 @@ always_ff @(posedge clk or posedge reset)
         lock <= 1'b0;
     else if (!stall && current.next_instruction)
         lock <= 1'b0;
-    else if (current.lock)
+    else if (opcode == 8'hf0)
         lock <= 1'b1;
 
 `ifdef verilator

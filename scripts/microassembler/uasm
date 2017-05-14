@@ -288,7 +288,6 @@ class MicroAssembler(object):
         'load_ip': (1, _boolean, True),
         'read_immed': (1, _boolean, True),
         'io': (1, _boolean, True),
-        'lock': (1, _boolean, False),
         'ext_int_yield': (1, _boolean, True),
         'ext_int_inhibit': (1, _boolean, False),
         'immediate': (0, _immediate, False),
