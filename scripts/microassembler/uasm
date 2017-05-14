@@ -268,7 +268,6 @@ class MicroAssembler(object):
         'mdr_write': (1, _boolean, True),
         'mem_read': (1, _boolean, True),
         'mem_write': (1, _boolean, True),
-        'sr_wr_sel': (num_bits(len(SR)), partial(_enumerated_field, enum_class=SR), True),
         'segment': (num_bits(len(SR)), partial(_enumerated_field, enum_class=SR), True),
         'prefix_type': (num_bits(len(PrefixType)), partial(_enumerated_field, enum_class=PrefixType), False),
         'segment_wr_en': (1, _boolean, True),

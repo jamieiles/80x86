@@ -11,5 +11,5 @@ lds_mem:
     a_sel MAR, alu_op ADD, b_sel IMMEDIATE, immediate 0x2,
         mar_write, mar_wr_sel Q, segment DS;
     segment DS, mem_read;
-    segment_force, sr_wr_sel DS, segment_wr_en, a_sel MDR, alu_op SELA,
+    segment_force, segment DS, segment_wr_en, a_sel MDR, alu_op SELA,
         next_instruction;

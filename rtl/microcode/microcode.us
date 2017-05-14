@@ -24,7 +24,7 @@ do_divide_error:
         rd_sel SP, reg_wr_en;
     b_sel IMMEDIATE, immediate 0x0, alu_op SETFLAGSB, update_flags IF TF;
     b_sel IMMEDIATE, immediate 0x0, alu_op SELB, segment_force,
-        sr_wr_sel CS, segment_wr_en;
+        segment CS, segment_wr_en;
     b_sel IMMEDIATE, immediate 0x0, alu_op SELB, mar_wr_sel Q,
         mar_write, segment CS, segment_force;
     segment_force, segment CS, mem_read;
@@ -32,7 +32,7 @@ do_divide_error:
     a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, mar_write,
         mar_wr_sel Q, segment CS, segment_force;
     segment_force, segment CS, mem_read;
-    a_sel MDR, alu_op SELA, segment_force, sr_wr_sel CS,
+    a_sel MDR, alu_op SELA, segment_force, segment CS,
         segment_wr_en, next_instruction;
 
 // See 0xcc in int.us for more details, this is the same thing but for a
@@ -58,7 +58,7 @@ do_irq:
         rd_sel SP, reg_wr_en;
     b_sel IMMEDIATE, immediate 0x0, alu_op SETFLAGSB, update_flags IF TF;
     b_sel IMMEDIATE, immediate 0x0, alu_op SELB, segment_force,
-        sr_wr_sel CS, segment_wr_en;
+        segment CS, segment_wr_en;
     b_sel TEMP, alu_op SELB, mar_wr_sel Q, mar_write;
     a_sel MAR, b_sel IMMEDIATE, immediate 0x4, alu_op MUL, mar_wr_sel Q,
         mar_write, segment CS, segment_force;
@@ -67,7 +67,7 @@ do_irq:
     a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, mar_write,
         mar_wr_sel Q, segment CS, segment_force;
     segment_force, segment CS, mem_read;
-    a_sel MDR, alu_op SELA, segment_force, sr_wr_sel CS,
+    a_sel MDR, alu_op SELA, segment_force, segment CS,
         segment_wr_en, next_instruction;
 
 // See 0xcc in int.us for more details, this is the same thing but for a
@@ -92,7 +92,7 @@ do_nmi:
         rd_sel SP, reg_wr_en;
     b_sel IMMEDIATE, immediate 0x0, alu_op SETFLAGSB, update_flags IF TF;
     b_sel IMMEDIATE, immediate 0x0, alu_op SELB, segment_force,
-        sr_wr_sel CS, segment_wr_en;
+        segment CS, segment_wr_en;
     b_sel IMMEDIATE, immediate 0x8, alu_op SELB, mar_wr_sel Q,
         mar_write, segment CS, segment_force;
     segment_force, segment CS, mem_read;
@@ -100,7 +100,7 @@ do_nmi:
     a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, mar_write,
         mar_wr_sel Q, segment CS, segment_force;
     segment_force, segment CS, mem_read;
-    a_sel MDR, alu_op SELA, segment_force, sr_wr_sel CS,
+    a_sel MDR, alu_op SELA, segment_force, segment CS,
         segment_wr_en, next_instruction;
 
 // See 0xcc in int.us for more details, this is the same thing but for a
@@ -125,7 +125,7 @@ do_single_step:
         rd_sel SP, reg_wr_en;
     b_sel IMMEDIATE, immediate 0x0, alu_op SETFLAGSB, update_flags IF TF;
     b_sel IMMEDIATE, immediate 0x0, alu_op SELB, segment_force,
-        sr_wr_sel CS, segment_wr_en;
+        segment CS, segment_wr_en;
     b_sel IMMEDIATE, immediate 0x4, alu_op SELB, mar_wr_sel Q,
         mar_write, segment CS, segment_force;
     segment_force, segment CS, mem_read;
@@ -133,7 +133,7 @@ do_single_step:
     a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, mar_write,
         mar_wr_sel Q, segment CS, segment_force;
     segment_force, segment CS, mem_read;
-    a_sel MDR, alu_op SELA, segment_force, sr_wr_sel CS,
+    a_sel MDR, alu_op SELA, segment_force, segment CS,
         segment_wr_en, ext_int_inhibit, next_instruction;
 
 // Multiplexed add/adc/sub/sbb/cmp/xor/or/and
@@ -329,13 +329,13 @@ reset:
         rd_sel SI, reg_wr_en;
     b_sel IMMEDIATE, alu_op SELB, immediate 0x0, rd_sel_source MICROCODE_RD_SEL,
         rd_sel DI, reg_wr_en;
-    b_sel IMMEDIATE, alu_op SELB, immediate 0x0, segment_force, sr_wr_sel ES,
+    b_sel IMMEDIATE, alu_op SELB, immediate 0x0, segment_force, segment ES,
         segment_wr_en;
-    b_sel IMMEDIATE, alu_op SELB, immediate 0xffff, segment_force, sr_wr_sel CS,
+    b_sel IMMEDIATE, alu_op SELB, immediate 0xffff, segment_force, segment CS,
         segment_wr_en;
-    b_sel IMMEDIATE, alu_op SELB, immediate 0x0, segment_force, sr_wr_sel SS,
+    b_sel IMMEDIATE, alu_op SELB, immediate 0x0, segment_force, segment SS,
         segment_wr_en;
-    b_sel IMMEDIATE, alu_op SELB, immediate 0x0, segment_force, sr_wr_sel DS,
+    b_sel IMMEDIATE, alu_op SELB, immediate 0x0, segment_force, segment DS,
         segment_wr_en;
     next_instruction, jmp opcode_fetch;
 

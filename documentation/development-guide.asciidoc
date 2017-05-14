@@ -237,8 +237,6 @@ adjacent with the register based instruction appearing first.
   address register.  As with `mem_read`, the segment must have had the fetch
   initiated in the previous instruction and held for the duration of this
   instruction.
-| sr_wr_sel | The destination segment register for a segment register write
-  operation.
 | segment_force | When used in combination with the `segment` field, this will
   force that segment to be used unconditionally, ignoring any segment override
   prefix.

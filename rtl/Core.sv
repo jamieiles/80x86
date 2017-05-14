@@ -63,7 +63,7 @@ wire io_operation;
 assign d_io = io_operation;
 wire segment_force;
 assign seg_wr_sel = segment_force ?
-    microcode_seg_wr_sel : reg_wr_sel[1:0];
+    microcode_segment : reg_wr_sel[1:0];
 wire [15:0] seg_rd_val;
 wire [15:0] seg_wr_val = alu_out[15:0];
 wire [15:0] cs;
@@ -145,7 +145,6 @@ wire alu_busy;
 wire [2:0] microcode_reg_rd_sel[2];
 wire [2:0] microcode_reg_wr_sel;
 wire [1:0] reg_wr_source;
-wire [1:0] microcode_seg_wr_sel;
 wire [1:0] seg_wr_sel;
 wire microcode_fifo_rd_en;
 wire [1:0] a_sel;
@@ -398,7 +397,6 @@ Microcode       Microcode(.clk(clk),
                           .segment_override(segment_override),
                           .segment_force(segment_force),
                           .segment_wr_en(segment_wr_en),
-                          .sr_wr_sel(microcode_seg_wr_sel),
                           .tmp_wr_en(microcode_tmp_wr_en),
                           .tmp_wr_sel(tmp_wr_sel),
                           .update_flags(update_flags),

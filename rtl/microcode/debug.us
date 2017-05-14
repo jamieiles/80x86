@@ -31,7 +31,7 @@ DEBUG_READ_SR(DS, 0x10e)
 #define DEBUG_WRITE_SR(reg, addr) \
 .at addr; \
     b_sel TEMP, alu_op SELB, segment_force, segment_wr_en, \
-        segment_force, sr_wr_sel reg, next_instruction, \
+        segment_force, segment reg, next_instruction, \
         ext_int_inhibit, jmp debug_wait;
 
 DEBUG_WRITE_GPR(AX, 0x113)

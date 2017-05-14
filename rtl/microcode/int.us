@@ -21,7 +21,7 @@ int3:
         rd_sel SP, reg_wr_en;
     b_sel IMMEDIATE, immediate 0x0, alu_op SETFLAGSB, update_flags IF TF;
     b_sel IMMEDIATE, immediate 0x0, alu_op SELB, segment_force,
-        sr_wr_sel CS, segment_wr_en;
+        segment CS, segment_wr_en;
     b_sel IMMEDIATE, immediate 0xc, alu_op SELB, mar_wr_sel Q,
         mar_write, segment CS, segment_force;
     segment_force, segment CS, mem_read;
@@ -29,7 +29,7 @@ int3:
     a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, mar_write,
         mar_wr_sel Q, segment CS, segment_force;
     segment_force, segment CS, mem_read;
-    a_sel MDR, alu_op SELA, segment_force, sr_wr_sel CS,
+    a_sel MDR, alu_op SELA, segment_force, segment CS,
         segment_wr_en, next_instruction;
 
 // This is a reasonably large microprocedure, but a reasonable amount of
@@ -58,7 +58,7 @@ intN:
         rd_sel SP, reg_wr_en;
     b_sel IMMEDIATE, immediate 0x0, alu_op SETFLAGSB, update_flags IF TF;
     b_sel IMMEDIATE, immediate 0x0, alu_op SELB, segment_force,
-        sr_wr_sel CS, segment_wr_en;
+        segment CS, segment_wr_en;
     b_sel IMMEDIATE, alu_op SELB, mar_wr_sel Q, mar_write;
     a_sel MAR, b_sel IMMEDIATE, immediate 0xff, alu_op AND, mar_write,
         mar_wr_sel Q;
@@ -69,7 +69,7 @@ intN:
     a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, mar_write,
         mar_wr_sel Q, segment CS, segment_force;
     segment_force, segment CS, mem_read;
-    a_sel MDR, alu_op SELA, segment_force, sr_wr_sel CS,
+    a_sel MDR, alu_op SELA, segment_force, segment CS,
         segment_wr_en, next_instruction;
 
 // INTO: the same as int3, but conditional on OF being set.
@@ -95,7 +95,7 @@ into_taken:
         rd_sel SP, reg_wr_en;
     b_sel IMMEDIATE, immediate 0x0, alu_op SETFLAGSB, update_flags IF TF;
     b_sel IMMEDIATE, immediate 0x0, alu_op SELB, segment_force,
-        sr_wr_sel CS, segment_wr_en;
+        segment CS, segment_wr_en;
     b_sel IMMEDIATE, immediate 0x10, alu_op SELB, mar_wr_sel Q,
         mar_write, segment CS, segment_force;
     segment_force, segment CS, mem_read;
@@ -103,5 +103,5 @@ into_taken:
     a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, mar_write,
         mar_wr_sel Q, segment CS, segment_force;
     segment_force, segment CS, mem_read;
-    a_sel MDR, alu_op SELA, segment_force, sr_wr_sel CS,
+    a_sel MDR, alu_op SELA, segment_force, segment CS,
         segment_wr_en, next_instruction;

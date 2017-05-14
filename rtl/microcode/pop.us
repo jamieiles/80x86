@@ -40,7 +40,7 @@ pop_sr ## reg:                                                          \
     segment_force, segment SS, mem_read, ra_sel SP;                     \
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op ADD,               \
         rd_sel SP, rd_sel_source MICROCODE_RD_SEL, reg_wr_en;           \
-    a_sel MDR, alu_op SELA, segment_force, sr_wr_sel reg,               \
+    a_sel MDR, alu_op SELA, segment_force, segment reg,                 \
         segment_wr_en, ext_int_inhibit, next_instruction;
 
 POP_SR(0x07, ES)
