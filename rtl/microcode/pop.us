@@ -14,8 +14,7 @@ pop8f_mem_restore:
     segment_force, segment SS, mem_read, ra_sel SP;
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op ADD,
         rd_sel SP, rd_sel_source MICROCODE_RD_SEL, reg_wr_en;
-    mar_write, mar_wr_sel EA, segment DS;
-    segment DS, mem_write, next_instruction;
+    mar_write, mar_wr_sel EA, segment DS, jmp write_16_complete;
 
 #define POP_GPR(opcode, reg)                                            \
 .at opcode;                                                             \

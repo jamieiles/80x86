@@ -20,8 +20,8 @@ inc_fe_reg:
 inc_fe_mem:
     width 8, segment DS, mem_read;
     a_sel MDR, b_sel IMMEDIATE, immediate 0x1, alu_op ADD,
-        mdr_write, update_flags OF SF ZF AF PF, width 8, segment DS;
-    width 8, segment DS, mem_write, next_instruction;
+        mdr_write, update_flags OF SF ZF AF PF, width 8, segment DS,
+        jmp write_8_complete;
 
 dec_fe_reg:
     a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
@@ -30,8 +30,8 @@ dec_fe_reg:
 dec_fe_mem:
     width 8, segment DS, mem_read;
     a_sel MDR, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
-        mdr_write, update_flags OF SF ZF AF PF, width 8, segment DS;
-    width 8, segment DS, mem_write, next_instruction;
+        mdr_write, update_flags OF SF ZF AF PF, width 8, segment DS,
+        jmp write_8_complete;
 
 inc_ff_reg:
     a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op ADD,
@@ -40,8 +40,8 @@ inc_ff_reg:
 inc_ff_mem:
     segment DS, mem_read;
     a_sel MDR, b_sel IMMEDIATE, immediate 0x1, alu_op ADD,
-        mdr_write, update_flags OF SF ZF AF PF, segment DS;
-    segment DS, mem_write, next_instruction;
+        mdr_write, update_flags OF SF ZF AF PF, segment DS,
+        jmp write_16_complete;
 
 dec_ff_reg:
     a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
@@ -50,8 +50,8 @@ dec_ff_reg:
 dec_ff_mem:
     segment DS, mem_read;
     a_sel MDR, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
-        mdr_write, update_flags OF SF ZF AF PF, segment DS;
-    segment DS, mem_write, next_instruction;
+        mdr_write, update_flags OF SF ZF AF PF, segment DS,
+        jmp write_16_complete;
 
 #define INC_REG(opcode, reg)                                            \
 .at opcode;                                                             \

@@ -7,8 +7,7 @@ mov88_reg:
     b_sel RB, alu_op SELB, rd_sel_source MODRM_RM_REG, reg_wr_en,
         width 8, next_instruction;
 mov88_mem:
-    b_sel RB, alu_op SELB, mdr_write, segment DS;
-    width 8, segment DS, mem_write, next_instruction;
+    b_sel RB, alu_op SELB, mdr_write, segment DS, jmp write_8_complete;
 
 // MOV 0x89     r/m := r (16-bit)
 .at 0x89;
@@ -20,8 +19,7 @@ mov89_reg:
         rd_sel_source MODRM_RM_REG, reg_wr_en,
         next_instruction;
 mov89_mem:
-    b_sel RB, alu_op SELB, mdr_write, segment DS;
-    segment DS, mem_write, next_instruction;
+    b_sel RB, alu_op SELB, mdr_write, segment DS, jmp write_16_complete;
 
 // MOV 0x8a     r := r/m (8-bit)
 .at 0x8a;
@@ -69,8 +67,7 @@ movc6_reg:
         rd_sel_source MODRM_RM_REG, reg_wr_en, width 8,
         next_instruction;
 movc6_mem:
-    b_sel IMMEDIATE, alu_op SELB, mdr_write, segment DS;
-    segment DS, mem_write, width 8, next_instruction;
+    b_sel IMMEDIATE, alu_op SELB, mdr_write, segment DS, jmp write_8_complete;
 
 // MOV 0xc7     r/m := immed16
 .at 0xc7;
@@ -90,8 +87,8 @@ movc7_reg:
         rd_sel_source MODRM_RM_REG, reg_wr_en,
         next_instruction;
 movc7_mem:
-    b_sel IMMEDIATE, alu_op SELB, mdr_write, segment DS;
-    segment DS, mem_write, next_instruction;
+    b_sel IMMEDIATE, alu_op SELB, mdr_write, segment DS,
+        jmp write_16_complete;
 
 #define MOV_REG_IMMED8(opcode, reg) \
     .at opcode; \
@@ -153,8 +150,7 @@ mova1:
         alu_op SELB, jmp mova2, ra_sel AL;
 .auto_address;
 mova2:
-    a_sel RA, alu_op SELA, mdr_write, segment DS;
-    segment DS, width 8, mem_write, next_instruction;
+    a_sel RA, alu_op SELA, mdr_write, segment DS, jmp write_8_complete;
 
 // MOV 0xa3     m[immed16] := al
 .at 0xa3;
@@ -162,8 +158,7 @@ mova2:
         alu_op SELB, jmp mova3, ra_sel AL;
 .auto_address;
 mova3:
-    a_sel RA, alu_op SELA, mdr_write, segment DS;
-    segment DS, mem_write, next_instruction;
+    a_sel RA, alu_op SELA, mdr_write, segment DS, jmp write_16_complete;
 
 // MOV 0x8e     sr := reg/mem
 .at 0x8e;
@@ -204,5 +199,4 @@ mov8c_reg:
     reg_wr_en, rd_sel_source MODRM_RM_REG, b_sel SR, alu_op SELB,
         next_instruction;
 mov8c_mem:
-    b_sel SR, alu_op SELB, mdr_write, segment DS;
-    segment DS, mem_write, next_instruction;
+    b_sel SR, alu_op SELB, mdr_write, segment DS, jmp write_16_complete;

@@ -12,8 +12,7 @@ xchg86_mem:
     width 8, a_sel MDR, alu_op SELA, rd_sel_source MODRM_REG,
         reg_wr_en;
     width 8, a_sel MAR, alu_op SELA, mdr_write, mar_wr_sel EA,
-        mar_write, segment DS;
-    width 8, segment DS, mem_write, next_instruction;
+        mar_write, segment DS, jmp write_8_complete;
 
 xchg86_reg_store:
     width 8, b_sel RB, alu_op SELB, rd_sel_source MODRM_RM_REG,
@@ -35,8 +34,7 @@ xchg87_mem:
     a_sel MDR, alu_op SELA, rd_sel_source MODRM_REG,
         reg_wr_en;
     a_sel MAR, alu_op SELA, mdr_write, mar_wr_sel EA,
-        mar_write, segment DS;
-    segment DS, mem_write, next_instruction;
+        mar_write, segment DS, jmp write_16_complete;
 
 xchg87_reg_store:
     b_sel RB, alu_op SELB, rd_sel_source MODRM_RM_REG,
