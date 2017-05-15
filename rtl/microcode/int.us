@@ -1,85 +1,39 @@
-// This is a reasonably large microprocedure, but a reasonable amount of
-// repetition.  Start by storing the flags + CS:IP to the stack, clear TF+IF
-// and then load the new CS:IP.  As the vectors are stored in segment 0, this
-// requires temporarily setting CS to 0 to read the final vector address.
+// INT3
 .at 0xcc;
-    alu_op GETFLAGS, mdr_write, ra_sel SP, jmp int3;
-.auto_address;
-int3:
-    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB,
-        mar_write, mar_wr_sel Q, segment SS, segment_force;
-    segment SS, segment_force, mem_write;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op SUB,
-        mar_write, mar_wr_sel Q, segment CS;
-    b_sel SR, alu_op SELB, mdr_write, segment SS, segment_force;
-    segment SS, segment_force, mem_write;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op SUB,
-        mar_write, mar_wr_sel Q;
-    a_sel IP, alu_op SELA, mdr_write, segment SS, segment_force;
-    segment SS, segment_force, mem_write;
-    a_sel MAR, alu_op SELA, rd_sel_source MICROCODE_RD_SEL,
-        rd_sel SP, reg_wr_en;
-    b_sel IMMEDIATE, immediate 0x0, alu_op SETFLAGSB, update_flags IF TF;
-    b_sel IMMEDIATE, immediate 0x0, alu_op SELB, segment_force,
-        segment CS, segment_wr_en;
-    b_sel IMMEDIATE, immediate 0xc, alu_op SELB, mar_wr_sel Q,
-        mar_write, segment CS, segment_force;
-    segment_force, segment CS, mem_read;
-    a_sel MDR, alu_op SELA, load_ip;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, mar_write,
-        mar_wr_sel Q, segment CS, segment_force;
-    segment_force, segment CS, mem_read;
-    a_sel MDR, alu_op SELA, segment_force, segment CS,
-        segment_wr_en, next_instruction;
+    b_sel IMMEDIATE, immediate 0xc, alu_op SELB, tmp_wr_en, jmp do_int;
 
-// This is a reasonably large microprocedure, but a reasonable amount of
-// repetition.  Start by storing the flags + CS:IP to the stack, clear TF+IF
-// and then load the new CS:IP.  As the vectors are stored in segment 0, this
-// requires temporarily setting CS to 0 to read the final vector address.
-//
 // The same as above, but this time it's a 8 bit interrupt number.
 .at 0xcd;
-    alu_op GETFLAGS, mdr_write, ra_sel SP, jmp intN;
+    width 8, read_immed, jmp intN;
 .auto_address;
 intN:
-    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB,
-        mar_write, mar_wr_sel Q, segment SS, segment_force;
-    segment SS, segment_force, mem_write;
-    width 8, read_immed;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op SUB,
-        mar_write, mar_wr_sel Q, segment CS;
-    b_sel SR, alu_op SELB, mdr_write, segment SS, segment_force;
-    segment SS, segment_force, mem_write;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op SUB,
-        mar_write, mar_wr_sel Q;
-    a_sel IP, alu_op SELA, mdr_write, segment SS, segment_force;
-    segment SS, segment_force, mem_write;
-    a_sel MAR, alu_op SELA, rd_sel_source MICROCODE_RD_SEL,
-        rd_sel SP, reg_wr_en;
-    b_sel IMMEDIATE, immediate 0x0, alu_op SETFLAGSB, update_flags IF TF;
-    b_sel IMMEDIATE, immediate 0x0, alu_op SELB, segment_force,
-        segment CS, segment_wr_en;
     b_sel IMMEDIATE, alu_op SELB, mar_wr_sel Q, mar_write;
     a_sel MAR, b_sel IMMEDIATE, immediate 0xff, alu_op AND, mar_write,
         mar_wr_sel Q;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x4, alu_op MUL, mar_write,
-        mar_wr_sel Q, segment CS, segment_force;
-    segment_force, segment CS, mem_read;
-    a_sel MDR, alu_op SELA, load_ip;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, mar_write,
-        mar_wr_sel Q, segment CS, segment_force;
-    segment_force, segment CS, mem_read;
-    a_sel MDR, alu_op SELA, segment_force, segment CS,
-        segment_wr_en, next_instruction;
+    a_sel MAR, b_sel IMMEDIATE, immediate 0x4, alu_op MUL, tmp_wr_en,
+        jmp do_int;
 
 // INTO: the same as int3, but conditional on OF being set.
 .at 0xce;
     alu_op GETFLAGS, mdr_write, jmp into;
 .auto_address;
 into:
-    alu_op GETFLAGS, jmp_if_taken into_taken, ra_sel SP;
+    b_sel IMMEDIATE, immediate 0x10, alu_op SELB, tmp_wr_en,
+        jmp_if_taken into_taken, ra_sel SP;
     next_instruction;
 into_taken:
+    jmp do_int;
+
+// Process an interrupt.
+// TEMP: interrupt vector address
+//
+// This is a reasonably large microprocedure, but a reasonable amount of
+// repetition.  Start by storing the flags + CS:IP to the stack, clear TF+IF
+// and then load the new CS:IP.  As the vectors are stored in segment 0, this
+// requires temporarily setting CS to 0 to read the final vector address.
+.auto_address;
+do_int:
+    alu_op GETFLAGS, mdr_write, ra_sel SP;
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB,
         mar_write, mar_wr_sel Q, segment SS, segment_force;
     segment SS, segment_force, mem_write;
@@ -96,8 +50,8 @@ into_taken:
     b_sel IMMEDIATE, immediate 0x0, alu_op SETFLAGSB, update_flags IF TF;
     b_sel IMMEDIATE, immediate 0x0, alu_op SELB, segment_force,
         segment CS, segment_wr_en;
-    b_sel IMMEDIATE, immediate 0x10, alu_op SELB, mar_wr_sel Q,
-        mar_write, segment CS, segment_force;
+    b_sel TEMP, alu_op SELB, mar_wr_sel Q, mar_write, segment CS,
+        segment_force;
     segment_force, segment CS, mem_read;
     a_sel MDR, alu_op SELA, load_ip;
     a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, mar_write,

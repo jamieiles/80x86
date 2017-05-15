@@ -6,135 +6,26 @@ opcode_fetch:
 // divide error.
 .at 0x101;
 divide_error:
-    alu_op GETFLAGS, mdr_write, ra_sel SP, jmp do_divide_error;
-.auto_address;
-do_divide_error:
-    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB,
-        mar_write, mar_wr_sel Q, segment SS, segment_force;
-    segment SS, segment_force, mem_write;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op SUB,
-        mar_write, mar_wr_sel Q, segment CS;
-    b_sel SR, alu_op SELB, mdr_write, segment SS, segment_force;
-    segment SS, segment_force, mem_write;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op SUB,
-        mar_write, mar_wr_sel Q;
-    a_sel IP, alu_op SELA, mdr_write, segment SS, segment_force;
-    segment SS, segment_force, mem_write;
-    a_sel MAR, alu_op SELA, rd_sel_source MICROCODE_RD_SEL,
-        rd_sel SP, reg_wr_en;
-    b_sel IMMEDIATE, immediate 0x0, alu_op SETFLAGSB, update_flags IF TF;
-    b_sel IMMEDIATE, immediate 0x0, alu_op SELB, segment_force,
-        segment CS, segment_wr_en;
-    b_sel IMMEDIATE, immediate 0x0, alu_op SELB, mar_wr_sel Q,
-        mar_write, segment CS, segment_force;
-    segment_force, segment CS, mem_read;
-    a_sel MDR, alu_op SELA, load_ip;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, mar_write,
-        mar_wr_sel Q, segment CS, segment_force;
-    segment_force, segment CS, mem_read;
-    a_sel MDR, alu_op SELA, segment_force, segment CS,
-        segment_wr_en, next_instruction;
+    b_sel IMMEDIATE, immediate 0x0, alu_op SELB, tmp_wr_en, jmp do_int;
 
 // See 0xcc in int.us for more details, this is the same thing but for a
 // IRQ.
 .at 0x12b;
     // IRQ number to temp
-    a_sel MDR, tmp_wr_en, jmp do_irq;
-.auto_address;
-do_irq:
-    alu_op GETFLAGS, mdr_write, ra_sel SP;
-    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB,
-        mar_write, mar_wr_sel Q, segment SS, segment_force;
-    segment SS, segment_force, mem_write;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op SUB,
-        mar_write, mar_wr_sel Q, segment CS;
-    b_sel SR, alu_op SELB, mdr_write, segment SS, segment_force;
-    segment SS, segment_force, mem_write;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op SUB,
-        mar_write, mar_wr_sel Q;
-    a_sel IP, alu_op SELA, mdr_write, segment SS, segment_force;
-    segment SS, segment_force, mem_write;
-    a_sel MAR, alu_op SELA, rd_sel_source MICROCODE_RD_SEL,
-        rd_sel SP, reg_wr_en;
-    b_sel IMMEDIATE, immediate 0x0, alu_op SETFLAGSB, update_flags IF TF;
-    b_sel IMMEDIATE, immediate 0x0, alu_op SELB, segment_force,
-        segment CS, segment_wr_en;
-    b_sel TEMP, alu_op SELB, mar_wr_sel Q, mar_write;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x4, alu_op MUL, mar_wr_sel Q,
-        mar_write, segment CS, segment_force;
-    segment_force, segment CS, mem_read;
-    a_sel MDR, alu_op SELA, load_ip;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, mar_write,
-        mar_wr_sel Q, segment CS, segment_force;
-    segment_force, segment CS, mem_read;
-    a_sel MDR, alu_op SELA, segment_force, segment CS,
-        segment_wr_en, next_instruction;
+    a_sel MDR, b_sel IMMEDIATE, immediate 0x4, alu_op MUL, tmp_wr_en,
+        jmp do_int;
 
 // See 0xcc in int.us for more details, this is the same thing but for a
 // NMI.
 .at 0x12a;
 nmi:
-    alu_op GETFLAGS, mdr_write, ra_sel SP, jmp do_nmi;
-.auto_address;
-do_nmi:
-    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB,
-        mar_write, mar_wr_sel Q, segment SS, segment_force;
-    segment SS, segment_force, mem_write;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op SUB,
-        mar_write, mar_wr_sel Q, segment CS;
-    b_sel SR, alu_op SELB, mdr_write, segment SS, segment_force;
-    segment SS, segment_force, mem_write;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op SUB,
-        mar_write, mar_wr_sel Q;
-    a_sel IP, alu_op SELA, mdr_write, segment SS, segment_force;
-    segment SS, segment_force, mem_write;
-    a_sel MAR, alu_op SELA, rd_sel_source MICROCODE_RD_SEL,
-        rd_sel SP, reg_wr_en;
-    b_sel IMMEDIATE, immediate 0x0, alu_op SETFLAGSB, update_flags IF TF;
-    b_sel IMMEDIATE, immediate 0x0, alu_op SELB, segment_force,
-        segment CS, segment_wr_en;
-    b_sel IMMEDIATE, immediate 0x8, alu_op SELB, mar_wr_sel Q,
-        mar_write, segment CS, segment_force;
-    segment_force, segment CS, mem_read;
-    a_sel MDR, alu_op SELA, load_ip;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, mar_write,
-        mar_wr_sel Q, segment CS, segment_force;
-    segment_force, segment CS, mem_read;
-    a_sel MDR, alu_op SELA, segment_force, segment CS,
-        segment_wr_en, next_instruction;
+    b_sel IMMEDIATE, immediate 0x8, alu_op SELB, tmp_wr_en, jmp do_int;
 
 // See 0xcc in int.us for more details, this is the same thing but for a
 // single step trap.
 .at 0x12c;
 single_step:
-    alu_op GETFLAGS, mdr_write, ra_sel SP, jmp do_single_step;
-.auto_address;
-do_single_step:
-    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB,
-        mar_write, mar_wr_sel Q, segment SS, segment_force;
-    segment SS, segment_force, mem_write;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op SUB,
-        mar_write, mar_wr_sel Q, segment CS;
-    b_sel SR, alu_op SELB, mdr_write, segment SS, segment_force;
-    segment SS, segment_force, mem_write;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op SUB,
-        mar_write, mar_wr_sel Q;
-    a_sel IP, alu_op SELA, mdr_write, segment SS, segment_force;
-    segment SS, segment_force, mem_write;
-    a_sel MAR, alu_op SELA, rd_sel_source MICROCODE_RD_SEL,
-        rd_sel SP, reg_wr_en;
-    b_sel IMMEDIATE, immediate 0x0, alu_op SETFLAGSB, update_flags IF TF;
-    b_sel IMMEDIATE, immediate 0x0, alu_op SELB, segment_force,
-        segment CS, segment_wr_en;
-    b_sel IMMEDIATE, immediate 0x4, alu_op SELB, mar_wr_sel Q,
-        mar_write, segment CS, segment_force;
-    segment_force, segment CS, mem_read;
-    a_sel MDR, alu_op SELA, load_ip;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, mar_write,
-        mar_wr_sel Q, segment CS, segment_force;
-    segment_force, segment CS, mem_read;
-    a_sel MDR, alu_op SELA, segment_force, segment CS,
-        segment_wr_en, ext_int_inhibit, next_instruction;
+    b_sel IMMEDIATE, immediate 0x4, alu_op SELB, tmp_wr_en, jmp do_int;
 
 // Multiplexed add/adc/sub/sbb/cmp/xor/or/and
 // r/m OP immed8
