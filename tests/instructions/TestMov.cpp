@@ -258,17 +258,6 @@ TEST_F(EmulateFixture, MovSRMem)
     ASSERT_EQ(0x8000, read_reg(ES));
 }
 
-TEST_F(EmulateFixture, MovSRInvalidSR)
-{
-    set_instruction({ 0x8e, 0xe8 });
-    write_reg(CS, 0);
-    write_reg(AX, 0x8000);
-    emulate();
-    ASSERT_EQ(0, read_reg(CS));
-
-    ASSERT_FALSE(instruction_had_side_effects());
-}
-
 TEST_F(EmulateFixture, MovRegSR)
 {
     // mov ax, cs
@@ -288,17 +277,4 @@ TEST_F(EmulateFixture, MovMemSR)
     emulate();
 
     ASSERT_EQ(0x8000, read_mem16(0x0100));
-}
-
-TEST_F(EmulateFixture, MovRegInvalidSR)
-{
-    // mov ax, cs
-    write_reg(AX, 0);
-    write_reg(CS, 0x8000);
-    set_instruction({ 0x8c, 0xe8 });
-    emulate();
-
-    ASSERT_EQ(0, read_reg(AX));
-
-    ASSERT_FALSE(instruction_had_side_effects());
 }

@@ -170,10 +170,10 @@ dispatch_8e:
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem mov8e_reg;
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem mov8e_reg;
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem mov8e_reg;
-    next_instruction; // reg == 4
-    next_instruction; // reg == 5
-    next_instruction; // reg == 6
-    next_instruction; // reg == 7
+    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem mov8e_reg;
+    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem mov8e_reg;
+    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem mov8e_reg;
+    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem mov8e_reg;
 mov8e_reg:
     segment_wr_en, rd_sel_source MODRM_REG, a_sel RA, alu_op SELA,
         ext_int_inhibit, next_instruction;
@@ -191,10 +191,10 @@ dispatch_8c:
     segment_force, segment CS, jmp_rm_reg_mem mov8c_reg;
     segment_force, segment SS, jmp_rm_reg_mem mov8c_reg;
     segment_force, segment DS, jmp_rm_reg_mem mov8c_reg;
-    next_instruction; // reg == 4
-    next_instruction; // reg == 5
-    next_instruction; // reg == 6
-    next_instruction; // reg == 7
+    segment_force, segment ES, jmp_rm_reg_mem mov8c_reg;
+    segment_force, segment CS, jmp_rm_reg_mem mov8c_reg;
+    segment_force, segment SS, jmp_rm_reg_mem mov8c_reg;
+    segment_force, segment DS, jmp_rm_reg_mem mov8c_reg;
 mov8c_reg:
     reg_wr_en, rd_sel_source MODRM_RM_REG, b_sel SR, alu_op SELB,
         next_instruction;
