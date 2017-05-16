@@ -1045,7 +1045,7 @@ void EmulatorPimpl::neg_mul_not_test_div_f6()
         mulf6();
     else if (modrm_decoder->raw_reg() == 0x5)
         imulf6();
-    else if (modrm_decoder->raw_reg() == 0x0)
+    else if (modrm_decoder->raw_reg() == 0x0 || modrm_decoder->raw_reg() == 1)
         testf6();
     else if (modrm_decoder->raw_reg() == 0x6)
         divf6();
@@ -1070,7 +1070,7 @@ void EmulatorPimpl::neg_mul_not_test_div_f7()
         mulf7();
     else if (modrm_decoder->raw_reg() == 0x5)
         imulf7();
-    else if (modrm_decoder->raw_reg() == 0x0)
+    else if (modrm_decoder->raw_reg() == 0x0 || modrm_decoder->raw_reg() == 1)
         testf7();
     else if (modrm_decoder->raw_reg() == 0x6)
         divf7();

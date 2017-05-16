@@ -45,24 +45,6 @@ INSTANTIATE_TEST_CASE_P(InvalidOpcode, InvalidOpcodeFixture,
         std::vector<uint8_t>{ 0xff, 0xff }
     ));
 
-TEST_F(EmulateFixture, InvalidRegF6)
-{
-    set_instruction({ 0xf6, 1 << 3 });
-
-    emulate();
-
-    ASSERT_FALSE(instruction_had_side_effects());
-}
-
-TEST_F(EmulateFixture, InvalidRegF7)
-{
-    set_instruction({ 0xf7, 1 << 3 });
-
-    emulate();
-
-    ASSERT_FALSE(instruction_had_side_effects());
-}
-
 TEST_F(EmulateFixture, InvalidRegFE)
 {
     set_instruction({ 0xfe, 2 << 3 });
