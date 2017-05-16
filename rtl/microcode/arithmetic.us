@@ -96,16 +96,6 @@ alufunc ## 81_mem:                                                              
     a_sel MDR, b_sel IMMEDIATE, alu_op alufunc,                      		\
         mdr_write, update_flags flags, segment DS, jmp write_16_complete;
 
-#define ARITH_82(alufunc, flags)                                                \
-alufunc ## 82_reg:                                                              \
-    a_sel RA, b_sel IMMEDIATE, alu_op alufunc,                       		\
-        rd_sel_source MODRM_RM_REG, reg_wr_en,                                  \
-        update_flags flags, next_instruction, width 8;          		\
-alufunc ## 82_mem:                                                              \
-    segment DS, mem_read, width 8;                                              \
-    a_sel MDR, b_sel IMMEDIATE, alu_op alufunc,                      		\
-        mdr_write, update_flags flags, segment DS, width 8, jmp write_8_complete;
-
 #define ARITH_83(alufunc, flags)                                                \
 alufunc ## 83_reg:                                                              \
     ra_modrm_rm_reg, jmp alufunc ## 83 ## regwrite;                             \

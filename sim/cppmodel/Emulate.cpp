@@ -918,26 +918,7 @@ void EmulatorPimpl::add_adc_sub_sbb_cmp_xor_or_and_80()
 
 void EmulatorPimpl::add_adc_sub_sbb_cmp_82()
 {
-    modrm_decoder->set_width(OP_WIDTH_8);
-    modrm_decoder->decode();
-
-    uint8_t v1 = read_data<uint8_t>();
-    uint8_t v2 = fetch_byte();
-    bool carry_in = modrm_decoder->raw_reg() == 2 || modrm_decoder->raw_reg() == 3 ?
-        !!(registers->get_flags() & CF) : 0;
-
-    uint8_t result;
-    uint16_t flags;
-    if (modrm_decoder->raw_reg() == 0 ||
-        modrm_decoder->raw_reg() == 2)
-        std::tie(flags, result) = do_add<uint8_t>(v1, v2, carry_in);
-    else
-        std::tie(flags, result) = do_sub<uint8_t>(v1, v2, carry_in);
-
-    registers->set_flags(flags, OF | SF | ZF | CF | PF | AF);
-    // cmp doesn't write the result
-    if (modrm_decoder->raw_reg() != 7)
-        write_data<uint8_t>(result & 0xff);
+    add_adc_sub_sbb_cmp_xor_or_and_80();
 }
 
 // add r/m, immediate, 16-bit
@@ -984,21 +965,8 @@ void EmulatorPimpl::add_adc_sub_sbb_cmp_83()
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
 
-    if (modrm_decoder->raw_reg() != 0 &&
-        modrm_decoder->raw_reg() != 2 &&
-        modrm_decoder->raw_reg() != 5 &&
-        modrm_decoder->raw_reg() != 3 &&
-        modrm_decoder->raw_reg() != 4 &&
-        modrm_decoder->raw_reg() != 1 &&
-        modrm_decoder->raw_reg() != 7) {
-        std::cerr << "warning: invalid reg " << std::hex <<
-            (unsigned)modrm_decoder->raw_reg() <<
-            " for opcode 0x" << (unsigned)opcode << std::endl;
-        return;
-    }
-
     uint16_t v1 = read_data<uint16_t>();
-    int16_t immed = sign_extend<int16_t, uint8_t>(fetch_byte());
+    int16_t v2 = sign_extend<int16_t, uint8_t>(fetch_byte());
     bool carry_in = modrm_decoder->raw_reg() == 2 || modrm_decoder->raw_reg() == 3 ?
         !!(registers->get_flags() & CF) : 0;
 
@@ -1006,19 +974,22 @@ void EmulatorPimpl::add_adc_sub_sbb_cmp_83()
     uint16_t flags;
     uint16_t update_mask = OF | SF | ZF | CF | PF | AF;
     if (modrm_decoder->raw_reg() == 0 ||
-        modrm_decoder->raw_reg() == 2) {
-        std::tie(flags, result) = do_add<uint16_t>(v1, immed, carry_in);
-    } else if (modrm_decoder->raw_reg() == 4) {
-        std::tie(flags, result) = do_and<uint16_t>(v1, immed);
+        modrm_decoder->raw_reg() == 2)
+        std::tie(flags, result) = do_add<uint16_t>(v1, v2, carry_in);
+    else if (modrm_decoder->raw_reg() == 6) {
+        std::tie(flags, result) = do_xor<uint16_t>(v1, v2);
         flags &= ~(CF | OF);
         update_mask &= ~AF;
     } else if (modrm_decoder->raw_reg() == 1) {
-        std::tie(flags, result) = do_or<uint16_t>(v1, immed);
+        std::tie(flags, result) = do_or<uint16_t>(v1, v2);
         flags &= ~(CF | OF);
         update_mask &= ~AF;
-    } else {
-        std::tie(flags, result) = do_sub<uint16_t>(v1, immed, carry_in);
-    }
+    } else if (modrm_decoder->raw_reg() == 4) {
+        std::tie(flags, result) = do_and<uint16_t>(v1, v2);
+        flags &= ~(CF | OF);
+        update_mask &= ~AF;
+    } else
+        std::tie(flags, result) = do_sub<uint16_t>(v1, v2, carry_in);
 
     registers->set_flags(flags, update_mask);
     // cmp doesn't write the result

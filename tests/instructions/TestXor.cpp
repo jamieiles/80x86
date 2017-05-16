@@ -104,6 +104,24 @@ INSTANTIATE_TEST_CASE_P(Xor, ArithmeticMemImmed16Test,
         )
     ));
 
+INSTANTIATE_TEST_CASE_P(Xor, ArithmeticRegImmed16TestExtend,
+    ::testing::Values(
+        // xor bx, 1
+        ArithImmed16Params(
+            std::vector<uint8_t>{ 0x83, 0xf3, 0x01 },
+            { 1, 0, ZF | PF, false }
+        )
+    ));
+
+INSTANTIATE_TEST_CASE_P(Xor, ArithmeticMemImmed16TestExtend,
+    ::testing::Values(
+        // xor word [bx], 1
+        ArithImmed16Params(
+            std::vector<uint8_t>{ 0x83, 0x37, 0x01 },
+            { 1, 0, ZF | PF, false }
+        )
+    ));
+
 INSTANTIATE_TEST_CASE_P(Xor, ArithmeticAlImmedTest,
     ::testing::Values(
         // xor al, 1
