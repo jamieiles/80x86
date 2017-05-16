@@ -128,7 +128,7 @@ dispatch_d0:
     width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem RCRd0_reg;
     width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHLd0_reg;
     width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHRd0_reg;
-    next_instruction; // reg == 6
+    width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHLd0_reg;
     width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SARd0_reg;
 
 // Multiplexed shift single 16-bit
@@ -142,7 +142,7 @@ dispatch_d1:
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem RCRd1_reg;
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHLd1_reg;
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHRd1_reg;
-    next_instruction; // reg == 6
+    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHLd1_reg;
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SARd1_reg;
 
 // Multiplexed shift multiple 8-bit
@@ -156,7 +156,7 @@ dispatch_d2:
     width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp RCRd2;
     width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp SHLd2;
     width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp SHRd2;
-    next_instruction; // reg == 6
+    width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp SHLd2;
     width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp SARd2;
 
 // Multiplexed shift multiple 16-bit
@@ -170,7 +170,7 @@ dispatch_d3:
     ra_modrm_rm_reg, rb_cl, segment DS, jmp RCRd3;
     ra_modrm_rm_reg, rb_cl, segment DS, jmp SHLd3;
     ra_modrm_rm_reg, rb_cl, segment DS, jmp SHRd3;
-    next_instruction; // reg == 6
+    ra_modrm_rm_reg, rb_cl, segment DS, jmp SHLd3;
     ra_modrm_rm_reg, rb_cl, segment DS, jmp SARd3;
 
 // Multiplexed neg/mul/not/test/div 8 bit

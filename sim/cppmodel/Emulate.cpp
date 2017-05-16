@@ -1087,7 +1087,8 @@ void EmulatorPimpl::shiftd0()
     modrm_decoder->set_width(OP_WIDTH_8);
     modrm_decoder->decode();
 
-    if (modrm_decoder->raw_reg() == 4)
+    if (modrm_decoder->raw_reg() == 4 ||
+        modrm_decoder->raw_reg() == 6)
         shld0();
     else if (modrm_decoder->raw_reg() == 5)
         shrd0();
@@ -1112,7 +1113,8 @@ void EmulatorPimpl::shiftd1()
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
 
-    if (modrm_decoder->raw_reg() == 4)
+    if (modrm_decoder->raw_reg() == 4 ||
+        modrm_decoder->raw_reg() == 6)
         shld1();
     else if (modrm_decoder->raw_reg() == 5)
         shrd1();
@@ -1137,7 +1139,8 @@ void EmulatorPimpl::shiftd2()
     modrm_decoder->set_width(OP_WIDTH_8);
     modrm_decoder->decode();
 
-    if (modrm_decoder->raw_reg() == 4)
+    if (modrm_decoder->raw_reg() == 4 ||
+        modrm_decoder->raw_reg() == 6)
         shld2();
     else if (modrm_decoder->raw_reg() == 5)
         shrd2();
@@ -1162,7 +1165,8 @@ void EmulatorPimpl::shiftd3()
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
 
-    if (modrm_decoder->raw_reg() == 4)
+    if (modrm_decoder->raw_reg() == 4 ||
+        modrm_decoder->raw_reg() == 6)
         shld3();
     else if (modrm_decoder->raw_reg() == 5)
         shrd3();
