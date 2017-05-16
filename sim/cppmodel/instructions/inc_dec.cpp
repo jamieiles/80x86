@@ -4,6 +4,11 @@ void EmulatorPimpl::inc_dec_fe()
     modrm_decoder->set_width(OP_WIDTH_8);
     modrm_decoder->decode();
 
+    if (modrm_decoder->raw_reg() == 7) {
+        invalid_opcode();
+        return;
+    }
+
     if (modrm_decoder->raw_reg() != 0 &&
         modrm_decoder->raw_reg() != 1) {
         std::cerr << "warning: invalid reg " << std::hex <<

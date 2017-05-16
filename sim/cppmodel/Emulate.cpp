@@ -270,6 +270,7 @@ private:
     void testa9();
     void testf6();
     void testf7();
+    void invalid_opcode();
 
     uint8_t fetch_byte();
     template <typename T>
@@ -543,8 +544,8 @@ size_t EmulatorPimpl::emulate_insn()
         case 0x0e: // fallthrough
         case 0x16: // fallthrough
         case 0x1e: pushsr(); break;
+        case 0x0f: invalid_opcode(); break;
         case 0x07: // fallthrough
-        case 0x0f: // fallthrough
         case 0x17: // fallthrough
         case 0x1f: popsr(); break;
 
@@ -607,19 +608,11 @@ size_t EmulatorPimpl::emulate_insn()
         case 0x60: jo70(); break;
         case 0x61: jno71(); break;
         case 0x62: jb72(); break;
-        case 0x63: jnb73(); break;
-        case 0x64: je74(); break;
-        case 0x65: jne75(); break;
-        case 0x66: jbe76(); break;
-        case 0x67: jnbe77(); break;
-        case 0x68: js78(); break;
-        case 0x69: jns79(); break;
-        case 0x6a: jp7a(); break;
-        case 0x6b: jnp7b(); break;
-        case 0x6c: jl7c(); break;
-        case 0x6d: jnl7d(); break;
-        case 0x6e: jle7e(); break;
-        case 0x6f: jnle7f(); break;
+        case 0x63: invalid_opcode(); break;
+        case 0x64: invalid_opcode(); break;
+        case 0x65: invalid_opcode(); break;
+        case 0x66: invalid_opcode(); break;
+        case 0x67: invalid_opcode(); break;
         case 0x70: jo70(); break;
         case 0x71: jno71(); break;
         case 0x72: jb72(); break;
@@ -716,6 +709,7 @@ size_t EmulatorPimpl::emulate_insn()
         case 0xed: ined(); break;
         case 0xee: outee(); break;
         case 0xef: outef(); break;
+        case 0xf1: invalid_opcode(); break;
         case 0xf4: hltf4(); break;
         case 0xf5: cmcf5(); break;
         case 0xf6: neg_mul_not_test_div_f6(); break;
@@ -790,9 +784,7 @@ void EmulatorPimpl::push_inc_jmp_call_ff()
     else if (modrm_decoder->raw_reg() == 5)
         jmpff_inter();
     else
-        std::cerr << "warning: invalid reg " << std::hex <<
-            (unsigned)modrm_decoder->raw_reg() <<
-            " for opcode 0x" << (unsigned)opcode << std::endl;
+        invalid_opcode();
 }
 
 template <typename T>
@@ -1188,6 +1180,26 @@ void EmulatorPimpl::shiftd3()
         std::cerr << "warning: invalid reg " << std::hex <<
             (unsigned)modrm_decoder->raw_reg() <<
             " for opcode 0x" << (unsigned)opcode << std::endl;
+}
+
+void EmulatorPimpl::invalid_opcode()
+{
+    auto flags = registers->get_flags();
+
+    push_word(flags);
+    push_word(registers->get(CS));
+    push_word(registers->get(IP) + instr_length);
+
+    flags &= ~(IF | TF);
+    registers->set_flags(flags, IF | TF);
+
+    // int 3
+    auto new_cs = mem->read<uint16_t>(VEC_INVALID_OPCODE + 2);
+    auto new_ip = mem->read<uint16_t>(VEC_INVALID_OPCODE + 0);
+
+    registers->set(CS, new_cs);
+    registers->set(IP, new_ip);
+    jump_taken = true;
 }
 
 #include "instructions/mov.cpp"

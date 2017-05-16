@@ -11,7 +11,7 @@ dispatch_fe:
     next_instruction; // reg == 4
     next_instruction; // reg == 5
     next_instruction; // reg == 6
-    next_instruction; // reg == 7
+    jmp invalid_opcode; // reg == 7
 
 inc_fe_reg:
     a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op ADD,

@@ -43,7 +43,6 @@ pop_sr ## reg:                                                          \
         segment_wr_en, ext_int_inhibit, next_instruction;
 
 POP_SR(0x07, ES)
-POP_SR(0x0f, CS)
 POP_SR(0x17, SS)
 POP_SR(0x1f, DS)
 

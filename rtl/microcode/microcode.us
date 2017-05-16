@@ -27,6 +27,22 @@ nmi:
 single_step:
     b_sel IMMEDIATE, immediate 0x4, alu_op SELB, tmp_wr_en, jmp do_int;
 
+#define INVALID_OPCODE(opc) \
+.at opc; \
+    jmp invalid_opcode
+
+INVALID_OPCODE(0x0f);
+INVALID_OPCODE(0x63);
+INVALID_OPCODE(0x64);
+INVALID_OPCODE(0x65);
+INVALID_OPCODE(0x66);
+INVALID_OPCODE(0x67);
+INVALID_OPCODE(0xf1);
+
+.auto_address;
+invalid_opcode:
+    b_sel IMMEDIATE, immediate 0x18, alu_op SELB, tmp_wr_en, jmp do_int;
+
 // Multiplexed add/adc/sub/sbb/cmp/xor/or/and
 // r/m OP immed8
 .at 0x80;
@@ -197,7 +213,7 @@ dispatch_ff:
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem jmpff_indirect_intra_reg; // reg == 4
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem jmpff_indirect_inter_reg; // reg == 5
     ra_sel SP, segment DS, jmp_rm_reg_mem pushff_reg; // reg == 6
-    next_instruction; // reg == 7
+    jmp invalid_opcode;
 
 .at 0x129;
     jmp reset;
@@ -238,8 +254,6 @@ reset:
 .at 0xc8;
     next_instruction;
 .at 0xc9;
-    next_instruction;
-.at 0xf1;
     next_instruction;
 
 .auto_address;
