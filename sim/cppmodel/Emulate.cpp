@@ -72,6 +72,8 @@ private:
     void mova3();
     void mov8e();
     void mov8c();
+    void pusha60();
+    void popa61();
     void pushff();
     void push50_57();
     void pushsr();
@@ -605,8 +607,8 @@ size_t EmulatorPimpl::emulate_insn()
         case 0x48 ... 0x4f: dec48_4f(); break;
         case 0x50 ... 0x57: push50_57(); break;
         case 0x58 ... 0x5f: pop58_5f(); break;
-        case 0x60: jo70(); break;
-        case 0x61: jno71(); break;
+        case 0x60: pusha60(); break;
+        case 0x61: popa61(); break;
         case 0x62: jb72(); break;
         case 0x63: invalid_opcode(); break;
         case 0x64: invalid_opcode(); break;

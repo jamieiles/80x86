@@ -39,3 +39,29 @@ void EmulatorPimpl::pushf9c()
     auto addr = get_phys_addr(registers->get(SS), registers->get(SP));
     mem->write<uint16_t>(addr, val);
 }
+
+void EmulatorPimpl::pusha60()
+{
+    auto sp = registers->get(SP);
+
+    push_word(registers->get(AX));
+    push_word(registers->get(CX));
+    push_word(registers->get(DX));
+    push_word(registers->get(BX));
+    push_word(sp);
+    push_word(registers->get(BP));
+    push_word(registers->get(SI));
+    push_word(registers->get(DI));
+}
+
+void EmulatorPimpl::popa61()
+{
+    registers->set(DI, pop_word());
+    registers->set(SI, pop_word());
+    registers->set(BP, pop_word());
+    pop_word();
+    registers->set(BX, pop_word());
+    registers->set(DX, pop_word());
+    registers->set(CX, pop_word());
+    registers->set(AX, pop_word());
+}

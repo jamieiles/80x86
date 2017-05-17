@@ -69,6 +69,57 @@ TEST_F(EmulateFixture, PushSR)
     }
 }
 
+TEST_F(EmulateFixture, Pusha)
+{
+    write_reg(AX, 1);
+    write_reg(CX, 2);
+    write_reg(DX, 3);
+    write_reg(BX, 4);
+    write_reg(SP, 0x0100);
+    write_reg(BP, 5);
+    write_reg(SI, 6);
+    write_reg(DI, 7);
+
+    set_instruction({ 0x60 });
+    emulate();
+
+    EXPECT_EQ(0x0f0, read_reg(SP));
+    EXPECT_EQ(1, read_mem16(0xfe, SS));
+    EXPECT_EQ(2, read_mem16(0xfc, SS));
+    EXPECT_EQ(3, read_mem16(0xfa, SS));
+    EXPECT_EQ(4, read_mem16(0xf8, SS));
+    EXPECT_EQ(0x100, read_mem16(0xf6, SS));
+    EXPECT_EQ(5, read_mem16(0xf4, SS));
+    EXPECT_EQ(6, read_mem16(0xf2, SS));
+    EXPECT_EQ(7, read_mem16(0xf0, SS));
+}
+
+TEST_F(EmulateFixture, Popa)
+{
+    write_reg(SP, 0xf0);
+
+    write_mem16(0xfe, 1, SS);
+    write_mem16(0xfc, 2, SS);
+    write_mem16(0xfa, 3, SS);
+    write_mem16(0xf8, 4, SS);
+    write_mem16(0xf6, 0x800, SS); // Ignored
+    write_mem16(0xf4, 5, SS);
+    write_mem16(0xf2, 6, SS);
+    write_mem16(0xf0, 7, SS);
+
+    set_instruction({ 0x61 });
+    emulate();
+
+    EXPECT_EQ(read_reg(AX), 1);
+    EXPECT_EQ(read_reg(CX), 2);
+    EXPECT_EQ(read_reg(DX), 3);
+    EXPECT_EQ(read_reg(BX), 4);
+    EXPECT_EQ(read_reg(BP), 5);
+    EXPECT_EQ(read_reg(SI), 6);
+    EXPECT_EQ(read_reg(DI), 7);
+    EXPECT_EQ(read_reg(SP), 0x100);
+}
+
 TEST_F(EmulateFixture, PopReg8F)
 {
     // pop ax
