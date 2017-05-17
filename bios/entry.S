@@ -52,14 +52,7 @@ saved_sp:
 
     sub $2, %sp
     push %ds
-    push %ax
-    push %cx
-    push %dx
-    push %bx
-    push %sp
-    push %bp
-    push %si
-    push %di
+    pusha
     mov %sp, %bp
     push %bp
 
@@ -86,14 +79,7 @@ saved_sp:
     mov %cs:saved_sp, %bx
     mov %ax, 4(%bx)
 
-    pop %di
-    pop %si
-    pop %bp
-    pop %sp
-    pop %bx
-    pop %dx
-    pop %cx
-    pop %ax
+    popa
     pop %ds
     add $2, %sp
 
