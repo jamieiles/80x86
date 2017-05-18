@@ -9,6 +9,26 @@ void EmulatorPimpl::pushff()
     mem->write<uint16_t>(addr, val);
 }
 
+// push imm16
+void EmulatorPimpl::push68()
+{
+    auto val = fetch_16bit();
+
+    registers->set(SP, registers->get(SP) - 2);
+    auto addr = get_phys_addr(registers->get(SS), registers->get(SP));
+    mem->write<uint16_t>(addr, val);
+}
+
+// push imm8
+void EmulatorPimpl::push6a()
+{
+    auto val = sign_extend<int16_t, uint8_t>(fetch_byte());
+
+    registers->set(SP, registers->get(SP) - 2);
+    auto addr = get_phys_addr(registers->get(SS), registers->get(SP));
+    mem->write<uint16_t>(addr, val);
+}
+
 // push r
 void EmulatorPimpl::push50_57()
 {

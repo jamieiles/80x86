@@ -16,6 +16,32 @@ TEST_F(EmulateFixture, PushRegFF)
     ASSERT_EQ(0xaa55, read_mem16(0x0fe, SS));
 }
 
+TEST_F(EmulateFixture, PushImm16)
+{
+    // push $0xaa55
+    set_instruction({ 0x68, 0x55, 0xaa });
+
+    write_reg(SP, 0x100);
+
+    emulate();
+
+    ASSERT_EQ(0x0fe, read_reg(SP));
+    ASSERT_EQ(0xaa55, read_mem16(0x0fe, SS));
+}
+
+TEST_F(EmulateFixture, PushImm8)
+{
+    // push $0x80
+    set_instruction({ 0x6a, 0x80 });
+
+    write_reg(SP, 0x100);
+
+    emulate();
+
+    ASSERT_EQ(0x0fe, read_reg(SP));
+    ASSERT_EQ(0xff80, read_mem16(0x0fe, SS));
+}
+
 TEST_F(EmulateFixture, PushMemFF)
 {
     // push [1234]

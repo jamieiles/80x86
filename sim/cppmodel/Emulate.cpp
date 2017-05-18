@@ -77,6 +77,8 @@ private:
     void pushff();
     void push50_57();
     void pushsr();
+    void push68();
+    void push6a();
     void pop8f();
     void pop58_5f();
     void popsr();
@@ -615,6 +617,8 @@ size_t EmulatorPimpl::emulate_insn()
         case 0x65: invalid_opcode(); break;
         case 0x66: invalid_opcode(); break;
         case 0x67: invalid_opcode(); break;
+        case 0x68: push68(); break;
+        case 0x6a: push6a(); break;
         case 0x70: jo70(); break;
         case 0x71: jno71(); break;
         case 0x72: jb72(); break;

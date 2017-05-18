@@ -51,6 +51,25 @@ push_sr:
     segment_force, segment SS, mem_write, a_sel MAR, rd_sel SP,
         rd_sel_source MICROCODE_RD_SEL, reg_wr_en, next_instruction;
 
+.at 0x68;
+    read_immed, ra_sel SP, jmp push_immed16;
+.auto_address;
+push_immed16:
+    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, mar_write,
+        mar_wr_sel Q, reg_wr_en, rd_sel SP, rd_sel_source MICROCODE_RD_SEL;
+    b_sel IMMEDIATE, alu_op SELB, mdr_write, segment_force, segment SS;
+    segment_force, segment SS, mem_write, next_instruction;
+
+.at 0x6a;
+    width 8, read_immed, jmp push_immed8;
+.auto_address;
+push_immed8:
+    ra_sel SP;
+    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, mar_write,
+        mar_wr_sel Q, reg_wr_en, rd_sel SP, rd_sel_source MICROCODE_RD_SEL;
+    b_sel IMMEDIATE, alu_op SELB, mdr_write, segment_force, segment SS;
+    segment_force, segment SS, mem_write, next_instruction;
+
 .at 0x9c;
     alu_op GETFLAGS, mdr_write, ra_sel SP, jmp pushf;
 .auto_address;
