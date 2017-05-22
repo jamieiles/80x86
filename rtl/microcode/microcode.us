@@ -121,6 +121,43 @@ dispatch_d0:
     width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHLd0_reg;
     width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SARd0_reg;
 
+// Multiplexed shift single 8-bit by immediate
+.at 0xc0;
+    width 8, modrm_start, mar_write, mar_wr_sel EA,
+	jmp_dispatch_reg dispatch_c0;
+.auto_address;
+dispatch_c0:
+    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE,
+	ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem ROLc0_reg;
+    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE,
+	ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem RORc0_reg;
+    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE,
+	ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem RCLc0_reg;
+    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE,
+	ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem RCRc0_reg;
+    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE,
+	ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHLc0_reg;
+    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE,
+	ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHRc0_reg;
+    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE,
+	ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHLc0_reg;
+    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE,
+	ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SARc0_reg;
+
+// Multiplexed shift single 16-bit by immediate
+.at 0xc1;
+    modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_c1;
+.auto_address;
+dispatch_c1:
+    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE, jmp ROLc1;
+    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE, jmp RORc1;
+    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE, jmp RCLc1;
+    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE, jmp RCRc1;
+    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE, jmp SHLc1;
+    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE, jmp SHRc1;
+    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE, jmp SHLc1;
+    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE, jmp SARc1;
+
 // Multiplexed shift single 16-bit
 .at 0xd1;
     modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_d1;
@@ -237,10 +274,6 @@ reset:
     next_instruction, jmp opcode_fetch;
 
 // Unimplemented opcodes
-.at 0xc0;
-    next_instruction;
-.at 0xc1;
-    next_instruction;
 .at 0xc8;
     next_instruction;
 .at 0xc9;
