@@ -19,6 +19,38 @@ std::pair<uint16_t, T> do_rcl(T v, int count, bool carry_in)
     return std::make_pair(flags, v);
 }
 
+// rcl r/m, N
+void EmulatorPimpl::rclc0()
+{
+    auto v = read_data<uint8_t>();
+    auto count = fetch_byte();
+    uint16_t flags;
+
+    if (!(count & 0x1f))
+        return;
+
+    std::tie(flags, v) = do_rcl(v, count & 0x1f, registers->get_flag(CF));
+
+    write_data<uint8_t>(v);
+    registers->set_flags(flags, CF);
+}
+
+// rcl r/m, 1
+void EmulatorPimpl::rclc1()
+{
+    auto v = read_data<uint16_t>();
+    auto count = fetch_byte();
+    uint16_t flags;
+
+    if (!(count & 0x1f))
+        return;
+
+    std::tie(flags, v) = do_rcl(v, count & 0x1f, registers->get_flag(CF));
+
+    write_data<uint16_t>(v);
+    registers->set_flags(flags, CF);
+}
+
 // rcl r/m, 1
 void EmulatorPimpl::rcld0()
 {

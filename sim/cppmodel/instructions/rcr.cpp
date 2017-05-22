@@ -22,6 +22,38 @@ std::pair<uint16_t, T> do_rcr(T v, int count, bool carry_in)
     return std::make_pair(flags, v);
 }
 
+// rcr r/m, N
+void EmulatorPimpl::rcrc0()
+{
+    auto v = read_data<uint8_t>();
+    auto count = fetch_byte();
+    uint16_t flags;
+
+    if (!(count & 0x1f))
+        return;
+
+    std::tie(flags, v) = do_rcr(v, count & 0x1f, registers->get_flag(CF));
+
+    write_data<uint8_t>(v);
+    registers->set_flags(flags, CF);
+}
+
+// rcr r/m, 1
+void EmulatorPimpl::rcrc1()
+{
+    auto v = read_data<uint16_t>();
+    auto count = fetch_byte();
+    uint16_t flags;
+
+    if (!(count & 0x1f))
+        return;
+
+    std::tie(flags, v) = do_rcr(v, count & 0x1f, registers->get_flag(CF));
+
+    write_data<uint16_t>(v);
+    registers->set_flags(flags, CF);
+}
+
 // rcr r/m, 1
 void EmulatorPimpl::rcrd0()
 {

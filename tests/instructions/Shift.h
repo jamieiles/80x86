@@ -26,11 +26,27 @@ class ShiftMem8Test : public EmulateFixture,
     public ::testing::WithParamInterface<Shift8Params> {
 };
 
+class ShiftRegImm8Test : public EmulateFixture,
+    public ::testing::WithParamInterface<Shift8Params> {
+};
+
+class ShiftMemImm8Test : public EmulateFixture,
+    public ::testing::WithParamInterface<Shift8Params> {
+};
+
 class ShiftReg16Test : public EmulateFixture,
     public ::testing::WithParamInterface<Shift16Params> {
 };
 
 class ShiftMem16Test : public EmulateFixture,
+    public ::testing::WithParamInterface<Shift16Params> {
+};
+
+class ShiftRegImm16Test : public EmulateFixture,
+    public ::testing::WithParamInterface<Shift16Params> {
+};
+
+class ShiftMemImm16Test : public EmulateFixture,
     public ::testing::WithParamInterface<Shift16Params> {
 };
 

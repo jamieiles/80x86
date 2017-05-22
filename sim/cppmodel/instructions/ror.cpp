@@ -20,6 +20,38 @@ std::pair<uint16_t, T> do_ror(T v, int count)
     return std::make_pair(flags, v);
 }
 
+// ror r/m, N
+void EmulatorPimpl::rorc0()
+{
+    auto v = read_data<uint8_t>();
+    auto count = fetch_byte();
+    uint16_t flags;
+
+    if (!(count & 0x1f))
+        return;
+
+    std::tie(flags, v) = do_ror(v, count & 0x1f);
+
+    write_data<uint8_t>(v);
+    registers->set_flags(flags, CF);
+}
+
+// ror r/m, 1
+void EmulatorPimpl::rorc1()
+{
+    auto v = read_data<uint16_t>();
+    auto count = fetch_byte();
+    uint16_t flags;
+
+    if (!(count & 0x1f))
+        return;
+
+    std::tie(flags, v) = do_ror(v, count & 0x1f);
+
+    write_data<uint16_t>(v);
+    registers->set_flags(flags, CF);
+}
+
 // ror r/m, 1
 void EmulatorPimpl::rord0()
 {

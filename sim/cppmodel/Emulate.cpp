@@ -236,34 +236,50 @@ private:
     void wait9b();
     void escd8();
     void aadd5();
+    void shiftc0();
+    void shiftc1();
     void shiftd0();
     void shiftd1();
     void shiftd2();
     void shiftd3();
+    void shlc0();
+    void shlc1();
     void shld0();
     void shld1();
     void shld2();
     void shld3();
+    void shrc0();
+    void shrc1();
     void shrd0();
     void shrd1();
     void shrd2();
     void shrd3();
+    void sarc0();
+    void sarc1();
     void sard0();
     void sard1();
     void sard2();
     void sard3();
+    void rolc0();
+    void rolc1();
     void rold0();
     void rold1();
     void rold2();
     void rold3();
+    void rclc0();
+    void rclc1();
     void rcld0();
     void rcld1();
     void rcld2();
     void rcld3();
+    void rcrc0();
+    void rcrc1();
     void rcrd0();
     void rcrd1();
     void rcrd2();
     void rcrd3();
+    void rorc0();
+    void rorc1();
     void rord0();
     void rord1();
     void rord2();
@@ -678,6 +694,8 @@ size_t EmulatorPimpl::emulate_insn()
         case 0xaf: scasbaf(); break;
         case 0xb0 ... 0xb7: movb0_b7(); break;
         case 0xb8 ... 0xbf: movb8_bf(); break;
+        case 0xc0: shiftc0(); break;
+        case 0xc1: shiftc1(); break;
         case 0xc2: retc2(); break;
         case 0xc3: retc3(); break;
         case 0xc4: lesc4(); break;
@@ -1053,6 +1071,58 @@ void EmulatorPimpl::neg_mul_not_test_div_f7()
         divf7();
     else if (modrm_decoder->raw_reg() == 0x7)
         idivf7();
+    else
+        std::cerr << "warning: invalid reg " << std::hex <<
+            (unsigned)modrm_decoder->raw_reg() <<
+            " for opcode 0x" << (unsigned)opcode << std::endl;
+}
+
+void EmulatorPimpl::shiftc0()
+{
+    modrm_decoder->set_width(OP_WIDTH_8);
+    modrm_decoder->decode();
+
+    if (modrm_decoder->raw_reg() == 4 ||
+        modrm_decoder->raw_reg() == 6)
+        shlc0();
+    else if (modrm_decoder->raw_reg() == 5)
+        shrc0();
+    else if (modrm_decoder->raw_reg() == 7)
+        sarc0();
+    else if (modrm_decoder->raw_reg() == 0)
+        rolc0();
+    else if (modrm_decoder->raw_reg() == 2)
+        rclc0();
+    else if (modrm_decoder->raw_reg() == 3)
+        rcrc0();
+    else if (modrm_decoder->raw_reg() == 1)
+        rorc0();
+    else
+        std::cerr << "warning: invalid reg " << std::hex <<
+            (unsigned)modrm_decoder->raw_reg() <<
+            " for opcode 0x" << (unsigned)opcode << std::endl;
+}
+
+void EmulatorPimpl::shiftc1()
+{
+    modrm_decoder->set_width(OP_WIDTH_16);
+    modrm_decoder->decode();
+
+    if (modrm_decoder->raw_reg() == 4 ||
+        modrm_decoder->raw_reg() == 6)
+        shlc1();
+    else if (modrm_decoder->raw_reg() == 5)
+        shrc1();
+    else if (modrm_decoder->raw_reg() == 7)
+        sarc1();
+    else if (modrm_decoder->raw_reg() == 0)
+        rolc1();
+    else if (modrm_decoder->raw_reg() == 2)
+        rclc1();
+    else if (modrm_decoder->raw_reg() == 3)
+        rcrc1();
+    else if (modrm_decoder->raw_reg() == 1)
+        rorc1();
     else
         std::cerr << "warning: invalid reg " << std::hex <<
             (unsigned)modrm_decoder->raw_reg() <<

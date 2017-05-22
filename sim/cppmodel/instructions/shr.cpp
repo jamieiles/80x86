@@ -21,6 +21,38 @@ std::pair<uint16_t, T> do_shr(T v, int count)
     return std::make_pair(flags, v);
 }
 
+// shr r/m, N
+void EmulatorPimpl::shrc0()
+{
+    auto v = read_data<uint8_t>();
+    auto count = fetch_byte();
+    uint16_t flags;
+
+    if (!(count & 0x1f))
+        return;
+
+    std::tie(flags, v) = do_shr(v, count & 0x1f);
+
+    write_data<uint8_t>(v);
+    registers->set_flags(flags, CF | ZF | PF | SF);
+}
+
+// shr r/m, 1
+void EmulatorPimpl::shrc1()
+{
+    auto v = read_data<uint16_t>();
+    auto count = fetch_byte();
+    uint16_t flags;
+
+    if (!(count & 0x1f))
+        return;
+
+    std::tie(flags, v) = do_shr(v, count & 0x1f);
+
+    write_data<uint16_t>(v);
+    registers->set_flags(flags, CF | ZF | PF | SF);
+}
+
 // shr r/m, 1
 void EmulatorPimpl::shrd0()
 {

@@ -94,6 +94,30 @@ INSTANTIATE_TEST_CASE_P(RcrgN, ShiftMem16Test,
         Shift16Params({ 0xd3, 0x1f }, rcr16_shiftN_tests)
     ));
 
+INSTANTIATE_TEST_CASE_P(RcrN, ShiftRegImm8Test,
+    ::testing::Values(
+        // rcr ax, imm8
+        Shift8Params({ 0xc0, 0xd8}, rcr8_shiftN_tests)
+    ));
+
+INSTANTIATE_TEST_CASE_P(RcrN, ShiftMemImm8Test,
+    ::testing::Values(
+        // rcr word [bx], imm8
+        Shift8Params({ 0xc0, 0x1f}, rcr8_shiftN_tests)
+    ));
+
+INSTANTIATE_TEST_CASE_P(RcrN, ShiftRegImm16Test,
+    ::testing::Values(
+        // rcr ax, imm16
+        Shift16Params({ 0xc1, 0xd8}, rcr16_shiftN_tests)
+    ));
+
+INSTANTIATE_TEST_CASE_P(RcrN, ShiftMemImm16Test,
+    ::testing::Values(
+        // rcr word [bx], imm16
+        Shift16Params({ 0xc1, 0x1f}, rcr16_shiftN_tests)
+    ));
+
 INSTANTIATE_TEST_CASE_P(RcrgCL, ShiftCLTest,
     ::testing::Values(
         ShiftCLTestParams{4, 0x40, { 0xd2, 0xd1 }}
