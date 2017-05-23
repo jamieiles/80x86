@@ -274,10 +274,19 @@ reset:
     next_instruction, jmp opcode_fetch;
 
 // Unimplemented opcodes
-.at 0xc8;
-    next_instruction;
-.at 0xc9;
-    next_instruction;
+#define UNIMPLEMENTED(opcode) \
+    .at opcode; \
+    next_instruction
+
+UNIMPLEMENTED(0x62);
+UNIMPLEMENTED(0x69);
+UNIMPLEMENTED(0x6b);
+UNIMPLEMENTED(0x6c);
+UNIMPLEMENTED(0x6d);
+UNIMPLEMENTED(0x6e);
+UNIMPLEMENTED(0x6f);
+UNIMPLEMENTED(0xc8);
+UNIMPLEMENTED(0xc9);
 
 .auto_address;
 write_16_complete:
