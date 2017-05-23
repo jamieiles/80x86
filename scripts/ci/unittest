@@ -4,12 +4,15 @@ set -e
 [ -d _build/unittest ] || mkdir -p _build/unittest
 [ -d _build/.ccache ] || mkdir -p _build/.ccache
 DOCKER_NONINTERACTIVE=1 ./docker/s80x86-build -e -c 'cd _build/unittest; \
-        cmake ../..; \
+        cmake -DBUILD_DE0_CV=ON ../..; \
         make -j8; \
+        make de0-cv-program; \
         [ -d test_results ] || mkdir test_results; \
         ./tests/simulator/sim-unittest --gtest_output=xml:test_results/simulation.xml; \
         ./tests/rtl/rtl-unittest --gtest_output=xml:test_results/rtl.xml; \
+        ./tests/jtag/jtag-unittest --gtest_output=xml:test_results/jtag.xml; \
         ../../scripts/prefix-junit Simulation. test_results/simulation.xml test_results/simulation.xml; \
         ../../scripts/prefix-junit RTL. test_results/rtl.xml test_results/rtl.xml; \
+        ../../scripts/prefix-junit JTAG. test_results/jtag.xml test_results/jtag.xml; \
         rm -rf Testing; \
-        ctest -LE JTAG -T Test'
+        ctest -E jtag-unittest -T Test'
