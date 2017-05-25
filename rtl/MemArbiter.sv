@@ -1,6 +1,5 @@
 module MemArbiter(input logic clk,
                   input logic reset,
-                  input logic d_io,
                   // Instruction bus
                   input logic [19:1] instr_m_addr,
                   output logic [15:0] instr_m_data_in,
@@ -23,40 +22,32 @@ module MemArbiter(input logic clk,
                   output logic q_m_wr_en,
                   output logic [1:0] q_m_bytesel);
 
-reg instr_grant;
-reg data_grant;
+reg grant_to_data;
+reg grant_active;
 
-wire q_data = data_will_grant | data_grant;
+wire q_data = (grant_active && grant_to_data) || (!grant_active && data_m_access);
 
-assign q_m_addr = q_data ? data_m_addr : instr_m_addr;
+assign q_m_addr = q_data ? data_m_addr : grant_active ? instr_m_addr : 19'b0;
 assign q_m_data_out = data_m_data_out;
-assign q_m_access = q_data ? data_m_access : instr_m_access;
+assign q_m_access = q_data ? data_m_access : grant_active ? instr_m_access : 1'b0;
 assign q_m_wr_en = q_data ? data_m_wr_en : 1'b0;
 assign q_m_bytesel = q_data ? data_m_bytesel : 2'b11;
 
 assign instr_m_data_in = q_m_data_in;
-assign instr_m_ack = instr_grant & q_m_ack;
+assign instr_m_ack = ~grant_to_data & q_m_ack;
 assign data_m_data_in = q_m_data_in;
-assign data_m_ack = data_grant & q_m_ack;
-
-// Data takes priority over instruction accesses to complete instructions.
-wire instr_will_grant = instr_m_access & ~data_m_access & ~data_grant;
-wire data_will_grant = ~d_io & data_m_access & ~instr_grant;
+assign data_m_ack = grant_to_data & q_m_ack;
 
 always_ff @(posedge clk or posedge reset) begin
     if (reset) begin
-        instr_grant <= 1'b0;
-        data_grant <= 1'b0;
+        grant_active <= 1'b0;
     end else begin
-        if (data_m_ack)
-            data_grant <= 1'b0;
-        if (instr_m_ack)
-            instr_grant <= 1'b0;
-
-        if (data_will_grant)
-            data_grant <= 1'b1;
-        else if (instr_will_grant)
-            instr_grant <= 1'b1;
+        if (q_m_ack)
+            grant_active <= 1'b0;
+        else if (!grant_active && (data_m_access || instr_m_access)) begin
+            grant_active <= 1'b1;
+            grant_to_data <= data_m_access;
+        end
     end
 end
 
