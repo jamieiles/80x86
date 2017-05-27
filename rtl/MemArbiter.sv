@@ -6,6 +6,7 @@ module MemArbiter(input logic clk,
                   input logic instr_m_access,
                   output logic instr_m_ack,
                   // Data bus
+                  input logic d_io,
                   input logic [19:1] data_m_addr,
                   output logic [15:0] data_m_data_in,
                   input logic [15:0] data_m_data_out,
@@ -25,18 +26,18 @@ module MemArbiter(input logic clk,
 reg grant_to_data;
 reg grant_active;
 
-wire q_data = (grant_active && grant_to_data) || (!grant_active && data_m_access);
+wire q_data = (grant_active && grant_to_data) || (!grant_active && data_m_access && !d_io);
 
 assign q_m_addr = q_data ? data_m_addr : grant_active ? instr_m_addr : 19'b0;
 assign q_m_data_out = data_m_data_out;
-assign q_m_access = q_data ? data_m_access : grant_active ? instr_m_access : 1'b0;
+assign q_m_access = ~q_m_ack & (q_data ? data_m_access : grant_active ? instr_m_access : 1'b0);
 assign q_m_wr_en = q_data ? data_m_wr_en : 1'b0;
 assign q_m_bytesel = q_data ? data_m_bytesel : 2'b11;
 
-assign instr_m_data_in = q_m_data_in;
-assign instr_m_ack = ~grant_to_data & q_m_ack;
-assign data_m_data_in = q_m_data_in;
-assign data_m_ack = grant_to_data & q_m_ack;
+assign instr_m_data_in = grant_active & ~grant_to_data ? q_m_data_in : 16'b0;
+assign instr_m_ack = grant_active & ~grant_to_data & q_m_ack;
+assign data_m_data_in = grant_active & grant_to_data ? q_m_data_in : 16'b0;
+assign data_m_ack = grant_active & grant_to_data & q_m_ack;
 
 always_ff @(posedge clk or posedge reset) begin
     if (reset) begin
@@ -44,9 +45,9 @@ always_ff @(posedge clk or posedge reset) begin
     end else begin
         if (q_m_ack)
             grant_active <= 1'b0;
-        else if (!grant_active && (data_m_access || instr_m_access)) begin
+        else if (!grant_active && ((data_m_access & !d_io) || instr_m_access)) begin
             grant_active <= 1'b1;
-            grant_to_data <= data_m_access;
+            grant_to_data <= data_m_access && !d_io;
         end
     end
 end
