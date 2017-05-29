@@ -199,3 +199,154 @@ INSTANTIATE_TEST_CASE_P(IMul, MulMem16Test,
     ::testing::Values(
         Mul16Params({ 0xf7, 0x2f }, imul16_tests)
     ));
+
+template <typename T>
+struct MulImmTest {
+    uint16_t v1;
+    T v2;
+    uint16_t expected;
+    uint16_t expected_flags;
+};
+
+using MulImm8Params = struct MulImmTest<uint8_t>;
+using MulImm16Params = struct MulImmTest<uint16_t>;
+
+class MulImmReg8Test : public EmulateFixture,
+    public ::testing::WithParamInterface<MulImm8Params> {
+};
+TEST_P(MulImmReg8Test, ResultAndFlags)
+{
+    auto t = GetParam();
+
+    SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " * " +
+                    std::to_string(static_cast<int>(t.v2)));
+    write_flags(0);
+    write_reg(BX, t.v1);
+    // IMUL ax, bx, IMM8
+    auto instr = std::vector<uint8_t>{ 0x6b, 0xc3 };
+    instr.push_back(t.v2);
+    set_instruction(instr);
+
+    emulate();
+
+    EXPECT_EQ(read_reg(AX), t.expected);
+    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        FLAGS_STUCK_BITS | t.expected_flags);
+}
+INSTANTIATE_TEST_CASE_P(IMul, MulImmReg8Test,
+    ::testing::Values(
+        MulImm8Params{ 0, 0, 0, 0 },
+        MulImm8Params{ 0xff, 0, 0, 0 },
+        MulImm8Params{ 0, 0xff, 0, 0 },
+        MulImm8Params{ 2, 8, 16, 0 },
+        MulImm8Params{ 0x8000, 2, 0x0000, CF | OF },
+        MulImm8Params{ 0xffff, 0xff, 0x0001, 0 },
+        MulImm8Params{ 0xffff, 1, 0xffff, CF | OF },
+        MulImm8Params{ 8192, 8, 0x0000, CF | OF }
+    ));
+
+class MulImmMem8Test : public EmulateFixture,
+    public ::testing::WithParamInterface<MulImm8Params> {
+};
+TEST_P(MulImmMem8Test, ResultAndFlags)
+{
+    auto t = GetParam();
+
+    SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " * " +
+                    std::to_string(static_cast<int>(t.v2)));
+    write_flags(0);
+    write_reg(BX, 0x100);
+    write_mem16(0x100, t.v1);
+    // IMUL ax, [bx], IMM8
+    auto instr = std::vector<uint8_t>{ 0x6b, 0x07 };
+    instr.push_back(t.v2);
+    set_instruction(instr);
+
+    emulate();
+
+    EXPECT_EQ(read_reg(AX), t.expected);
+    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        FLAGS_STUCK_BITS | t.expected_flags);
+}
+INSTANTIATE_TEST_CASE_P(IMul, MulImmMem8Test,
+    ::testing::Values(
+        MulImm8Params{ 0, 0, 0, 0 },
+        MulImm8Params{ 0xff, 0, 0, 0 },
+        MulImm8Params{ 0, 0xff, 0, 0 },
+        MulImm8Params{ 2, 8, 16, 0 },
+        MulImm8Params{ 0x8000, 2, 0x0000, CF | OF },
+        MulImm8Params{ 0xffff, 0xff, 0x0001, 0 },
+        MulImm8Params{ 0xffff, 1, 0xffff, CF | OF },
+        MulImm8Params{ 8192, 8, 0x0000, CF | OF }
+    ));
+
+class MulImmReg16Test : public EmulateFixture,
+    public ::testing::WithParamInterface<MulImm16Params> {
+};
+TEST_P(MulImmReg16Test, ResultAndFlags)
+{
+    auto t = GetParam();
+
+    SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " * " +
+                    std::to_string(static_cast<int>(t.v2)));
+    write_flags(0);
+    write_reg(BX, t.v1);
+    // IMUL ax, bx, IMM16
+    auto instr = std::vector<uint8_t>{ 0x69, 0xc3 };
+    instr.push_back(t.v2 & 0xff);
+    instr.push_back(t.v2 >> 8);
+    set_instruction(instr);
+
+    emulate();
+
+    EXPECT_EQ(read_reg(AX), t.expected);
+    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        FLAGS_STUCK_BITS | t.expected_flags);
+}
+INSTANTIATE_TEST_CASE_P(IMul, MulImmReg16Test,
+    ::testing::Values(
+        MulImm16Params{ 0, 0, 0, 0 },
+        MulImm16Params{ 0xff, 0, 0, 0 },
+        MulImm16Params{ 0, 0xff, 0, 0 },
+        MulImm16Params{ 2, 8, 16, 0 },
+        MulImm16Params{ 0x8000, 2, 0x0000, CF | OF },
+        MulImm16Params{ 0xffff, 0xffff, 0x0001, 0 },
+        MulImm16Params{ 0xffff, 1, 0xffff, CF | OF },
+        MulImm16Params{ 8192, 8, 0x0000, CF | OF }
+    ));
+
+class MulImmMem16Test : public EmulateFixture,
+    public ::testing::WithParamInterface<MulImm16Params> {
+};
+TEST_P(MulImmMem16Test, ResultAndFlags)
+{
+    auto t = GetParam();
+
+    SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " * " +
+                    std::to_string(static_cast<int>(t.v2)));
+    write_flags(0);
+    write_reg(BX, 0x100);
+    write_mem16(0x100, t.v1);
+    // IMUL ax, [bx], IMM16
+    auto instr = std::vector<uint8_t>{ 0x69, 0x07 };
+    instr.push_back(t.v2 & 0xff);
+    instr.push_back(t.v2 >> 8);
+    set_instruction(instr);
+
+    emulate();
+
+    EXPECT_EQ(read_reg(AX), t.expected);
+    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
+                        FLAGS_STUCK_BITS | t.expected_flags);
+}
+INSTANTIATE_TEST_CASE_P(IMul, MulImmMem16Test,
+    ::testing::Values(
+        MulImm16Params{ 0, 0, 0, 0 },
+        MulImm16Params{ 0xff, 0, 0, 0 },
+        MulImm16Params{ 0, 0xff, 0, 0 },
+        MulImm16Params{ 2, 8, 16, 0 },
+        MulImm16Params{ 0x8000, 2, 0x0000, CF | OF },
+        MulImm16Params{ 0xffff, 0xffff, 0x0001, 0 },
+        MulImm16Params{ 0xffff, 1, 0xffff, CF | OF },
+        MulImm16Params{ 8192, 8, 0x0000, CF | OF }
+    ));

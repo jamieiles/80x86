@@ -170,6 +170,8 @@ private:
     void cmp3d();
     void mulf6();
     void mulf7();
+    void imul6b();
+    void imul69();
     void imulf6();
     void imulf7();
     void divf6();
@@ -634,7 +636,9 @@ size_t EmulatorPimpl::emulate_insn()
         case 0x66: invalid_opcode(); break;
         case 0x67: invalid_opcode(); break;
         case 0x68: push68(); break;
+        case 0x69: imul69(); break;
         case 0x6a: push6a(); break;
+        case 0x6b: imul6b(); break;
         case 0x70: jo70(); break;
         case 0x71: jno71(); break;
         case 0x72: jb72(); break;

@@ -33,3 +33,45 @@ void EmulatorPimpl::imulf7()
     registers->set(DX, (result >> 16) & 0xffff);
     registers->set_flags(flags, OF | CF | ZF);
 }
+
+// imul r/m, 16-bit immediate
+void EmulatorPimpl::imul69()
+{
+    modrm_decoder->set_width(OP_WIDTH_16);
+    modrm_decoder->decode();
+
+    auto old_flags = registers->get_flags();
+    int32_t v1 = sign_extend<int32_t, int16_t>(read_data<uint16_t>());
+    int32_t v2 = sign_extend<int32_t, int16_t>(fetch_16bit());
+
+    uint32_t result;
+    uint16_t flags;
+    std::tie(flags, result) = do_mul<int32_t>(v1, v2);
+    flags = old_flags & ~(CF | OF | ZF);
+    if (result & 0xffff0000)
+        flags |= CF | OF;
+
+    registers->set(modrm_decoder->reg(), result & 0xffff);
+    registers->set_flags(flags, OF | CF | ZF);
+}
+
+// imul r/m, 8-bit immediate
+void EmulatorPimpl::imul6b()
+{
+    modrm_decoder->set_width(OP_WIDTH_16);
+    modrm_decoder->decode();
+
+    auto old_flags = registers->get_flags();
+    int32_t v1 = sign_extend<int32_t, int16_t>(read_data<uint16_t>());
+    int32_t v2 = sign_extend<int32_t, int8_t>(fetch_byte());
+
+    uint32_t result;
+    uint16_t flags;
+    std::tie(flags, result) = do_mul<int32_t>(v1, v2);
+    flags = old_flags & ~(CF | OF | ZF);
+    if (result & 0xffff0000)
+        flags |= CF | OF;
+
+    registers->set(modrm_decoder->reg(), result & 0xffff);
+    registers->set_flags(flags, OF | CF | ZF);
+}
