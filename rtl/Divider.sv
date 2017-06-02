@@ -42,8 +42,8 @@ wire unsigned_overflow8 = dividend[15:0] >= {divisor[7:0], 8'b0};
 wire unsigned_overflow16 = dividend >= {divisor, 16'b0};
 wire unsigned_overflow = is_8_bit ? unsigned_overflow8 : unsigned_overflow16;
 
-wire signed_overflow8 = dividend_mag[15:0] >= {1'b0, divisor_mag[7:0], 7'b0};
-wire signed_overflow16 = dividend_mag >= {1'b0, divisor_mag, 15'b0};
+wire signed_overflow8 = in_signs_equal && dividend_mag[14:7] >= divisor_mag[7:0];
+wire signed_overflow16 = in_signs_equal && dividend_mag[30:15] >= divisor_mag;
 wire signed_overflow = is_8_bit ? signed_overflow8 : signed_overflow16;
 
 wire overflow = is_signed ? signed_overflow : unsigned_overflow;
@@ -132,8 +132,12 @@ always_ff @(posedge clk or posedge reset) begin
             complete <= ~is_signed;
         end
         FIX_SIGN: begin
-            if (~in_signs_equal)
+            if (~in_signs_equal) begin
                 quotient <= negative_quotient;
+                error <= is_signed & ~negative_quotient[is_8_bit ? 7 : 15];
+            end else begin
+                error <= is_signed & quotient[is_8_bit ? 7 : 15];
+            end
             if (dividend_negative && is_8_bit)
                 P[15:8] <= ~P[15:8] + 1'b1;
             else if (dividend_negative)

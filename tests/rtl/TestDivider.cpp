@@ -162,10 +162,11 @@ INSTANTIATE_TEST_CASE_P(IDiv, IDivTests16,
     IDiv16Params{ -10, 3, -3, -1, false },
     IDiv16Params{ -10, 0, 0, 0, true },
     IDiv16Params{ 65534, 2, 32767, 0, false },
+    IDiv16Params{ -65536, 2, -32768, 0, false },
     // Positive integer overflow
     IDiv16Params{ 65536, 2, 0, 0, true },
     // Negative integer overflow
-    IDiv16Params{ -65536, 2, 0, 0, true }
+    IDiv16Params{ -65538, 2, 0, 0, true }
 ));
 
 class IDivTests8 : public DividerTestbench,
@@ -194,8 +195,9 @@ INSTANTIATE_TEST_CASE_P(IDiv, IDivTests8,
     // Divide by zero
     IDiv8Params{ -10, 0, 0, 0, true },
     IDiv8Params{ 254, 2, 127, 0, false },
+    IDiv8Params{ -256, 2, -128, 0, false },
     // Positive integer overflow
     IDiv8Params{ 256, 2, 0, 0, true },
     // Negative integer overflow
-    IDiv8Params{ -256, 2, 0, 0, true }
+    IDiv8Params{ -258, 2, 0, 0, true }
 ));

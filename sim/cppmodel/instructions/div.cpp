@@ -69,7 +69,7 @@ void EmulatorPimpl::idivf6()
     int8_t divisor = static_cast<int8_t>(read_data<uint8_t>());
     int16_t dividend = static_cast<int16_t>(registers->get(AX));
 
-    if (divisor == 0 || (dividend / divisor < -127) ||
+    if (divisor == 0 || (dividend / divisor < -128) ||
         (dividend / divisor > 127)) {
         auto flags = registers->get_flags();
         push_word(flags);
@@ -103,7 +103,7 @@ void EmulatorPimpl::idivf7()
     int32_t dividend =
         (static_cast<uint32_t>(registers->get(DX)) << 16) | registers->get(AX);
 
-    if (divisor == 0 || (dividend / divisor < -32767) ||
+    if (divisor == 0 || (dividend / divisor < -32768) ||
         (dividend / divisor) > 32767) {
         auto flags = registers->get_flags();
         push_word(flags);
