@@ -52,7 +52,6 @@ add_subdirectory(python)
 add_subdirectory(sim)
 add_subdirectory(tests)
 add_subdirectory(documentation)
-add_subdirectory(bios)
 
 if(${BUILD_DE0_CV})
 add_subdirectory(fpga/de0-cv)

@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         clang-c++ \
         cmake \
         cpp \
+        git \
         nasm \
         libboost-program-options-dev \
         libboost-python1.58.0 \

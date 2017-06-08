@@ -1,3 +1,6 @@
+set(BIOS_PLATFORM "sim")
+add_subdirectory(../bios ${CMAKE_CURRENT_BINARY_DIR}/bios)
+
 include(Verilator)
 include(Nasm)
 
