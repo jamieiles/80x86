@@ -146,6 +146,18 @@ TEST_F(LoadStoreTestbench, SegmentCalculation)
     ASSERT_EQ(this->dut.m_addr, ((0x800 << 4) + 0x100LU) >> 1);
 }
 
+TEST_F(LoadStoreTestbench, SegmentNoWrap)
+{
+    this->dut.segment = 0;
+    add_memory(0xfffe, { 0xee, 0x55 });
+    add_memory(0x10000, { 0xaa, 0xff });
+
+    write_mar(0xffff);
+    read(WIDTH_16);
+
+    ASSERT_EQ(get_read_values(), std::vector<uint16_t>{ 0xaa55 });
+}
+
 struct LoadParams {
     physaddr mar_value;
     LoadStoreTestbench::MemWidth width;
