@@ -23,7 +23,7 @@ reg [ptr_bits:0] count;
 
 assign empty = count == 0;
 assign full = count == depth;
-assign nearly_full = count + {{ptr_bits-1{1'b0}}, (wr_en & ~rd_en)} >= depth - full_threshold;
+assign nearly_full = count >= depth - full_threshold;
 
 assign rd_data = mem[rd_ptr];
 
