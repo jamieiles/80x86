@@ -70,6 +70,8 @@ class ALUOp(Enum):
     DIV = 30
     IDIV = 31
     EXTEND = 32
+    BOUNDL = 33
+    BOUNDH = 34
 
 class UpdateFlags(Enum):
     CF = 0

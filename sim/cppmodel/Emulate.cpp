@@ -292,6 +292,7 @@ private:
     void testa9();
     void testf6();
     void testf7();
+    void bound62();
     void invalid_opcode();
 
     uint8_t fetch_byte();
@@ -629,7 +630,7 @@ size_t EmulatorPimpl::emulate_insn()
         case 0x58 ... 0x5f: pop58_5f(); break;
         case 0x60: pusha60(); break;
         case 0x61: popa61(); break;
-        case 0x62: jb72(); break;
+        case 0x62: bound62(); break;
         case 0x63: invalid_opcode(); break;
         case 0x64: invalid_opcode(); break;
         case 0x65: invalid_opcode(); break;
@@ -1318,6 +1319,7 @@ void EmulatorPimpl::invalid_opcode()
 #include "instructions/ror.cpp"
 #include "instructions/rcr.cpp"
 #include "instructions/test.cpp"
+#include "instructions/bound.cpp"
 
 void EmulatorPimpl::push_word(uint16_t v)
 {

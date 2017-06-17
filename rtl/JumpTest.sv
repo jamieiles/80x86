@@ -8,6 +8,7 @@ always_comb begin
     taken = 1'b0;
 
     unique casez(opcode)
+    8'b01100010: taken = flags[CF_IDX]; // BOUND
     8'b01110000: taken = flags[OF_IDX]; // JO
     8'b01110001: taken = ~flags[OF_IDX]; // JNO
     8'b01110010: taken = flags[CF_IDX]; // JB

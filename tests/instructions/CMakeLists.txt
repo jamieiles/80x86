@@ -11,6 +11,7 @@ add_library(instructions OBJECT
             TestAdd.cpp
             TestAnd.cpp
             TestAscii.cpp
+            TestBound.cpp
             TestCall.cpp
             TestCmp.cpp
             TestControl.cpp

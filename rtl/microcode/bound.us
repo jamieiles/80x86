@@ -1,0 +1,20 @@
+// BOUND
+.at 0x62;
+    modrm_start, mar_write, mar_wr_sel EA, segment DS,
+        jmp_rm_reg_mem bound_reg;
+.auto_address;
+bound_reg:
+    b_sel IMMEDIATE, immediate 0x18, alu_op SELB, tmp_wr_en, jmp do_int;
+bound_mem:
+    alu_op GETFLAGS, tmp_wr_en, segment DS, mem_read;
+    a_sel MDR, b_sel RB, alu_op BOUNDL, update_flags CF;
+    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, mar_write,
+        mar_wr_sel Q, segment DS, jmp_if_taken bound_fail;
+    segment DS, mem_read;
+    a_sel MDR, b_sel RB, alu_op BOUNDH, update_flags CF;
+    jmp_if_taken bound_fail;
+    b_sel TEMP, alu_op SELB, alu_op SETFLAGSB, update_flags CF, next_instruction;
+
+bound_fail:
+    b_sel TEMP, alu_op SELB, alu_op SETFLAGSB, update_flags CF;
+    b_sel IMMEDIATE, immediate 0x14, alu_op SELB, tmp_wr_en, jmp do_int;

@@ -10,6 +10,7 @@ set(ALU_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/adc.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/add.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/and.sv
+    ${CMAKE_CURRENT_SOURCE_DIR}/alu/bound.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/daa.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/das.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/extend.sv

@@ -5,6 +5,7 @@ set(microprogram_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/adc.us
     ${CMAKE_CURRENT_SOURCE_DIR}/add.us
     ${CMAKE_CURRENT_SOURCE_DIR}/and.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/bound.us
     ${CMAKE_CURRENT_SOURCE_DIR}/daa.us
     ${CMAKE_CURRENT_SOURCE_DIR}/das.us
     ${CMAKE_CURRENT_SOURCE_DIR}/arithmetic.us

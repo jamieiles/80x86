@@ -26,6 +26,8 @@ always_comb begin
     ALUOp_AND: do_and(out[15:0], is_8_bit, a, b, flags_in, flags_out);
     ALUOp_XOR: do_xor(out[15:0], is_8_bit, a, b, flags_in, flags_out);
     ALUOp_OR: do_or(out[15:0], is_8_bit, a, b, flags_in, flags_out);
+    ALUOp_BOUNDH: do_bound(a, b, flags_in, flags_out);
+    ALUOp_BOUNDL: do_bound(b, a, flags_in, flags_out);
     ALUOp_SUB: do_sub(out[15:0], is_8_bit, a, b, flags_in, flags_out);
     ALUOp_SUBREV: do_sub(out[15:0], is_8_bit, b, a, flags_in, flags_out);
     ALUOp_SBB: do_sbb(out[15:0], is_8_bit, a, b, flags_in, flags_out);
