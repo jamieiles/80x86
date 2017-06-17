@@ -179,7 +179,8 @@ wire start_interrupt;
 
 // IP
 wire ip_inc = fifo_rd_en & ~fifo_empty & ~start_interrupt;
-wire ip_rollback = start_interrupt & ext_int_yield;
+wire do_escape_fault;
+wire ip_rollback = (start_interrupt & ext_int_yield) | do_escape_fault;
 
 // Divider
 wire [31:0] dividend8 = divide_signed ? {{16{tmp_val[15]}}, tmp_val} : {16'b0, tmp_val};
@@ -358,6 +359,7 @@ Microcode       Microcode(.clk(clk),
                           .inta(inta),
                           .irq_to_mdr(irq_to_mdr),
                           .start_interrupt(start_interrupt),
+                          .do_escape_fault(do_escape_fault),
                           .stall(do_stall),
                           .divide_error(divide_error),
                           .modrm_reg(regnum),

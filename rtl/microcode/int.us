@@ -31,14 +31,16 @@ into_taken:
 // repetition.  Start by storing the flags + CS:IP to the stack, clear TF+IF
 // and then load the new CS:IP.  As the vectors are stored in segment 0, this
 // requires temporarily setting CS to 0 to read the final vector address.
-.auto_address;
+.at 0x12d;
 do_int:
-    alu_op GETFLAGS, mdr_write, ra_sel SP;
+    alu_op GETFLAGS, mdr_write, ra_sel SP, jmp do_int_main;
+.auto_address;
+do_int_main:
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB,
         mar_write, mar_wr_sel Q, segment SS, segment_force;
     segment SS, segment_force, mem_write;
     a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op SUB,
-        mar_write, mar_wr_sel Q, segment CS;
+        mar_write, mar_wr_sel Q, segment_force, segment CS;
     b_sel SR, alu_op SELB, mdr_write, segment SS, segment_force;
     segment SS, segment_force, mem_write;
     a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op SUB,

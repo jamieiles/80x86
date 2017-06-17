@@ -13,6 +13,7 @@ module Microcode(input logic clk,
                  output logic inta,
                  output logic irq_to_mdr,
                  output logic start_interrupt,
+                 output logic do_escape_fault,
                  input logic stall,
                  input logic divide_error,
                  input logic rm_is_reg,
@@ -53,6 +54,7 @@ localparam single_step_address = <%addr_bits%>'h12c;
 localparam divide_error_address = <%addr_bits%>'h101;
 localparam next_instruction_address = <%addr_bits%>'h100;
 localparam debug_wait_address = <%addr_bits%>'h102;
+localparam do_int_address = <%addr_bits%>'h12d;
 
 typedef struct packed {
 <%#fields%>
@@ -102,6 +104,7 @@ assign multibit_shift = opcode == 8'hd2 ||
                         opcode == 8'hd3 ||
                         opcode == 8'hc0 ||
                         opcode == 8'hc1;
+assign do_escape_fault = opcode[7:3] == 5'b11011 && next_addr == do_int_address;
 
 reg nmi_pending;
 reg ext_int_inhibit;

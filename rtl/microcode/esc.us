@@ -1,16 +1,20 @@
 .at 0xd8;
-    modrm_start, next_instruction;
+    modrm_start, jmp do_esc;
 .at 0xd9;
-    modrm_start, next_instruction;
+    modrm_start, jmp do_esc;
 .at 0xda;
-    modrm_start, next_instruction;
+    modrm_start, jmp do_esc;
 .at 0xdb;
-    modrm_start, next_instruction;
+    modrm_start, jmp do_esc;
 .at 0xdc;
-    modrm_start, next_instruction;
+    modrm_start, jmp do_esc;
 .at 0xdd;
-    modrm_start, next_instruction;
+    modrm_start, jmp do_esc;
 .at 0xde;
-    modrm_start, next_instruction;
+    modrm_start, jmp do_esc;
 .at 0xdf;
-    modrm_start, next_instruction;
+    modrm_start, jmp do_esc;
+
+.auto_address;
+do_esc:
+    b_sel IMMEDIATE, immediate 0x1c, alu_op SELB, tmp_wr_en, jmp do_int;
