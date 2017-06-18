@@ -36,15 +36,25 @@ public:
 
         val &= ~mask;
         val |= (static_cast<uint16_t>(v) << (8 * offs));
+
+        write_vals.push_back(static_cast<uint16_t>(v) << (8 * offs));
     }
 
     void write16(uint16_t port_num, uint16_t v)
     {
         (void)port_num;
         val = v;
+
+        write_vals.push_back(v);
+    }
+
+    std::vector<uint16_t> get_write_vals() const
+    {
+        return write_vals;
     }
 private:
     uint16_t val;
+    std::vector<uint16_t> write_vals;
 };
 
 class EmulateFixture : public ::testing::Test {

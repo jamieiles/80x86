@@ -107,3 +107,75 @@ TEST_F(EmulateFixture, OutVariable16)
 
     ASSERT_EQ(0xaa55, read_io16(0x0100));
 }
+
+TEST_F(EmulateFixture, Outsb)
+{
+    write_flags(0);
+    write_reg(SI, 0x800);
+    write_vector8(0x800, {0, 1, 2, 3}, DS);
+
+    write_reg(DX, 0x100);
+    write_reg(CX, 3);
+
+    // rep outsb
+    set_instruction({ 0xf2, 0x6e });
+
+    emulate();
+
+    auto expected = std::vector<uint16_t>{ 0, 1, 2 };
+    EXPECT_EQ(io100.get_write_vals(), expected);
+}
+
+TEST_F(EmulateFixture, OutsbDec)
+{
+    write_flags(DF);
+    write_reg(SI, 0x802);
+    write_vector8(0x800, {0, 1, 2, 3}, DS);
+
+    write_reg(DX, 0x100);
+    write_reg(CX, 3);
+
+    // rep outsb
+    set_instruction({ 0xf2, 0x6e });
+
+    emulate();
+
+    auto expected = std::vector<uint16_t>{ 2, 1, 0 };
+    EXPECT_EQ(io100.get_write_vals(), expected);
+}
+
+TEST_F(EmulateFixture, Outsw)
+{
+    write_flags(0);
+    write_reg(SI, 0x800);
+    write_vector16(0x800, {0x0101, 0x0202, 0x0303, 0x0404}, DS);
+
+    write_reg(DX, 0x100);
+    write_reg(CX, 3);
+
+    // rep outsw
+    set_instruction({ 0xf2, 0x6f });
+
+    emulate();
+
+    auto expected = std::vector<uint16_t>{ 0x0101, 0x0202, 0x0303 };
+    EXPECT_EQ(io100.get_write_vals(), expected);
+}
+
+TEST_F(EmulateFixture, OutswDec)
+{
+    write_flags(DF);
+    write_reg(SI, 0x804);
+    write_vector16(0x800, {0x0101, 0x0202, 0x0303, 0x0404}, DS);
+
+    write_reg(DX, 0x100);
+    write_reg(CX, 3);
+
+    // rep outsw
+    set_instruction({ 0xf2, 0x6f });
+
+    emulate();
+
+    auto expected = std::vector<uint16_t>{ 0x0303, 0x0202, 0x0101 };
+    EXPECT_EQ(io100.get_write_vals(), expected);
+}
