@@ -295,6 +295,8 @@ private:
     void bound62();
     void outsb6e();
     void outsw6f();
+    void insb6c();
+    void insw6d();
     void invalid_opcode();
 
     uint8_t fetch_byte();
@@ -642,6 +644,8 @@ size_t EmulatorPimpl::emulate_insn()
         case 0x69: imul69(); break;
         case 0x6a: push6a(); break;
         case 0x6b: imul6b(); break;
+        case 0x6c: insb6c(); break;
+        case 0x6d: insw6d(); break;
         case 0x6e: outsb6e(); break;
         case 0x6f: outsw6f(); break;
         case 0x70: jo70(); break;
@@ -1325,6 +1329,7 @@ void EmulatorPimpl::invalid_opcode()
 #include "instructions/test.cpp"
 #include "instructions/bound.cpp"
 #include "instructions/outs.cpp"
+#include "instructions/ins.cpp"
 
 void EmulatorPimpl::push_word(uint16_t v)
 {

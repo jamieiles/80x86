@@ -130,3 +130,55 @@ outsw_no_rep:
     rb_cl, ext_int_yield, jmp outsw_rep_loop;
 outsw_done:
     next_instruction;
+
+.at 0x6c;
+    jmp insb;
+
+.auto_address;
+insb:
+    ra_sel DX, jmp_if_not_rep insb_no_rep;
+    rb_cl;
+insb_rep_loop:
+    ra_sel CX, a_sel RA, b_sel IMMEDIATE, immediate 0x0, alu_op SUB,
+        jmp_rb_zero insb_done;
+    ra_sel DI, a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel CX, reg_wr_en, ra_sel DX;
+insb_no_rep:
+    a_sel RA, alu_op SELA, mar_wr_sel Q, mar_write;
+    width 8, io, mem_read;
+    ra_sel DI;
+    a_sel RA, alu_op SELA, mar_write, mar_wr_sel Q, segment ES, segment_force;
+    segment ES, segment_force, width 8, mem_write;
+    ra_sel DI;
+    a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op NEXT,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel DI, reg_wr_en,
+        jmp_if_not_rep insb_done;
+    rb_cl, ext_int_yield, jmp insb_rep_loop;
+insb_done:
+    next_instruction;
+
+.at 0x6d;
+    jmp insw;
+
+.auto_address;
+insw:
+    ra_sel DX, jmp_if_not_rep insw_no_rep;
+    rb_cl;
+insw_rep_loop:
+    ra_sel CX, a_sel RA, b_sel IMMEDIATE, immediate 0x0, alu_op SUB,
+        jmp_rb_zero insw_done;
+    ra_sel DI, a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel CX, reg_wr_en, ra_sel DX;
+insw_no_rep:
+    a_sel RA, alu_op SELA, mar_wr_sel Q, mar_write;
+    io, mem_read;
+    ra_sel DI;
+    a_sel RA, alu_op SELA, mar_write, mar_wr_sel Q, segment ES, segment_force;
+    segment ES, segment_force, mem_write;
+    ra_sel DI;
+    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op NEXT,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel DI, reg_wr_en,
+        jmp_if_not_rep insw_done;
+    rb_cl, ext_int_yield, jmp insw_rep_loop;
+insw_done:
+    next_instruction;

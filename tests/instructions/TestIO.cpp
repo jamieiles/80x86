@@ -179,3 +179,79 @@ TEST_F(EmulateFixture, OutswDec)
     auto expected = std::vector<uint16_t>{ 0x0303, 0x0202, 0x0101 };
     EXPECT_EQ(io100.get_write_vals(), expected);
 }
+
+TEST_F(EmulateFixture, Insb)
+{
+    write_flags(0);
+    write_reg(DI, 0x800);
+    write_io8(0x100, 0xaa);
+
+    write_reg(DX, 0x100);
+    write_reg(CX, 3);
+
+    // rep insb
+    set_instruction({ 0xf2, 0x6c });
+
+    emulate();
+
+    for (auto i = 0; i < 3; ++i)
+        EXPECT_EQ(read_mem8(0x800 + i, ES), 0xaa);
+    EXPECT_EQ(read_mem8(0x803, ES),  0x00);
+}
+
+TEST_F(EmulateFixture, InsbDec)
+{
+    write_flags(DF);
+    write_reg(DI, 0x802);
+    write_io8(0x100, 0xaa);
+
+    write_reg(DX, 0x100);
+    write_reg(CX, 3);
+
+    // rep insb
+    set_instruction({ 0xf2, 0x6c });
+
+    emulate();
+
+    for (auto i = 0; i < 3; ++i)
+        EXPECT_EQ(read_mem8(0x800 + i, ES), 0xaa);
+    EXPECT_EQ(read_mem8(0x7ff, ES),  0x00);
+}
+
+TEST_F(EmulateFixture, Insw)
+{
+    write_flags(0);
+    write_reg(DI, 0x800);
+    write_io16(0x100, 0xaa55);
+
+    write_reg(DX, 0x100);
+    write_reg(CX, 3);
+
+    // rep insw
+    set_instruction({ 0xf2, 0x6d });
+
+    emulate();
+
+    for (auto i = 0; i < 3; ++i)
+        EXPECT_EQ(read_mem16(0x800 + i * 2, ES), 0xaa55);
+    EXPECT_EQ(read_mem8(0x806, ES),  0x00);
+}
+
+TEST_F(EmulateFixture, InswDec)
+{
+    write_flags(DF);
+    write_reg(DI, 0x804);
+    write_io16(0x100, 0xaa55);
+
+    write_reg(DX, 0x100);
+    write_reg(CX, 3);
+
+    // rep insw
+    set_instruction({ 0xf2, 0x6d });
+
+    emulate();
+
+    for (auto i = 0; i < 3; ++i)
+        EXPECT_EQ(read_mem16(0x800 + i * 2, ES), 0xaa55);
+    EXPECT_EQ(read_mem8(0x7fe, ES),  0x00);
+}

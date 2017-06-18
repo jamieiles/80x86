@@ -278,8 +278,6 @@ reset:
     .at opcode; \
     next_instruction
 
-UNIMPLEMENTED(0x6c);
-UNIMPLEMENTED(0x6d);
 UNIMPLEMENTED(0xc8);
 UNIMPLEMENTED(0xc9);
 
