@@ -11,7 +11,7 @@ set(CMAKE_ASM_FLAGS_DEBUG "")
 
 set(CMAKE_C_FLAGS "-Wall -Werror -fstack-usage -Wstack-usage=128 -fconserve-stack -ffreestanding -O2 -std=gnu99 -nostdinc -mtune=i8086 -march=i8086")
 set(CMAKE_ASM_FLAGS "-Wall -Werror -ffreestanding -O2 -std=gnu99 -nostdinc -mtune=i8086 -march=i8086")
-set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "-ffreestanding -nostdlib -T ${CMAKE_CURRENT_SOURCE_DIR}/bios.x")
+set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "-Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/bios.map -ffreestanding -nostdlib -T ${CMAKE_CURRENT_SOURCE_DIR}/bios.x")
 
 get_git_head_revision(BIOS_NAME BIOS_BUILD HEAD)
 git_local_changes(LOCAL_CHANGES)
