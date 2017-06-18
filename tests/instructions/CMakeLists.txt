@@ -22,6 +22,7 @@ add_library(instructions OBJECT
             TestIncDec.cpp
             TestInt.cpp
             TestInvalid.cpp
+            TestLeave.cpp
             TestLock.cpp
             TestLoop.cpp
             TestMisc.cpp

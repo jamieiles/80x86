@@ -24,6 +24,7 @@ set(microprogram_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/jmp.us
     ${CMAKE_CURRENT_SOURCE_DIR}/lds.us
     ${CMAKE_CURRENT_SOURCE_DIR}/lea.us
+    ${CMAKE_CURRENT_SOURCE_DIR}/leave.us
     ${CMAKE_CURRENT_SOURCE_DIR}/les.us
     ${CMAKE_CURRENT_SOURCE_DIR}/lods.us
     ${CMAKE_CURRENT_SOURCE_DIR}/loop.us

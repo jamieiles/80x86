@@ -279,7 +279,6 @@ reset:
     next_instruction
 
 UNIMPLEMENTED(0xc8);
-UNIMPLEMENTED(0xc9);
 
 .auto_address;
 write_16_complete:
