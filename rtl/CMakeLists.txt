@@ -13,6 +13,7 @@ set(ALU_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/bound.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/daa.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/das.sv
+    ${CMAKE_CURRENT_SOURCE_DIR}/alu/enter.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/extend.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/flags.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/mul.sv
@@ -45,6 +46,7 @@ set(CORE_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/IP.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/JumpTest.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/LoadStore.sv
+    ${CMAKE_CURRENT_SOURCE_DIR}/LoopCounter.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/ModRMDecode.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/PosedgeToPulse.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/Prefetch.sv

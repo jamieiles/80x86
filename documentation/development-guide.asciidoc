@@ -172,6 +172,10 @@ adjacent with the register based instruction appearing first.
   condition met, otherwise continue with the adjacent instruction.  This is
   only valid for jump instructions, and INTO.
 
+| jmp_loop_done LABEL | Jump to the target if loop has completed.  The loop
+  counter is loaded from the 5 MSB's of the immediate and decremented on each
+  iteration.  This is only used for the `enter` instruction.
+
 | jmp LABEL | An unconditional jump, will always transfer control to LABEL.
 |===
 

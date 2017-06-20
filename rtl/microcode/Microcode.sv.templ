@@ -39,6 +39,8 @@ module Microcode(input logic clk,
                  input logic [7:0] fifo_rd_data,
                  input logic fifo_empty,
                  input logic fifo_resetting,
+                 output logic loop_next,
+                 input logic loop_done,
                  // Debug
                  output logic debug_stopped,
                  input logic debug_seize,
@@ -123,6 +125,8 @@ reg seized;
 wire seizing = debug_seize & ~seized;
 
 reg start_instruction;
+
+assign loop_next = !stall && current.jump_type == JumpType_LOOP_DONE;
 
 always_ff @(posedge clk or posedge reset)
     if (reset)
@@ -218,6 +222,8 @@ always_comb begin
         next_addr = !fifo_empty ? {{addr_bits-8{1'b0}}, fifo_rd_data} : addr;
     else if (current.jump_type == JumpType_RB_ZERO)
         next_addr = rb_zero ? current.next : addr + 1'b1;
+    else if (current.jump_type == JumpType_LOOP_DONE)
+        next_addr = loop_done ? current.next : addr + 1'b1;
     else if (divide_error)
         next_addr = divide_error_address;
     else if (current.next_instruction && take_nmi)

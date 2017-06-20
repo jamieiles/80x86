@@ -16,6 +16,7 @@ add_library(instructions OBJECT
             TestCmp.cpp
             TestControl.cpp
             TestDiv.cpp
+            TestEnter.cpp
             TestExtend.cpp
             TestFlags.cpp
             TestJump.cpp

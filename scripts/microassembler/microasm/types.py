@@ -72,6 +72,7 @@ class ALUOp(Enum):
     EXTEND = 32
     BOUNDL = 33
     BOUNDH = 34
+    ENTER_FRAME_TEMP_ADDR = 35
 
 class UpdateFlags(Enum):
     CF = 0
@@ -99,6 +100,7 @@ class JumpType(Enum):
     REP_NOT_COMPLETE = 6
     JUMP_TAKEN = 7
     RB_ZERO = 8
+    LOOP_DONE = 9
 
 class MARWrSel(Enum):
     EA = 0

@@ -170,6 +170,8 @@ wire rb_zero = ~|reg_rd_val[1];
 wire nmi_pulse;
 wire ext_int_yield;
 wire irq_to_mdr;
+wire loop_next;
+wire loop_done;
 
 // Misc control signals
 wire debug_set_ip = debug_stopped && ip_wr_en;
@@ -283,6 +285,12 @@ ImmediateReader ImmediateReader(.clk(clk),
                                 .fifo_rd_en(immed_fifo_rd_en),
                                 .fifo_rd_data(fifo_rd_data),
                                 .fifo_empty(fifo_empty));
+
+LoopCounter LoopCounter(.clk(clk),
+                        .count_in(immediate_reader_immediate[4:0]),
+                        .load(immed_complete),
+                        .next(loop_next),
+                        .done(loop_done));
 
 ModRMDecode     ModRMDecode(.clk(clk),
                             .reset(reset),
@@ -407,6 +415,8 @@ Microcode       Microcode(.clk(clk),
                           .fifo_rd_data(fifo_rd_data),
                           .fifo_empty(fifo_empty),
                           .fifo_resetting(fifo_reset),
+                          .loop_next(loop_next),
+                          .loop_done(loop_done),
                           // Debug
                           .debug_stopped(debug_stopped),
                           .debug_seize(debug_seize),

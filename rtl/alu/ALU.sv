@@ -32,6 +32,7 @@ always_comb begin
     ALUOp_SUBREV: do_sub(out[15:0], is_8_bit, b, a, flags_in, flags_out);
     ALUOp_SBB: do_sbb(out[15:0], is_8_bit, a, b, flags_in, flags_out);
     ALUOp_SBBREV: do_sbb(out[15:0], is_8_bit, b, a, flags_in, flags_out);
+    ALUOp_ENTER_FRAME_TEMP_ADDR: do_enter_frame_temp_addr(out[15:0], a, b[4:0]);
     ALUOp_GETFLAGS: out[15:0] = flags_in;
     ALUOp_SETFLAGSA: flags_out = a;
     ALUOp_SETFLAGSB: flags_out = b;

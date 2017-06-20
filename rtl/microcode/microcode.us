@@ -273,13 +273,6 @@ reset:
         segment_wr_en;
     next_instruction, jmp opcode_fetch;
 
-// Unimplemented opcodes
-#define UNIMPLEMENTED(opcode) \
-    .at opcode; \
-    next_instruction
-
-UNIMPLEMENTED(0xc8);
-
 .auto_address;
 write_16_complete:
     segment DS, mem_write, next_instruction;
