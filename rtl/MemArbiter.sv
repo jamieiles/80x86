@@ -6,7 +6,6 @@ module MemArbiter(input logic clk,
                   input logic instr_m_access,
                   output logic instr_m_ack,
                   // Data bus
-                  input logic d_io,
                   input logic [19:1] data_m_addr,
                   output logic [15:0] data_m_data_in,
                   input logic [15:0] data_m_data_out,
@@ -26,7 +25,7 @@ module MemArbiter(input logic clk,
 reg grant_to_data;
 reg grant_active;
 
-wire q_data = (grant_active && grant_to_data) || (!grant_active && data_m_access && !d_io);
+wire q_data = (grant_active && grant_to_data) || (!grant_active && data_m_access);
 
 assign q_m_addr = q_data ? data_m_addr : grant_active ? instr_m_addr : 19'b0;
 assign q_m_data_out = data_m_data_out;
@@ -45,9 +44,9 @@ always_ff @(posedge clk or posedge reset) begin
     end else begin
         if (q_m_ack)
             grant_active <= 1'b0;
-        else if (!grant_active && ((data_m_access & !d_io) || instr_m_access)) begin
+        else if (!grant_active && (data_m_access || instr_m_access)) begin
             grant_active <= 1'b1;
-            grant_to_data <= data_m_access && !d_io;
+            grant_to_data <= data_m_access;
         end
     end
 end
