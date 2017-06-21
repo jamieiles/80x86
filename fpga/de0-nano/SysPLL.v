@@ -55,7 +55,7 @@ defparam
 	altpll_component.clk1_divide_by = 1,
 	altpll_component.clk1_duty_cycle = 50,
 	altpll_component.clk1_multiply_by = 1,
-	altpll_component.clk1_phase_shift = "-2790",
+	altpll_component.clk1_phase_shift = "-4500",
 	altpll_component.compensate_clock = "CLK0",
 	altpll_component.inclk0_input_frequency = 20000,
 	altpll_component.intended_device_family = "Cyclone IV E",
