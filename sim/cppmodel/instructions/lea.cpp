@@ -4,7 +4,8 @@ void EmulatorPimpl::lea8d()
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
 
-    registers->set(modrm_decoder->reg(), modrm_decoder->effective_address());
+    if (modrm_decoder->rm_type() != OP_REG)
+        registers->set(modrm_decoder->reg(), modrm_decoder->effective_address());
 }
 
 // lds r, m

@@ -25,15 +25,6 @@ TEST_F(EmulateFixture, LeaAxBxSiDisplacement)
     ASSERT_EQ(0x1234 + 0x0400 + 0x0100, read_reg(AX));
 }
 
-TEST_F(EmulateFixture, LdsReg)
-{
-    // Invalid encoding
-    set_instruction({ 0xc5, 0xc0 });
-    emulate();
-
-    ASSERT_FALSE(instruction_had_side_effects());
-}
-
 TEST_F(EmulateFixture, Lds)
 {
     // lds si, [0x0100]
