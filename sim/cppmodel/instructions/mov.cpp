@@ -128,15 +128,8 @@ void EmulatorPimpl::mov8e()
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
 
-    if (modrm_decoder->raw_reg() & (1 << 2)) {
-        std::cerr << "warning: invalid reg " << std::hex <<
-            (unsigned)modrm_decoder->raw_reg() <<
-            " for opcode 0x" << (unsigned)opcode << std::endl;
-        return;
-    }
-
     uint16_t val = read_data<uint16_t>();
-    auto segnum = modrm_decoder->raw_reg();
+    auto segnum = modrm_decoder->raw_reg() & 0x3;
     auto reg = static_cast<GPR>(static_cast<int>(ES) + segnum);
 
     registers->set(reg, val);
@@ -149,14 +142,7 @@ void EmulatorPimpl::mov8c()
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
 
-    if (modrm_decoder->raw_reg() & (1 << 2)) {
-        std::cerr << "warning: invalid reg " << std::hex <<
-            (unsigned)modrm_decoder->raw_reg() <<
-            " for opcode 0x" << (unsigned)opcode << std::endl;
-        return;
-    }
-
-    auto segnum = modrm_decoder->raw_reg();
+    auto segnum = modrm_decoder->raw_reg() & 0x3;
     auto reg = static_cast<GPR>(static_cast<int>(ES) + segnum);
     uint16_t val = registers->get(reg);
 
