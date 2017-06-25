@@ -36,15 +36,6 @@ TEST_F(EmulateFixture, Lds)
     ASSERT_EQ(0x1234, read_reg(SI));
 }
 
-TEST_F(EmulateFixture, LesReg)
-{
-    // Invalid encoding
-    set_instruction({ 0xc4, 0xc0 });
-    emulate();
-
-    ASSERT_FALSE(instruction_had_side_effects());
-}
-
 TEST_F(EmulateFixture, Les)
 {
     // les si, [0x0100]

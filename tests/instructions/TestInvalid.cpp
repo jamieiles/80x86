@@ -45,11 +45,54 @@ INSTANTIATE_TEST_CASE_P(InvalidOpcode, InvalidOpcodeFixture,
         std::vector<uint8_t>{ 0xff, 0xff }
     ));
 
-TEST_F(EmulateFixture, InvalidRegFE)
+class UnimplementedOpcodeFixture : public EmulateFixture,
+    public ::testing::WithParamInterface<std::vector<uint8_t>> {
+};
+TEST_P(UnimplementedOpcodeFixture, UnimplementedOpcode)
 {
-    set_instruction({ 0xfe, 2 << 3 });
+    set_instruction(GetParam());
 
     emulate();
 
     ASSERT_FALSE(instruction_had_side_effects());
 }
+INSTANTIATE_TEST_CASE_P(UnimplementedOpcode, UnimplementedOpcodeFixture,
+    ::testing::Values(
+        // inc
+        std::vector<uint8_t>{ 0xfe, 2 << 3 },
+        std::vector<uint8_t>{ 0xfe, 3 << 3 },
+        std::vector<uint8_t>{ 0xfe, 4 << 3 },
+        std::vector<uint8_t>{ 0xfe, 5 << 3 },
+        std::vector<uint8_t>{ 0xfe, 6 << 3 },
+        // pop
+        std::vector<uint8_t>{ 0x8f, 1 << 3 },
+        std::vector<uint8_t>{ 0x8f, 2 << 3 },
+        std::vector<uint8_t>{ 0x8f, 3 << 3 },
+        std::vector<uint8_t>{ 0x8f, 4 << 3 },
+        std::vector<uint8_t>{ 0x8f, 5 << 3 },
+        std::vector<uint8_t>{ 0x8f, 6 << 3 },
+        std::vector<uint8_t>{ 0x8f, 7 << 3 },
+        // mov
+        std::vector<uint8_t>{ 0xc6, 1 << 3 },
+        std::vector<uint8_t>{ 0xc6, 2 << 3 },
+        std::vector<uint8_t>{ 0xc6, 3 << 3 },
+        std::vector<uint8_t>{ 0xc6, 4 << 3 },
+        std::vector<uint8_t>{ 0xc6, 5 << 3 },
+        std::vector<uint8_t>{ 0xc6, 6 << 3 },
+        std::vector<uint8_t>{ 0xc6, 7 << 3 },
+        std::vector<uint8_t>{ 0xc7, 1 << 3 },
+        std::vector<uint8_t>{ 0xc7, 2 << 3 },
+        std::vector<uint8_t>{ 0xc7, 3 << 3 },
+        std::vector<uint8_t>{ 0xc7, 4 << 3 },
+        std::vector<uint8_t>{ 0xc7, 5 << 3 },
+        std::vector<uint8_t>{ 0xc7, 6 << 3 },
+        std::vector<uint8_t>{ 0xc7, 7 << 3 },
+        // lds
+        std::vector<uint8_t>{ 0xc5, 0xc0 },
+        // les
+        std::vector<uint8_t>{ 0xc4, 0xc0 },
+        // lea
+        std::vector<uint8_t>{ 0x8d, 0xc0 },
+        // call indirect inter reg
+        std::vector<uint8_t>{ 0xff, 3 << 6 | 3 << 3 }
+    ));

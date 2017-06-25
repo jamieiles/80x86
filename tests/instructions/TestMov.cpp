@@ -237,15 +237,29 @@ TEST_F(EmulateFixture, MovMemoryAccumulator16)
     ASSERT_EQ(0xaa55, read_mem16(0x1234));
 }
 
-TEST_F(EmulateFixture, MovSRReg)
+class MovSRFixture : public EmulateFixture,
+    public ::testing::WithParamInterface<std::pair<uint8_t, GPR>> {
+};
+TEST_P(MovSRFixture, MovSRReg)
 {
-    // mov es, ax
-    set_instruction({ 0x8e, 0xc0 });
+    // mov ?s, ax
+    set_instruction({ 0x8e, GetParam().first });
     write_reg(AX, 0x8000);
     emulate();
 
-    ASSERT_EQ(0x8000, read_reg(ES));
+    ASSERT_EQ(read_reg(GetParam().second), 0x8000);
 }
+INSTANTIATE_TEST_CASE_P(MovSRReg, MovSRFixture,
+    ::testing::Values(
+        std::make_pair<uint8_t, GPR>( 0xc0 | (0 << 3), ES ),
+        std::make_pair<uint8_t, GPR>( 0xc0 | (1 << 3), CS ),
+        std::make_pair<uint8_t, GPR>( 0xc0 | (2 << 3), SS ),
+        std::make_pair<uint8_t, GPR>( 0xc0 | (3 << 3), DS ),
+        std::make_pair<uint8_t, GPR>( 0xc0 | (4 << 3), ES ),
+        std::make_pair<uint8_t, GPR>( 0xc0 | (5 << 3), CS ),
+        std::make_pair<uint8_t, GPR>( 0xc0 | (6 << 3), SS ),
+        std::make_pair<uint8_t, GPR>( 0xc0 | (7 << 3), DS )
+    ));
 
 TEST_F(EmulateFixture, MovSRMem)
 {
@@ -278,3 +292,27 @@ TEST_F(EmulateFixture, MovMemSR)
 
     ASSERT_EQ(0x8000, read_mem16(0x0100));
 }
+
+class MovRegSRFixture : public EmulateFixture,
+    public ::testing::WithParamInterface<std::pair<uint8_t, GPR>> {
+};
+TEST_P(MovRegSRFixture, MovSRReg)
+{
+    // mov ax, ?s
+    write_reg(GetParam().second, 0x8000);
+    set_instruction({ 0x8c, GetParam().first });
+    emulate();
+
+    ASSERT_EQ(0x8000, read_reg(AX));
+}
+INSTANTIATE_TEST_CASE_P(MovRegSR, MovRegSRFixture,
+    ::testing::Values(
+        std::make_pair<uint8_t, GPR>( 0xc0 | (0 << 3), ES ),
+        std::make_pair<uint8_t, GPR>( 0xc0 | (1 << 3), CS ),
+        std::make_pair<uint8_t, GPR>( 0xc0 | (2 << 3), SS ),
+        std::make_pair<uint8_t, GPR>( 0xc0 | (3 << 3), DS ),
+        std::make_pair<uint8_t, GPR>( 0xc0 | (4 << 3), ES ),
+        std::make_pair<uint8_t, GPR>( 0xc0 | (5 << 3), CS ),
+        std::make_pair<uint8_t, GPR>( 0xc0 | (6 << 3), SS ),
+        std::make_pair<uint8_t, GPR>( 0xc0 | (7 << 3), DS )
+    ));

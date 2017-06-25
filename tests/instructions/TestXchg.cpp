@@ -65,15 +65,28 @@ TEST_F(EmulateFixture, XchgALALNop)
     ASSERT_EQ(read_reg(AL), 0xaa);
 }
 
-TEST_F(EmulateFixture, XchgRegAccumulator)
+class XchgAXFixture : public EmulateFixture,
+    public ::testing::WithParamInterface<std::pair<uint8_t, GPR>> {
+};
+TEST_P(XchgAXFixture, XchgRegAccumulator)
 {
-    // xchg ax, bx
-    set_instruction({ 0x93 });
+    // xchg ax, ?x
+    set_instruction({ GetParam().first });
     write_reg(AX, 0xaaaa);
-    write_reg(BX, 0xbbbb);
+    write_reg(GetParam().second, 0xbbbb);
 
     emulate();
 
     ASSERT_EQ(read_reg(AX), 0xbbbb);
-    ASSERT_EQ(read_reg(BX), 0xaaaa);
+    ASSERT_EQ(read_reg(GetParam().second), 0xaaaa);
 }
+INSTANTIATE_TEST_CASE_P(XchgAccumulator, XchgAXFixture,
+    ::testing::Values(
+        std::make_pair<uint8_t, GPR>( 0x91, CX ),
+        std::make_pair<uint8_t, GPR>( 0x92, DX ),
+        std::make_pair<uint8_t, GPR>( 0x93, BX ),
+        std::make_pair<uint8_t, GPR>( 0x94, SP ),
+        std::make_pair<uint8_t, GPR>( 0x95, BP ),
+        std::make_pair<uint8_t, GPR>( 0x96, SI ),
+        std::make_pair<uint8_t, GPR>( 0x97, DI )
+    ));
