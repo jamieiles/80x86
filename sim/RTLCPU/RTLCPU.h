@@ -27,13 +27,15 @@ public:
     bool int_yield_ready();
     void debug_detach();
     size_t step();
+    void idle(int count);
+    int time_step();
     void write_flags(uint16_t val);
     uint16_t read_flags();
     bool has_trapped();
 
-    void debug_run_proc(unsigned addr);
+    int debug_run_proc(unsigned addr);
     void debug_seize();
-    void debug_step();
+    int debug_step();
     bool debug_is_stopped() const
     {
         return is_stopped;

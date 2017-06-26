@@ -86,7 +86,7 @@ RTLCPU<debug_enabled>::RTLCPU(const std::string &test_name)
 }
 
 template <bool debug_enabled>
-void RTLCPU<debug_enabled>::debug_run_proc(unsigned addr)
+int RTLCPU<debug_enabled>::debug_run_proc(unsigned addr)
 {
     this->after_n_cycles(0, [&]{
         this->dut.debug_addr = addr;
@@ -105,21 +105,28 @@ void RTLCPU<debug_enabled>::debug_run_proc(unsigned addr)
     }
 
     // wait for completion
+    cycle_count = 0;
     while (!debug_is_stopped()) {
         this->cycle();
-        ++cycle_count;
+
+        auto addr = get_microcode_address();
+        // Dispatch address and debug idle don't count
+        if (addr != 0x100 && addr != 0x102)
+            ++cycle_count;
     }
 
     if (cycle_count >= max_cycles_per_step)
         throw std::runtime_error("execution timeout");
+
+    return cycle_count;
 }
 
 template <bool debug_enabled>
-void RTLCPU<debug_enabled>::debug_step()
+int RTLCPU<debug_enabled>::debug_step()
 {
     assert(is_stopped);
 
-    debug_run_proc(0x00);
+    return debug_run_proc(0x00);
 }
 
 template <bool debug_enabled>
@@ -325,6 +332,18 @@ size_t RTLCPU<debug_enabled>::step()
     this->debug_step();
 
     return this->get_and_clear_instr_length();
+}
+
+template <bool debug_enabled>
+void RTLCPU<debug_enabled>::idle(int count)
+{
+    this->cycle(count);
+}
+
+template <bool debug_enabled>
+int RTLCPU<debug_enabled>::time_step()
+{
+    return this->debug_step();
 }
 
 template <bool debug_enabled>
@@ -568,3 +587,5 @@ uint16_t RTLCPU<debug_enabled>::read_io16(uint32_t addr)
 }
 
 template RTLCPU<verilator_debug_enabled>::RTLCPU(const std::string &);
+template void RTLCPU<verilator_debug_enabled>::idle(int count);
+template int RTLCPU<verilator_debug_enabled>::time_step();

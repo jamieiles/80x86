@@ -1,0 +1,23 @@
+<%#instructions%>
+=== <%mnemonic%>
+
+==== Flags updated
+
+[cols="9*^",options="header",width="50%"]
+|===
+| C | P | A | Z | S | T | I | D | O
+| <%flags.C%> | <%flags.P%> | <%flags.A%> | <%flags.Z%> | <%flags.S%> | <%flags.T%> | <%flags.I%> | <%flags.D%> | <%flags.O%>
+|===
+
+==== Encoding
+
+.<%mnemonic%> encoding
+[cols="<4m,^2m,^1,^1",options="header",align="center"]
+|===
+| Mnemonic | Opcode | Size | Latency
+<%#encodings%>
+| <%mnemonic%> | <%opcode%> | <%size%> | <%cycles%>
+<%/encodings%>
+|===
+<<<
+<%/instructions%>

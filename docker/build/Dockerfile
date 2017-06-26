@@ -22,8 +22,10 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         python3 \
         python-distorm3 \
         python3-pip \
+        python-pystache \
         python3-pystache \
         python-lxml \
+        python-yaml \
         wget \
         flex \
         bison

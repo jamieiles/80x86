@@ -1,0 +1,140 @@
+#!/usr/bin/env python
+import os
+import pprint
+import pystache
+import yaml
+
+from py8086sim.Cpu import RTLCPU, GPR
+
+HERE = os.path.dirname(__file__)
+INSTR_TEMPLATE = os.path.join(HERE, '..', 'documentation', 'instructions.templ')
+
+pystache.defaults.DELIMITERS = (u'<%', u'%>')
+
+with open(os.path.join(HERE, '..', 'documentation', 'instructions.yaml')) as instr:
+    instructions = yaml.load(instr)
+
+def has_modrm(operands):
+    return any(map(lambda x: x != 'ES' and x.startswith('E'), operands))
+
+def has_immediate(operands):
+    return any(map(lambda x: x.startswith('I'), operands))
+
+def has_mem_only(operands):
+    return any(map(lambda x: x.startswith('M'), operands))
+
+def modrm(reg, encoding, rm_reg=None):
+    reg = int(encoding.get('reg', reg))
+    if rm_reg:
+        return (3 << 6) | (int(reg) << 3) | int(rm_reg)
+
+    return int(reg) << 3
+
+def immediate(operands):
+    imm_bytes = []
+    for o in operands:
+        if not o.startswith('I'):
+            continue
+        imm_bytes.append(0)
+        if o.endswith('w'):
+            imm_bytes.append(0)
+    return imm_bytes
+
+def describe_operands(operands, E='memory'):
+    names = []
+
+    for o in operands:
+        name = ''
+
+        if o in GPR.names:
+            names.append(o)
+            continue
+
+        for c in o:
+            if c == 'E':
+                name += E
+            elif c == 'G':
+                name += 'register'
+            elif c == 'M':
+                name += 'memory'
+            elif c == 'I':
+                name += 'immediate'
+            elif c == 'O':
+                name += 'moffset'
+            elif c == 'w':
+                name += '16'
+            elif c == 'b':
+                name += '8'
+            elif c == 'p':
+                name += '(seg:offset)'
+            else:
+                raise ValueError("Invalid operand type %s %c" % (o,c ))
+
+        names.append(name)
+
+    return names
+
+def encode(encoding):
+    instr = [encoding['opcode']]
+    operands = encoding.get('operands', [])
+
+    immed = immediate(operands)
+
+    if 'operands' in encoding and has_mem_only(operands):
+        yield describe_operands(operands), instr + [modrm(GPR.AX, encoding, rm_reg=GPR.BX)] + immed
+    elif 'operands' in encoding and has_modrm(operands):
+        yield describe_operands(operands, E='register'), instr + [modrm(GPR.AX, encoding, rm_reg=GPR.BX)] + immed
+        yield describe_operands(operands, E='memory'), instr + [modrm(GPR.AX, encoding)] + immed
+    else:
+        yield describe_operands(operands), instr + immed
+
+def count_cycles(instr, name):
+    cpu = RTLCPU(name.replace('/', '_').replace(' ', '_'))
+
+    cpu.reset()
+    cpu.write_vector8(cpu.read_reg(GPR.CS),
+                        cpu.read_reg(GPR.IP), instr)
+    cpu.write_reg(GPR.CS, cpu.read_reg(GPR.CS))
+    cpu.idle(256)
+    return cpu.time_step()
+
+def describe_modrm(encoding):
+    if 'reg' in encoding:
+        return ' /{0}'.format(encoding['reg'])
+    elif has_modrm(encoding.get('operands', [])):
+        return ' /r'
+    return ''
+
+def describe_immediates(encoding):
+    return ' ' + ', '.join(filter(lambda x: x[0] == 'I', encoding.get('operands', [])))
+
+definitions = []
+for mnemonic in sorted(instructions.keys()):
+    definition = instructions[mnemonic]
+    encodings = []
+
+    for encoding in definition['encodings']:
+        for operand_description, instr in encode(encoding):
+            opcode = '{0:02x}'.format(encoding['opcode'])
+            opcode += describe_modrm(encoding)
+            opcode += describe_immediates(encoding)
+
+            size = len(instr)
+            # Optional immediate added to form EA
+            if has_modrm(encoding.get('operands', [])):
+                size = '{0}-{1}'.format(size, size + 2)
+            encodings.append({
+                'opcode': opcode,
+                'mnemonic': mnemonic + ' ' + ', '.join(operand_description),
+                'cycles': count_cycles(instr, mnemonic + '_'.join(operand_description)+str(encoding.get('reg', ''))),
+                'size': size
+            })
+
+    definitions.append({
+        'mnemonic': mnemonic.upper(),
+        'encodings': encodings,
+        'flags': definition.get('flags', {})
+    })
+
+with open(INSTR_TEMPLATE) as template:
+    print pystache.render(template.read(), { 'instructions': definitions })

@@ -603,6 +603,10 @@ drive and will boot the first sector of whatever is written to that SD card.
 The BIOS is loaded at "f000:e000", and the BIOS stack grows down from
 "f000:dffe".  The UART is used for video and keyboard services.
 
+== Instructions
+
+include::instructions.asciidoc[]
+
 == RTL Tests
 
 The RTL tests are written in {cpp}, using Verilator to create {cpp} models of the

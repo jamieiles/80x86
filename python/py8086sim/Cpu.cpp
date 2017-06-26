@@ -75,6 +75,8 @@ BOOST_PYTHON_MODULE(Cpu)
         .def("read_flags", &rtlcpu::read_flags)
         .def("write_flags", &rtlcpu::write_flags)
         .def("step", &rtlcpu::step)
+        .def("idle", &rtlcpu::idle)
+        .def("time_step", &rtlcpu::time_step)
         .def("has_trapped", &rtlcpu::has_trapped);
     class_<JTAGCPU, boost::noncopyable>("JTAGCPU", init<const std::string &>())
         .def("reset", &JTAGCPU::reset)

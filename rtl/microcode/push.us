@@ -134,39 +134,39 @@ popa:
     a_sel RA, alu_op SELA, mar_wr_sel Q, mar_write, segment_force,
         segment SS;
 
-    segment_force, segment SS, mem_read;
-    rd_sel_source MICROCODE_RD_SEL, rd_sel DI, reg_wr_en, a_sel MDR;
+    segment_force, segment SS, mem_read,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel DI, reg_wr_en, a_sel MDR;
     a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, mar_wr_sel Q,
         mar_write, segment_force, segment SS;
 
-    segment_force, segment SS, mem_read;
-    rd_sel_source MICROCODE_RD_SEL, rd_sel SI, reg_wr_en, a_sel MDR;
+    segment_force, segment SS, mem_read,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel SI, reg_wr_en, a_sel MDR;
     a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, mar_wr_sel Q,
         mar_write, segment_force, segment SS;
 
-    segment_force, segment SS, mem_read;
+    segment_force, segment SS, mem_read,
     // Skip over SP
-    rd_sel_source MICROCODE_RD_SEL, rd_sel BP, reg_wr_en, a_sel MDR;
+        rd_sel_source MICROCODE_RD_SEL, rd_sel BP, reg_wr_en, a_sel MDR;
     a_sel MAR, b_sel IMMEDIATE, immediate 0x4, alu_op ADD, mar_wr_sel Q,
         mar_write, segment_force, segment SS;
 
-    segment_force, segment SS, mem_read;
-    rd_sel_source MICROCODE_RD_SEL, rd_sel BX, reg_wr_en, a_sel MDR;
+    segment_force, segment SS, mem_read,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel BX, reg_wr_en, a_sel MDR;
     a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, mar_wr_sel Q,
         mar_write, segment_force, segment SS;
 
-    segment_force, segment SS, mem_read;
-    rd_sel_source MICROCODE_RD_SEL, rd_sel DX, reg_wr_en, a_sel MDR;
+    segment_force, segment SS, mem_read,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel DX, reg_wr_en, a_sel MDR;
     a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, mar_wr_sel Q,
         mar_write, segment_force, segment SS;
 
-    segment_force, segment SS, mem_read;
-    rd_sel_source MICROCODE_RD_SEL, rd_sel CX, reg_wr_en, a_sel MDR;
+    segment_force, segment SS, mem_read,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel CX, reg_wr_en, a_sel MDR;
     a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, mar_wr_sel Q,
         mar_write, segment_force, segment SS;
 
-    segment_force, segment SS, mem_read;
-    rd_sel_source MICROCODE_RD_SEL, rd_sel AX, reg_wr_en, a_sel MDR;
+    segment_force, segment SS, mem_read,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel AX, reg_wr_en, a_sel MDR;
     a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, mar_wr_sel Q,
         mar_write, segment_force, segment SS;
 
