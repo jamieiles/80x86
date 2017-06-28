@@ -10,6 +10,9 @@
 #include <functional>
 #include <map>
 #include <vector>
+#include <errno.h>
+
+#include <sys/stat.h>
 
 enum PeriodicEventType {
     // Run at the end of the cycle once the DUT has been clocked and
@@ -147,6 +150,10 @@ VerilogDriver<T, debug_enabled>::~VerilogDriver()
 
     if (verilator_coverage_enabled) {
         auto filename = (boost::format("%s.dat") % instance_name).str();
+
+        if (mkdir("coverage", 0755) && errno != EEXIST)
+            throw std::runtime_error("Failed to create coverage dir");
+
         boost::replace_all(filename, "/", "_");
         VerilatedCov::write(("coverage/" + filename).c_str());
         VerilatedCov::clear();
