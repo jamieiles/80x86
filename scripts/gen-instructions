@@ -33,11 +33,14 @@ def modrm(reg, encoding, rm_reg=None):
 def immediate(operands):
     imm_bytes = []
     for o in operands:
-        if not o.startswith('I'):
+        if o[0] not in 'IJ':
             continue
         imm_bytes.append(0)
         if o.endswith('w'):
             imm_bytes.append(0)
+        elif o.endswith('p'):
+            for _ in xrange(3):
+                imm_bytes.append(0)
     return imm_bytes
 
 def describe_operands(operands, E='memory'):
@@ -59,6 +62,8 @@ def describe_operands(operands, E='memory'):
                 name += 'memory'
             elif c == 'I':
                 name += 'immediate'
+            elif c == 'J':
+                name += 'displacement'
             elif c == 'O':
                 name += 'moffset'
             elif c == 'w':
@@ -81,14 +86,17 @@ def encode(encoding):
     immed = immediate(operands)
 
     if 'operands' in encoding and has_mem_only(operands):
-        yield describe_operands(operands), instr + [modrm(GPR.AX, encoding, rm_reg=GPR.BX)] + immed
+        yield describe_operands(operands), instr + [modrm(GPR.AX, encoding)] + immed
     elif 'operands' in encoding and has_modrm(operands):
         yield describe_operands(operands, E='register'), instr + [modrm(GPR.AX, encoding, rm_reg=GPR.BX)] + immed
         yield describe_operands(operands, E='memory'), instr + [modrm(GPR.AX, encoding)] + immed
     else:
         yield describe_operands(operands), instr + immed
 
-def count_cycles(instr, name):
+def count_cycles(instr, name, note=None, skip=False):
+    if skip:
+        return '-'
+
     cpu = RTLCPU(name.replace('/', '_').replace(' ', '_'))
 
     cpu.reset()
@@ -96,7 +104,12 @@ def count_cycles(instr, name):
                         cpu.read_reg(GPR.IP), instr)
     cpu.write_reg(GPR.CS, cpu.read_reg(GPR.CS))
     cpu.idle(256)
-    return cpu.time_step()
+
+    count = cpu.time_step()
+    if not note:
+        return count
+
+    return '{0} {1}'.format(count, note)
 
 def describe_modrm(encoding):
     if 'reg' in encoding:
@@ -126,7 +139,9 @@ for mnemonic in sorted(instructions.keys()):
             encodings.append({
                 'opcode': opcode,
                 'mnemonic': mnemonic + ' ' + ', '.join(operand_description),
-                'cycles': count_cycles(instr, mnemonic + '_'.join(operand_description)+str(encoding.get('reg', ''))),
+                'cycles': count_cycles(instr, mnemonic + '_'.join(operand_description)+str(encoding.get('reg', '')),
+                                       note=encoding.get('note', ''),
+                                       skip=encoding.get('notime', False)),
                 'size': size
             })
 

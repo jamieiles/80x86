@@ -346,7 +346,6 @@ pop:
       operands: [DS]
     - opcode: 0x8f
       operands: [Ew]
-
 popf:
     flags:
      O: M
@@ -360,9 +359,48 @@ popf:
      D: M
     encodings:
     - opcode: 0x9d
+push:
+    encodings:
+    - opcode: 0xff
+      reg: 6
+      operands: [Ew]
+    - opcode: 0x06
+      operands: [ES]
+    - opcode: 0x0e
+      operands: [CS]
+    - opcode: 0x16
+      operands: [SS]
+    - opcode: 0x1e
+      operands: [DS]
+    - opcode: 0x50
+      operands: [AX]
+    - opcode: 0x51
+      operands: [CX]
+    - opcode: 0x52
+      operands: [DX]
+    - opcode: 0x53
+      operands: [BX]
+    - opcode: 0x54
+      operands: [SP]
+    - opcode: 0x55
+      operands: [BP]
+    - opcode: 0x56
+      operands: [SI]
+    - opcode: 0x57
+      operands: [DI]
+    - opcode: 0x68
+      operands: [Iw]
+    - opcode: 0x6a
+      operands: [Ib]
+pushf:
+    encodings:
+    - opcode: 0x9c
 popa:
     encodings:
     - opcode: 0x61
+pusha:
+    encodings:
+    - opcode: 0x60
 clc:
     flags:
      C: 0
@@ -485,6 +523,10 @@ lds:
     encodings:
     - opcode: 0xc5
       operands: [Gw, Mp]
+lea:
+    encodings:
+    - opcode: 0x8d
+      operands: [Gw, Mw]
 les:
     encodings:
     - opcode: 0xc4
@@ -593,3 +635,427 @@ mov:
       operands: [Ob, AL]
     - opcode: 0xa3
       operands: [Ow, AX]
+aaa:
+    flags:
+      A: M
+      C: M
+    encodings:
+    - opcode: 0x37
+      operands: [AX]
+aad:
+    flags:
+      S: M
+      Z: M
+      P: M
+    encodings:
+    - opcode: 0xd5
+      operands: [AX, Ib]
+aas:
+    flags:
+      A: M
+      C: M
+    encodings:
+    - opcode: 0x3f
+      operands: [AX]
+daa:
+    flags:
+      S: M
+      Z: M
+      A: M
+      C: M
+      P: M
+    encodings:
+    - opcode: 0x27
+      operands: [AL]
+das:
+    flags:
+      S: M
+      Z: M
+      A: M
+      C: M
+      P: M
+    encodings:
+    - opcode: 0x2f
+      operands: [AX]
+imul:
+    flags:
+      C: M
+      O: M
+      Z: M
+    encodings:
+    - opcode: 0xf6
+      reg: 5
+      operands: [Eb, Ib]
+    - opcode: 0xf7
+      reg: 5
+      operands: [Ew, Iw]
+    - opcode: 0x69
+      operands: [Ew, Iw]
+    - opcode: 0x6b
+      operands: [Ew, Ib]
+mul:
+    flags:
+      C: M
+      O: M
+      Z: M
+    encodings:
+    - opcode: 0xf6
+      reg: 4
+      operands: [Eb, Ib]
+    - opcode: 0xf7
+      reg: 4
+      operands: [Ew, Iw]
+int3:
+    encodings:
+    - opcode: 0xcc
+int:
+    encodings:
+    - opcode: 0xcd
+      operands: [Ib]
+xchg:
+    encodings:
+    - opcode: 0x86
+      operands: [Gb, Eb]
+    - opcode: 0x87
+      operands: [Gw, Ew]
+    - opcode: 0x91
+      operands: [CX, AX]
+    - opcode: 0x92
+      operands: [DX, AX]
+    - opcode: 0x93
+      operands: [BX, AX]
+    - opcode: 0x94
+      operands: [SP, AX]
+    - opcode: 0x95
+      operands: [BP, AX]
+    - opcode: 0x96
+      operands: [SI, AX]
+    - opcode: 0x97
+      operands: [DI, AX]
+call:
+    encodings:
+    - opcode: 0xe8
+      operands: [Iw]
+    - opcode: 0x9a
+      operands: [Jp]
+    - opcode: 0xff
+      reg: 2
+      operands: [Ew]
+    - opcode: 0xff
+      reg: 3
+      operands: [Mp]
+iret:
+    flags:
+      C: M
+      P: M
+      A: M
+      Z: M
+      S: M
+      T: M
+      I: M
+      D: M
+      O: M
+    encodings:
+    - opcode: 0xcf
+ret:
+    encodings:
+    - opcode: 0xc3
+    - opcode: 0xc2
+      operands: [Iw]
+    - opcode: 0xcb
+    - opcode: 0xca
+      operands: [Iw]
+rcl:
+    flags:
+     C: M
+     O: M
+    encodings:
+    # Single bit
+    - opcode: 0xd0
+      reg: 2
+      operands: [Eb]
+    - opcode: 0xd1
+      reg: 2
+      operands: [Ew]
+    # By immediate
+    - opcode: 0xc0
+      reg: 2
+      operands: [Eb, Ib]
+      note: "+ (n-1)"
+    - opcode: 0xc1
+      reg: 2
+      operands: [Ew, Ib]
+      note: "+ (n-1)"
+    # By reg
+    - opcode: 0xd2
+      reg: 2
+      operands: [Eb, CL]
+      note: "+ (n-1)"
+    - opcode: 0xd3
+      reg: 2
+      operands: [Ew, CL]
+      note: "+ (n-1)"
+rcr:
+    flags:
+     C: M
+     O: M
+    encodings:
+    # Single bit
+    - opcode: 0xd0
+      reg: 3
+      operands: [Eb]
+    - opcode: 0xd1
+      reg: 3
+      operands: [Ew]
+    # By immediate
+    - opcode: 0xc0
+      reg: 3
+      operands: [Eb, Ib]
+      note: "+ (n-1)"
+    - opcode: 0xc1
+      reg: 3
+      operands: [Ew, Ib]
+      note: "+ (n-1)"
+    # By reg
+    - opcode: 0xd2
+      reg: 3
+      operands: [Eb, CL]
+      note: "+ (n-1)"
+    - opcode: 0xd3
+      reg: 3
+      operands: [Ew, CL]
+      note: "+ (n-1)"
+rol:
+    flags:
+     C: M
+     O: M
+    encodings:
+    # Single bit
+    - opcode: 0xd0
+      reg: 0
+      operands: [Eb]
+    - opcode: 0xd1
+      reg: 0
+      operands: [Ew]
+    # By immediate
+    - opcode: 0xc0
+      reg: 0
+      operands: [Eb, Ib]
+      note: "+ (n-1)"
+    - opcode: 0xc1
+      reg: 0
+      operands: [Ew, Ib]
+      note: "+ (n-1)"
+    # By reg
+    - opcode: 0xd2
+      reg: 0
+      operands: [Eb, CL]
+      note: "+ (n-1)"
+    - opcode: 0xd3
+      reg: 0
+      operands: [Ew, CL]
+      note: "+ (n-1)"
+ror:
+    flags:
+     C: M
+     O: M
+    encodings:
+    # Single bit
+    - opcode: 0xd0
+      reg: 1
+      operands: [Eb]
+    - opcode: 0xd1
+      reg: 1
+      operands: [Ew]
+    # By immediate
+    - opcode: 0xc0
+      reg: 1
+      operands: [Eb, Ib]
+      note: "+ (n-1)"
+    - opcode: 0xc1
+      reg: 1
+      operands: [Ew, Ib]
+      note: "+ (n-1)"
+    # By reg
+    - opcode: 0xd2
+      reg: 1
+      operands: [Eb, CL]
+      note: "+ (n-1)"
+    - opcode: 0xd3
+      reg: 1
+      operands: [Ew, CL]
+      note: "+ (n-1)"
+sar:
+    flags:
+     C: M
+     O: M
+     Z: M
+     P: M
+     S: M
+    encodings:
+    # Single bit
+    - opcode: 0xd0
+      reg: 7
+      operands: [Eb]
+    - opcode: 0xd1
+      reg: 7
+      operands: [Ew]
+    # By immediate
+    - opcode: 0xc0
+      reg: 7
+      operands: [Eb, Ib]
+      note: "+ (n-1)"
+    - opcode: 0xc1
+      reg: 7
+      operands: [Ew, Ib]
+      note: "+ (n-1)"
+    # By reg
+    - opcode: 0xd2
+      reg: 7
+      operands: [Eb, CL]
+      note: "+ (n-1)"
+    - opcode: 0xd3
+      reg: 7
+      operands: [Ew, CL]
+      note: "+ (n-1)"
+shl:
+    flags:
+     C: M
+     O: M
+     Z: M
+     P: M
+     S: M
+    encodings:
+    # Single bit
+    - opcode: 0xd0
+      reg: 6
+      operands: [Eb]
+    - opcode: 0xd1
+      reg: 6
+      operands: [Ew]
+    # By immediate
+    - opcode: 0xc0
+      reg: 6
+      operands: [Eb, Ib]
+      note: "+ (n-1)"
+    - opcode: 0xc1
+      reg: 6
+      operands: [Ew, Ib]
+      note: "+ (n-1)"
+    # By reg
+    - opcode: 0xd2
+      reg: 6
+      operands: [Eb, CL]
+      note: "+ (n-1)"
+    - opcode: 0xd3
+      reg: 6
+      operands: [Ew, CL]
+      note: "+ (n-1)"
+sal:
+    flags:
+     C: M
+     O: M
+     Z: M
+     P: M
+     S: M
+    encodings:
+    # Single bit
+    - opcode: 0xd0
+      reg: 6
+      operands: [Eb]
+    - opcode: 0xd1
+      reg: 6
+      operands: [Ew]
+    # By immediate
+    - opcode: 0xc0
+      reg: 6
+      operands: [Eb, Ib]
+      note: "+ (n-1)"
+    - opcode: 0xc1
+      reg: 6
+      operands: [Ew, Ib]
+      note: "+ (n-1)"
+    # By reg
+    - opcode: 0xd2
+      reg: 6
+      operands: [Eb, CL]
+      note: "+ (n-1)"
+    - opcode: 0xd3
+      reg: 6
+      operands: [Ew, CL]
+      note: "+ (n-1)"
+shr:
+    flags:
+     C: M
+     O: M
+     Z: M
+     P: M
+     S: M
+    encodings:
+    # Single bit
+    - opcode: 0xd0
+      reg: 5
+      operands: [Eb]
+    - opcode: 0xd1
+      reg: 5
+      operands: [Ew]
+    # By immediate
+    - opcode: 0xc0
+      reg: 5
+      operands: [Eb, Ib]
+      note: "+ (n-1)"
+    - opcode: 0xc1
+      reg: 5
+      operands: [Ew, Ib]
+      note: "+ (n-1)"
+    # By reg
+    - opcode: 0xd2
+      reg: 5
+      operands: [Eb, CL]
+      note: "+ (n-1)"
+    - opcode: 0xd3
+      reg: 5
+      operands: [Ew, CL]
+      note: "+ (n-1)"
+esc:
+    encodings:
+    - opcode: 0xd8
+    - opcode: 0xd9
+    - opcode: 0xda
+    - opcode: 0xdb
+    - opcode: 0xdc
+    - opcode: 0xdd
+    - opcode: 0xde
+    - opcode: 0xdf
+hlt:
+    encodings:
+    - opcode: 0xf4
+      notime: true
+wait:
+    encodings:
+    - opcode: 0x9b
+      notime: true
+inb:
+    encodings:
+    - opcode: 0xe4
+      operands: [Ib]
+    - opcode: 0xec
+      operands: [DX]
+inw:
+    encodings:
+    - opcode: 0xe5
+      operands: [Ib]
+    - opcode: 0xed
+      operands: [DX]
+outb:
+    encodings:
+    - opcode: 0xe6
+      operands: [Ib]
+    - opcode: 0xee
+      operands: [DX]
+outw:
+    encodings:
+    - opcode: 0xe7
+      operands: [Ib]
+    - opcode: 0xef
+      operands: [DX]

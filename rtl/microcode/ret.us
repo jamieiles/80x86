@@ -56,6 +56,7 @@ retca:
     a_sel MDR, alu_op SELA, segment_force, segment CS,
         segment_wr_en, next_instruction;
 
+// iret
 .at 0xcf;
     ra_sel SP, jmp retcf;
 .auto_address;
