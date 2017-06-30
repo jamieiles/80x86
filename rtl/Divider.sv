@@ -56,7 +56,7 @@ wire [15:0] divisor_mag = (divisor + {16{divisor[15]}}) ^ {16{divisor[15]}};
 // Dividend
 wire [63:0] P16 = is_signed ?
     {32'b0, dividend_mag} : {32'b0, dividend};
-wire [63:0] P8 = is_signed ? 
+wire [63:0] P8 = is_signed ?
     {48'b0, dividend_mag[15:0]} : {48'b0, dividend[15:0]};
 wire [63:0] P_init = is_8_bit ? P8 : P16;
 
