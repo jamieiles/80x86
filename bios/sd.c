@@ -46,7 +46,7 @@ static void sd_send_initial_clock(void)
         spi_xfer_buf_set(i, 0xff);
     // No CS, slow clock
     outw(SPI_CONTROL_PORT, SPI_CS_DEACTIVATE | 0x1ff);
-    
+
     spi_xfer(8);
 }
 
@@ -58,7 +58,7 @@ static void sd_flush_fifo(void)
         spi_xfer_buf_set(i, 0xff);
     // No CS, slow clock
     outw(SPI_CONTROL_PORT, 0x1ff);
-    
+
     spi_xfer(8);
 }
 
