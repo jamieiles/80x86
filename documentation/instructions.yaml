@@ -685,10 +685,10 @@ imul:
     encodings:
     - opcode: 0xf6
       reg: 5
-      operands: [Eb, Ib]
+      operands: [Eb]
     - opcode: 0xf7
       reg: 5
-      operands: [Ew, Iw]
+      operands: [Ew]
     - opcode: 0x69
       operands: [Ew, Iw]
     - opcode: 0x6b
@@ -1059,3 +1059,335 @@ outw:
       operands: [Ib]
     - opcode: 0xef
       operands: [DX]
+aam:
+    flags:
+      S: M
+      Z: M
+      P: M
+    encodings:
+    - opcode: 0xd4
+      operands: [Ib]
+      timing_operands: [1]
+div:
+    encodings:
+    - opcode: 0xf6
+      reg: 6
+      operands: [Eb]
+      timing_operands: [10]
+    - opcode: 0xf7
+      reg: 6
+      operands: [Ew]
+      timing_operands: [10]
+idiv:
+    encodings:
+    - opcode: 0xf6
+      reg: 7
+      operands: [Eb]
+      timing_operands: [10]
+    - opcode: 0xf7
+      reg: 7
+      operands: [Ew]
+      timing_operands: [10]
+jmp:
+    encodings:
+    - opcode: 0xe9
+      operands: [Iw]
+    - opcode: 0xea
+      operands: [Iw, Iw]
+    - opcode: 0xeb
+      operands: [Ib]
+    - opcode: 0xff
+      reg: 4
+      operands: [Ew]
+    - opcode: 0xff
+      reg: 5
+      operands: [Mp]
+je:
+    encodings:
+    - opcode: 0x74
+      operands: [Ib]
+      taken:
+        ZF: 1
+      not_taken:
+        ZF: 0
+jl:
+    encodings:
+    - opcode: 0x7c
+      operands: [Ib]
+      taken:
+        ZF: 1
+        SF: 0
+      not_taken:
+        ZF: 0
+        SF: 0
+jle:
+    encodings:
+    - opcode: 0x7e
+      operands: [Ib]
+      taken:
+        ZF: 1
+      not_taken:
+        ZF: 0
+        OF: 0
+        SF: 0
+jb:
+    encodings:
+    - opcode: 0x72
+      operands: [Ib]
+      taken:
+        CF: 1
+      not_taken:
+        CF: 0
+jbe:
+    encodings:
+    - opcode: 0x76
+      operands: [Ib]
+      taken:
+        ZF: 1
+      not_taken:
+        ZF: 0
+        CF: 0
+jp:
+    encodings:
+    - opcode: 0x7a
+      operands: [Ib]
+      taken:
+        PF: 1
+      not_taken:
+        PF: 0
+jo:
+    encodings:
+    - opcode: 0x70
+      operands: [Ib]
+      taken:
+        OF: 1
+      not_taken:
+        OF: 0
+js:
+    encodings:
+    - opcode: 0x78
+      operands: [Ib]
+      taken:
+        SF: 1
+      not_taken:
+        SF: 0
+jne:
+    encodings:
+    - opcode: 0x75
+      operands: [Ib]
+      taken:
+        ZF: 0
+      not_taken:
+        ZF: 1
+jnl:
+    encodings:
+    - opcode: 0x7d
+      operands: [Ib]
+      taken:
+        SF: 0
+        OF: 0
+      not_taken:
+        SF: 1
+        OF: 0
+jnle:
+    encodings:
+    - opcode: 0x7f
+      operands: [Ib]
+      taken:
+        SF: 0
+        OF: 0
+        ZF: 0
+      not_taken:
+        ZF: 1
+jnb:
+    encodings:
+    - opcode: 0x73
+      operands: [Ib]
+      taken:
+        CF: 0
+      not_taken:
+        CF: 1
+jnbe:
+    encodings:
+    - opcode: 0x77
+      operands: [Ib]
+      taken:
+        CF: 0
+        ZF: 0
+      not_taken:
+        ZF: 1
+jnp:
+    encodings:
+    - opcode: 0x7b
+      operands: [Ib]
+      taken:
+        PF: 0
+      not_taken:
+        PF: 1
+jno:
+    encodings:
+    - opcode: 0x71
+      operands: [Ib]
+      taken:
+        OF: 0
+      not_taken:
+        OF: 1
+jns:
+    encodings:
+    - opcode: 0x79
+      operands: [Ib]
+      taken:
+        SF: 0
+      not_taken:
+        SF: 1
+jcxz:
+    encodings:
+    - opcode: 0xe3
+      operands: [Ib]
+      taken:
+        CX: 0
+      not_taken:
+        CX: 1
+bound:
+    encodings:
+    - opcode: 0x62
+      operands: [Mp]
+into:
+    encodings:
+    - opcode: 0xce
+loop:
+    encodings:
+    - opcode: 0xe2
+      operands: [Ib]
+      taken:
+        CX: 2
+      not_taken:
+        CX: 1
+loope:
+    encodings:
+    - opcode: 0xe1
+      operands: [Ib]
+      taken:
+        CX: 2
+        ZF: 1
+      not_taken:
+        CX: 1
+        ZF: 0
+loopne:
+    encodings:
+    - opcode: 0xe0
+      operands: [Ib]
+      taken:
+        CX: 2
+        ZF: 0
+      not_taken:
+        CX: 1
+        ZF: 1
+stos:
+    encodings:
+    - opcode: 0xaa
+      operands: [AL]
+    - opcode: 0xab
+      operands: [AX]
+cmps:
+    flags:
+      O: M
+      S: M
+      Z: M
+      A: M
+      C: M
+      P: M
+    encodings:
+    - opcode: 0xa6
+      use_prefix: 0xf3
+      base:
+        CX: 1
+      next:
+        CX: 2
+    - opcode: 0xa7
+      use_prefix: 0xf3
+      base:
+        CX: 1
+      next:
+        CX: 2
+lods:
+    encodings:
+    - opcode: 0xac
+      use_prefix: 0xf3
+      base:
+        CX: 1
+      next:
+        CX: 2
+    - opcode: 0xad
+      use_prefix: 0xf3
+      base:
+        CX: 1
+      next:
+        CX: 2
+movs:
+    encodings:
+    - opcode: 0xa4
+      use_prefix: 0xf3
+      base:
+        CX: 1
+      next:
+        CX: 2
+    - opcode: 0xa5
+      use_prefix: 0xf3
+      base:
+        CX: 1
+      next:
+        CX: 2
+ins:
+    encodings:
+    - opcode: 0x6c
+      use_prefix: 0xf3
+      base:
+        CX: 1
+      next:
+        CX: 2
+    - opcode: 0x6d
+      use_prefix: 0xf3
+      base:
+        CX: 1
+      next:
+        CX: 2
+outs:
+    encodings:
+    - opcode: 0x6e
+      use_prefix: 0xf3
+      base:
+        CX: 1
+      next:
+        CX: 2
+    - opcode: 0x6f
+      use_prefix: 0xf3
+      base:
+        CX: 1
+      next:
+        CX: 2
+scas:
+    flags:
+      O: M
+      S: M
+      Z: M
+      A: M
+      C: M
+      P: M
+    encodings:
+    - opcode: 0xae
+      use_prefix: 0xf2
+      base:
+        AL: 0x77
+        CX: 1
+      next:
+        AX: 0x7777
+        CX: 2
+    - opcode: 0xaf
+      use_prefix: 0xf2
+      base:
+        AX: 0x7777
+        CX: 1
+      next:
+        AX: 0x7777
+        CX: 2

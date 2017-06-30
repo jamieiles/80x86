@@ -2,9 +2,10 @@
 import os
 import pprint
 import pystache
+import struct
 import yaml
 
-from py8086sim.Cpu import RTLCPU, GPR
+from py8086sim.Cpu import RTLCPU, GPR, Flag
 
 HERE = os.path.dirname(__file__)
 INSTR_TEMPLATE = os.path.join(HERE, '..', 'documentation', 'instructions.templ')
@@ -23,24 +24,56 @@ def has_immediate(operands):
 def has_mem_only(operands):
     return any(map(lambda x: x.startswith('M'), operands))
 
-def modrm(reg, encoding, rm_reg=None):
+def to_raw_reg(gpr):
+    if gpr >= GPR.AL:
+        return int(gpr) - int(GPR.AL)
+    return int(gpr)
+
+def modrm(reg, encoding, cpu, rm_reg=None):
     reg = int(encoding.get('reg', reg))
+    operands = encoding.get('operands', [])
+    timing_operands = encoding.get('timing_operands', None)
+
+    if timing_operands:
+        for i, o in enumerate(operands):
+            if o.startswith('E') and rm_reg:
+                cpu.write_reg(GPR.values[rm_reg], timing_operands[i])
+            elif o.startswith('E') and not rm_reg:
+                cpu.write_reg(GPR.BX, 0x100)
+                if o.endswith('b'):
+                    cpu.write_mem8(cpu.read_reg(GPR.DS), 0x100, timing_operands[i])
+                elif o.endswith('w'):
+                    cpu.write_mem16(cpu.read_reg(GPR.DS), 0x100, timing_operands[i])
+                else:
+                    cpu.write_mem32(cpu.read_reg(GPR.DS), 0x100, timing_operands[i])
+            elif o.startswith('G'):
+                cpu.write_reg(GPR.values[reg], timing_operands[i])
+
     if rm_reg:
-        return (3 << 6) | (int(reg) << 3) | int(rm_reg)
+        return (3 << 6) | (to_raw_reg(reg) << 3) | to_raw_reg(rm_reg)
 
-    return int(reg) << 3
+    return to_raw_reg(reg) << 3 | 7
 
-def immediate(operands):
+def immediate(operands, timing_operands):
     imm_bytes = []
-    for o in operands:
+    for i, o in enumerate(operands):
         if o[0] not in 'IJ':
             continue
-        imm_bytes.append(0)
-        if o.endswith('w'):
-            imm_bytes.append(0)
-        elif o.endswith('p'):
-            for _ in xrange(3):
-                imm_bytes.append(0)
+
+        v = 0
+        if timing_operands:
+            v = int(timing_operands[i])
+
+        if o.endswith('b'):
+            struct_fmt = '<B'
+        elif o.endswith('w'):
+            struct_fmt = '<H'
+        else:
+            struct_fmt = '<I'
+
+        packed = struct.pack(struct_fmt, v)
+        for b in packed:
+            imm_bytes.append(ord(b))
     return imm_bytes
 
 def describe_operands(operands, E='memory'):
@@ -79,27 +112,27 @@ def describe_operands(operands, E='memory'):
 
     return names
 
-def encode(encoding):
+def encode(encoding, cpu):
+    cpu.reset()
+
     instr = [encoding['opcode']]
     operands = encoding.get('operands', [])
 
-    immed = immediate(operands)
+    immed = immediate(operands, encoding.get('timing_operands', None))
 
     if 'operands' in encoding and has_mem_only(operands):
-        yield describe_operands(operands), instr + [modrm(GPR.AX, encoding)] + immed
+        yield describe_operands(operands), instr + [modrm(GPR.AX, encoding, cpu)] + immed
     elif 'operands' in encoding and has_modrm(operands):
-        yield describe_operands(operands, E='register'), instr + [modrm(GPR.AX, encoding, rm_reg=GPR.BX)] + immed
-        yield describe_operands(operands, E='memory'), instr + [modrm(GPR.AX, encoding)] + immed
+        gpr = GPR.BL if 'Eb' in operands else GPR.BX
+        yield describe_operands(operands, E='register'), instr + [modrm(GPR.AX, encoding, cpu, rm_reg=gpr)] + immed
+        yield describe_operands(operands, E='memory'), instr + [modrm(GPR.AX, encoding, cpu)] + immed
     else:
         yield describe_operands(operands), instr + immed
 
-def count_cycles(instr, name, note=None, skip=False):
+def count_cycles(cpu, instr, note=None, skip=False):
     if skip:
         return '-'
 
-    cpu = RTLCPU(name.replace('/', '_').replace(' ', '_'))
-
-    cpu.reset()
     cpu.write_vector8(cpu.read_reg(GPR.CS),
                         cpu.read_reg(GPR.IP), instr)
     cpu.write_reg(GPR.CS, cpu.read_reg(GPR.CS))
@@ -121,13 +154,26 @@ def describe_modrm(encoding):
 def describe_immediates(encoding):
     return ' ' + ', '.join(filter(lambda x: x[0] == 'I', encoding.get('operands', [])))
 
+def setup(cpu, params):
+    flags = 0
+
+    for key, val in params.items():
+        if key in GPR.names:
+            cpu.write_reg(GPR.names[key], int(val))
+        elif key in Flag.names and int(val) != 0:
+            flags |= Flag.names[key]
+
+    cpu.write_flags(flags)
+
 definitions = []
 for mnemonic in sorted(instructions.keys()):
     definition = instructions[mnemonic]
     encodings = []
 
     for encoding in definition['encodings']:
-        for operand_description, instr in encode(encoding):
+        cpu = RTLCPU('instructions')
+
+        for operand_description, instr in encode(encoding, cpu):
             opcode = '{0:02x}'.format(encoding['opcode'])
             opcode += describe_modrm(encoding)
             opcode += describe_immediates(encoding)
@@ -136,14 +182,36 @@ for mnemonic in sorted(instructions.keys()):
             # Optional immediate added to form EA
             if has_modrm(encoding.get('operands', [])):
                 size = '{0}-{1}'.format(size, size + 2)
+
+            prefix = []
+            if 'use_prefix' in encoding:
+                prefix = [int(encoding['use_prefix'])]
+            if 'taken' in encoding:
+                setup(cpu, encoding['taken'])
+                taken = count_cycles(cpu, instr, note=encoding.get('note', ''))
+                setup(cpu, encoding['not_taken'])
+                not_taken = count_cycles(cpu, instr, note=encoding.get('note', ''))
+                cycles = '{0} (taken) / {1} (not taken)'.format(taken, not_taken)
+            elif 'base' in encoding:
+                setup(cpu, encoding['base'])
+                base = count_cycles(cpu, prefix + instr, note=encoding.get('note', ''))
+                setup(cpu, encoding['next'])
+                n = count_cycles(cpu, prefix + instr, note=encoding.get('note', ''))
+                cycles = '{0} + (n-1)*{1}'.format(base, n-base)
+            else:
+                cycles = count_cycles(cpu, instr,
+                                      note=encoding.get('note', ''),
+                                      skip=encoding.get('notime', False))
             encodings.append({
                 'opcode': opcode,
                 'mnemonic': mnemonic + ' ' + ', '.join(operand_description),
-                'cycles': count_cycles(instr, mnemonic + '_'.join(operand_description)+str(encoding.get('reg', '')),
-                                       note=encoding.get('note', ''),
-                                       skip=encoding.get('notime', False)),
+                'cycles': cycles,
                 'size': size
             })
+
+        # Verilator uses a singleton for some things, make sure to gc the
+        # cpu before creating a new one
+        cpu = None
 
     definitions.append({
         'mnemonic': mnemonic.upper(),
