@@ -42,15 +42,13 @@ performance.
 building the project and running the tests.  This environment runs everything
 as the current user's uid/gid to preserve file permissions outside of the
 container and bind-mounts the project directory into `/build`.  The
-'s80x86-build' container 
-
-'s80x86-dev' is intended for developing the project itself and includes extra
-packages and convenience scripts to make developing easier.  Unlike the
-'s80x86-build' container, this container bind mounts `/home` from the host
-into the container for convenience and includes packages like GTKWave for
-viewing waveforms.  It is recommended to use the Docker build environments for
-all builds and developments as those are used for the baseline development and
-verification.
+'s80x86-dev' container is intended for developing the project itself and
+includes extra packages and convenience scripts to make developing easier.
+Unlike the 's80x86-build' container, this container bind mounts `/home` from
+the host into the container for convenience and includes packages like GTKWave
+for viewing waveforms.  It is recommended to use the Docker build environments
+for all builds and developments as those are used for the baseline development
+and verification.
 
 === CI Build Scripts
 
