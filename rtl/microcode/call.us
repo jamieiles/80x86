@@ -7,8 +7,7 @@ calle8:
         mar_wr_sel Q;
     a_sel IP, alu_op SELA, mdr_write, ra_sel SP, segment SS, segment_force;
     segment SS, segment_force, mem_write, a_sel IP, b_sel IMMEDIATE,
-        alu_op ADD, load_ip;
-    next_instruction;
+        alu_op ADD, load_ip, next_instruction;
 
 callff_indirect_intra_reg:
     a_sel RA, alu_op SELA, load_ip, jmp callff_indirect_intra_save,
