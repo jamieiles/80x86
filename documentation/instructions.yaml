@@ -1067,27 +1067,32 @@ aam:
     encodings:
     - opcode: 0xd4
       operands: [Ib]
-      timing_operands: [1]
+      timing_operands:
+      - [1]
 div:
     encodings:
     - opcode: 0xf6
       reg: 6
       operands: [Eb]
-      timing_operands: [10]
+      timing_operands:
+      - [10]
     - opcode: 0xf7
       reg: 6
       operands: [Ew]
-      timing_operands: [10]
+      timing_operands:
+      - [10]
 idiv:
     encodings:
     - opcode: 0xf6
       reg: 7
       operands: [Eb]
-      timing_operands: [10]
+      timing_operands:
+      - [10]
     - opcode: 0xf7
       reg: 7
       operands: [Ew]
-      timing_operands: [10]
+      timing_operands:
+      - [10]
 jmp:
     encodings:
     - opcode: 0xe9
@@ -1391,3 +1396,12 @@ scas:
       next:
         AX: 0x7777
         CX: 2
+enter:
+    encodings:
+    - opcode: 0xc8
+      operands: [Iw, Ib]
+      timing_operands:
+      - [0, 0]
+      - [32, 0]
+      - [0, 1]
+      - [0, 2]

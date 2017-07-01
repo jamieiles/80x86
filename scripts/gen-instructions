@@ -29,10 +29,9 @@ def to_raw_reg(gpr):
         return int(gpr) - int(GPR.AL)
     return int(gpr)
 
-def modrm(reg, encoding, cpu, rm_reg=None):
+def modrm(reg, encoding, cpu, timing_operands, rm_reg=None):
     reg = int(encoding.get('reg', reg))
     operands = encoding.get('operands', [])
-    timing_operands = encoding.get('timing_operands', None)
 
     if timing_operands:
         for i, o in enumerate(operands):
@@ -76,7 +75,7 @@ def immediate(operands, timing_operands):
             imm_bytes.append(ord(b))
     return imm_bytes
 
-def describe_operands(operands, E='memory'):
+def describe_operands(operands, timing_operands, E='memory'):
     names = []
 
     for o in operands:
@@ -110,7 +109,10 @@ def describe_operands(operands, E='memory'):
 
         names.append(name)
 
-    return names
+    if timing_operands:
+        return names, '(ex: ' + ' '.join(['0x{0:x}'.format(t) for t in timing_operands]) + ')'
+
+    return names, None
 
 def encode(encoding, cpu):
     cpu.reset()
@@ -118,16 +120,18 @@ def encode(encoding, cpu):
     instr = [encoding['opcode']]
     operands = encoding.get('operands', [])
 
-    immed = immediate(operands, encoding.get('timing_operands', None))
+    timing_operands = encoding.get('timing_operands', [None])
 
-    if 'operands' in encoding and has_mem_only(operands):
-        yield describe_operands(operands), instr + [modrm(GPR.AX, encoding, cpu)] + immed
-    elif 'operands' in encoding and has_modrm(operands):
-        gpr = GPR.BL if 'Eb' in operands else GPR.BX
-        yield describe_operands(operands, E='register'), instr + [modrm(GPR.AX, encoding, cpu, rm_reg=gpr)] + immed
-        yield describe_operands(operands, E='memory'), instr + [modrm(GPR.AX, encoding, cpu)] + immed
-    else:
-        yield describe_operands(operands), instr + immed
+    for timing in timing_operands:
+        immed = immediate(operands, timing)
+        if 'operands' in encoding and has_mem_only(operands):
+            yield describe_operands(operands, timing), instr + [modrm(GPR.AX, encoding, cpu, timing)] + immed
+        elif 'operands' in encoding and has_modrm(operands):
+            gpr = GPR.BL if 'Eb' in operands else GPR.BX
+            yield describe_operands(operands, timing, E='register'), instr + [modrm(GPR.AX, encoding, cpu, timing, rm_reg=gpr)] + immed
+            yield describe_operands(operands, timing, E='memory'), instr + [modrm(GPR.AX, encoding, cpu, timing)] + immed
+        else:
+            yield describe_operands(operands, timing), instr + immed
 
 def count_cycles(cpu, instr, note=None, skip=False):
     if skip:
@@ -202,9 +206,13 @@ for mnemonic in sorted(instructions.keys()):
                 cycles = count_cycles(cpu, instr,
                                       note=encoding.get('note', ''),
                                       skip=encoding.get('notime', False))
+
+            desc = mnemonic + ' ' + ', '.join(operand_description[0])
+            if operand_description[1]:
+                desc += ' ' + operand_description[1]
             encodings.append({
                 'opcode': opcode,
-                'mnemonic': mnemonic + ' ' + ', '.join(operand_description),
+                'mnemonic': desc,
                 'cycles': cycles,
                 'size': size
             })
