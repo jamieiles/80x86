@@ -692,4 +692,25 @@ these test cases to run against pure software simulations and Verilog models.
 
 == Instructions
 
+The following tables list all of the supported instructions along with sizes
+and timings for each.  The timings are measured using the RTL simulation under
+the following conditions:
+
+  * The prefetch FIFO contains the instruction and is padded with other bytes
+    to be full.
+  * The instruction and data busses are connected to an arbiter that gives
+    priority to data accesses.
+  * Memory accesses take a single cycle to complete.
+
+Instructions with a MOD R/M byte have a variable length and execution time
+depending on whether the addressing mode has a displacement.  In the
+instruction tables, the length reflects this, and if the addressing mode uses
+a displacement, add one cycle per displacement byte for the execution timing.
+
+Prefix bytes add one byte to the instruction length and one cycle to the
+execution time, and for conflicting prefixes such as multiple segment
+overrides, the last prefix is used.
+
+<<<
+
 include::instructions.asciidoc[]
