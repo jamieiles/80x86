@@ -190,6 +190,8 @@ uint16_t JTAGCPU::read_sr(GPR regnum)
 
 size_t JTAGCPU::step()
 {
+    ++num_cycles;
+
     this->debug_step();
 
     return 0;

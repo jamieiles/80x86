@@ -74,6 +74,11 @@ public:
         assert(irq_num >= 0 && irq_num < 7);
         write_io8(0xfff6, ~(1 << irq_num));
     }
+
+    unsigned long cycle_count() const
+    {
+        return num_cycles;
+    }
 private:
     uint16_t read_ip();
     uint16_t read_sr(GPR regnum);
@@ -88,4 +93,5 @@ private:
     void write_scr(uint16_t v);
     uint16_t read_scr();
     std::string test_name;
+    unsigned long num_cycles;
 };

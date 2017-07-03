@@ -150,6 +150,11 @@ public:
     {
         emulator.clear_irq(irq_num);
     }
+
+    unsigned long cycle_count() const
+    {
+        return emulator.cycle_count();
+    }
 private:
     RegisterFile registers;
     Emulator emulator;

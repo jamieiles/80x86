@@ -99,6 +99,11 @@ public:
 
         pending_irqs &= ~(1 << irq_num);
     }
+
+    unsigned long cycle_count() const
+    {
+        return static_cast<unsigned long>(this->cur_cycle());
+    }
 private:
     uint16_t get_microcode_address();
     void mem_access();

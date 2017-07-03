@@ -1417,6 +1417,8 @@ Emulator::~Emulator()
 
 size_t Emulator::step()
 {
+    ++num_cycles;
+
     return pimpl->step();
 }
 
@@ -1453,4 +1455,9 @@ void Emulator::raise_irq(int irq_num)
 void Emulator::clear_irq(int irq_num)
 {
     pimpl->clear_irq(irq_num);
+}
+
+unsigned long Emulator::cycle_count() const
+{
+    return num_cycles;
 }

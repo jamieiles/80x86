@@ -105,6 +105,8 @@ void Simulator<T>::run()
 {
     unsigned cycle_count = 0;
 
+    auto start_time = std::chrono::system_clock::now();
+
     if (detached)
         cpu.debug_detach();
     while (!got_exit) {
@@ -115,6 +117,12 @@ void Simulator<T>::run()
         else
             cpu.step();
     }
+
+    auto end_time = std::chrono::system_clock::now();
+
+    std::chrono::duration<double> elapsed_seconds = end_time - start_time;
+
+    std::cout << "Operating frequency: " << (cpu.cycle_count() / 1000000.0) / elapsed_seconds.count() << "MHz" << std::endl;
 }
 
 int main(int argc, char **argv)

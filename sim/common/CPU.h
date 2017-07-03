@@ -122,4 +122,5 @@ public:
     virtual void raise_nmi() = 0;
     virtual void raise_irq(int irq_num) = 0;
     virtual void clear_irq(int irq_num) = 0;
+    virtual unsigned long cycle_count() const = 0;
 };
