@@ -116,9 +116,19 @@ void int19_function(struct callregs *regs)
     asm volatile("jmp $0xffff, $0x0");
 }
 
+static unsigned long time_count;
+
 void int1a_function(struct callregs *regs)
 {
-    regs->flags |= CF;
+    switch (regs->ax.h) {
+    case 0x0:
+        regs->cx.x = time_count >> 16;
+        regs->dx.x = time_count;
+        regs->flags &= ~CF;
+        break;
+    default:
+        regs->flags |= CF;
+    }
 }
 
 void int1b_function(struct callregs *regs)
@@ -139,6 +149,25 @@ void set_vector(int vector, void (*handler)(void))
     writew(0, vector * 4 + 2, get_cs());
 }
 
+void timer_function(struct callregs *regs)
+{
+    ++time_count;
+
+    memcpy_seg(0x40, (void *)0x006c, get_cs(), &time_count,
+               sizeof(time_count));
+
+    (void)inw(0xffee);
+}
+
+static void init_timer(void)
+{
+    outb(0xfff5, 8);
+    outb(0xfff4, 1);
+    outw(0xffee, (1 << 15) | 55);
+
+    time_count = 0;
+}
+
 extern void int10_handler(void);
 extern void int11_handler(void);
 extern void int12_handler(void);
@@ -152,9 +181,11 @@ extern void int19_handler(void);
 extern void int1a_handler(void);
 extern void int1b_handler(void);
 extern void int1c_handler(void);
+extern void timer_handler(void);
 
 static void install_vectors(void)
 {
+    set_vector(0x08, timer_handler);
     set_vector(0x10, int10_handler);
     set_vector(0x11, int11_handler);
     set_vector(0x12, int12_handler);
@@ -179,6 +210,10 @@ void root(void)
 
     keyboard_init();
     install_vectors();
+    putstr("Init timers\n\r");
+    init_timer();
+    putstr("Initalization done\n\r");
+
     sd_init();
     sd_boot();
 }

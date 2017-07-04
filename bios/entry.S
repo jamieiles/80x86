@@ -130,3 +130,7 @@ int1b_handler:
 .globl int1c_handler
 int1c_handler:
     int_handler int1c_function
+
+.globl timer_handler
+timer_handler:
+    int_handler timer_function
