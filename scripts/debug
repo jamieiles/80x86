@@ -81,6 +81,22 @@ class Debugger(cmd.Cmd):
         self._update_prompt()
         return False
 
+    def do_in16(self, line):
+        '''Read a 16-bit IO port'''
+        tokens = split(line)
+        assert len(tokens) == 1
+        print('{0:04x}'.format(self.c.read_io16(int(tokens[0], 16))))
+        self._update_prompt()
+        return False
+
+    def do_out16(self, line):
+        '''Write a 16-bit IO port'''
+        tokens = split(line)
+        assert len(tokens) == 2
+        self.c.write_io16(int(tokens[0], 16), int(tokens[1], 16))
+        self._update_prompt()
+        return False
+
     def do_EOF(self, line):
         print('')
         return True
