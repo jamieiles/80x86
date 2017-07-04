@@ -76,15 +76,15 @@ TEST_F(IPTestFixture, SetNewValue)
     ASSERT_EQ(0xa55a, get());
 }
 
-TEST_F(IPTestFixture, Rollback)
+TEST_F(IPTestFixture, IncNoRollback)
 {
     set(0x0100);
-    inc();
-    inc();
     commit();
+    inc();
+    inc();
     inc();
     inc();
     rollback();
 
-    ASSERT_EQ(0x0102, get());
+    ASSERT_EQ(0x0100, get());
 }

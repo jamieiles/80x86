@@ -15,8 +15,7 @@ always_ff @(posedge clk or posedge reset)
     if (reset)
         instruction_start_addr <= 16'b0;
     else if (start_instruction)
-        instruction_start_addr <= wr_en ? wr_val :
-            inc ? cur_val + 1'b1 : cur_val;
+        instruction_start_addr <= wr_en ? wr_val : cur_val;
 
 always @(posedge clk or posedge reset)
     if (reset)
