@@ -42,7 +42,7 @@ wire [15:0] debug_val;
 wire debug_wr_en;
 
 wire [15:0] io_data = sdram_config_data | uart_data | spi_data |
-    irq_control_data;
+    timer_data | irq_control_data;
 wire [15:0] mem_data;
 
 // Data bus
@@ -104,6 +104,12 @@ wire irq_control_access;
 wire irq_control_ack;
 wire [15:0] irq_control_data;
 
+// Timer
+wire timer_intr;
+wire timer_access;
+wire timer_ack;
+wire [15:0] timer_data;
+
 wire default_io_access;
 wire default_io_ack;
 
@@ -114,7 +120,8 @@ wire io_ack = sdram_config_ack |
               leds_ack |
 `endif // CONFIG_LEDS
               spi_ack |
-              irq_control_ack;
+              irq_control_ack |
+              timer_ack;
 
 always_ff @(posedge clk)
     default_io_ack <= default_io_access;
@@ -128,6 +135,7 @@ always_comb begin
     uart_access = 1'b0;
     spi_access = 1'b0;
     irq_control_access = 1'b0;
+    timer_access = 1'b0;
 
     if (d_io && data_m_access) begin
         casez ({data_m_addr[15:1], 1'b0})
@@ -138,6 +146,7 @@ always_comb begin
         16'b1111_1111_1111_1010: uart_access = 1'b1;
         16'b1111_1111_1111_00z0: spi_access = 1'b1;
         16'b1111_1111_1111_01z0: irq_control_access = 1'b1;
+        16'b1111_1111_1110_1110: timer_access = 1'b1;
         default:  default_io_access = 1'b1;
         endcase
     end
@@ -262,7 +271,17 @@ IRQController IRQController(.clk(sys_clk),
                             .data_m_data_out(irq_control_data),
                             .data_m_data_in(data_m_data_out),
                             .data_m_addr(data_m_addr),
+                            .intr_in({7'b0, timer_intr}),
                             .*);
+
+Timer Timer(.clk(sys_clk),
+            .cs(timer_access),
+            .data_m_ack(timer_ack),
+            .data_m_data_out(timer_data),
+            .data_m_data_in(data_m_data_out),
+            .data_m_addr(data_m_addr),
+            .intr(timer_intr),
+            .*);
 
 always_ff @(posedge clk)
     poweron_reset <= 1'b0;

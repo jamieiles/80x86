@@ -10,7 +10,8 @@ module IRQController(input logic clk,
                      output logic data_m_ack,
                      output logic nmi,
                      output logic intr,
-                     output logic [7:0] irq);
+                     output logic [7:0] irq,
+                     input logic [7:0] intr_in);
 
 reg [7:0] enable_reg;
 reg [7:0] test_reg;
@@ -26,15 +27,17 @@ wire [7:0] data_out_high = access_base ? base_reg : 8'b0;
 
 assign intr = |irq;
 
+wire [7:0] pending = test_reg | (enable_reg & intr_in);
+
 int i;
 always_ff @(posedge clk or posedge reset)
     if (reset)
         irq <= 8'b0;
-    else if (~|test_reg)
+    else if (~|pending)
         irq <= 8'b0;
-    else if (|test_reg) begin
+    else if (|pending) begin
         for (i = 0; i < 7; i += 1) begin
-            if (test_reg[i]) begin
+            if (pending[i]) begin
                 irq <= i[7:0] + base_reg;
                 break;
             end

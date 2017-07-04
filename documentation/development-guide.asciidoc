@@ -504,6 +504,14 @@ load the design into the FPGA via the Altera USB Blaster.
 [cols="1,1,4",options="header"]
 |===
 | Address | Width (bits) | Description
+| 16'hffee | 16 a| Timer control register:
+
+  - [15]: enable.
+  - [14:0]: reload value (ms).
+
+Reading the register clears the interrupt after the timer has counted down
+to 0.
+
 | 16'hfff0 | 16 a| SPI control register:
 
   - [15:10]: reserved.
@@ -563,6 +571,14 @@ load the design into the FPGA via the Altera USB Blaster.
 [cols="1,1,4",options="header"]
 |===
 | Address | Width (bits) | Description
+| 16'hffee | 16 a| Timer control register:
+
+  - [15]: enable.
+  - [14:0]: reload value (ms).
+
+Reading the register clears the interrupt after the timer has counted down
+to 0.
+
 | 16'hfff0 | 16 a| SPI control register:
 
   - [15:10]: reserved.
