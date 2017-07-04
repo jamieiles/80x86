@@ -77,7 +77,7 @@ RTLCPU<debug_enabled>::RTLCPU(const std::string &test_name)
             if (this->pending_irqs & (1 << irq_num))
                 break;
         this->dut.intr = 1;
-        this->dut.irq = 32 + irq_num;
+        this->dut.irq = 8 + irq_num;
     });
     this->periodic(ClockCapture, [&]{
         if (this->dut.inta)

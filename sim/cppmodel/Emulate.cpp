@@ -498,8 +498,8 @@ void EmulatorPimpl::handle_irq()
     flags &= ~(IF | TF);
     registers->set_flags(flags, IF | TF);
 
-    auto new_cs = mem->read<uint16_t>((32 + irq_num) * 4 + 2);
-    auto new_ip = mem->read<uint16_t>((32 + irq_num) * 4 + 0);
+    auto new_cs = mem->read<uint16_t>((8 + irq_num) * 4 + 2);
+    auto new_ip = mem->read<uint16_t>((8 + irq_num) * 4 + 0);
 
     registers->set(CS, new_cs);
     registers->set(IP, new_ip);
