@@ -41,7 +41,8 @@ wire [15:0] debug_wr_val;
 wire [15:0] debug_val;
 wire debug_wr_en;
 
-wire [15:0] io_data = sdram_config_data | uart_data | spi_data;
+wire [15:0] io_data = sdram_config_data | uart_data | spi_data |
+    irq_control_data;
 wire [15:0] mem_data;
 
 // Data bus
@@ -101,7 +102,7 @@ wire intr;
 wire [7:0] irq;
 wire irq_control_access;
 wire irq_control_ack;
-wire irq_control_data;
+wire [15:0] irq_control_data;
 
 wire default_io_access;
 wire default_io_ack;
