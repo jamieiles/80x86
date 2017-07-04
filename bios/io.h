@@ -61,16 +61,19 @@ static inline void memcpy_seg(unsigned short dseg, void *dst,
     asm volatile("push %%ds\n"
                  "push %%es\n"
                  "push %%cx\n"
+                 "push %%si\n"
+                 "push %%di\n"
                  "cld\n"
                  "mov %P[dseg], %%es\n"
                  "mov %P[sseg], %%ds\n"
                  "mov %P[len], %%cx\n"
                  "rep movsb\n"
+                 "pop %%di\n"
+                 "pop %%si\n"
                  "pop %%cx\n"
                  "pop %%es\n"
                  "pop %%ds\n" : : [dseg]"r"(dseg), [sseg]"r"(sseg),
                     "S"(src), "D"(dst), [len]"r"(len) : "memory", "cc");
-
 }
 
 static inline unsigned char readb(unsigned short segment, const void *address)
