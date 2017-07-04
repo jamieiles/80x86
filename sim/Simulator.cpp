@@ -15,6 +15,7 @@
 #include "RTLCPU.h"
 #include "UART.h"
 #include "SPI.h"
+#include "Timer.h"
 
 class SDRAMConfigRegister : public IOPorts {
 public:
@@ -50,6 +51,7 @@ private:
     SDRAMConfigRegister sdram_config_register;
     UART uart;
     SPI spi;
+    TimerTick timer;
     bool got_exit;
     bool detached;
 };
@@ -60,12 +62,14 @@ Simulator<T>::Simulator(const std::string &bios_path,
                         bool detached)
     : cpu("simulator"),
     spi(disk_image_path),
+    timer(&this->cpu),
     got_exit(false),
     detached(detached)
 {
     cpu.add_ioport(&sdram_config_register);
     cpu.add_ioport(&uart);
     cpu.add_ioport(&spi);
+    cpu.add_ioport(&timer);
     cpu.reset();
     load_bios(bios_path);
 }
@@ -109,13 +113,20 @@ void Simulator<T>::run()
 
     if (detached)
         cpu.debug_detach();
+
     while (!got_exit) {
+        auto prev_count = cpu.cycle_count();
+
         if (++cycle_count % 1000)
             process_io();
         if (detached)
             cpu.cycle_cpu();
         else
             cpu.step();
+
+        auto new_count = cpu.cycle_count();
+
+        timer.tick((new_count - prev_count) * 2);
     }
 
     auto end_time = std::chrono::system_clock::now();
