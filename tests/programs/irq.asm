@@ -2,8 +2,8 @@ cpu 8086
 
     times 1024 db 0
 
-    mov word    [32 * 4], irq0_handler
-    mov word    [33 * 4], irq1_handler
+    mov word    [8 * 4], irq0_handler
+    mov word    [9 * 4], irq1_handler
     sti
 
     mov         dx, 0xfff6
