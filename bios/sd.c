@@ -13,12 +13,12 @@ static char sd_is_sdhc;
 static void __attribute__((noinline))
 spi_xfer_buf_set(int offs, unsigned char v)
 {
-    write_csbyte(spi_xfer_buf + offs, v);
+    spi_xfer_buf[offs] = v;
 }
 
 static unsigned char __attribute__((noinline)) spi_xfer_buf_get(int offs)
 {
-    return read_csbyte(spi_xfer_buf + offs);
+    return spi_xfer_buf[offs];
 }
 
 static void spi_wait_idle(void)
@@ -190,9 +190,9 @@ static int sd_send_read_ocr(void)
     };
 
     if (converter.u32 & (1LU << 30))
-        write_csbyte(&sd_is_sdhc, 1);
+        sd_is_sdhc = 1;
     else
-        write_csbyte(&sd_is_sdhc, 0);
+        sd_is_sdhc = 0;
 
     return r1.v & R1_ERROR_MASK;
 }
@@ -326,7 +326,7 @@ int write_sector(unsigned short sector, unsigned short sseg,
 {
     unsigned long address = sector;
 
-    if (!read_csbyte(&sd_is_sdhc))
+    if (!sd_is_sdhc)
         address *= 512;
 
     if (sd_make_write_request(address))
@@ -353,7 +353,7 @@ int read_sector(unsigned short sector, unsigned short dseg,
     int r1offs, data_start;
     unsigned long address = sector;
 
-    if (!read_csbyte(&sd_is_sdhc))
+    if (!sd_is_sdhc)
         address *= 512;
 
     cmd.arg[0] = (address >> 24) & 0xff;

@@ -1,19 +1,5 @@
 #pragma once
 
-static inline unsigned char read_csbyte(const void *p)
-{
-    unsigned char v;
-
-    asm volatile("movb %%cs:(%1), %0" : "=r"(v) : "S"(p) : "%bx");
-
-    return v;
-}
-
-static inline void write_csbyte(void *p, unsigned char v)
-{
-    asm volatile("movb %1, %%cs:(%0)" :: "S"(p), "r"(v) : "memory", "%bx");
-}
-
 static inline void outw(unsigned short port, unsigned short v)
 {
     asm volatile("outw %1, %0" : : "d"(port), "a"(v));

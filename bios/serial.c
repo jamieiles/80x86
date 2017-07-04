@@ -30,14 +30,14 @@ void putbyte(unsigned char b)
 {
     static const char hexarr[] = "0123456789abcdef";
 
-    putchar(read_csbyte(hexarr + ((b & 0xf0) >> 4)));
-    putchar(read_csbyte(hexarr + (b & 0x0f)));
+    putchar(hexarr[(b & 0xf0) >> 4]);
+    putchar(hexarr[b & 0x0f]);
 }
 
 void putstr(const char *str)
 {
     char p;
 
-    for (p = read_csbyte(str); p != 0; ++str, p = read_csbyte(str))
+    for (p = *str; p != 0; ++str, p = *str)
         putchar(p);
 }

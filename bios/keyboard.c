@@ -8,11 +8,11 @@ static void keyboard_wait(struct callregs *regs)
 {
     regs->flags &= ~CF;
 
-    char c = read_csbyte(&last_key);
+    char c = last_key;
     if (!c)
         c = getchar();
 
-    write_csbyte(&last_key, 0);
+    last_key = 0;
     regs->ax.l = c;
     regs->ax.h = c;
 }
@@ -21,11 +21,11 @@ static void keyboard_status(struct callregs *regs)
 {
     regs->flags &= ~CF;
 
-    char c = read_csbyte(&last_key);
+    char c = last_key;
     if (!c && getchar_ready())
         c = getchar();
 
-    write_csbyte(&last_key, c);
+    last_key = c;
     if (c)
         regs->flags &= ~ZF;
     else
@@ -65,5 +65,5 @@ void int16_function(struct callregs *regs)
 void keyboard_init(void)
 {
     // Start of with a delete to stop DOS fom waiting for a keypress.
-    write_csbyte(&last_key, 0x7f);
+    last_key = 0x7f;
 }
