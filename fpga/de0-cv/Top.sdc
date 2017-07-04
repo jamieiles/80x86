@@ -26,8 +26,8 @@ derive_clock_uncertainty
 # SDRAM
 set sdram_tsu       1.5
 set sdram_th        0.8
-set sdram_tco_min   2.7
-set sdram_tco_max   5.4
+set sdram_tco_min   1.0
+set sdram_tco_max   6.4
 
 # FPGA timing constraints
 set sdram_input_delay_min        $sdram_tco_min
@@ -75,7 +75,7 @@ set_input_delay \
 #
 # * The PLL is configured so that SDRAM clock leads the system
 #   clock by -2.79ns
-set_multicycle_path -setup -end -from sdram_clk -to $sys_clk 2
+set_multicycle_path -setup -end -from sdram_clk -to [get_clocks $sys_clk] 2
 
 # Reset request
 set_false_path -from [get_ports {rst_in_n}]
