@@ -9,8 +9,8 @@ set(CMAKE_ASM_COMPILER ia16-elf-gcc)
 set(CMAKE_C_FLAGS_DEBUG "")
 set(CMAKE_ASM_FLAGS_DEBUG "")
 
-set(CMAKE_C_FLAGS "-Wall -Werror -fstack-usage -Wstack-usage=128 -fconserve-stack -ffreestanding -O2 -std=gnu99 -nostdinc -mtune=i80186 -march=i80186")
-set(CMAKE_ASM_FLAGS "-Wall -Werror -ffreestanding -O2 -std=gnu99 -nostdinc -mtune=i80186 -march=i80186")
+set(CMAKE_C_FLAGS "-Wall -Werror -fstack-usage -Wstack-usage=128 -fconserve-stack -ffreestanding -Os -std=gnu99 -nostdinc -mtune=i80186 -march=i80186")
+set(CMAKE_ASM_FLAGS "-Wall -Werror -ffreestanding -Os -std=gnu99 -nostdinc -mtune=i80186 -march=i80186")
 set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "-Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/bios.map -ffreestanding -nostdlib -T ${CMAKE_CURRENT_SOURCE_DIR}/bios.x")
 
 get_git_head_revision(BIOS_NAME BIOS_BUILD HEAD)
