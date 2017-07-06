@@ -35,9 +35,9 @@ always_ff @(posedge clk or posedge reset)
         enabled <= 1'b0;
         reload <= 15'b0;
     end else if (cs & data_m_access & data_m_wr_en) begin
-        {enabled, counter} <= data_m_data_in;
+        {enabled, counter} <= {data_m_data_in[15], data_m_data_in[14:0] - 1'b1};
         ms_counter <= ms_tick_bits'(ticks_per_ms);
-        reload <= data_m_data_in[14:0];
+        reload <= data_m_data_in[14:0] - 1'b1;
     end else if (enabled) begin
         ms_counter <= |ms_counter ? ms_counter - 1'b1 :
             ms_tick_bits'(ticks_per_ms);
