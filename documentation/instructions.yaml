@@ -472,6 +472,12 @@ cwd:
     - opcode: 0x99
       operands: [AX]
 inc:
+    flags:
+     O: M
+     S: M
+     Z: M
+     A: M
+     P: M
     encodings:
     - opcode: 0xfe
       reg: 0
@@ -496,6 +502,12 @@ inc:
     - opcode: 0x47
       operands: [DI]
 dec:
+    flags:
+     O: M
+     S: M
+     Z: M
+     A: M
+     P: M
     encodings:
     - opcode: 0xfe
       reg: 1
