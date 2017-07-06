@@ -126,6 +126,11 @@ void int1a_function(struct callregs *regs)
         regs->dx.x = time_count;
         regs->flags &= ~CF;
         break;
+    case 0x1:
+        time_count = (regs->dx.x |
+                      ((unsigned long)regs->cx.x << 16));
+        regs->flags &= ~CF;
+        break;
     default:
         regs->flags |= CF;
     }
