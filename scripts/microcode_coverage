@@ -20,25 +20,31 @@ def gather_coverage(coverage_root):
 
     return coverage
 
+def coverage_dict(microcode, coverage_root):
+    cd = {}
 
-def report(microcode, coverage_root):
     coverage = gather_coverage(coverage_root)
-
     with open(microcode) as microcode_bin:
         lines = microcode_bin.readlines()
 
     addr = 0
-    for l in lines:
+    for linenum, l in enumerate(lines):
         if l.startswith('//'):
-            print(l, end='')
             continue
         if l.startswith('@'):
-            print(l, end='')
             addr = int(l.split()[1], 16)
             continue
-        print('%s %8d %s' % ('*' if coverage[addr] == 0 else ' ',
-                             coverage[addr], l), end='')
+        cd[linenum] = (coverage[addr], l)
         addr += 1
+
+    return cd
+
+def report(microcode, coverage_root):
+    cd = coverage_dict(microcode, coverage_root)
+
+    for linenum, (count, line) in cd.items():
+        print('%s %8d %s' % ('*' if count == 0 else ' ',
+                             count, line), end='')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
