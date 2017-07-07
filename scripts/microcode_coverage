@@ -2,9 +2,12 @@
 import argparse
 import os
 import re
+import sys
+import time
 
-from collections import defaultdict
-
+from collections import namedtuple, defaultdict
+from xml.dom import minidom
+from xml.etree.ElementTree import Element, SubElement, tostring
 
 def gather_coverage(coverage_root):
     coverage = defaultdict(int)
@@ -42,14 +45,67 @@ def coverage_dict(microcode, coverage_root):
 def report(microcode, coverage_root):
     cd = coverage_dict(microcode, coverage_root)
 
+    data = []
     for linenum, (count, line) in cd.items():
-        print('%s %8d %s' % ('*' if count == 0 else ' ',
-                             count, line), end='')
+        data.append('%s %8d %s' % ('*' if count == 0 else ' ',
+                                   count, line))
+    return ''.join(data)
+
+def report_xml(microcode, coverage_root, source_root):
+    cd = coverage_dict(microcode, coverage_root)
+
+    uncovered = len(list(filter(lambda x: x[0] == 0, cd.values())))
+    num_lines = len(cd.keys())
+    line_rate = (num_lines - uncovered) / num_lines
+
+    coverage = Element('coverage', attrib={
+                       'branch-rate': '0.0',
+                       'complexity': '0.0',
+                       'line-rate': str(line_rate),
+                       'timestamp': str(int(time.time())),
+                       'version': 'verilator-cobertura-1',
+                       })
+    sources = SubElement(coverage, 'sources')
+    source = SubElement(sources, 'source')
+    source.text = source_root
+    packages = SubElement(coverage, 'packages')
+    package = SubElement(packages, 'package', attrib={
+                         'name': 'microcode',
+                         'branch-rate': '0.0',
+                         'complexity': '0.0',
+                         'line-rate': str(line_rate),
+                         })
+    classes = SubElement(package, 'classes')
+    f = SubElement(classes, 'class', attrib={
+                    'filename': os.path.relpath(microcode, source_root),
+                    'name': os.path.basename(microcode).replace('.', '_'),
+                    'line-rate': str(line_rate),
+                    'branch-rate': '0.0',
+                    'complexity': '0.0',
+                    })
+    lines_elem = SubElement(f, 'lines')
+    for linenum, (count, _) in cd.items():
+        l = SubElement(lines_elem, 'line',
+                    attrib={'hits': str(count), 'number': str(linenum), 'branch': 'false'})
+
+    return minidom.parseString(tostring(coverage)).toprettyxml(indent="  ").replace('<?xml version="1.0" ?>', '<?xml version="1.0" ?>\n<!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-03.dtd">')
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('microcode_bin')
     parser.add_argument('coverage_root')
+    parser.add_argument('source_root')
+    parser.add_argument('--xml', action='store_true')
+    parser.add_argument('--output')
     args = parser.parse_args()
 
-    report(args.microcode_bin, args.coverage_root)
+    if args.xml:
+        data = report_xml(args.microcode_bin, args.coverage_root, args.source_root)
+    else:
+        data = report(args.microcode_bin, args.coverage_root)
+
+    if args.output:
+        with open(args.output, 'w') as f:
+            f.write(data)
+    else:
+        print(data, end='')
