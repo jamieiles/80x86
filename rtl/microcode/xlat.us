@@ -5,6 +5,6 @@ xlat:
     a_sel RA, alu_op SELA, tmp_wr_en, ra_sel BX;
     a_sel RA, alu_op SELA, mar_wr_sel Q, mar_write;
     a_sel MAR, b_sel TEMP, alu_op ADD, mar_wr_sel Q, mar_write, segment DS;
-    segment DS, width W8, mem_read;
-    a_sel MDR, alu_op SELA, width W8, rd_sel_source MICROCODE_RD_SEL, reg_wr_en,
-        rd_sel AL, next_instruction;
+    segment DS, width W8, mem_read,
+        a_sel MDR, alu_op SELA, width W8, rd_sel_source MICROCODE_RD_SEL,
+        reg_wr_en, rd_sel AL, next_instruction;
