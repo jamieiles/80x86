@@ -1,45 +1,26 @@
 .at 0x86;
-    width W8, modrm_start, mar_write, mar_wr_sel EA,
+    width WAUTO, modrm_start, mar_write, mar_wr_sel EA,
+        ra_modrm_rm_reg, jmp_rm_reg_mem xchg86_reg, segment DS;
+.at 0x87;
+    modrm_start, mar_write, mar_wr_sel EA,
         ra_modrm_rm_reg, jmp_rm_reg_mem xchg86_reg, segment DS;
 .auto_address;
 xchg86_reg:
-    width W8, a_sel RA, alu_op SELA, mar_write, mar_wr_sel Q,
+    width WAUTO, a_sel RA, alu_op SELA, mar_write, mar_wr_sel Q,
         jmp xchg86_reg_store;
 xchg86_mem:
-    segment DS, width W8, mem_read;
-    width W8, b_sel RB, alu_op SELB, mar_write, mar_wr_sel Q;
+    segment DS, width WAUTO, mem_read;
+    width WAUTO, b_sel RB, alu_op SELB, mar_write, mar_wr_sel Q;
     // memory value is in MDR, register value is in MAR
-    width W8, a_sel MDR, alu_op SELA, rd_sel_source MODRM_REG,
+    width WAUTO, a_sel MDR, alu_op SELA, rd_sel_source MODRM_REG,
         reg_wr_en;
-    width W8, a_sel MAR, alu_op SELA, mdr_write, mar_wr_sel EA,
-        mar_write, segment DS, jmp write_8_complete;
+    width WAUTO, a_sel MAR, alu_op SELA, mdr_write, mar_wr_sel EA,
+        mar_write, segment DS, jmp write_complete;
 
 xchg86_reg_store:
-    width W8, b_sel RB, alu_op SELB, rd_sel_source MODRM_RM_REG,
+    width WAUTO, b_sel RB, alu_op SELB, rd_sel_source MODRM_RM_REG,
         reg_wr_en;
-    width W8, a_sel MAR, alu_op SELA, rd_sel_source MODRM_REG, reg_wr_en,
-        next_instruction;
-
-.at 0x87;
-    modrm_start, mar_write, mar_wr_sel EA,
-        ra_modrm_rm_reg, jmp_rm_reg_mem xchg87_reg, segment DS;
-.auto_address;
-xchg87_reg:
-    a_sel RA, alu_op SELA, mar_write, mar_wr_sel Q,
-        jmp xchg87_reg_store;
-xchg87_mem:
-    segment DS, mem_read;
-    b_sel RB, alu_op SELB, mar_write, mar_wr_sel Q;
-    // memory value is in MDR, register value is in MAR
-    a_sel MDR, alu_op SELA, rd_sel_source MODRM_REG,
-        reg_wr_en;
-    a_sel MAR, alu_op SELA, mdr_write, mar_wr_sel EA,
-        mar_write, segment DS, jmp write_16_complete;
-
-xchg87_reg_store:
-    b_sel RB, alu_op SELB, rd_sel_source MODRM_RM_REG,
-        reg_wr_en;
-    a_sel MAR, alu_op SELA, rd_sel_source MODRM_REG, reg_wr_en,
+    width WAUTO, a_sel MAR, alu_op SELA, rd_sel_source MODRM_REG, reg_wr_en,
         next_instruction;
 
 #define XCHG_REG(opcode, reg)                                           \

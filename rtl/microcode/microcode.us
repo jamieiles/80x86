@@ -247,8 +247,5 @@ reset:
 write_16_complete:
     segment DS, mem_write, next_instruction;
 
-write_8_complete:
-    segment DS, mem_write, width W8, next_instruction;
-
 write_complete:
     segment DS, mem_write, width WAUTO, next_instruction;
