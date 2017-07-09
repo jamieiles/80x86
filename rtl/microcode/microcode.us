@@ -49,14 +49,14 @@ invalid_opcode:
     modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_80;
 .auto_address;
 dispatch_80:
-    width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem ADD80_reg; // reg == 0
-    width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem OR80_reg; // reg == 1
-    width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem ADC80_reg; // reg == 2
-    width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SBB80_reg; // reg == 3
-    width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem AND80_reg; // reg == 4
-    width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SUB80_reg; // reg == 5
-    width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem XOR80_reg; // reg == 6
-    width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem compSUB80_reg; // reg == 7
+    width W8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem ADD80_reg; // reg == 0
+    width W8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem OR80_reg; // reg == 1
+    width W8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem ADC80_reg; // reg == 2
+    width W8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SBB80_reg; // reg == 3
+    width W8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem AND80_reg; // reg == 4
+    width W8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SUB80_reg; // reg == 5
+    width W8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem XOR80_reg; // reg == 6
+    width W8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem compSUB80_reg; // reg == 7
 
 // Multiplexed add/adc/sub/sbb/cmp/xor/or/and
 // r/m OP immed16
@@ -84,14 +84,14 @@ dispatch_81:
     modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_83;
 .auto_address;
 dispatch_83:
-    width 8, read_immed, segment DS, jmp_rm_reg_mem ADD83_reg; // reg == 0
-    width 8, read_immed, segment DS, jmp_rm_reg_mem OR83_reg; // reg == 1
-    width 8, read_immed, segment DS, jmp_rm_reg_mem ADC83_reg; // reg == 2
-    width 8, read_immed, segment DS, jmp_rm_reg_mem SBB83_reg; // reg == 3
-    width 8, read_immed, segment DS, jmp_rm_reg_mem AND83_reg; // reg == 4
-    width 8, read_immed, segment DS, jmp_rm_reg_mem SUB83_reg; // reg == 5
-    width 8, read_immed, segment DS, jmp_rm_reg_mem XOR83_reg; // reg == 6
-    width 8, read_immed, segment DS, jmp_rm_reg_mem compSUB83_reg; // reg == 7
+    width W8, read_immed, segment DS, jmp_rm_reg_mem ADD83_reg; // reg == 0
+    width W8, read_immed, segment DS, jmp_rm_reg_mem OR83_reg; // reg == 1
+    width W8, read_immed, segment DS, jmp_rm_reg_mem ADC83_reg; // reg == 2
+    width W8, read_immed, segment DS, jmp_rm_reg_mem SBB83_reg; // reg == 3
+    width W8, read_immed, segment DS, jmp_rm_reg_mem AND83_reg; // reg == 4
+    width W8, read_immed, segment DS, jmp_rm_reg_mem SUB83_reg; // reg == 5
+    width W8, read_immed, segment DS, jmp_rm_reg_mem XOR83_reg; // reg == 6
+    width W8, read_immed, segment DS, jmp_rm_reg_mem compSUB83_reg; // reg == 7
 
 // Multiplexed pop/8f
 .at 0x8f;
@@ -109,39 +109,39 @@ dispatch_8f:
 
 // Multiplexed shift single 8-bit
 .at 0xd0;
-    width 8, modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_d0;
+    width W8, modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_d0;
 .auto_address;
 dispatch_d0:
-    width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem ROLd0_reg;
-    width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem RORd0_reg;
-    width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem RCLd0_reg;
-    width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem RCRd0_reg;
-    width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHLd0_reg;
-    width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHRd0_reg;
-    width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHLd0_reg;
-    width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SARd0_reg;
+    width W8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem ROLd0_reg;
+    width W8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem RORd0_reg;
+    width W8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem RCLd0_reg;
+    width W8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem RCRd0_reg;
+    width W8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHLd0_reg;
+    width W8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHRd0_reg;
+    width W8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHLd0_reg;
+    width W8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SARd0_reg;
 
 // Multiplexed shift single 8-bit by immediate
 .at 0xc0;
-    width 8, modrm_start, mar_write, mar_wr_sel EA,
+    width W8, modrm_start, mar_write, mar_wr_sel EA,
 	jmp_dispatch_reg dispatch_c0;
 .auto_address;
 dispatch_c0:
-    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE,
+    width W8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE,
 	ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem ROLc0_reg;
-    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE,
+    width W8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE,
 	ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem RORc0_reg;
-    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE,
+    width W8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE,
 	ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem RCLc0_reg;
-    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE,
+    width W8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE,
 	ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem RCRc0_reg;
-    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE,
+    width W8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE,
 	ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHLc0_reg;
-    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE,
+    width W8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE,
 	ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHRc0_reg;
-    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE,
+    width W8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE,
 	ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHLc0_reg;
-    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE,
+    width W8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE,
 	ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SARc0_reg;
 
 // Multiplexed shift single 16-bit by immediate
@@ -149,14 +149,14 @@ dispatch_c0:
     modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_c1;
 .auto_address;
 dispatch_c1:
-    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE, jmp ROLc1;
-    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE, jmp RORc1;
-    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE, jmp RCLc1;
-    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE, jmp RCRc1;
-    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE, jmp SHLc1;
-    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE, jmp SHRc1;
-    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE, jmp SHLc1;
-    width 8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE, jmp SARc1;
+    width W8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE, jmp ROLc1;
+    width W8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE, jmp RORc1;
+    width W8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE, jmp RCLc1;
+    width W8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE, jmp RCRc1;
+    width W8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE, jmp SHLc1;
+    width W8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE, jmp SHRc1;
+    width W8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE, jmp SHLc1;
+    width W8, read_immed, tmp_wr_en, alu_op SELB, b_sel IMMEDIATE, jmp SARc1;
 
 // Multiplexed shift single 16-bit
 .at 0xd1;
@@ -174,17 +174,17 @@ dispatch_d1:
 
 // Multiplexed shift multiple 8-bit
 .at 0xd2;
-    width 8, modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_d2;
+    width W8, modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_d2;
 .auto_address;
 dispatch_d2:
-    width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp ROLd2;
-    width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp RORd2;
-    width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp RCLd2;
-    width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp RCRd2;
-    width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp SHLd2;
-    width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp SHRd2;
-    width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp SHLd2;
-    width 8, ra_modrm_rm_reg, rb_cl, segment DS, jmp SARd2;
+    width W8, ra_modrm_rm_reg, rb_cl, segment DS, jmp ROLd2;
+    width W8, ra_modrm_rm_reg, rb_cl, segment DS, jmp RORd2;
+    width W8, ra_modrm_rm_reg, rb_cl, segment DS, jmp RCLd2;
+    width W8, ra_modrm_rm_reg, rb_cl, segment DS, jmp RCRd2;
+    width W8, ra_modrm_rm_reg, rb_cl, segment DS, jmp SHLd2;
+    width W8, ra_modrm_rm_reg, rb_cl, segment DS, jmp SHRd2;
+    width W8, ra_modrm_rm_reg, rb_cl, segment DS, jmp SHLd2;
+    width W8, ra_modrm_rm_reg, rb_cl, segment DS, jmp SARd2;
 
 // Multiplexed shift multiple 16-bit
 .at 0xd3;
@@ -202,17 +202,17 @@ dispatch_d3:
 
 // Multiplexed neg/mul/not/test/div 8 bit
 .at 0xf6;
-    width 8, modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_f6;
+    width W8, modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_f6;
 .auto_address;
 dispatch_f6:
-    width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem compANDf6_reg; // reg == 0
-    width 8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem compANDf6_reg; // reg == 1
-    width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem notf6_reg; // reg == 3
-    width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem negf6_reg; // reg == 3
-    width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem mulf6_reg; // reg == 4
-    width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem imulf6_reg; // reg == 5
-    width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem divf6_reg; // reg == 6
-    width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem idivf6_reg; // reg == 7
+    width W8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem compANDf6_reg; // reg == 0
+    width W8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem compANDf6_reg; // reg == 1
+    width W8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem notf6_reg; // reg == 3
+    width W8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem negf6_reg; // reg == 3
+    width W8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem mulf6_reg; // reg == 4
+    width W8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem imulf6_reg; // reg == 5
+    width W8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem divf6_reg; // reg == 6
+    width W8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem idivf6_reg; // reg == 7
 
 // Multiplexed neg/mul/not/test/div 16 bit
 .at 0xf7;
@@ -278,4 +278,4 @@ write_16_complete:
     segment DS, mem_write, next_instruction;
 
 write_8_complete:
-    segment DS, mem_write, width 8, next_instruction;
+    segment DS, mem_write, width W8, next_instruction;

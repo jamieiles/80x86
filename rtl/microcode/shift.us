@@ -3,10 +3,10 @@
 alu_func ## d0_reg:                                                             \
     a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op alu_func, 			\
         rd_sel_source MODRM_RM_REG, update_flags flags,                         \
-        reg_wr_en, width 8, next_instruction;                                   \
+        reg_wr_en, width W8, next_instruction;                                   \
 alu_func ## d0_mem:                                                             \
-    segment DS, mem_read, width 8;                                              \
-    width 8, a_sel MDR, b_sel IMMEDIATE, immediate 0x1, alu_op alu_func,        \
+    segment DS, mem_read, width W8;                                              \
+    width W8, a_sel MDR, b_sel IMMEDIATE, immediate 0x1, alu_op alu_func,        \
         mdr_write, update_flags flags, segment DS, jmp write_8_complete;
 
 #define SHIFT1_16(alu_func, flags)                                              \
@@ -27,15 +27,15 @@ alu_func ## d1_mem:                                                             
 
 #define SHIFTN_8(alu_func, flags)                                               \
 alu_func ## d2:									\
-    ra_modrm_rm_reg, b_sel RB, alu_op SELB, tmp_wr_en, width 8,                 \
+    ra_modrm_rm_reg, b_sel RB, alu_op SELB, tmp_wr_en, width W8,                 \
         segment DS, jmp_rm_reg_mem alu_func ## d2_reg;	                        \
 alu_func ## d2_reg:                                                             \
     a_sel RA, b_sel RB, alu_op alu_func, rd_sel_source MODRM_RM_REG, 		\
-        update_flags flags, reg_wr_en, width 8, tmp_wr_sel Q_HIGH, 		\
+        update_flags flags, reg_wr_en, width W8, tmp_wr_sel Q_HIGH, 		\
         tmp_wr_en, next_instruction, ra_modrm_rm_reg;                           \
 alu_func ## d2_mem:                                                             \
-    segment DS, mem_read, width 8, rb_cl;                                       \
-    width 8, a_sel MDR, b_sel RB, alu_op alu_func, mdr_write,        		\
+    segment DS, mem_read, width W8, rb_cl;                                       \
+    width W8, a_sel MDR, b_sel RB, alu_op alu_func, mdr_write,        		\
         update_flags flags, segment DS, tmp_wr_sel Q_HIGH, tmp_wr_en,           \
         jmp write_8_complete;
 
@@ -56,11 +56,11 @@ alu_func ## d3_mem:                                                             
 #define SHIFTN_IMM8(alu_func, flags)                                            \
 alu_func ## c0_reg:                                                             \
     a_sel RA, b_sel IMMEDIATE, alu_op alu_func, rd_sel_source MODRM_RM_REG,     \
-        update_flags flags, reg_wr_en, width 8, tmp_wr_sel Q_HIGH, 		\
+        update_flags flags, reg_wr_en, width W8, tmp_wr_sel Q_HIGH, 		\
         tmp_wr_en, next_instruction, ra_modrm_rm_reg;                           \
 alu_func ## c0_mem:                                                             \
-    segment DS, mem_read, width 8;                                              \
-    width 8, a_sel MDR, b_sel IMMEDIATE, alu_op alu_func, mdr_write,        	\
+    segment DS, mem_read, width W8;                                              \
+    width W8, a_sel MDR, b_sel IMMEDIATE, alu_op alu_func, mdr_write,        	\
         update_flags flags, segment DS, tmp_wr_sel Q_HIGH, tmp_wr_en,           \
         jmp write_8_complete;
 

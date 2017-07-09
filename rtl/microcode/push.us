@@ -61,7 +61,7 @@ push_immed16:
     segment_force, segment SS, mem_write, next_instruction;
 
 .at 0x6a;
-    width 8, read_immed, jmp push_immed8;
+    width W8, read_immed, jmp push_immed8;
 .auto_address;
 push_immed8:
     ra_sel SP;

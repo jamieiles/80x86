@@ -1,17 +1,17 @@
 // out imm8, al
 .at 0xe6;
-    width 8, read_immed, b_sel IMMEDIATE, alu_op SELB,
+    width W8, read_immed, b_sel IMMEDIATE, alu_op SELB,
         mar_wr_sel Q, mar_write, jmp oute6, ra_sel AL;
 .auto_address;
 oute6:
     a_sel MAR, b_sel IMMEDIATE, immediate 0xff, alu_op AND, mar_write,
         mar_wr_sel Q;
     a_sel RA, alu_op SELA, mdr_write;
-    width 8, io, mem_write, next_instruction;
+    width W8, io, mem_write, next_instruction;
 
 // out imm16, al
 .at 0xe7;
-    width 8, read_immed, b_sel IMMEDIATE, alu_op SELB, mar_wr_sel Q,
+    width W8, read_immed, b_sel IMMEDIATE, alu_op SELB, mar_wr_sel Q,
         mar_write, jmp oute7;
 .auto_address;
 oute7:
@@ -22,12 +22,12 @@ oute7:
 
 // out dx, al
 .at 0xee;
-    width 8, ra_sel AL, jmp outee;
+    width W8, ra_sel AL, jmp outee;
 .auto_address;
 outee:
     a_sel RA, alu_op SELA, mdr_write, ra_sel DX;
     a_sel RA, alu_op SELA, mar_write, mar_wr_sel Q;
-    width 8, io, mem_write, next_instruction;
+    width W8, io, mem_write, next_instruction;
 
 // out dx, ax
 .at 0xef;
@@ -40,19 +40,19 @@ outef:
 
 // in al, immed8
 .at 0xe4;
-    width 8, read_immed, b_sel IMMEDIATE, alu_op SELB,
+    width W8, read_immed, b_sel IMMEDIATE, alu_op SELB,
         mar_wr_sel Q, mar_write, jmp ine4;
 .auto_address;
 ine4:
     a_sel MAR, b_sel IMMEDIATE, immediate 0xff, alu_op AND, mar_write,
         mar_wr_sel Q;
-    width 8, io, mem_read;
+    width W8, io, mem_read;
     a_sel MDR, alu_op SELA, rd_sel_source MICROCODE_RD_SEL,
-        rd_sel AL, reg_wr_en, width 8, next_instruction;
+        rd_sel AL, reg_wr_en, width W8, next_instruction;
 
 // in ax, immed16
 .at 0xe5;
-    width 8, read_immed, b_sel IMMEDIATE, alu_op SELB,
+    width W8, read_immed, b_sel IMMEDIATE, alu_op SELB,
         mar_wr_sel Q, mar_write, jmp ine5;
 .auto_address;
 ine5:
@@ -68,9 +68,9 @@ ine5:
 .auto_address;
 inec:
     a_sel RA, alu_op SELA, mar_write, mar_wr_sel Q;
-    width 8, io, mem_read;
+    width W8, io, mem_read;
     a_sel MDR, alu_op SELA, rd_sel_source MICROCODE_RD_SEL,
-        rd_sel AL, reg_wr_en, width 8, next_instruction;
+        rd_sel AL, reg_wr_en, width W8, next_instruction;
 
 // in dx, ax
 .at 0xed;
@@ -98,10 +98,10 @@ outsb_no_rep:
     ra_sel SI, a_sel RA, alu_op SELA, mar_wr_sel Q, mar_write, segment DS;
     a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op NEXT,
         rd_sel_source MICROCODE_RD_SEL, rd_sel SI, reg_wr_en, segment DS;
-    width 8, segment DS, mem_read;
+    width W8, segment DS, mem_read;
     ra_sel DX;
     a_sel RA, alu_op SELA, mar_write, mar_wr_sel Q;
-    width 8, io, mem_write, jmp_if_not_rep outsb_done;
+    width W8, io, mem_write, jmp_if_not_rep outsb_done;
     rb_cl, ext_int_yield, jmp outsb_rep_loop;
 outsb_done:
     next_instruction;
@@ -144,10 +144,10 @@ insb_rep_loop:
         rd_sel_source MICROCODE_RD_SEL, rd_sel CX, reg_wr_en, ra_sel DX;
 insb_no_rep:
     a_sel RA, alu_op SELA, mar_wr_sel Q, mar_write;
-    width 8, io, mem_read;
+    width W8, io, mem_read;
     ra_sel DI;
     a_sel RA, alu_op SELA, mar_write, mar_wr_sel Q, segment ES, segment_force;
-    segment ES, segment_force, width 8, mem_write;
+    segment ES, segment_force, width W8, mem_write;
     ra_sel DI;
     a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op NEXT,
         rd_sel_source MICROCODE_RD_SEL, rd_sel DI, reg_wr_en,

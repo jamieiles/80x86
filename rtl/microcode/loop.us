@@ -1,6 +1,6 @@
 // LOOP
 .at 0xe2;
-    width 8, read_immed, jmp loop;
+    width W8, read_immed, jmp loop;
 
 .auto_address;
 loop:
@@ -15,7 +15,7 @@ loop_not_taken:
 
 // LOOPE
 .at 0xe1;
-    width 8, read_immed, jmp loope;
+    width W8, read_immed, jmp loope;
 
 .auto_address;
 loope:
@@ -32,7 +32,7 @@ loope_not_taken:
 
 // LOOPNE
 .at 0xe0;
-    width 8, read_immed, jmp loopne;
+    width W8, read_immed, jmp loopne;
 
 .auto_address;
 loopne:

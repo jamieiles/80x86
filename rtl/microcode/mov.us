@@ -1,11 +1,11 @@
 // MOV 0x88     r/m := r (8-bit)
 .at 0x88;
-    modrm_start, mar_write, mar_wr_sel EA, width 8,
+    modrm_start, mar_write, mar_wr_sel EA, width W8,
         jmp_rm_reg_mem mov88_reg;
 .auto_address;
 mov88_reg:
     b_sel RB, alu_op SELB, rd_sel_source MODRM_RM_REG, reg_wr_en,
-        width 8, next_instruction;
+        width W8, next_instruction;
 mov88_mem:
     b_sel RB, alu_op SELB, mdr_write, segment DS, jmp write_8_complete;
 
@@ -23,16 +23,16 @@ mov89_mem:
 
 // MOV 0x8a     r := r/m (8-bit)
 .at 0x8a;
-    modrm_start, mar_write, mar_wr_sel EA, ra_modrm_rm_reg, width 8,
+    modrm_start, mar_write, mar_wr_sel EA, ra_modrm_rm_reg, width W8,
         jmp_rm_reg_mem mov8a_reg, segment DS, a_sel RA;
 .auto_address;
 mov8a_reg:
     a_sel RA, ra_modrm_rm_reg, alu_op SELA,
-        rd_sel_source MODRM_REG, reg_wr_en, width 8,
+        rd_sel_source MODRM_REG, reg_wr_en, width W8,
         next_instruction;
 mov8a_mem:
-    mem_read, width 8, segment DS;
-    rd_sel_source MODRM_REG, reg_wr_en, a_sel MDR, alu_op SELA, width 8,
+    mem_read, width W8, segment DS;
+    rd_sel_source MODRM_REG, reg_wr_en, a_sel MDR, alu_op SELA, width W8,
         next_instruction;
 
 // MOV 0x8b     r := r/m (16-bit)
@@ -54,7 +54,7 @@ mov8b_mem:
     modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg c6_dispatch;
 .auto_address;
 c6_dispatch:
-    read_immed, width 8, jmp_rm_reg_mem movc6_reg; // reg == 0
+    read_immed, width W8, jmp_rm_reg_mem movc6_reg; // reg == 0
     next_instruction; // reg == 1
     next_instruction; // reg == 2
     next_instruction; // reg == 3
@@ -64,7 +64,7 @@ c6_dispatch:
     next_instruction; // reg == 7
 movc6_reg:
     b_sel IMMEDIATE, alu_op SELB,
-        rd_sel_source MODRM_RM_REG, reg_wr_en, width 8,
+        rd_sel_source MODRM_RM_REG, reg_wr_en, width W8,
         next_instruction;
 movc6_mem:
     b_sel IMMEDIATE, alu_op SELB, mdr_write, segment DS, jmp write_8_complete;
@@ -92,11 +92,11 @@ movc7_mem:
 
 #define MOV_REG_IMMED8(opcode, reg) \
     .at opcode; \
-        read_immed, width 8, jmp mov_ ## reg ## _immed8; \
+        read_immed, width W8, jmp mov_ ## reg ## _immed8; \
     .auto_address; \
     mov_ ## reg ## _immed8: \
         rd_sel_source MICROCODE_RD_SEL, rd_sel reg, reg_wr_en, \
-            alu_op SELB, b_sel IMMEDIATE, width 8, next_instruction;
+            alu_op SELB, b_sel IMMEDIATE, width W8, next_instruction;
 
 MOV_REG_IMMED8(0xb0, AL)
 MOV_REG_IMMED8(0xb1, CL)
@@ -130,8 +130,8 @@ MOV_REG_IMMED16(0xbf, DI)
         alu_op SELB, jmp mova0, segment DS;
 .auto_address;
 mova0:
-    segment DS, width 8, mem_read;
-    rd_sel_source MICROCODE_RD_SEL, rd_sel AL, width 8, reg_wr_en,
+    segment DS, width W8, mem_read;
+    rd_sel_source MICROCODE_RD_SEL, rd_sel AL, width W8, reg_wr_en,
         a_sel MDR, alu_op SELA, next_instruction;
 
 // MOV 0xa1     ax := m[immed16]

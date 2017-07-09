@@ -1,15 +1,15 @@
 divf6_reg:
-    width 8, a_sel RA, alu_op SELA, mdr_write, jmp do_div8;
+    width W8, a_sel RA, alu_op SELA, mdr_write, jmp do_div8;
 divf6_mem:
-    width 8, segment DS, mem_read, jmp do_div8;
+    width W8, segment DS, mem_read, jmp do_div8;
 do_div8:
     ra_sel AX;
     // Divisor in MDR, dividend in DX:TMP
     a_sel RA, alu_op SELA, tmp_wr_en;
-    width 8, alu_op DIV;
-    width 8, reg_wr_source QUOTIENT, rd_sel_source MICROCODE_RD_SEL, rd_sel AL,
+    width W8, alu_op DIV;
+    width W8, reg_wr_source QUOTIENT, rd_sel_source MICROCODE_RD_SEL, rd_sel AL,
         reg_wr_en;
-    width 8, reg_wr_source REMAINDER, rd_sel_source MICROCODE_RD_SEL,
+    width W8, reg_wr_source REMAINDER, rd_sel_source MICROCODE_RD_SEL,
         rd_sel AH, reg_wr_en, next_instruction;
 
 divf7_reg:
@@ -26,17 +26,17 @@ do_div16:
         reg_wr_en, next_instruction;
 
 idivf6_reg:
-    width 8, a_sel RA, alu_op SELA, mdr_write, jmp do_idiv8;
+    width W8, a_sel RA, alu_op SELA, mdr_write, jmp do_idiv8;
 idivf6_mem:
-    width 8, segment DS, mem_read, jmp do_idiv8;
+    width W8, segment DS, mem_read, jmp do_idiv8;
 do_idiv8:
     ra_sel AX;
     // divisor in MDR, dividend in DX:TMP
     a_sel RA, alu_op SELA, tmp_wr_en;
-    width 8, alu_op IDIV;
-    width 8, reg_wr_source QUOTIENT, rd_sel_source MICROCODE_RD_SEL, rd_sel AL,
+    width W8, alu_op IDIV;
+    width W8, reg_wr_source QUOTIENT, rd_sel_source MICROCODE_RD_SEL, rd_sel AL,
         reg_wr_en;
-    width 8, reg_wr_source REMAINDER, rd_sel_source MICROCODE_RD_SEL,
+    width W8, reg_wr_source REMAINDER, rd_sel_source MICROCODE_RD_SEL,
         rd_sel AH, reg_wr_en, next_instruction;
 
 idivf7_reg:
@@ -53,17 +53,17 @@ do_idiv16:
         reg_wr_en, next_instruction;
 
 .at 0xd4;
-    width 8, read_immed, ra_modrm_rm_reg, b_sel IMMEDIATE, alu_op SELB,
+    width W8, read_immed, ra_modrm_rm_reg, b_sel IMMEDIATE, alu_op SELB,
         mdr_write, jmp do_aam;
 .auto_address;
 do_aam:
-    width 8, ra_sel AL;
+    width W8, ra_sel AL;
     // divisor in MDR, dividend in DX:TMP
     a_sel RA, alu_op SELA, tmp_wr_en;
-    width 8, alu_op DIV;
-    width 8, reg_wr_source QUOTIENT, rd_sel_source MICROCODE_RD_SEL, rd_sel AH,
+    width W8, alu_op DIV;
+    width W8, reg_wr_source QUOTIENT, rd_sel_source MICROCODE_RD_SEL, rd_sel AH,
         reg_wr_en;
-    width 8, reg_wr_source REMAINDER, rd_sel_source MICROCODE_RD_SEL,
+    width W8, reg_wr_source REMAINDER, rd_sel_source MICROCODE_RD_SEL,
         rd_sel AL, reg_wr_en;
     ra_sel AX;
     a_sel RA, b_sel IMMEDIATE, immediate 0x0, alu_op ADD,

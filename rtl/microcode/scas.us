@@ -15,9 +15,9 @@ scasb_no_rep:
         segment_force;
     a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op NEXT,
         rd_sel_source MICROCODE_RD_SEL, rd_sel DI, reg_wr_en;
-    width 8, segment ES, segment_force, mem_read, ra_sel AL;
-    width 8, a_sel RA, alu_op SELA, tmp_wr_en;
-    width 8, a_sel MDR, b_sel TEMP, alu_op SUBREV,
+    width W8, segment ES, segment_force, mem_read, ra_sel AL;
+    width W8, a_sel RA, alu_op SELA, tmp_wr_en;
+    width W8, a_sel MDR, b_sel TEMP, alu_op SUBREV,
         update_flags OF SF ZF CF PF AF, jmp_if_not_rep scasb_done;
     rb_cl, alu_op GETFLAGS, ext_int_yield,
         jmp_if_rep_not_complete scasb_rep_loop;

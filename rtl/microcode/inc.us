@@ -1,11 +1,11 @@
 // Multiplexed inc/dec
 .at 0xfe;
-    width 8, modrm_start, mar_write, mar_wr_sel EA,
+    width W8, modrm_start, mar_write, mar_wr_sel EA,
         jmp_dispatch_reg dispatch_fe;
 .auto_address;
 dispatch_fe:
-    width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem inc_fe_reg; // reg == 0
-    width 8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem dec_fe_reg; // reg == 1
+    width W8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem inc_fe_reg; // reg == 0
+    width W8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem dec_fe_reg; // reg == 1
     next_instruction; // reg == 2
     next_instruction; // reg == 3
     next_instruction; // reg == 4
@@ -16,21 +16,21 @@ dispatch_fe:
 inc_fe_reg:
     a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op ADD,
         rd_sel_source MODRM_RM_REG, reg_wr_en, update_flags OF SF ZF AF PF,
-        width 8, next_instruction;
+        width W8, next_instruction;
 inc_fe_mem:
-    width 8, segment DS, mem_read;
+    width W8, segment DS, mem_read;
     a_sel MDR, b_sel IMMEDIATE, immediate 0x1, alu_op ADD,
-        mdr_write, update_flags OF SF ZF AF PF, width 8, segment DS,
+        mdr_write, update_flags OF SF ZF AF PF, width W8, segment DS,
         jmp write_8_complete;
 
 dec_fe_reg:
     a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
         rd_sel_source MODRM_RM_REG, reg_wr_en, update_flags OF SF ZF AF PF,
-        width 8, next_instruction;
+        width W8, next_instruction;
 dec_fe_mem:
-    width 8, segment DS, mem_read;
+    width W8, segment DS, mem_read;
     a_sel MDR, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
-        mdr_write, update_flags OF SF ZF AF PF, width 8, segment DS,
+        mdr_write, update_flags OF SF ZF AF PF, width W8, segment DS,
         jmp write_8_complete;
 
 inc_ff_reg:

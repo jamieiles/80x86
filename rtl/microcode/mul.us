@@ -1,13 +1,13 @@
 // Multiplicand in TEMP, multiplier in MDR
 mulf6_reg:
-    width 8, a_sel RA, alu_op SELA, mdr_write, ra_sel AL, jmp do_mul8;
+    width W8, a_sel RA, alu_op SELA, mdr_write, ra_sel AL, jmp do_mul8;
 mulf6_mem:
-    width 8, segment DS, mem_read, ra_sel AL, jmp do_mul8;
+    width W8, segment DS, mem_read, ra_sel AL, jmp do_mul8;
 do_mul8:
-    width 8, a_sel RA, alu_op SELA, tmp_wr_en;
+    width W8, a_sel RA, alu_op SELA, tmp_wr_en;
     // 8-bit multiplication yields a 16-bit result so move the result into
     // TEMP to later transfer to AX as a 16-bit operation.
-    width 8, a_sel MDR, b_sel TEMP, alu_op MUL, update_flags ZF OF CF,
+    width W8, a_sel MDR, b_sel TEMP, alu_op MUL, update_flags ZF OF CF,
         tmp_wr_en;
     b_sel TEMP, alu_op SELB, rd_sel_source MICROCODE_RD_SEL, rd_sel AX,
         reg_wr_en, next_instruction;
@@ -27,14 +27,14 @@ do_mul16:
 
 // imultiplicand in TEMP, imultiplier in MDR
 imulf6_reg:
-    width 8, a_sel RA, alu_op SELA, mdr_write, ra_sel AL, jmp do_imul8;
+    width W8, a_sel RA, alu_op SELA, mdr_write, ra_sel AL, jmp do_imul8;
 imulf6_mem:
-    width 8, segment DS, mem_read, ra_sel AL, jmp do_imul8;
+    width W8, segment DS, mem_read, ra_sel AL, jmp do_imul8;
 do_imul8:
-    width 8, a_sel RA, alu_op SELA, tmp_wr_en;
+    width W8, a_sel RA, alu_op SELA, tmp_wr_en;
     // 8-bit imultiplication yields a 16-bit result so move the result into
     // TEMP to later transfer to AX as a 16-bit operation.
-    width 8, a_sel MDR, b_sel TEMP, alu_op IMUL, update_flags ZF OF CF,
+    width W8, a_sel MDR, b_sel TEMP, alu_op IMUL, update_flags ZF OF CF,
         tmp_wr_en;
     b_sel TEMP, alu_op SELB, rd_sel_source MICROCODE_RD_SEL, rd_sel AX,
         reg_wr_en, next_instruction;
@@ -56,7 +56,7 @@ do_imul16:
     modrm_start, mar_write mar_wr_sel EA, jmp imul_6b;
 .auto_address;
 imul_6b:
-    width 8, read_immed;
+    width W8, read_immed;
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem imul6b_reg;
 imul6b_reg:
     a_sel RA, b_sel IMMEDIATE, alu_op IMUL, update_flags ZF OF CF,

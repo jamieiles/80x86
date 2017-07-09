@@ -120,3 +120,7 @@ class PrefixType(Enum):
     SEGMENT_OVERRIDE = 1
     REPNE = 2
     REPE = 3
+
+class WidthType(Enum):
+    W16 = 0
+    W8 = 1

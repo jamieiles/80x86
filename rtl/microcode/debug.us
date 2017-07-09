@@ -85,7 +85,7 @@ debug_read_sr:
     segment_force, segment DS, jmp debug_read8;
 .auto_address;
 debug_read8:
-    segment_force, segment DS, width 8, mem_read;
+    segment_force, segment DS, width W8, mem_read;
     a_sel MDR, alu_op SELA, tmp_wr_en;
     a_sel MAR, b_sel IMMEDIATE, immediate 0x1, alu_op ADD, mar_wr_sel Q,
         mar_write, jmp debug_wait;
@@ -105,7 +105,7 @@ debug_read16:
     segment_force, segment DS, jmp debug_write8;
 .auto_address;
 debug_write8:
-    segment_force, segment DS, width 8, mem_write;
+    segment_force, segment DS, width W8, mem_write;
     a_sel MAR, b_sel IMMEDIATE, immediate 0x1, alu_op ADD, mar_wr_sel Q,
         mar_write, jmp debug_wait;
 
@@ -123,7 +123,7 @@ debug_write16:
     segment_force, segment DS, jmp debug_read8io;
 .auto_address;
 debug_read8io:
-    segment_force, segment DS, width 8, mem_read, io;
+    segment_force, segment DS, width W8, mem_read, io;
     a_sel MDR, alu_op SELA, tmp_wr_en, jmp debug_wait;
 
 // Read 16 IO
@@ -139,7 +139,7 @@ debug_read16io:
     segment_force, segment DS, jmp debug_write8io;
 .auto_address;
 debug_write8io:
-    segment_force, segment DS, width 8, mem_write, io, jmp debug_wait;
+    segment_force, segment DS, width W8, mem_write, io, jmp debug_wait;
 
 // Write 16 IO
 .at 0x128;

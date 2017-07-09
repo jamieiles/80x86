@@ -4,7 +4,7 @@
 
 // The same as above, but this time it's a 8 bit interrupt number.
 .at 0xcd;
-    width 8, read_immed, jmp intN;
+    width W8, read_immed, jmp intN;
 .auto_address;
 intN:
     b_sel IMMEDIATE, alu_op SELB, mar_wr_sel Q, mar_write;

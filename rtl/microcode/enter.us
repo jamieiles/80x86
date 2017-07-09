@@ -3,7 +3,7 @@
 .auto_address;
 enter:
     b_sel IMMEDIATE, alu_op SELB, tmp_wr_en;
-    width 8, read_immed;
+    width W8, read_immed;
     // Push BP
     ra_sel SP;
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, mar_write,

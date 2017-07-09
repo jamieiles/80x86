@@ -1,23 +1,23 @@
 .at 0x86;
-    width 8, modrm_start, mar_write, mar_wr_sel EA,
+    width W8, modrm_start, mar_write, mar_wr_sel EA,
         ra_modrm_rm_reg, jmp_rm_reg_mem xchg86_reg, segment DS;
 .auto_address;
 xchg86_reg:
-    width 8, a_sel RA, alu_op SELA, mar_write, mar_wr_sel Q,
+    width W8, a_sel RA, alu_op SELA, mar_write, mar_wr_sel Q,
         jmp xchg86_reg_store;
 xchg86_mem:
-    segment DS, width 8, mem_read;
-    width 8, b_sel RB, alu_op SELB, mar_write, mar_wr_sel Q;
+    segment DS, width W8, mem_read;
+    width W8, b_sel RB, alu_op SELB, mar_write, mar_wr_sel Q;
     // memory value is in MDR, register value is in MAR
-    width 8, a_sel MDR, alu_op SELA, rd_sel_source MODRM_REG,
+    width W8, a_sel MDR, alu_op SELA, rd_sel_source MODRM_REG,
         reg_wr_en;
-    width 8, a_sel MAR, alu_op SELA, mdr_write, mar_wr_sel EA,
+    width W8, a_sel MAR, alu_op SELA, mdr_write, mar_wr_sel EA,
         mar_write, segment DS, jmp write_8_complete;
 
 xchg86_reg_store:
-    width 8, b_sel RB, alu_op SELB, rd_sel_source MODRM_RM_REG,
+    width W8, b_sel RB, alu_op SELB, rd_sel_source MODRM_RM_REG,
         reg_wr_en;
-    width 8, a_sel MAR, alu_op SELA, rd_sel_source MODRM_REG, reg_wr_en,
+    width W8, a_sel MAR, alu_op SELA, rd_sel_source MODRM_REG, reg_wr_en,
         next_instruction;
 
 .at 0x87;
