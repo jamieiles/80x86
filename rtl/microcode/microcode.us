@@ -99,17 +99,17 @@ dispatch_8f:
 
 // Multiplexed shift single 8-bit
 .at 0xd0;
-    width W8, modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_d0;
+    width WAUTO, modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_d0_d1;
 .auto_address;
-dispatch_d0:
-    width W8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem ROLd0_reg;
-    width W8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem RORd0_reg;
-    width W8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem RCLd0_reg;
-    width W8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem RCRd0_reg;
-    width W8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHLd0_reg;
-    width W8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHRd0_reg;
-    width W8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHLd0_reg;
-    width W8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SARd0_reg;
+dispatch_d0_d1:
+    width WAUTO, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem ROLd0_d1_reg;
+    width WAUTO, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem RORd0_d1_reg;
+    width WAUTO, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem RCLd0_d1_reg;
+    width WAUTO, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem RCRd0_d1_reg;
+    width WAUTO, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHLd0_d1_reg;
+    width WAUTO, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHRd0_d1_reg;
+    width WAUTO, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHLd0_d1_reg;
+    width WAUTO, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SARd0_d1_reg;
 
 // Multiplexed shift single 8-bit by immediate
 .at 0xc0;
@@ -150,45 +150,25 @@ dispatch_c1:
 
 // Multiplexed shift single 16-bit
 .at 0xd1;
-    modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_d1;
-.auto_address;
-dispatch_d1:
-    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem ROLd1_reg;
-    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem RORd1_reg;
-    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem RCLd1_reg;
-    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem RCRd1_reg;
-    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHLd1_reg;
-    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHRd1_reg;
-    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SHLd1_reg;
-    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SARd1_reg;
+    modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_d0_d1;
 
 // Multiplexed shift multiple 8-bit
 .at 0xd2;
-    width W8, modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_d2;
+    width WAUTO, modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_d2_d3;
 .auto_address;
-dispatch_d2:
-    width W8, ra_modrm_rm_reg, rb_cl, segment DS, jmp ROLd2;
-    width W8, ra_modrm_rm_reg, rb_cl, segment DS, jmp RORd2;
-    width W8, ra_modrm_rm_reg, rb_cl, segment DS, jmp RCLd2;
-    width W8, ra_modrm_rm_reg, rb_cl, segment DS, jmp RCRd2;
-    width W8, ra_modrm_rm_reg, rb_cl, segment DS, jmp SHLd2;
-    width W8, ra_modrm_rm_reg, rb_cl, segment DS, jmp SHRd2;
-    width W8, ra_modrm_rm_reg, rb_cl, segment DS, jmp SHLd2;
-    width W8, ra_modrm_rm_reg, rb_cl, segment DS, jmp SARd2;
+dispatch_d2_d3:
+    width WAUTO, ra_modrm_rm_reg, rb_cl, segment DS, jmp ROLd2_d3;
+    width WAUTO, ra_modrm_rm_reg, rb_cl, segment DS, jmp RORd2_d3;
+    width WAUTO, ra_modrm_rm_reg, rb_cl, segment DS, jmp RCLd2_d3;
+    width WAUTO, ra_modrm_rm_reg, rb_cl, segment DS, jmp RCRd2_d3;
+    width WAUTO, ra_modrm_rm_reg, rb_cl, segment DS, jmp SHLd2_d3;
+    width WAUTO, ra_modrm_rm_reg, rb_cl, segment DS, jmp SHRd2_d3;
+    width WAUTO, ra_modrm_rm_reg, rb_cl, segment DS, jmp SHLd2_d3;
+    width WAUTO, ra_modrm_rm_reg, rb_cl, segment DS, jmp SARd2_d3;
 
 // Multiplexed shift multiple 16-bit
 .at 0xd3;
-    modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_d3;
-.auto_address;
-dispatch_d3:
-    ra_modrm_rm_reg, rb_cl, segment DS, jmp ROLd3;
-    ra_modrm_rm_reg, rb_cl, segment DS, jmp RORd3;
-    ra_modrm_rm_reg, rb_cl, segment DS, jmp RCLd3;
-    ra_modrm_rm_reg, rb_cl, segment DS, jmp RCRd3;
-    ra_modrm_rm_reg, rb_cl, segment DS, jmp SHLd3;
-    ra_modrm_rm_reg, rb_cl, segment DS, jmp SHRd3;
-    ra_modrm_rm_reg, rb_cl, segment DS, jmp SHLd3;
-    ra_modrm_rm_reg, rb_cl, segment DS, jmp SARd3;
+    modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_d2_d3;
 
 // Multiplexed neg/mul/not/test/div 8 bit
 .at 0xf6;
