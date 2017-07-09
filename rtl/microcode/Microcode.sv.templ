@@ -34,6 +34,7 @@ module Microcode(input logic clk,
                  <%#exported_fields%>
                  output logic <%type%><%name%>,
                  <%/exported_fields%>
+                 output logic width,
                  // Fifo Read Port.
                  output logic fifo_rd_en,
                  input logic [7:0] fifo_rd_data,
@@ -127,6 +128,15 @@ wire seizing = debug_seize & ~seized;
 reg start_instruction;
 
 assign loop_next = !stall && current.jump_type == JumpType_LOOP_DONE;
+
+always_comb begin
+    case (current.width)
+    WidthType_W8: width = 1'b1;
+    WidthType_W16: width = 1'b0;
+    WidthType_WAUTO: width = ~opcode[0];
+    default: width = 1'b0;
+    endcase
+end
 
 always_ff @(posedge clk or posedge reset)
     if (reset)

@@ -124,3 +124,4 @@ class PrefixType(Enum):
 class WidthType(Enum):
     W16 = 0
     W8 = 1
+    WAUTO = 2

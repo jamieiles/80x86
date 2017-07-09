@@ -283,8 +283,9 @@ ALU operation.
   multiplications.
 
 | width | Selects the width of the operation.  Defaults to 16-bit, but "width
-  8" will perform byte operations for register read/write, memory read/write,
-  immediate fetch and ALU operations.
+  W8" will perform byte operations for register read/write, memory read/write,
+  immediate fetch and ALU operations.  "width WAUTO" will infer the width from
+  the opcode, where bit 0 being set indicates a 16-bit operation.
 | load_ip | Causes the ALU result to be used as the new IP to be taken when
   the next instruction is executed.
 | read_immed | Triggers the immediate reader to read an immediate from the

@@ -189,7 +189,7 @@ class MicroAssembler(object):
         enums = []
         for cls in [ADriver, BDriver, ALUOp, JumpType, RDSelSource,
                     MARWrSel, TEMPWrSel, UpdateFlags, PrefixType,
-                    RegWrSource]:
+                    RegWrSource, WidthType]:
             items = []
             for idx, e in enumerate(cls.__members__):
                 name = '%s_%s' % (cls.__name__, e)
@@ -284,7 +284,7 @@ class MicroAssembler(object):
         'reg_wr_source': (num_bits(len(RegWrSource)), partial(_enumerated_field, enum_class=RegWrSource), True),
         'tmp_wr_en': (1, _boolean, True),
         'tmp_wr_sel': (num_bits(len(TEMPWrSel)), partial(_enumerated_field, enum_class=TEMPWrSel), True),
-        'width': (num_bits(len(WidthType)), partial(_enumerated_field, enum_class=WidthType), True),
+        'width': (num_bits(len(WidthType)), partial(_enumerated_field, enum_class=WidthType), False),
         'load_ip': (1, _boolean, True),
         'read_immed': (1, _boolean, True),
         'io': (1, _boolean, True),
