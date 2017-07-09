@@ -46,37 +46,27 @@ invalid_opcode:
 // Multiplexed add/adc/sub/sbb/cmp/xor/or/and
 // r/m OP immed8
 .at 0x80;
-    modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_80;
+    modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_80_81;
 .auto_address;
-dispatch_80:
-    width W8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem ADD80_reg; // reg == 0
-    width W8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem OR80_reg; // reg == 1
-    width W8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem ADC80_reg; // reg == 2
-    width W8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SBB80_reg; // reg == 3
-    width W8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem AND80_reg; // reg == 4
-    width W8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SUB80_reg; // reg == 5
-    width W8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem XOR80_reg; // reg == 6
-    width W8, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem compSUB80_reg; // reg == 7
+dispatch_80_81:
+    width WAUTO, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem ADD80_81_reg; // reg == 0
+    width WAUTO, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem OR80_81_reg; // reg == 1
+    width WAUTO, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem ADC80_81_reg; // reg == 2
+    width WAUTO, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SBB80_81_reg; // reg == 3
+    width WAUTO, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem AND80_81_reg; // reg == 4
+    width WAUTO, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SUB80_81_reg; // reg == 5
+    width WAUTO, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem XOR80_81_reg; // reg == 6
+    width WAUTO, read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem compSUB80_81_reg; // reg == 7
 
 // Multiplexed add/adc/sub/sbb/cmp/xor/or/and
 // r/m OP immed16
 .at 0x81;
-    modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_81;
-.auto_address;
-dispatch_81:
-    read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem ADD81_reg; // reg == 0
-    read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem OR81_reg; // reg == 1
-    read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem ADC81_reg; // reg == 2
-    read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SBB81_reg; // reg == 3
-    read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem AND81_reg; // reg == 4
-    read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem SUB81_reg; // reg == 5
-    read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem XOR81_reg; // reg == 6
-    read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem compSUB81_reg; // reg == 7
+    modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_80_81;
 
 // Multiplexed add/adc/sub/sbb/cmp
 // r/m OP immed8
 .at 0x82;
-    modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_80;
+    modrm_start, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_80_81;
 
 // Multiplexed add/adc/sub/sbb/cmp/xor/or/and
 // r/m OP immed16
@@ -279,3 +269,6 @@ write_16_complete:
 
 write_8_complete:
     segment DS, mem_write, width W8, next_instruction;
+
+write_complete:
+    segment DS, mem_write, width WAUTO, next_instruction;

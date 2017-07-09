@@ -69,23 +69,14 @@ comp ## alufunc ## opcode:                                                      
     a_sel RA, b_sel IMMEDIATE, alu_op alufunc,                                  \
         update_flags flags, next_instruction;
 
-#define COMP_80(alufunc, flags)                                                 \
-comp ## alufunc ## 80_reg:                                                      \
+#define COMP_80_81(alufunc, flags)                                                 \
+comp ## alufunc ## 80_81_reg:                                                      \
     a_sel RA, b_sel IMMEDIATE, alu_op alufunc,                                  \
-        update_flags flags, width W8, next_instruction;                          \
-comp ## alufunc ## 80_mem:                                                      \
-    segment DS, mem_read, width W8;                                              \
+        update_flags flags, width WAUTO, next_instruction;                          \
+comp ## alufunc ## 80_81_mem:                                                      \
+    segment DS, mem_read, width WAUTO;                                              \
     a_sel MDR, b_sel IMMEDIATE, alu_op alufunc,                                 \
-        update_flags flags, width W8, next_instruction;
-
-#define COMP_81(alufunc, flags)                                                 \
-comp ## alufunc ## 81_reg:                                                      \
-    a_sel RA, b_sel IMMEDIATE, alu_op alufunc,                                  \
-        update_flags flags, next_instruction;                                   \
-comp ## alufunc ## 81_mem:                                                      \
-    segment DS, mem_read;                                                       \
-    a_sel MDR, b_sel IMMEDIATE, alu_op alufunc,                                 \
-        update_flags flags, next_instruction;
+        update_flags flags, width WAUTO, next_instruction;
 
 #define COMP_82(alufunc, flags)                                                 \
 comp ## alufunc ## 82_reg:                                                      \
