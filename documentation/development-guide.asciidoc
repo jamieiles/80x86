@@ -267,7 +267,6 @@ ALU operation.
   - MICROCODE_RD_SEL: use the rd_sel field of the instruction to select the
   destination register.
 
-| reg_wr_en | Causes the result to be written to the destination register.
 | reg_wr_source a| Selects which result should be written to the destination
   register:
 

@@ -26,7 +26,7 @@ DEBUG_READ_SR(DS, 0x10e)
 #define DEBUG_WRITE_GPR(reg, addr) \
 .at addr; \
     b_sel TEMP, alu_op SELB, rd_sel_source MICROCODE_RD_SEL, rd_sel reg, \
-        reg_wr_en, jmp debug_wait;
+        jmp debug_wait;
 
 #define DEBUG_WRITE_SR(reg, addr) \
 .at addr; \

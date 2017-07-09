@@ -10,7 +10,7 @@ do_mul8:
     width W8, a_sel MDR, b_sel TEMP, alu_op MUL, update_flags ZF OF CF,
         tmp_wr_en;
     b_sel TEMP, alu_op SELB, rd_sel_source MICROCODE_RD_SEL, rd_sel AX,
-        reg_wr_en, next_instruction;
+        next_instruction;
 
 // Multiplicand in TEMP, multiplier in MDR
 mulf7_reg:
@@ -21,9 +21,9 @@ do_mul16:
     a_sel RA, alu_op SELA, tmp_wr_en;
     a_sel MDR, b_sel TEMP, alu_op MUL, update_flags ZF OF CF,
         tmp_wr_sel Q_HIGH, tmp_wr_en, rd_sel_source MICROCODE_RD_SEL,
-        rd_sel AX, reg_wr_en;
+        rd_sel AX;
     b_sel TEMP, alu_op SELB, rd_sel_source MICROCODE_RD_SEL, rd_sel DX,
-        reg_wr_en, next_instruction;
+        next_instruction;
 
 // imultiplicand in TEMP, imultiplier in MDR
 imulf6_reg:
@@ -37,7 +37,7 @@ do_imul8:
     width W8, a_sel MDR, b_sel TEMP, alu_op IMUL, update_flags ZF OF CF,
         tmp_wr_en;
     b_sel TEMP, alu_op SELB, rd_sel_source MICROCODE_RD_SEL, rd_sel AX,
-        reg_wr_en, next_instruction;
+        next_instruction;
 
 // imultiplicand in TEMP, imultiplier in MDR
 imulf7_reg:
@@ -48,9 +48,9 @@ do_imul16:
     a_sel RA, alu_op SELA, tmp_wr_en;
     a_sel MDR, b_sel TEMP, alu_op IMUL, update_flags ZF OF CF,
         tmp_wr_sel Q_HIGH, tmp_wr_en, rd_sel_source MICROCODE_RD_SEL,
-        rd_sel AX, reg_wr_en;
+        rd_sel AX;
     b_sel TEMP, alu_op SELB, rd_sel_source MICROCODE_RD_SEL, rd_sel DX,
-        reg_wr_en, next_instruction;
+        next_instruction;
 
 .at 0x6b;
     modrm_start, mar_write mar_wr_sel EA, jmp imul_6b;
@@ -60,11 +60,11 @@ imul_6b:
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem imul6b_reg;
 imul6b_reg:
     a_sel RA, b_sel IMMEDIATE, alu_op IMUL, update_flags ZF OF CF,
-        rd_sel_source MODRM_REG, reg_wr_en, next_instruction;
+        rd_sel_source MODRM_REG, next_instruction;
 imul6b_mem:
     segment DS, mem_read;
     a_sel MDR, b_sel IMMEDIATE, alu_op IMUL, update_flags ZF OF CF,
-        rd_sel_source MODRM_REG, reg_wr_en, next_instruction;
+        rd_sel_source MODRM_REG, next_instruction;
 
 .at 0x69;
     modrm_start, mar_write mar_wr_sel EA, jmp imul_69;

@@ -12,15 +12,13 @@ xchg86_mem:
     segment DS, width WAUTO, mem_read;
     width WAUTO, b_sel RB, alu_op SELB, mar_write, mar_wr_sel Q;
     // memory value is in MDR, register value is in MAR
-    width WAUTO, a_sel MDR, alu_op SELA, rd_sel_source MODRM_REG,
-        reg_wr_en;
+    width WAUTO, a_sel MDR, alu_op SELA, rd_sel_source MODRM_REG;
     width WAUTO, a_sel MAR, alu_op SELA, mdr_write, mar_wr_sel EA,
         mar_write, segment DS, jmp write_complete;
 
 xchg86_reg_store:
-    width WAUTO, b_sel RB, alu_op SELB, rd_sel_source MODRM_RM_REG,
-        reg_wr_en;
-    width WAUTO, a_sel MAR, alu_op SELA, rd_sel_source MODRM_REG, reg_wr_en,
+    width WAUTO, b_sel RB, alu_op SELB, rd_sel_source MODRM_RM_REG;
+    width WAUTO, a_sel MAR, alu_op SELA, rd_sel_source MODRM_REG,
         next_instruction;
 
 #define XCHG_REG(opcode, reg)                                           \
@@ -31,9 +29,9 @@ xchg_ ## reg:                                                           \
     a_sel RA, alu_op SELA, mar_write, mar_wr_sel Q,          \
         ra_sel AX;                                                      \
     a_sel RA, alu_op SELA, rd_sel_source MICROCODE_RD_SEL,   \
-        rd_sel reg, reg_wr_en;                                          \
+        rd_sel reg;                                          \
     a_sel MAR, alu_op SELA, rd_sel_source MICROCODE_RD_SEL,  \
-        rd_sel AX, reg_wr_en, next_instruction;
+        rd_sel AX, next_instruction;
 
 // xchg ax, ax
 .at 0x90;

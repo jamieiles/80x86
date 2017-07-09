@@ -3,7 +3,7 @@
 .auto_address;
 cbw:
     width W8, a_sel RA, b_sel IMMEDIATE, alu_op EXTEND,
-        rd_sel_source MICROCODE_RD_SEL, rd_sel AH, reg_wr_en,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel AH,
         next_instruction;
 
 .at 0x99;
@@ -11,5 +11,5 @@ cbw:
 .auto_address;
 cwd:
     a_sel RA, b_sel IMMEDIATE, alu_op EXTEND,
-        rd_sel_source MICROCODE_RD_SEL, rd_sel DX, reg_wr_en,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel DX,
         next_instruction;

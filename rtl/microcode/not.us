@@ -1,6 +1,6 @@
 notf6_reg:
     a_sel RA, b_sel IMMEDIATE, immediate 0x0, alu_op NOT,
-        rd_sel_source MODRM_RM_REG, reg_wr_en,
+        rd_sel_source MODRM_RM_REG,
         update_flags OF SF ZF CF PF AF, width WAUTO, next_instruction;
 notf6_mem:
     width WAUTO, segment DS, mem_read, ra_modrm_rm_reg;

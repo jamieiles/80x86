@@ -7,13 +7,13 @@ pop8f_mem:
 pop8f_reg_restore:
     segment_force, segment SS, mem_read, ra_sel SP;
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op ADD,
-        rd_sel SP, rd_sel_source MICROCODE_RD_SEL, reg_wr_en;
+        rd_sel SP, rd_sel_source MICROCODE_RD_SEL;
     a_sel MDR, alu_op SELA, rd_sel_source MODRM_RM_REG,
-        reg_wr_en, next_instruction;
+        next_instruction;
 pop8f_mem_restore:
     segment_force, segment SS, mem_read, ra_sel SP;
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op ADD,
-        rd_sel SP, rd_sel_source MICROCODE_RD_SEL, reg_wr_en;
+        rd_sel SP, rd_sel_source MICROCODE_RD_SEL;
     mar_write, mar_wr_sel EA, segment DS, jmp write_16_complete;
 
 #define POP_GPR(opcode, reg)                                            \
@@ -25,9 +25,9 @@ pop_gpr ## reg:                                                         \
         segment_force, segment SS;                                      \
     segment_force, segment SS, mem_read, ra_sel SP;                     \
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op ADD,               \
-        rd_sel SP, rd_sel_source MICROCODE_RD_SEL, reg_wr_en;           \
+        rd_sel SP, rd_sel_source MICROCODE_RD_SEL;           \
     a_sel MDR, alu_op SELA, rd_sel reg,                                 \
-        rd_sel_source MICROCODE_RD_SEL, reg_wr_en, next_instruction;
+        rd_sel_source MICROCODE_RD_SEL, next_instruction;
 
 #define POP_SR(opcode, reg)                                             \
 .at opcode;                                                             \
@@ -38,7 +38,7 @@ pop_sr ## reg:                                                          \
         segment_force, segment SS;                                      \
     segment_force, segment SS, mem_read, ra_sel SP;                     \
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op ADD,               \
-        rd_sel SP, rd_sel_source MICROCODE_RD_SEL, reg_wr_en;           \
+        rd_sel SP, rd_sel_source MICROCODE_RD_SEL;           \
     a_sel MDR, alu_op SELA, segment_force, segment reg,                 \
         segment_wr_en, ext_int_inhibit, next_instruction;
 
@@ -62,6 +62,6 @@ popf:
     alu_op SELA, mar_wr_sel Q, mar_write, segment_force, segment SS;
     segment_force, segment SS, mem_read, ra_sel SP;
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op ADD,
-        rd_sel SP, rd_sel_source MICROCODE_RD_SEL, reg_wr_en;
+        rd_sel SP, rd_sel_source MICROCODE_RD_SEL;
     a_sel MDR, alu_op SETFLAGSA, update_flags CF PF AF ZF SF TF IF DF OF,
         next_instruction;

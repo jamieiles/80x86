@@ -35,6 +35,7 @@ module Microcode(input logic clk,
                  output logic <%type%><%name%>,
                  <%/exported_fields%>
                  output logic width,
+                 output logic reg_wr_en,
                  // Fifo Read Port.
                  output logic fifo_rd_en,
                  input logic [7:0] fifo_rd_data,
@@ -128,6 +129,8 @@ wire seizing = debug_seize & ~seized;
 reg start_instruction;
 
 assign loop_next = !stall && current.jump_type == JumpType_LOOP_DONE;
+
+assign reg_wr_en = current.rd_sel_source != RDSelSource_NONE;
 
 always_comb begin
     case (current.width)

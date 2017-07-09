@@ -48,7 +48,7 @@ do_int_main:
     a_sel IP, alu_op SELA, mdr_write, segment SS, segment_force;
     segment SS, segment_force, mem_write;
     a_sel MAR, alu_op SELA, rd_sel_source MICROCODE_RD_SEL,
-        rd_sel SP, reg_wr_en;
+        rd_sel SP;
     b_sel IMMEDIATE, immediate 0x0, alu_op SETFLAGSB, update_flags IF TF;
     b_sel IMMEDIATE, immediate 0x0, alu_op SELB, segment_force,
         segment CS, segment_wr_en;

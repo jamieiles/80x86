@@ -3,7 +3,7 @@
 alu_func ## d0_d1_reg:                                                          \
     a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op alu_func, 			\
         rd_sel_source MODRM_RM_REG, update_flags flags,                         \
-        reg_wr_en, width WAUTO, next_instruction;                               \
+        width WAUTO, next_instruction;                               \
 alu_func ## d0_d1_mem:                                                          \
     segment DS, mem_read, width WAUTO;                                          \
     width WAUTO, a_sel MDR, b_sel IMMEDIATE, immediate 0x1, alu_op alu_func,    \
@@ -21,7 +21,7 @@ alu_func ## d2_d3:							        \
         segment DS, jmp_rm_reg_mem alu_func ## d2_d3_reg;	                \
 alu_func ## d2_d3_reg:                                                          \
     a_sel RA, b_sel RB, alu_op alu_func, rd_sel_source MODRM_RM_REG, 		\
-        update_flags flags, reg_wr_en, width WAUTO, tmp_wr_sel Q_HIGH, 		\
+        update_flags flags, width WAUTO, tmp_wr_sel Q_HIGH, 		\
         tmp_wr_en, next_instruction, ra_modrm_rm_reg;                           \
 alu_func ## d2_d3_mem:                                                          \
     segment DS, mem_read, width WAUTO, rb_cl;                                   \
@@ -32,7 +32,7 @@ alu_func ## d2_d3_mem:                                                          
 #define SHIFTN_IMM8(alu_func, flags)                                            \
 alu_func ## c0_reg:                                                             \
     a_sel RA, b_sel IMMEDIATE, alu_op alu_func, rd_sel_source MODRM_RM_REG,     \
-        update_flags flags, reg_wr_en, width WAUTO, tmp_wr_sel Q_HIGH, 		\
+        update_flags flags, width WAUTO, tmp_wr_sel Q_HIGH, 		\
         tmp_wr_en, next_instruction, ra_modrm_rm_reg;                           \
 alu_func ## c0_mem:                                                             \
     segment DS, mem_read, width WAUTO;                                          \

@@ -35,7 +35,7 @@
 // LAHF
 .at 0x9f;
     alu_op GETFLAGS, rd_sel_source MICROCODE_RD_SEL, rd_sel AH,
-        width W8, reg_wr_en, next_instruction;
+        width W8, next_instruction;
 
 // SAHF
 .at 0x9e;
@@ -50,4 +50,4 @@ sahf:
 .auto_address;
 setalc:
     width W8, a_sel RA, b_sel RB, alu_op SBB,
-        rd_sel_source MICROCODE_RD_SEL, reg_wr_en, rd_sel AL, next_instruction;
+        rd_sel_source MICROCODE_RD_SEL, rd_sel AL, next_instruction;

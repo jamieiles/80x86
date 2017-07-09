@@ -8,10 +8,9 @@ do_div8:
     a_sel RA, alu_op SELA, tmp_wr_en;
     width W8, alu_op DIV;
 div8_complete:
-    width W8, reg_wr_source QUOTIENT, rd_sel_source MICROCODE_RD_SEL, rd_sel AL,
-        reg_wr_en;
+    width W8, reg_wr_source QUOTIENT, rd_sel_source MICROCODE_RD_SEL, rd_sel AL;
     width W8, reg_wr_source REMAINDER, rd_sel_source MICROCODE_RD_SEL,
-        rd_sel AH, reg_wr_en, next_instruction;
+        rd_sel AH, next_instruction;
 
 divf7_reg:
     a_sel RA, alu_op SELA, mdr_write, ra_sel AX, jmp do_div16;
@@ -22,10 +21,9 @@ do_div16:
     a_sel RA, alu_op SELA, tmp_wr_en, ra_sel DX;
     ra_sel DX, alu_op DIV;
 div16_complete:
-    reg_wr_source QUOTIENT, rd_sel_source MICROCODE_RD_SEL, rd_sel AX,
-        reg_wr_en;
+    reg_wr_source QUOTIENT, rd_sel_source MICROCODE_RD_SEL, rd_sel AX;
     reg_wr_source REMAINDER, rd_sel_source MICROCODE_RD_SEL, rd_sel DX,
-        reg_wr_en, next_instruction;
+        next_instruction;
 
 idivf6_reg:
     width W8, a_sel RA, alu_op SELA, mdr_write, jmp do_idiv8;
@@ -55,10 +53,9 @@ do_aam:
     // divisor in MDR, dividend in DX:TMP
     a_sel RA, alu_op SELA, tmp_wr_en;
     width W8, alu_op DIV;
-    width W8, reg_wr_source QUOTIENT, rd_sel_source MICROCODE_RD_SEL, rd_sel AH,
-        reg_wr_en;
+    width W8, reg_wr_source QUOTIENT, rd_sel_source MICROCODE_RD_SEL, rd_sel AH;
     width W8, reg_wr_source REMAINDER, rd_sel_source MICROCODE_RD_SEL,
-        rd_sel AL, reg_wr_en;
+        rd_sel AL;
     ra_sel AX;
     a_sel RA, b_sel IMMEDIATE, immediate 0x0, alu_op ADD,
         update_flags SF ZF PF, next_instruction;

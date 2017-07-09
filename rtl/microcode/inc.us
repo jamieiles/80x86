@@ -15,7 +15,7 @@ dispatch_fe:
 
 inc_fe_reg:
     a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op ADD,
-        rd_sel_source MODRM_RM_REG, reg_wr_en, update_flags OF SF ZF AF PF,
+        rd_sel_source MODRM_RM_REG, update_flags OF SF ZF AF PF,
         width WAUTO, next_instruction;
 inc_fe_mem:
     width WAUTO, segment DS, mem_read;
@@ -25,7 +25,7 @@ inc_fe_mem:
 
 dec_fe_reg:
     a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
-        rd_sel_source MODRM_RM_REG, reg_wr_en, update_flags OF SF ZF AF PF,
+        rd_sel_source MODRM_RM_REG, update_flags OF SF ZF AF PF,
         width WAUTO, next_instruction;
 dec_fe_mem:
     width WAUTO, segment DS, mem_read;
@@ -38,7 +38,7 @@ dec_fe_mem:
     ra_sel reg, jmp inc ## reg;                                         \
 inc ## reg:                                                             \
     a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op ADD,               \
-        rd_sel_source MICROCODE_RD_SEL, rd_sel reg, reg_wr_en,          \
+        rd_sel_source MICROCODE_RD_SEL, rd_sel reg,          \
         update_flags OF SF ZF AF PF, next_instruction;
 
 #define DEC_REG(opcode, reg)                                            \
@@ -46,7 +46,7 @@ inc ## reg:                                                             \
     ra_sel reg, jmp dec ## reg;                                         \
 dec ## reg:                                                             \
     a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,               \
-        rd_sel_source MICROCODE_RD_SEL, rd_sel reg, reg_wr_en,          \
+        rd_sel_source MICROCODE_RD_SEL, rd_sel reg,          \
         update_flags OF SF ZF AF PF, next_instruction;
 
 INC_REG(0x40, AX)

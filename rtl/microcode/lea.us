@@ -6,4 +6,4 @@ lea_reg:
     next_instruction;
 lea_mem:
     rd_sel AX, rd_sel_source MODRM_REG, a_sel MAR, alu_op SELA,
-        reg_wr_en, next_instruction;
+        next_instruction;

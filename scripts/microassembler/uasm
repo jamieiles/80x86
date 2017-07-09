@@ -280,7 +280,6 @@ class MicroAssembler(object):
         'modrm_start': (1, _boolean, True),
         'ra_modrm_rm_reg': (1, _boolean, True),
         'rd_sel_source': (num_bits(len(RDSelSource)), partial(_enumerated_field, enum_class=RDSelSource), True),
-        'reg_wr_en': (1, _boolean, True),
         'reg_wr_source': (num_bits(len(RegWrSource)), partial(_enumerated_field, enum_class=RegWrSource), True),
         'tmp_wr_en': (1, _boolean, True),
         'tmp_wr_sel': (num_bits(len(TEMPWrSel)), partial(_enumerated_field, enum_class=TEMPWrSel), True),

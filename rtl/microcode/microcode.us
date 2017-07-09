@@ -218,21 +218,21 @@ dispatch_ff:
 .auto_address;
 reset:
     b_sel IMMEDIATE, alu_op SELB, immediate 0x0, rd_sel_source MICROCODE_RD_SEL,
-        rd_sel AX, reg_wr_en;
+        rd_sel AX;
     b_sel IMMEDIATE, alu_op SELB, immediate 0x0, rd_sel_source MICROCODE_RD_SEL,
-        rd_sel CX, reg_wr_en;
+        rd_sel CX;
     b_sel IMMEDIATE, alu_op SELB, immediate 0x0, rd_sel_source MICROCODE_RD_SEL,
-        rd_sel DX, reg_wr_en;
+        rd_sel DX;
     b_sel IMMEDIATE, alu_op SELB, immediate 0x0, rd_sel_source MICROCODE_RD_SEL,
-        rd_sel BX, reg_wr_en;
+        rd_sel BX;
     b_sel IMMEDIATE, alu_op SELB, immediate 0x0, rd_sel_source MICROCODE_RD_SEL,
-        rd_sel SP, reg_wr_en;
+        rd_sel SP;
     b_sel IMMEDIATE, alu_op SELB, immediate 0x0, rd_sel_source MICROCODE_RD_SEL,
-        rd_sel BP, reg_wr_en;
+        rd_sel BP;
     b_sel IMMEDIATE, alu_op SELB, immediate 0x0, rd_sel_source MICROCODE_RD_SEL,
-        rd_sel SI, reg_wr_en;
+        rd_sel SI;
     b_sel IMMEDIATE, alu_op SELB, immediate 0x0, rd_sel_source MICROCODE_RD_SEL,
-        rd_sel DI, reg_wr_en;
+        rd_sel DI;
     b_sel IMMEDIATE, alu_op SELB, immediate 0x0, segment_force, segment ES,
         segment_wr_en;
     b_sel IMMEDIATE, alu_op SELB, immediate 0xffff, segment_force, segment CS,

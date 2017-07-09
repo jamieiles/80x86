@@ -7,8 +7,7 @@ enter:
     // Push BP
     ra_sel SP;
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, mar_write,
-        mar_wr_sel Q, ra_sel BP, rd_sel_source MICROCODE_RD_SEL, rd_sel SP,
-        reg_wr_en;
+        mar_wr_sel Q, ra_sel BP, rd_sel_source MICROCODE_RD_SEL, rd_sel SP;
     a_sel RA, alu_op SELA, mdr_write, segment_force, segment SS;
     segment_force, segment SS, mem_write, ra_sel SP,
         jmp_loop_done enter_out_nonest;
@@ -23,12 +22,12 @@ enter_loop:
     jmp_loop_done enter_out, ra_sel BP;
     // BP := BP - 2
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel BP,
-        rd_sel_source MICROCODE_RD_SEL, reg_wr_en, segment_force, segment SS,
+        rd_sel_source MICROCODE_RD_SEL, segment_force, segment SS,
         mar_write, mar_wr_sel Q;
     // push [BP]
     segment_force, segment SS, mem_read, ra_sel SP;
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
-        rd_sel_source MICROCODE_RD_SEL, reg_wr_en, segment_force, segment SS,
+        rd_sel_source MICROCODE_RD_SEL, segment_force, segment SS,
         mar_write, mar_wr_sel Q;
     segment_force, segment SS, mem_write;
     jmp enter_loop;
@@ -37,17 +36,17 @@ enter_out:
     // Reload frame_temp
     ra_sel SP;
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
-        rd_sel_source MICROCODE_RD_SEL, reg_wr_en, segment_force, segment SS,
+        rd_sel_source MICROCODE_RD_SEL, segment_force, segment SS,
         mar_write, mar_wr_sel Q;
     segment_force, segment SS, mem_read, ra_sel SP;
     a_sel MDR, alu_op SELA, rd_sel BP, rd_sel_source MICROCODE_RD_SEL,
-        reg_wr_en, ra_sel SP;
+        ra_sel SP;
     // SP := SP - size
     a_sel RA, b_sel TEMP, alu_op SUB, rd_sel SP, rd_sel_source MICROCODE_RD_SEL,
-        reg_wr_en, next_instruction;
+        next_instruction;
 
 enter_out_nonest:
     a_sel RA, alu_op SELA, rd_sel BP, rd_sel_source MICROCODE_RD_SEL,
-        reg_wr_en, ra_sel SP;
+        ra_sel SP;
     a_sel RA, b_sel TEMP, alu_op SUB, rd_sel SP, rd_sel_source MICROCODE_RD_SEL,
-        reg_wr_en, next_instruction;
+        next_instruction;

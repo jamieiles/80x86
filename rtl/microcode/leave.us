@@ -3,10 +3,9 @@
 .auto_address;
 leavec9:
     a_sel RA, alu_op SELA, rd_sel SP, rd_sel_source MICROCODE_RD_SEL,
-        reg_wr_en, mar_write, mar_wr_sel Q, segment SS, segment_force;
+        mar_write, mar_wr_sel Q, segment SS, segment_force;
     segment SS, segment_force, mem_read;
-    a_sel MDR, alu_op SELA, rd_sel BP, rd_sel_source MICROCODE_RD_SEL,
-        reg_wr_en;
+    a_sel MDR, alu_op SELA, rd_sel BP, rd_sel_source MICROCODE_RD_SEL;
     a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD,
-        rd_sel_source MICROCODE_RD_SEL, rd_sel SP, reg_wr_en,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel SP,
         next_instruction;

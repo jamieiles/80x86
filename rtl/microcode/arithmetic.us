@@ -11,7 +11,7 @@
 .auto_address;                                                                  \
 alufunc ## opcode1 ## _reg:                                                     \
     a_sel RA, b_sel RB, alu_op alufunc,						\
-        rd_sel_source MODRM_RM_REG, update_flags flags, reg_wr_en,              \
+        rd_sel_source MODRM_RM_REG, update_flags flags,              \
         width WAUTO, next_instruction;                                          \
 alufunc ## opcode1 ## _mem:                                                     \
     segment DS, mem_read, width WAUTO;                                          \
@@ -28,12 +28,12 @@ alufunc ## opcode1 ## _mem:                                                     
 .auto_address;                                                                  \
 alufunc ## opcode1 ## _reg:                                                     \
     a_sel RA, b_sel RB, alu_op alufunc, rd_sel_source MODRM_REG,     		\
-        update_flags flags, reg_wr_en, width WAUTO,                             \
+        update_flags flags, width WAUTO,                             \
         next_instruction;                                       		\
 alufunc ## opcode1 ## _mem:                                                     \
     segment DS, mem_read, width WAUTO;						\
     a_sel MDR, b_sel RB, alu_op alufunc, rd_sel_source MODRM_REG,    		\
-        update_flags flags, reg_wr_en, width WAUTO,                             \
+        update_flags flags, width WAUTO,                             \
         next_instruction;
 
 #define ARITH_REGMEM_A(opcode1, opcode2, alufunc, flags)                        \
@@ -45,13 +45,13 @@ alufunc ## opcode1 ## _mem:                                                     
 alufunc ## opcode1:                                                             \
     a_sel RA, b_sel IMMEDIATE, alu_op alufunc,                       		\
         rd_sel_source MICROCODE_RD_SEL, rd_sel AL,                              \
-        update_flags flags, reg_wr_en, width WAUTO,                             \
+        update_flags flags, width WAUTO,                             \
         next_instruction;
 
 #define ARITH_80_81(alufunc, flags)                                                \
 alufunc ## 80_81_reg:                                                              \
     a_sel RA, b_sel IMMEDIATE, alu_op alufunc,                       		\
-        rd_sel_source MODRM_RM_REG, reg_wr_en,                                  \
+        rd_sel_source MODRM_RM_REG,                                  \
         width WAUTO, update_flags flags, next_instruction;                   	\
 alufunc ## 80_81_mem:                                                              \
     segment DS, mem_read, width WAUTO;						\
@@ -65,7 +65,7 @@ alufunc ## 83_mem:                                                              
     ra_modrm_rm_reg, segment DS, jmp alufunc ## 83 ## memwrite;                 \
 alufunc ## 83 ## regwrite:                                                      \
     a_sel RA, b_sel IMMEDIATE, alu_op alufunc,                       		\
-        rd_sel_source MODRM_RM_REG, reg_wr_en,                                  \
+        rd_sel_source MODRM_RM_REG,                                  \
         update_flags flags, next_instruction;                   	        \
 alufunc ## 83 ## memwrite:                                                      \
     segment DS, mem_read;						        \
