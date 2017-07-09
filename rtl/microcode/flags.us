@@ -15,7 +15,6 @@
 
 // STI
 .at 0xfb;
-    // TODO: need to inhibit interrupts for the next instruction.
     b_sel IMMEDIATE, immediate 0xffff, alu_op SETFLAGSB, update_flags IF,
         ext_int_inhibit, next_instruction;
 
