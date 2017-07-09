@@ -191,8 +191,8 @@ dispatch_f6:
 dispatch_f7:
     read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem compANDf7_reg; // reg == 0
     read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem compANDf7_reg; // reg == 1
-    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem notf7_reg; // reg == 2
-    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem negf7_reg; // reg == 3
+    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem notf6_reg; // reg == 2
+    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem negf6_reg; // reg == 3
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem mulf7_reg; // reg == 4
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem imulf7_reg; // reg == 5
     ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem divf7_reg; // reg == 6
