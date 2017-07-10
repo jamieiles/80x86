@@ -130,7 +130,7 @@ reg start_instruction;
 
 assign loop_next = !stall && current.jump_type == JumpType_LOOP_DONE;
 
-assign reg_wr_en = current.rd_sel_source != RDSelSource_NONE;
+assign reg_wr_en = current.rd_sel_source != RDSelSource_NONE & ~segment_wr_en;
 
 always_comb begin
     case (current.width)
