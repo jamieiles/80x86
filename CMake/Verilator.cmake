@@ -2,7 +2,7 @@ include_directories(${VERILATOR_INCLUDE_DIRS})
 
 set(VERILATED_HEADERS)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O2 -ggdb3 -std=c++14")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Os -ggdb3 -std=c++14")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Coverage")
     set(VERILATOR_COVERAGE_FLAGS --coverage-line -Wno-style)
