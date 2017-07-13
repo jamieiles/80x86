@@ -7,6 +7,9 @@ SECTIONS {
     .text 0xe000 : {
         *(.entry.text);
         *(.text);
+        vectors_start = . ;
+        *(.rodata.vectors);
+        vectors_end = . ;
         *(.rodata*);
         *(.bss*);
         *(.data*);

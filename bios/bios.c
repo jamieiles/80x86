@@ -116,6 +116,11 @@ void int19_function(struct callregs *regs)
     asm volatile("jmp $0xffff, $0x0");
 }
 
+void int12_function(struct callregs *regs)
+{
+    regs->ax.x = 640;
+}
+
 static unsigned long time_count;
 
 void int1a_function(struct callregs *regs)
@@ -173,37 +178,20 @@ static void init_timer(void)
     time_count = 0;
 }
 
-extern void int10_handler(void);
-extern void int11_handler(void);
-extern void int12_handler(void);
-extern void int13_handler(void);
-extern void int14_handler(void);
-extern void int15_handler(void);
-extern void int16_handler(void);
-extern void int17_handler(void);
-extern void int18_handler(void);
-extern void int19_handler(void);
-extern void int1a_handler(void);
-extern void int1b_handler(void);
-extern void int1c_handler(void);
-extern void timer_handler(void);
-
 static void install_vectors(void)
 {
-    set_vector(0x08, timer_handler);
-    set_vector(0x10, int10_handler);
-    set_vector(0x11, int11_handler);
-    set_vector(0x12, int12_handler);
-    set_vector(0x13, int13_handler);
-    set_vector(0x14, int14_handler);
-    set_vector(0x15, int15_handler);
-    set_vector(0x16, int16_handler);
-    set_vector(0x17, int17_handler);
-    set_vector(0x18, int18_handler);
-    set_vector(0x19, int19_handler);
-    set_vector(0x1a, int1a_handler);
-    set_vector(0x1b, int1b_handler);
-    set_vector(0x1c, int1c_handler);
+    struct vector {
+        unsigned short num;
+        void *handler;
+    };
+
+    extern struct vector vectors_start;
+    extern struct vector vectors_end;
+
+    struct vector *v;
+
+    for (v = &vectors_start; v < &vectors_end; ++v)
+        set_vector(v->num, v->handler);
 }
 
 void root(void)

@@ -39,7 +39,9 @@ saved_ss:
 saved_sp:
     .word 0
 
-.macro int_handler function
+.macro int_handler name, vector, function
+.globl \name
+\name:
     mov %ss, %cs:saved_ss
     mov %sp, %cs:saved_sp
     mov %cs:bios_ss, %ss
@@ -76,61 +78,26 @@ saved_sp:
     mov %cs:saved_sp, %sp
 
     iret
+
+.pushsection .rodata.vectors
+    .align 4
+    .word \vector
+    .word \name
+.popsection
+
 .endm
 
-.globl int12_handler
-int12_handler:
-    mov $640, %ax
-    iret
-
-.globl int10_handler
-int10_handler:
-    int_handler int10_function
-
-.globl int11_handler
-int11_handler:
-    int_handler int11_function
-
-.globl int13_handler
-int13_handler:
-    int_handler int13_function
-
-.globl int14_handler
-int14_handler:
-    int_handler int14_function
-
-.globl int15_handler
-int15_handler:
-    int_handler int15_function
-
-.globl int16_handler
-int16_handler:
-    int_handler int16_function
-
-.globl int17_handler
-int17_handler:
-    int_handler int17_function
-
-.globl int18_handler
-int18_handler:
-    int_handler int18_function
-
-.globl int19_handler
-int19_handler:
-    int_handler int19_function
-
-.globl int1a_handler
-int1a_handler:
-    int_handler int1a_function
-
-.globl int1b_handler
-int1b_handler:
-    int_handler int1b_function
-
-.globl int1c_handler
-int1c_handler:
-    int_handler int1c_function
-
-.globl timer_handler
-timer_handler:
-    int_handler timer_function
+int_handler int10_handler, 0x10, int10_function
+int_handler int11_handler, 0x11, int11_function
+int_handler int12_handler, 0x12, int12_function
+int_handler int13_handler, 0x13, int13_function
+int_handler int14_handler, 0x14, int14_function
+int_handler int15_handler, 0x15, int15_function
+int_handler int16_handler, 0x16, int16_function
+int_handler int17_handler, 0x17, int17_function
+int_handler int18_handler, 0x18, int18_function
+int_handler int19_handler, 0x19, int19_function
+int_handler int1a_handler, 0x1a, int1a_function
+int_handler int1b_handler, 0x1b, int1b_function
+int_handler int1c_handler, 0x1c, int1c_function
+int_handler timer_handler, 0x08, timer_function
