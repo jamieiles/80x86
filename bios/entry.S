@@ -25,14 +25,21 @@ _start:
     mov %ax, %ds
     mov %ax, %es
     mov %ax, %cs:bios_ss
-    movw $0xdffe, %cs:bios_sp
-    movw $0xdffe, %sp
+    movw $stack_start, %cs:bios_sp
+    movw $stack_start, %sp
 
     // Clear bss
     mov $bss_start, %di
     mov $bss_end, %cx
     sub $bss_start, %cx
     mov $0, %al
+    rep stosb
+
+    // Initialize rw data
+    mov $data_start, %di
+    mov $data_end, %cx
+    sub $data_start, %cx
+    mov $_data_load, %si
     rep stosb
 
     jmp root
