@@ -11,8 +11,12 @@ SECTIONS {
         *(.rodata.vectors);
         vectors_end = . ;
         *(.rodata*);
-        *(.bss*);
         *(.data*);
+    }
+    .bss : {
+        bss_start = . ;
+        *(.bss*);
+        bss_end = . ;
     }
     .reset 0xfff0 : {
         *(.reset.text);

@@ -23,9 +23,18 @@ _start:
     mov %cs, %ax
     mov %ax, %ss
     mov %ax, %ds
+    mov %ax, %es
     mov %ax, %cs:bios_ss
     movw $0xdffe, %cs:bios_sp
     movw $0xdffe, %sp
+
+    // Clear bss
+    mov $bss_start, %di
+    mov $bss_end, %cx
+    sub $bss_start, %cx
+    mov $0, %al
+    rep stosb
+
     jmp root
 
 .section .text, "ax"
