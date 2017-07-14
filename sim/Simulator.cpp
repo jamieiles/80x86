@@ -17,6 +17,12 @@
 #include "SPI.h"
 #include "Timer.h"
 
+namespace tty {
+    const std::string green = "\x1b[32m";
+    const std::string normal = "\x1b[39;49;0m";
+    const std::string bold = "\x1b[1m";
+};
+
 class SDRAMConfigRegister : public IOPorts {
 public:
     SDRAMConfigRegister()
@@ -77,6 +83,8 @@ Simulator<T>::Simulator(const std::string &bios_path,
 template <typename T>
 void Simulator<T>::load_bios(const std::string &bios_path)
 {
+    std::cout << tty::bold << tty::green << "Loading bios: " << bios_path << tty::normal << "\r\n";
+
     std::ifstream bios(bios_path, std::ios::binary);
     for (unsigned offs = 0; !bios.eof(); ++offs) {
         char v;
@@ -133,7 +141,7 @@ void Simulator<T>::run()
 
     std::chrono::duration<double> elapsed_seconds = end_time - start_time;
 
-    std::cout << "Operating frequency: " << (cpu.cycle_count() / 1000000.0) / elapsed_seconds.count() << "MHz" << std::endl;
+    std::cout << tty::bold << tty::green << "\r\nOperating frequency: " << (cpu.cycle_count() / 1000000.0) / elapsed_seconds.count() << "MHz\r\n" << tty::normal;
 }
 
 int main(int argc, char **argv)
