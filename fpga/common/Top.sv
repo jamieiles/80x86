@@ -210,9 +210,7 @@ BIOS #(.depth(4096))
           .data_m_access(q_m_access),
           .data_m_ack(bios_ack),
           .data_m_addr(q_m_addr),
-          .data_m_wr_en(q_m_wr_en),
           .data_m_data_out(bios_data),
-          .data_m_data_in(q_m_data_out),
           .data_m_bytesel(q_m_bytesel));
 
 SDRAMConfigRegister SDRAMConfigRegister(.clk(sys_clk),
