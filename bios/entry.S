@@ -24,9 +24,6 @@ _start:
     mov %ax, %ss
     mov %ax, %ds
     mov %ax, %es
-    mov %ax, %cs:bios_ss
-    movw $stack_start, %cs:bios_sp
-    movw $stack_start, %sp
 
     // Clear bss
     mov $bss_start, %di
@@ -40,20 +37,25 @@ _start:
     mov $data_end, %cx
     sub $data_start, %cx
     mov $_data_load, %si
-    rep stosb
+    rep movsb
+
+    movw $stack_start, %sp
 
     jmp root
 
-.section .text, "ax"
-
+.section .data
 bios_ss:
-    .word 0
+    .word 0xf000
 bios_sp:
-    .word 0
+    .word stack_start
+
+.section .bss
 saved_ss:
     .word 0
 saved_sp:
     .word 0
+
+.section .text, "ax"
 
 .macro int_handler name, vector, function
 .globl \name
