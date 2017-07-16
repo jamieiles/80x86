@@ -42,7 +42,7 @@ wire [15:0] debug_val;
 wire debug_wr_en;
 
 wire [15:0] io_data = sdram_config_data | uart_data | spi_data |
-    timer_data | irq_control_data;
+    timer_data | irq_control_data | bios_control_data;
 wire [15:0] mem_data;
 
 // Data bus
@@ -84,6 +84,11 @@ wire bios_access;
 wire bios_ack;
 wire [15:0] bios_data;
 
+wire bios_control_access;
+wire bios_control_ack;
+wire bios_enabled;
+wire [15:0] bios_control_data;
+
 wire sdram_config_access;
 wire sdram_config_ack;
 wire sdram_config_done;
@@ -121,7 +126,8 @@ wire io_ack = sdram_config_ack |
 `endif // CONFIG_LEDS
               spi_ack |
               irq_control_ack |
-              timer_ack;
+              timer_ack |
+              bios_control_ack;
 
 always_ff @(posedge clk)
     default_io_ack <= default_io_access;
@@ -136,6 +142,7 @@ always_comb begin
     spi_access = 1'b0;
     irq_control_access = 1'b0;
     timer_access = 1'b0;
+    bios_control_access = 1'b0;
 
     if (d_io && data_m_access) begin
         casez ({data_m_addr[15:1], 1'b0})
@@ -147,6 +154,7 @@ always_comb begin
         16'b1111_1111_1111_00z0: spi_access = 1'b1;
         16'b1111_1111_1111_01z0: irq_control_access = 1'b1;
         16'b1111_1111_1110_1110: timer_access = 1'b1;
+        16'b1111_1111_1110_1100: bios_control_access = 1'b1;
         default:  default_io_access = 1'b1;
         endcase
     end
@@ -157,8 +165,8 @@ always_comb begin
     bios_access = 1'b0;
 
     if (q_m_access) begin
-        casez ({q_m_addr, 1'b0})
-        20'b1111_111?_????_????_????: bios_access = 1'b1;
+        casez ({bios_enabled, q_m_addr, 1'b0})
+        {1'b1, 20'b1111_111?_????_????_????}: bios_access = 1'b1;
         default: sdram_access = 1'b1;
         endcase
     end
@@ -212,6 +220,13 @@ BIOS #(.depth(4096))
           .data_m_addr(q_m_addr),
           .data_m_data_out(bios_data),
           .data_m_bytesel(q_m_bytesel));
+
+BIOSControlRegister BIOSControlRegister(.clk(sys_clk),
+                                        .cs(bios_control_access),
+                                        .data_m_ack(bios_control_ack),
+                                        .data_m_data_out(bios_control_data),
+                                        .bios_enabled(bios_enabled),
+                                        .*);
 
 SDRAMConfigRegister SDRAMConfigRegister(.clk(sys_clk),
                                         .cs(sdram_config_access),

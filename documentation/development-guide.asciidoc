@@ -504,6 +504,10 @@ load the design into the FPGA via the Altera USB Blaster.
 [cols="1,1,4",options="header"]
 |===
 | Address | Width (bits) | Description
+| 16'hffec | 16 a| BIOS control register:
+
+  - [0]: BIOS ROM enabled.
+
 | 16'hffee | 16 a| Timer control register:
 
   - [15]: enable.
@@ -571,6 +575,10 @@ load the design into the FPGA via the Altera USB Blaster.
 [cols="1,1,4",options="header"]
 |===
 | Address | Width (bits) | Description
+| 16'hffec | 16 a| BIOS control register:
+
+  - [0]: BIOS writable.
+
 | 16'hffee | 16 a| Timer control register:
 
   - [15]: enable.

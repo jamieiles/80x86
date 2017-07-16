@@ -4,9 +4,12 @@ module BIOS #(parameter depth = 32)
               input logic data_m_access,
               output logic data_m_ack,
               input logic [19:1] data_m_addr,
+              input logic data_m_wr_en,
+              input logic [15:0] data_m_data_in,
               output logic [15:0] data_m_data_out,
               input logic [1:0] data_m_bytesel);
 
+wire wr_en = data_m_access & cs & data_m_wr_en;
 wire [15:0] q;
 assign data_m_data_out = data_m_ack ? q : 16'b0;
 
@@ -16,8 +19,8 @@ always_ff @(posedge clk)
 altsyncram	altsyncram_component(.address_a(data_m_addr[$clog2(depth):1]),
                                      .byteena_a(data_m_bytesel),
                                      .clock0(clk),
-                                     .data_a(16'b0),
-                                     .wren_a(1'b0),
+                                     .data_a(data_m_data_in),
+                                     .wren_a(wr_en),
                                      .q_a(q),
                                      .aclr0(1'b0),
                                      .aclr1(1'b0),
