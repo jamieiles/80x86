@@ -714,6 +714,46 @@ these test cases to run against pure software simulations and Verilog models.
 
 = Programmer's Reference
 
+== Interrupts
+
+The CPU core implements the following exceptions.  Traps are handled after the
+instruction and the saved CS:IP points to the next instruction, faults are
+restartable and the saved CS:IP points to the instruction that caused the
+fault and so can be restarted.  The core correctly handles multiple prefix
+bytes during an interrupted string instruction.
+
+.Exceptions
+[cols="2,2,1,6",options="header"]
+|===
+| Name | Type | Number | Description
+| Divide-by-zero | Trap | 0 | Raised when division by zero occurs or the result of
+the division operation does not fit in the range of the destination register.
+| Single-step | Trap | 1 | Raised when `TF` is set and the core steps an instruction.
+| NMI | Interrupt | 2 | Non-maskable interrupt, raised when the `nmi` signal
+has a negative to positive edge.
+| INT | Interrupt | 3 | Normal interrupt, raised by the `int3` instruction.
+| Overflow | Trap | 4 | Overflow, raised by an `into` instruction if `OF` is
+set.
+| Bound | Trap | 5 | Bounds check, raised when the `bound` instruction detects
+an out-of-bounds address.
+| Invalid Opcode | Trap | 6 a| Raised when an invalid opcode is executed.
+Invalid opcodes do not include unimplemented opcodes or undocumented opcodes.
+The opcodes that raise this trap are:
+
+  * 8'h0f
+  * 8'h63
+  * 8'h64
+  * 8'h65
+  * 8'h66
+  * 8'h67
+  * 8'hf1
+  * 8'hff or 8'hfe with /reg=7
+  * 8'h62 (bound) with a register operand
+
+| Escape | Fault | 7 | Escape opcode, this will always be raised on an `esc`
+instruction as no coprocessors are supported.
+|===
+
 == Instructions
 
 The following tables list all of the supported instructions along with sizes
