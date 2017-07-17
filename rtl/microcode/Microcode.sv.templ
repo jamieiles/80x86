@@ -6,10 +6,7 @@
 module Microcode(input logic clk,
                  input logic reset,
                  input logic nmi_pulse,
-                 // verilator lint_off UNUSED
-                 // verilator lint_off UNDRIVEN
                  input logic intr,
-                 input logic [7:0] irq,
                  output logic inta,
                  output logic irq_to_mdr,
                  output logic start_interrupt,
