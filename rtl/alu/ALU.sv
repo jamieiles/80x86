@@ -3,12 +3,8 @@ module ALU(input logic [15:0] a,
            output logic [31:0] out,
            input logic is_8_bit,
            input logic [`MC_ALUOp_t_BITS-1:0] op,
-           // verilator lint_off UNUSED
-           // verilator lint_off UNDRIVEN
            input logic [15:0] flags_in,
            output logic [15:0] flags_out,
-           // verilator lint_on UNUSED
-           // verilator lint_on UNDRIVEN
            input logic multibit_shift,
            input logic [4:0] shift_count,
            output logic busy);
