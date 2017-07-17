@@ -18,7 +18,6 @@ function(add_fpga)
                        COMMAND ${QUARTUS_SH_EXECUTABLE} --prepare -f ${add_fpga_FAMILY} -t ${add_fpga_PROJECT} ${add_fpga_PROJECT}
                        DEPENDS ${add_fpga_PROJECT}.qsf)
     add_custom_command(OUTPUT ${add_fpga_PROJECT}.map.rpt
-                       COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/microcode.mif .
                        COMMAND ${QUARTUS_MAP_EXECUTABLE} ${SOURCE_ARGS} --family ${add_fpga_FAMILY} --optimize=speed ${add_fpga_PROJECT}
                        DEPENDS ${add_fpga_DEPENDS} ${add_fpga_SOURCES} ${add_fpga_PROJECT}.qpf ${add_fpga_PROJECT}.qsf)
     add_custom_command(OUTPUT ${add_fpga_PROJECT}.fit.rpt
