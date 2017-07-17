@@ -4,7 +4,7 @@ function(add_fpga)
     set(multiValueArgs SOURCES DEPENDS)
     cmake_parse_arguments(add_fpga "${options}" "${oneValueArgs}" "${multiValueArgs}" ${ARGN})
 
-    foreach(source ${ALL_SOURCES})
+    foreach(source ${add_fpga_SOURCES})
         list(APPEND SOURCE_ARGS --source=${source})
     endforeach(source)
 
