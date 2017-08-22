@@ -4,8 +4,8 @@ set -e
 [ -d _build/gcov-coverage ] || mkdir -p _build/gcov-coverage
 [ -d _build/.ccache ] || mkdir -p _build/.ccache
 DOCKER_NONINTERACTIVE=1 ./docker/s80x86-build -e -c 'cd _build/gcov-coverage; \
-        cmake ../.. -DCMAKE_BUILD_TYPE=Coverage; \
-        make -j6; \
+        cmake -GNinja ../.. -DCMAKE_BUILD_TYPE=Coverage; \
+        ninja; \
         find . -name "*.mcov" -delete; \
         ctest --output-on-failure -R "sim-unittest|rtl-unittest"; \
         ../../scripts/gcovr --delete --output=coverage.xml \

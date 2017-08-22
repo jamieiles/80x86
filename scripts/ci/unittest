@@ -4,9 +4,9 @@ set -e
 [ -d _build/unittest ] || mkdir -p _build/unittest
 [ -d _build/.ccache ] || mkdir -p _build/.ccache
 DOCKER_NONINTERACTIVE=1 ./docker/s80x86-build -e -c 'cd _build/unittest; \
-        cmake -DBUILD_DE0_CV=ON ../..; \
-        make -j8; \
-        make de0-cv-program; \
+        cmake -GNinja -DBUILD_DE0_CV=ON ../..; \
+        ninja; \
+        ninja de0-cv-program; \
         [ -d test_results ] || mkdir test_results; \
         ./tests/simulator/sim-unittest --gtest_output=xml:test_results/simulation.xml; \
         ./tests/rtl/rtl-unittest --gtest_output=xml:test_results/rtl.xml; \

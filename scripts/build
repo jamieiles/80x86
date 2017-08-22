@@ -5,5 +5,5 @@ set -e
 [ -d _build/.ccache ] || mkdir -p _build/.ccache
 [ -d _build/build ] || mkdir -p _build/build
 DOCKER_NONINTERACTIVE=1 ./docker/s80x86-build -e -c 'cd _build/build; \
-        cmake ../.. ; \
-        make -j8 all test CTEST_OUTPUT_ON_FAILURE=TRUE;'
+        cmake -GNinja ../.. ; \
+        ninja all test CTEST_OUTPUT_ON_FAILURE=TRUE;'

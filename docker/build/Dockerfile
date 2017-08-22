@@ -16,6 +16,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         libusb-1.0-0-dev \
         python-dev \
         llvm \
+        ninja-build \
         ccache \
         ruby \
         ruby-dev \
