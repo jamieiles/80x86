@@ -4,14 +4,14 @@
 #include "CPU.h"
 #include "Emulate.h"
 
-class SoftwareCPU : public CPU {
+class SoftwareCPU : public SimCPU {
 public:
     SoftwareCPU()
         : SoftwareCPU("default")
     {
     }
     SoftwareCPU(const std::string &name)
-        : CPU(), emulator(&registers)
+        : SimCPU(name), emulator(&registers)
     {
         (void)name;
 
@@ -158,7 +158,6 @@ public:
 private:
     RegisterFile registers;
     Emulator emulator;
-    Memory mem;
 
     std::map<uint16_t, IOPorts *> io;
 };

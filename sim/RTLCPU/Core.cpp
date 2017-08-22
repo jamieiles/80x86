@@ -27,6 +27,7 @@ double sc_time_stamp()
 template <bool debug_enabled>
 RTLCPU<debug_enabled>::RTLCPU(const std::string &test_name)
     : VerilogDriver<VRTLCPU, debug_enabled>(test_name),
+    SimCPU(test_name),
     mem_in_progress(false),
     io_in_progress(false),
     mem_latency(0),

@@ -11,7 +11,7 @@
 
 template <bool debug_enabled=verilator_debug_enabled>
 class RTLCPU : public VerilogDriver<VRTLCPU, debug_enabled>,
-    public CPU {
+    public SimCPU {
 public:
     RTLCPU(const std::string &test_name);
     void write_coverage();
@@ -124,7 +124,6 @@ private:
     int mem_latency;
     std::string test_name;
     bool is_stopped;
-    Memory mem;
     std::map<uint16_t, IOPorts *> io;
     uint8_t pending_irqs;
     bool int_in_progress;

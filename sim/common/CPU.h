@@ -124,3 +124,17 @@ public:
     virtual void clear_irq(int irq_num) = 0;
     virtual unsigned long cycle_count() const = 0;
 };
+
+class SimCPU : public CPU {
+public:
+    SimCPU(const std::string &name)
+        : CPU(name)
+    {}
+
+    Memory *get_memory()
+    {
+        return &mem;
+    }
+protected:
+    Memory mem;
+};
