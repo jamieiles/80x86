@@ -4,6 +4,7 @@
 #include "serial.h"
 #include "keyboard.h"
 #include "timer.h"
+#include "utils.h"
 
 void int10_function(struct callregs *regs)
 {

@@ -1,6 +1,7 @@
 #include "io.h"
 #include "serial.h"
 #include "bios.h"
+#include "utils.h"
 
 #define SPI_CONTROL_PORT 0xfff0
 #define SPI_TRANSFER_PORT 0xfff2

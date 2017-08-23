@@ -45,6 +45,3 @@ enum Flag {
     DF = (1 << DF_OFFS),
     OF = (1 << OF_OFFS),
 };
-
-void panic(const char *p);
-void *memset(void *s, int c, unsigned short n);
