@@ -104,3 +104,18 @@ irq_entry:
     add $2, %sp
 
     iret
+
+.macro int_handler vector, function
+
+.pushsection .rodata.vectors
+    .align 4
+    .word \vector
+    .word \function
+.popsection
+
+.endm
+
+stub_irq:
+    iret
+
+int_handler 0x1c, stub_irq

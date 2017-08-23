@@ -118,13 +118,6 @@ static void break_handler(struct callregs *regs)
 }
 VECTOR(0x1b, break_handler);
 
-static void timer_tick_handler(struct callregs *regs)
-{
-    (void)regs;
-    panic("No tick handler\n\r");
-}
-VECTOR(0x1c, timer_tick_handler);
-
 static void set_vector(int vector, void (*handler)(void))
 {
     writew(0, vector * 4, (unsigned short)handler);

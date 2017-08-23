@@ -30,6 +30,8 @@ static void timer_irq(struct callregs *regs)
     memcpy_seg(0x40, (void *)0x006c, get_cs(), &time_count,
                sizeof(time_count));
 
+    asm volatile("int $0x1c");
+
     (void)inw(0xffee);
 }
 VECTOR(0x08, timer_irq);
