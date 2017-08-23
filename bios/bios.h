@@ -45,3 +45,15 @@ enum Flag {
     DF = (1 << DF_OFFS),
     OF = (1 << OF_OFFS),
 };
+
+#define VECTOR(vnum, handler) \
+    static void __attribute__((used)) handler(struct callregs *); \
+    asm(".pushsection .text, \"ax\"\n" \
+        "1:\n" \
+        "push $" #handler "\n" \
+        "jmp irq_entry\n" \
+        ".pushsection .rodata.vectors\n" \
+        ".align 4\n" \
+        ".word " #vnum "\n" \
+        ".word 1b\n" \
+        ".popsection")

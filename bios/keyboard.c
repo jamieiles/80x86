@@ -41,7 +41,7 @@ static void keyboard_shift_status(struct callregs *regs)
     regs->ax.h = 0;
 }
 
-void int16_function(struct callregs *regs)
+static void keyboard_services(struct callregs *regs)
 {
     regs->flags |= CF;
 
@@ -61,6 +61,7 @@ void int16_function(struct callregs *regs)
         break;
     }
 }
+VECTOR(0x16, keyboard_services);
 
 void keyboard_init(void)
 {

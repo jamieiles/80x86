@@ -56,6 +56,7 @@ saved_sp:
     .word 0
 
 .section .text, "ax"
+.globl irq_entry
 irq_entry:
     // Save current stack pointer, load BIOS stack
     mov %ss, %cs:saved_ss
@@ -103,32 +104,3 @@ irq_entry:
     add $2, %sp
 
     iret
-
-.macro int_handler name, vector, function
-.globl \name
-\name:
-    push $\function
-    jmp irq_entry
-
-.pushsection .rodata.vectors
-    .align 4
-    .word \vector
-    .word \name
-.popsection
-
-.endm
-
-int_handler int10_handler, 0x10, int10_function
-int_handler int11_handler, 0x11, int11_function
-int_handler int12_handler, 0x12, int12_function
-int_handler int13_handler, 0x13, int13_function
-int_handler int14_handler, 0x14, int14_function
-int_handler int15_handler, 0x15, int15_function
-int_handler int16_handler, 0x16, int16_function
-int_handler int17_handler, 0x17, int17_function
-int_handler int18_handler, 0x18, int18_function
-int_handler int19_handler, 0x19, int19_function
-int_handler int1a_handler, 0x1a, int1a_function
-int_handler int1b_handler, 0x1b, int1b_function
-int_handler int1c_handler, 0x1c, int1c_function
-int_handler timer_handler, 0x08, timer_function

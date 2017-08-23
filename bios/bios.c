@@ -6,7 +6,7 @@
 #include "timer.h"
 #include "utils.h"
 
-void int10_function(struct callregs *regs)
+static void video_services(struct callregs *regs)
 {
     if (regs->ax.h == 0xe) {
         putchar(regs->ax.l);
@@ -15,20 +15,23 @@ void int10_function(struct callregs *regs)
         regs->flags |= CF;
     }
 }
+VECTOR(0x10, video_services);
 
 #define INT11_DISKS_PRESENT (1 << 0)
 #define INT11_MDA_ADAPTOR (3 << 4)
 
-void int11_function(struct callregs *regs)
+static void equipment_check(struct callregs *regs)
 {
     regs->ax.x = INT11_DISKS_PRESENT | INT11_MDA_ADAPTOR;
 }
+VECTOR(0x11, equipment_check);
 
 // Serial services
-void int14_function(struct callregs *regs)
+static void serial_services(struct callregs *regs)
 {
     regs->flags |= CF;
 }
+VECTOR(0x14, serial_services);
 
 static const unsigned char bios_params_rec[] = {
     8, 0, 0xff, 0, 0, 0, 0, 0
@@ -58,7 +61,7 @@ static void a20_gate(struct callregs *regs)
     regs->flags |= CF;
 }
 
-void int15_function(struct callregs *regs)
+static void system_services(struct callregs *regs)
 {
     regs->flags |= CF;
 
@@ -79,41 +82,48 @@ void int15_function(struct callregs *regs)
         break;
     }
 }
+VECTOR(0x15, system_services);
 
 // Printer services
-void int17_function(struct callregs *regs)
+static void printer_services(struct callregs *regs)
 {
     regs->flags |= CF;
 }
+VECTOR(0x17, printer_services);
 
-void int18_function(struct callregs *regs)
+static void basic_services(struct callregs *regs)
 {
     (void)regs;
     panic("No basic services\n\r");
 }
+VECTOR(0x18, basic_services);
 
-void int19_function(struct callregs *regs)
+static void boostrap_loader(struct callregs *regs)
 {
     (void)regs;
     asm volatile("jmp $0xffff, $0x0");
 }
+VECTOR(0x19, boostrap_loader);
 
-void int12_function(struct callregs *regs)
+static void conventional_memory(struct callregs *regs)
 {
     regs->ax.x = 640;
 }
+VECTOR(0x12, conventional_memory);
 
-void int1b_function(struct callregs *regs)
+static void break_handler(struct callregs *regs)
 {
     (void)regs;
     panic("No break handler\n\r");
 }
+VECTOR(0x1b, break_handler);
 
-void int1c_function(struct callregs *regs)
+static void timer_tick_handler(struct callregs *regs)
 {
     (void)regs;
     panic("No tick handler\n\r");
 }
+VECTOR(0x1c, timer_tick_handler);
 
 static void set_vector(int vector, void (*handler)(void))
 {

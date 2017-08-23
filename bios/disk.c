@@ -118,7 +118,7 @@ static void disk_get_type(struct callregs *regs)
     regs->flags &= ~CF;
 }
 
-void int13_function(struct callregs *regs)
+static void disk_services(struct callregs *regs)
 {
     regs->flags |= CF;
 
@@ -143,3 +143,4 @@ void int13_function(struct callregs *regs)
         break;
     }
 }
+VECTOR(0x13, disk_services);

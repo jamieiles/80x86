@@ -4,7 +4,7 @@
 
 static unsigned long time_count;
 
-void int1a_function(struct callregs *regs)
+static void timer_services(struct callregs *regs)
 {
     switch (regs->ax.h) {
     case 0x0:
@@ -21,8 +21,9 @@ void int1a_function(struct callregs *regs)
         regs->flags |= CF;
     }
 }
+VECTOR(0x1a, timer_services);
 
-void timer_function(struct callregs *regs)
+static void timer_irq(struct callregs *regs)
 {
     ++time_count;
 
@@ -31,6 +32,7 @@ void timer_function(struct callregs *regs)
 
     (void)inw(0xffee);
 }
+VECTOR(0x08, timer_irq);
 
 void init_timer(void)
 {
