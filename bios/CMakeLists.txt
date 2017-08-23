@@ -28,4 +28,8 @@ add_executable(bios-${BIOS_PLATFORM}
                sd.c
                sd.h
 	       serial.c
-	       serial.h)
+	       serial.h
+	       timer.h
+	       timer.c
+               utils.h
+               utils.c)

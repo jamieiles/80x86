@@ -3,26 +3,7 @@
 #include "io.h"
 #include "serial.h"
 #include "keyboard.h"
-
-void *memset(void *s, int c, unsigned short n)
-{
-    unsigned char *p = s;
-    unsigned short m;
-
-    for (m = 0; m < n; ++m)
-        p[m] = c;
-
-    return s;
-}
-
-void panic(const char *p)
-{
-    putstr(p);
-    putstr("\n\r\n\rHalted.\n\r");
-
-    for (;;)
-        continue;
-}
+#include "timer.h"
 
 void int10_function(struct callregs *regs)
 {
@@ -121,26 +102,6 @@ void int12_function(struct callregs *regs)
     regs->ax.x = 640;
 }
 
-static unsigned long time_count;
-
-void int1a_function(struct callregs *regs)
-{
-    switch (regs->ax.h) {
-    case 0x0:
-        regs->cx.x = time_count >> 16;
-        regs->dx.x = time_count;
-        regs->flags &= ~CF;
-        break;
-    case 0x1:
-        time_count = (regs->dx.x |
-                      ((unsigned long)regs->cx.x << 16));
-        regs->flags &= ~CF;
-        break;
-    default:
-        regs->flags |= CF;
-    }
-}
-
 void int1b_function(struct callregs *regs)
 {
     (void)regs;
@@ -153,29 +114,10 @@ void int1c_function(struct callregs *regs)
     panic("No tick handler\n\r");
 }
 
-void set_vector(int vector, void (*handler)(void))
+static void set_vector(int vector, void (*handler)(void))
 {
     writew(0, vector * 4, (unsigned short)handler);
     writew(0, vector * 4 + 2, get_cs());
-}
-
-void timer_function(struct callregs *regs)
-{
-    ++time_count;
-
-    memcpy_seg(0x40, (void *)0x006c, get_cs(), &time_count,
-               sizeof(time_count));
-
-    (void)inw(0xffee);
-}
-
-static void init_timer(void)
-{
-    outb(0xfff5, 8);
-    outb(0xfff4, 1);
-    outw(0xffee, (1 << 15) | 55);
-
-    time_count = 0;
 }
 
 static void install_vectors(void)
