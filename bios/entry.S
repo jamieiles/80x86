@@ -56,46 +56,59 @@ saved_sp:
     .word 0
 
 .section .text, "ax"
-
-.macro int_handler name, vector, function
-.globl \name
-\name:
+irq_entry:
+    // Save current stack pointer, load BIOS stack
     mov %ss, %cs:saved_ss
     mov %sp, %cs:saved_sp
     mov %cs:bios_ss, %ss
     mov %cs:bios_sp, %sp
 
+    // Save registers, setup stack frame
     push %ds
     pusha
     mov %sp, %bp
     push %bp
 
+    // Load flags from iret frame, store in callregs
     mov %cs:saved_ss, %ds
     mov %cs:saved_sp, %bx
-    mov 4(%bx), %bx
+    mov 0(%bx), %ax
+    mov 6(%bx), %bx
     mov %bx, 18(%bp)
 
     // Use SS as DS inside the BIOS for stack-local variables that are passed
-    // by address.
+    // by address
     mov %ss, %bp
     mov %bp, %ds
 
-    call \function
+    call *%ax
+    // Discard regs pointer parameter
     add $2, %sp
     mov %sp, %bp
 
+    // Write possibly updated flags to the iret frame
     mov 18(%bp), %ax
     mov %cs:saved_ss, %ds
     mov %cs:saved_sp, %bx
-    mov %ax, 4(%bx)
+    mov %ax, 6(%bx)
 
+    // Restore all regs apart from flags - the iret frame has been updated
+    // already
     popa
     pop %ds
 
+    // Restore the callers stack
     mov %cs:saved_ss, %ss
     mov %cs:saved_sp, %sp
+    add $2, %sp
 
     iret
+
+.macro int_handler name, vector, function
+.globl \name
+\name:
+    push $\function
+    jmp irq_entry
 
 .pushsection .rodata.vectors
     .align 4
