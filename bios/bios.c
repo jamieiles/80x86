@@ -94,7 +94,7 @@ VECTOR(0x17, printer_services);
 static void basic_services(struct callregs *regs)
 {
     (void)regs;
-    panic("No basic services\n\r");
+    panic("No basic services\n");
 }
 VECTOR(0x18, basic_services);
 
@@ -114,7 +114,7 @@ VECTOR(0x12, conventional_memory);
 static void break_handler(struct callregs *regs)
 {
     (void)regs;
-    panic("No break handler\n\r");
+    panic("No break handler\n");
 }
 VECTOR(0x1b, break_handler);
 
@@ -142,16 +142,16 @@ static void install_vectors(void)
 
 void root(void)
 {
-    putstr("s80x86 BIOS, (C) Jamie Iles 2017, " __DATE__ " " __TIME__ "\r\n");
-    putstr("Platform: " __PLATFORM__ "\r\n");
-    putstr("Build: " __BUILD__ "\r\n");
-    putstr("\r\n");
+    putstr("s80x86 BIOS, (C) Jamie Iles 2017, " __DATE__ " " __TIME__ "\n");
+    putstr("Platform: " __PLATFORM__ "\n");
+    putstr("Build: " __BUILD__ "\n");
+    putstr("\n");
 
     keyboard_init();
     install_vectors();
-    putstr("Init timers\n\r");
+    putstr("Init timers\n");
     init_timer();
-    putstr("Initalization done\n\r");
+    putstr("Initalization done\n");
 
     sd_init();
     sd_boot();

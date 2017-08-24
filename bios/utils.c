@@ -16,7 +16,7 @@ void *memset(void *s, int c, unsigned short n)
 void panic(const char *p)
 {
     putstr(p);
-    putstr("\n\r\n\rHalted.\n\r");
+    putstr("\n\nHalted.\n");
 
     for (;;)
         continue;

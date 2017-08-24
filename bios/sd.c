@@ -365,17 +365,17 @@ int read_sector(unsigned short sector, unsigned short dseg,
     spi_do_command(&cmd);
     r1offs = find_r1_response(&r1);
     if (r1offs < 0) {
-        putstr("Failed to find R1 response\n\r");
+        putstr("Failed to find R1 response\n");
         return -1;
     }
     if (r1.v & R1_ERROR_MASK) {
-        putstr("Read sector failed\n\r");
+        putstr("Read sector failed\n");
         return -1;
     }
 
     data_start = find_data_start(r1offs);
     if (data_start < 0) {
-        putstr("No data start token\n\r");
+        putstr("No data start token\n");
         return -1;
     }
 
@@ -402,15 +402,15 @@ void sd_init(void)
     if (sd_set_blocklen())
         panic("Failed to wait for SD card init");
 
-    putstr("SD card ready\r\n");
+    putstr("SD card ready\n");
 }
 
 void sd_boot(void)
 {
     if (read_sector(0, 0, 0x7c00))
-        panic("Failed to read boot sector\n\r");
+        panic("Failed to read boot sector\n");
 
-    putstr("Booting from SD card...\n\r");
+    putstr("Booting from SD card...\n");
     asm volatile("mov $0, %dl\n"
                  "jmp $0x0000, $0x7c00");
 }

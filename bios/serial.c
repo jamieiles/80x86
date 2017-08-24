@@ -11,6 +11,9 @@ void putchar(unsigned char c)
 
     while (inb(UART_STATUS_PORT) & UART_TX_BUSY)
         continue;
+
+    if (c == '\n')
+        putchar('\r');
 }
 
 unsigned char getchar(void)
