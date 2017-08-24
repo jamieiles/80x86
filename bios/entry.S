@@ -119,3 +119,27 @@ stub_irq:
     iret
 
 int_handler 0x1c, stub_irq
+
+timer_irq:
+    push %ds
+    push %bx
+    push %ax
+    push %dx
+
+    movw $0x40, %bx
+    mov %bx, %ds
+    movw $0x6c, %bx
+    add $1, %ds:0(%bx)
+    adc $0, %cs:2(%bx)
+
+    movw $0xffee, %dx
+    inw (%dx), %ax
+
+    pop %dx
+    pop %ax
+    pop %bx
+    pop %ds
+
+    iret
+
+int_handler 0x08, timer_irq
