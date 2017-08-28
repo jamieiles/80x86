@@ -2,6 +2,8 @@
 #include "bda.h"
 #include "io.h"
 
+extern void video_putchar(char c);
+
 #define UART_DATA_PORT 0xfffa
 #define UART_STATUS_PORT 0xfffb
 #define UART_TX_BUSY 0x02

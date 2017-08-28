@@ -7,27 +7,15 @@
 #include "timer.h"
 #include "utils.h"
 
-static void video_services(struct callregs *regs)
-{
-    if (regs->ax.h == 0xe) {
-        putchar(regs->ax.l);
-        regs->flags &= ~CF;
-    } else {
-        regs->flags |= CF;
-    }
-}
-VECTOR(0x10, video_services);
-
 #define INT11_DISKS_PRESENT (1 << 0)
-#define INT11_MDA_ADAPTOR (3 << 4)
+#define INT11_CGA_ADAPTOR (2 << 4)
 
 static void equipment_check(struct callregs *regs)
 {
-    regs->ax.x = INT11_DISKS_PRESENT | INT11_MDA_ADAPTOR;
+    regs->ax.x = INT11_DISKS_PRESENT | INT11_CGA_ADAPTOR;
 }
 VECTOR(0x11, equipment_check);
 
-// Serial services
 static void serial_services(struct callregs *regs)
 {
     regs->flags |= CF;
@@ -119,11 +107,15 @@ static void break_handler(struct callregs *regs)
 }
 VECTOR(0x1b, break_handler);
 
-static void set_vector(int vector, void (*handler)(void))
+static void set_vector(int vector, void *handler)
 {
     writew(0, vector * 4, (unsigned short)handler);
     writew(0, vector * 4 + 2, get_cs());
 }
+
+static unsigned char vpt[] = {
+        80, 25, 8, 4000 & 0xff, 4000 >> 8
+};
 
 static void install_vectors(void)
 {
@@ -139,6 +131,9 @@ static void install_vectors(void)
 
     for (v = &vectors_start; v < &vectors_end; ++v)
         set_vector(v->num, v->handler);
+
+    set_vector(0x1d, vpt);
+    bda_write(num_screen_cols, 80);
 }
 
 void root(void)

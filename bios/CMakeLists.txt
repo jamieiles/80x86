@@ -22,6 +22,7 @@ add_definitions(-D__PLATFORM__="${BIOS_PLATFORM}"
 add_executable(bios-${BIOS_PLATFORM}
                bios.c
 	       disk.c
+	       display.c
                entry.S
                io.h
 	       keyboard.c
