@@ -1,3 +1,4 @@
+#include "bda.h"
 #include "bios.h"
 #include "sd.h"
 #include "io.h"

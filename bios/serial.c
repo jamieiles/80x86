@@ -1,3 +1,5 @@
+#include "bios.h"
+#include "bda.h"
 #include "io.h"
 
 #define UART_DATA_PORT 0xfffa

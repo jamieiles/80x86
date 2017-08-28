@@ -1,5 +1,7 @@
 #pragma once
 
+#include "bda.h"
+
 /* Pushed by the INT handlers in the order that a PUSHA would. */
 union reg {
     struct {
@@ -58,3 +60,29 @@ enum Flag {
         ".word " #vnum "\n" \
         ".word 1b\n" \
         ".popsection")
+
+#define bda_write(field, val) ({ \
+    typeof (((struct bios_data_area *)0)->field) _p = (val); \
+    if (__builtin_types_compatible_p(typeof(_p), unsigned short)) \
+        writew(0x40, offsetof(struct bios_data_area, field), _p); \
+    else if (__builtin_types_compatible_p(typeof(_p), unsigned char)) \
+        writeb(0x40, offsetof(struct bios_data_area, field), _p); \
+    else \
+        memcpy_seg(0x40, (void *)offsetof(struct bios_data_area, field), \
+                   get_cs(), &_p, sizeof(_p)); \
+})
+
+#define bda_read(field) ({ \
+    typeof (((struct bios_data_area *)0)->field) _p; \
+    if (__builtin_types_compatible_p(typeof(_p), unsigned short)) \
+        _p = readw(0x40, (void *)offsetof(struct bios_data_area, field)); \
+    else if (__builtin_types_compatible_p(typeof(_p), unsigned char)) \
+        _p = readb(0x40, (void *)offsetof(struct bios_data_area, field)); \
+    else \
+        memcpy_seg(get_cs(), &_p, \
+                   0x40, (void *)offsetof(struct bios_data_area, field), \
+                   sizeof(_p)); \
+    _p; \
+})
+
+#define offsetof __builtin_offsetof
