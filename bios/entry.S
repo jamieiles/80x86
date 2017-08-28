@@ -132,6 +132,8 @@ timer_irq:
     add $1, %ds:0(%bx)
     adc $0, %ds:2(%bx)
 
+    int $0x1c
+
     movw $0xffee, %dx
     inw (%dx), %ax
 
