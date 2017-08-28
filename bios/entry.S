@@ -130,7 +130,7 @@ timer_irq:
     mov %bx, %ds
     movw $0x6c, %bx
     add $1, %ds:0(%bx)
-    adc $0, %cs:2(%bx)
+    adc $0, %ds:2(%bx)
 
     movw $0xffee, %dx
     inw (%dx), %ax
