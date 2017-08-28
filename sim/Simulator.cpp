@@ -11,6 +11,7 @@
 #include <boost/program_options.hpp>
 
 #include "CPU.h"
+#include "Keyboard.h"
 #include "SoftwareCPU.h"
 #include "RTLCPU.h"
 #include "UART.h"
@@ -53,6 +54,7 @@ private:
     UART uart;
     SPI spi;
     TimerTick timer;
+    Keyboard<T> kbd;
     bool got_exit;
     bool detached;
 };
@@ -64,6 +66,7 @@ Simulator<T>::Simulator(const std::string &bios_path,
     : cpu("simulator"),
     spi(disk_image_path),
     timer(&this->cpu),
+    kbd(&this->cpu),
     got_exit(false),
     detached(detached)
 {
@@ -71,6 +74,7 @@ Simulator<T>::Simulator(const std::string &bios_path,
     cpu.add_ioport(&uart);
     cpu.add_ioport(&spi);
     cpu.add_ioport(&timer);
+    cpu.add_ioport(&kbd);
     cpu.reset();
     load_bios(bios_path);
 }
@@ -104,6 +108,14 @@ void Simulator<T>::process_io()
             got_exit = true;
         else
             uart.add_char(c);
+    }
+
+    SDL_Event e;
+    if (SDL_PollEvent(&e)) {
+        if (e.type == SDL_QUIT)
+            got_exit = true;
+        else if (e.type == SDL_KEYDOWN)
+            kbd.process_event(e);
     }
 }
 
