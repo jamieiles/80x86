@@ -132,7 +132,7 @@ void Simulator<T>::run()
     while (!got_exit) {
         auto prev_count = cpu.cycle_count();
 
-        if (++cycle_count % 1000)
+        if (++cycle_count % 1000 == 0)
             process_io();
         if (detached)
             cpu.cycle_cpu();
