@@ -14,6 +14,8 @@ void putchar(unsigned char c)
     while (inb(UART_STATUS_PORT) & UART_TX_BUSY)
         continue;
 
+    video_putchar(c);
+
     if (c == '\n')
         putchar('\r');
 }
