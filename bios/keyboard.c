@@ -1,44 +1,47 @@
+#include "bda.h"
 #include "bios.h"
 #include "io.h"
 #include "serial.h"
-
-static char last_key;
+#include "utils.h"
 
 static void keyboard_wait(struct callregs *regs)
 {
+    unsigned short c ;
+
     regs->flags &= ~CF;
+    do {
+        if (!bda_read(kbd_buffer[0]))
+            serial_poll();
+        c = bda_read(kbd_buffer[0]);
+        bda_write(kbd_buffer[0], 0);
+        bda_write(kbd_buffer_tail, offsetof(struct bios_data_area, kbd_buffer));
+    } while (c == 0);
 
-    char c = last_key;
-    if (!c)
-        c = getchar();
-
-    last_key = 0;
-    regs->ax.l = c;
-    regs->ax.h = c;
+    regs->ax.x = c;
 }
 
 static void keyboard_status(struct callregs *regs)
 {
+    unsigned short c;
+
     regs->flags &= ~CF;
 
-    char c = last_key;
-    if (!c && getchar_ready())
-        c = getchar();
-
-    last_key = c;
+    if (!bda_read(kbd_buffer[0]))
+        serial_poll();
+    c = bda_read(kbd_buffer[0]);
     if (c)
         regs->flags &= ~ZF;
     else
         regs->flags |= ZF;
 
-    regs->ax.l = c;
-    regs->ax.h = c;
+    regs->ax.x = c;
 }
 
 static void keyboard_shift_status(struct callregs *regs)
 {
     regs->flags &= ~CF;
     regs->ax.h = 0;
+    regs->ax.l = 0;
 }
 
 static void keyboard_services(struct callregs *regs)
@@ -65,6 +68,8 @@ VECTOR(0x16, keyboard_services);
 
 void keyboard_init(void)
 {
-    // Start of with a delete to stop DOS fom waiting for a keypress.
-    last_key = 0x7f;
+    bda_write(keyboard_flags[0], 0);
+    bda_write(keyboard_flags[1], 0);
+    bda_write(kbd_buffer_tail, 0);
+    bda_write(kbd_buffer_head, 0);
 }

@@ -18,17 +18,26 @@ void putchar(unsigned char c)
         putchar('\r');
 }
 
-unsigned char getchar(void)
+void serial_putchar(unsigned char c)
 {
-    while (!(inb(UART_STATUS_PORT) & UART_RX_READY))
-        continue;
+    outb(UART_DATA_PORT, c);
 
-    return inb(UART_DATA_PORT);
+    while (inb(UART_STATUS_PORT) & UART_TX_BUSY)
+        continue;
+    if (c == '\n')
+        putchar('\r');
 }
 
-int getchar_ready(void)
+int serial_poll(void)
 {
-    return inb(UART_STATUS_PORT) & UART_RX_READY;
+    int ready = inb(UART_STATUS_PORT) & UART_RX_READY;
+
+    if (ready) {
+        bda_write(kbd_buffer[0], inb(UART_DATA_PORT));
+        bda_write(kbd_buffer_tail, 0x20);
+    }
+
+    return ready;
 }
 
 void putbyte(unsigned char b)
