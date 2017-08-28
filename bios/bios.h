@@ -50,6 +50,7 @@ enum Flag {
     static void __attribute__((used)) handler(struct callregs *); \
     asm(".pushsection .text, \"ax\"\n" \
         "1:\n" \
+        "cli\n" \
         "push $" #handler "\n" \
         "jmp irq_entry\n" \
         ".pushsection .rodata.vectors\n" \
