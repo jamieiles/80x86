@@ -12,7 +12,9 @@ include_directories(${Boost_INCLUDE_DIR})
 add_subdirectory(common)
 add_subdirectory(cppmodel)
 add_subdirectory(RTLCPU)
+add_subdirectory(display)
 include_directories(cppmodel
+                    display
                     common
                     RTLCPU
                     ../tests/rtl)
@@ -20,6 +22,7 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR}/RTLCPU)
 
 add_executable(simulator
                Simulator.cpp
+               CGA.h
                Keyboard.h
                UART.h
                UART.cpp
@@ -27,6 +30,7 @@ add_executable(simulator
                SPI.cpp)
 target_link_libraries(simulator
                       simcommon
+                      simdisplay
                       8086sim
                       rtlsim
                       ${Boost_LIBRARIES})

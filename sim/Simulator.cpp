@@ -10,7 +10,9 @@
 
 #include <boost/program_options.hpp>
 
+#include "CGA.h"
 #include "CPU.h"
+#include "Display.h"
 #include "Keyboard.h"
 #include "SoftwareCPU.h"
 #include "RTLCPU.h"
@@ -54,6 +56,7 @@ private:
     UART uart;
     SPI spi;
     TimerTick timer;
+    CGA cga;
     Keyboard<T> kbd;
     bool got_exit;
     bool detached;
@@ -66,6 +69,7 @@ Simulator<T>::Simulator(const std::string &bios_path,
     : cpu("simulator"),
     spi(disk_image_path),
     timer(&this->cpu),
+    cga(this->cpu.get_memory()),
     kbd(&this->cpu),
     got_exit(false),
     detached(detached)
@@ -74,6 +78,7 @@ Simulator<T>::Simulator(const std::string &bios_path,
     cpu.add_ioport(&uart);
     cpu.add_ioport(&spi);
     cpu.add_ioport(&timer);
+    cpu.add_ioport(&cga);
     cpu.add_ioport(&kbd);
     cpu.reset();
     load_bios(bios_path);
@@ -132,6 +137,8 @@ void Simulator<T>::run()
     while (!got_exit) {
         auto prev_count = cpu.cycle_count();
 
+        if (cycle_count % 1000000 == 0)
+            cga.update();
         if (++cycle_count % 1000 == 0)
             process_io();
         if (detached)
