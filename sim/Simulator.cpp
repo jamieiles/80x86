@@ -31,14 +31,9 @@ public:
 
     void write8(uint16_t __unused port_num, unsigned __unused offs,
                 uint8_t __unused v) {}
-    void write16(uint16_t __unused port_num, uint16_t __unused v) {}
     uint8_t read8(uint16_t __unused port_num, unsigned offs)
     {
         return offs == 0 ? 0x1 : 0;
-    }
-    uint16_t read16(uint16_t __unused port_num)
-    {
-        return 1;
     }
 };
 

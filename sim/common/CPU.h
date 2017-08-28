@@ -35,9 +35,16 @@ public:
     {}
     virtual uint8_t read8(uint16_t port_num,
                           unsigned offs) = 0;
-    virtual uint16_t read16(uint16_t port_num) = 0;
+    virtual uint16_t read16(uint16_t port_num)
+    {
+        return read8(port_num, 0) | (static_cast<uint16_t>(read8(port_num, 1)) << 8);
+    }
     virtual void write8(uint16_t port_num, unsigned offs, uint8_t v) = 0;
-    virtual void write16(uint16_t port_num, uint16_t v) = 0;
+    virtual void write16(uint16_t port_num, uint16_t v)
+    {
+        write8(port_num, 0, v);
+        write8(port_num, 1, v >> 8);
+    }
     uint16_t get_base() const
     {
         return base;
