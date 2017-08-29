@@ -22,8 +22,6 @@ module Top(input logic clk,
 
 reg poweron_reset = 1'b1;
 wire sys_clk;
-wire sdr_clk_noninvert;
-assign sdr_clk = ~sdr_clk_noninvert;
 wire reset_n;
 wire reset = ~reset_n | debug_reset | poweron_reset;
 
@@ -271,7 +269,6 @@ SPIPorts SPIPorts(.clk(sys_clk),
 SysPLL	SysPLL(.refclk(clk),
 	       .rst(1'b0),
                .locked(),
-               .sdr_clk(sdr_clk_noninvert),
                .*);
 
 Core Core(.clk(sys_clk),
