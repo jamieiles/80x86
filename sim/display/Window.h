@@ -5,15 +5,14 @@
 
 class Window {
 public:
-    const float x_scale_factor = 3;
-    const float y_scale_factor = 6;
-
     Window(const char *name, int width, int height)
         : width(width),
         height(height)
     {
-        auto ret = SDL_CreateWindowAndRenderer(width * x_scale_factor,
-                                               height * y_scale_factor,
+        compute_scale();
+
+        auto ret = SDL_CreateWindowAndRenderer(window_width,
+                                               window_height,
                                                SDL_WINDOWPOS_UNDEFINED,
                                                &window, &renderer);
         if (ret)
@@ -67,8 +66,24 @@ public:
         return height;
     }
 private:
+    void compute_scale()
+    {
+        SDL_DisplayMode display_mode;
+        SDL_GetCurrentDisplayMode(0, &display_mode);
+
+        auto window_width = display_mode.w / 2;
+        auto window_height = ((float)height / (float)width) * window_width * 2;
+
+        x_scale_factor = window_width / (float)width;
+        y_scale_factor = window_height / (float)height;
+    }
+
     int width;
     int height;
     SDL_Window *window;
     SDL_Renderer *renderer;
+    float x_scale_factor;
+    float y_scale_factor;
+    int window_width;
+    int window_height;
 };
