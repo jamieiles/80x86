@@ -97,6 +97,25 @@ class Debugger(cmd.Cmd):
         self._update_prompt()
         return False
 
+    def do_w16(self, line):
+        '''Write a 16-bit value to memory'''
+        tokens = split(line)
+        assert len(tokens) == 2
+        seg, offset = tokens[0].split(':')
+        self.c.write_mem16(int(seg, 16), int(offset, 16), int(tokens[1], 16))
+        self._update_prompt()
+        return False
+
+    def do_r16(self, line):
+        '''Read a 16-bit value from memory'''
+        tokens = split(line)
+        assert len(tokens) == 1
+        seg, offset = tokens[0].split(':')
+        v = self.c.read_mem16(int(seg, 16), int(offset, 16))
+        print('{0:04x}'.format(v))
+        self._update_prompt()
+        return False
+
     def do_EOF(self, line):
         print('')
         return True
