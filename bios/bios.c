@@ -1,5 +1,6 @@
 #include "bda.h"
 #include "bios.h"
+#include "display.h"
 #include "sd.h"
 #include "io.h"
 #include "serial.h"
@@ -138,6 +139,8 @@ static void install_vectors(void)
 
 void root(void)
 {
+    display_init();
+
     putstr("s80x86 BIOS, (C) Jamie Iles 2017, " __DATE__ " " __TIME__ "\n");
     putstr("Platform: " __PLATFORM__ "\n");
     putstr("Build: " __BUILD__ "\n");

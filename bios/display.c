@@ -129,3 +129,13 @@ static void video_services(struct callregs *regs)
     }
 }
 VECTOR(0x10, video_services);
+
+void display_init(void)
+{
+    unsigned r, c;
+
+    for (r = 0; r < 25; ++r)
+        for (c = 0; c < 80; ++c)
+            writew(frame_buffer_segment,
+                   frame_buffer_offset + (r * 80 + c) * 2, ' ');
+}
