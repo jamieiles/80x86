@@ -141,7 +141,7 @@ void root(void)
 {
     display_init();
 
-    putstr("s80x86 BIOS, (C) Jamie Iles 2017, " __DATE__ " " __TIME__ "\n");
+    putstr("s80x86 BIOS, (C) Jamie Iles, " __DATE__ " " __TIME__ "\n");
     putstr("Platform: " __PLATFORM__ "\n");
     putstr("Build: " __BUILD__ "\n");
     putstr("\n");
