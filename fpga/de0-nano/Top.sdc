@@ -15,11 +15,6 @@ create_generated_clock -name {spi_clk} \
         -source [get_pins {SysPLL|altpll_component|auto_generated|pll1|clk[0]}] \
         -divide_by 2 -master_clock {SysPLL|altpll_component|auto_generated|pll1|clk[0]} \
         [get_registers {SPIPorts:SPIPorts|SPIMaster:SPIMaster|sclk}]
-# SDRAM PLL
-create_generated_clock \
-	-name sdram_clk \
-	-source $sdram_pll \
-	[get_ports {sdr_clk}]
 
 derive_clock_uncertainty
 
@@ -50,11 +45,11 @@ set sdram_outputs [get_ports {
 	s_banksel[*]
 }]
 set_output_delay \
-	-clock sdram_clk \
+	-clock [get_clocks $sdram_pll] \
 	-min $sdram_output_delay_min \
 	$sdram_outputs
 set_output_delay \
-	-clock sdram_clk \
+	-clock [get_clocks $sdram_pll] \
 	-max $sdram_output_delay_max \
 	$sdram_outputs
 
@@ -63,11 +58,11 @@ set sdram_inputs [get_ports {
 	s_data[*]
 }]
 set_input_delay \
-	-clock sdram_clk \
+	-clock [get_clocks $sdram_pll] \
 	-min $sdram_input_delay_min \
 	$sdram_inputs
 set_input_delay \
-	-clock sdram_clk \
+	-clock [get_clocks $sdram_pll] \
 	-max $sdram_input_delay_max \
 	$sdram_inputs
 
@@ -75,7 +70,7 @@ set_input_delay \
 #
 # * The PLL is configured so that SDRAM clock leads the system
 #   clock by -2.79ns
-set_multicycle_path -setup -end -from sdram_clk -to [get_clocks $sys_clk] 2
+set_multicycle_path -setup -end -from [get_clocks $sdram_pll] -to [get_clocks $sys_clk] 2
 
 # Reset request
 set_false_path -from [get_ports {rst_in_n}]
