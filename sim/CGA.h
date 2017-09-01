@@ -32,21 +32,12 @@ void CGA::update()
     int rows = 25;
 
     for (auto row = 0; row < rows; ++row) {
-        bool got_eol = false;
-
         for (auto col = 0; col < cols; ++col) {
             auto addr = buffer_phys + ((row * cols) + col) * sizeof(uint16_t);
             auto char_attr = mem->read<uint16_t>(addr);
 
-            if ((char_attr & 0xff) == '\r' || (char_attr & 0xff) == '\n')
-                got_eol = true;
-
             display.set_cursor(row, col);
-            if (char_attr == 0 || got_eol) {
-                display.write_char(' ');
-            } else {
-                display.write_char(char_attr);
-            }
+            display.write_char(char_attr);
         }
     }
     display.refresh();
