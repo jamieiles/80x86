@@ -12,7 +12,7 @@ static const unsigned frame_buffer_offset = 0x8000;
 static void __attribute__((noinline)) scroll_up(unsigned count)
 {
     unsigned start = (count * 80) * 2;
-    unsigned shift_rows = 25 - count;
+    unsigned shift_rows = count == 0 ? 0 : 25 - count;
     unsigned row, col;
 
     memcpy_seg(frame_buffer_segment, (void *)frame_buffer_offset,
