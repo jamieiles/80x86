@@ -17,6 +17,7 @@ set_location_assignment PIN_P22 -to rst_in_n
 
 set_instance_assignment -name GLOBAL_SIGNAL "GLOBAL CLOCK" -to "SysPLL:SysPLL|sys_clk"
 set_instance_assignment -name MATCH_PLL_COMPENSATION_CLOCK ON -to "SysPLL:SysPLL|sdr_clk"
+set_instance_assignment -name PLL_COMPENSATION_MODE NORMAL -to "SysPLL:SysPLL|*"
 
 # SDRAM
 set_location_assignment PIN_AB11 -to sdr_clk
@@ -64,6 +65,7 @@ set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_cas_n
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_wr_en
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_bytesel
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_data
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to s_data
 set_instance_assignment -name FAST_INPUT_REGISTER ON -to s_data
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_banksel
 set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to s_*
@@ -82,3 +84,20 @@ set_location_assignment PIN_H11 -to spi_sclk
 set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to spi_mosi
 set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to spi_ncs
 set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to spi_sclk
+
+# VGA
+set_location_assignment PIN_A9 -to vga_r[0]
+set_location_assignment PIN_B10 -to vga_r[1]
+set_location_assignment PIN_C9 -to vga_r[2]
+set_location_assignment PIN_A5 -to vga_r[3]
+set_location_assignment PIN_L7 -to vga_g[0]
+set_location_assignment PIN_K7 -to vga_g[1]
+set_location_assignment PIN_J7 -to vga_g[2]
+set_location_assignment PIN_J8 -to vga_g[3]
+set_location_assignment PIN_B6 -to vga_b[0]
+set_location_assignment PIN_B7 -to vga_b[1]
+set_location_assignment PIN_A8 -to vga_b[2]
+set_location_assignment PIN_A7 -to vga_b[3]
+set_location_assignment PIN_H8 -to vga_hsync
+set_location_assignment PIN_G8 -to vga_vsync
+set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to vga*

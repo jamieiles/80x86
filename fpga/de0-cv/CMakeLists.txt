@@ -23,6 +23,12 @@ set(FPGA_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../sdram/Counter.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../sdram/SDRAMController.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../sdram/SDRAMConfigRegister.sv
+    ${CMAKE_CURRENT_SOURCE_DIR}/../VGA/VGAController.sv
+    ${CMAKE_CURRENT_SOURCE_DIR}/../VGA/VGASync.sv
+    ${CMAKE_CURRENT_SOURCE_DIR}/../VGA/FontColorLUT.sv
+    ${CMAKE_CURRENT_SOURCE_DIR}/../VGA/FrameBuffer.sv
+    ${CMAKE_CURRENT_SOURCE_DIR}/../VGA/FrameBufferRAM.sv
+    ${CMAKE_CURRENT_SOURCE_DIR}/../VGA/VGAModeRegister.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/MemArbiter.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/cdc/BitSync.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/cdc/SyncPulse.sv
@@ -39,6 +45,8 @@ set(ALL_SOURCES ${CORE_SOURCES} ${FPGA_SOURCES})
 
 set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/Microcode.v PROPERTIES
                             COMPILE_FLAGS "--verilog_macro=\"MICROCODE_ROM_PATH=\\\\\\\"${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/\\\\\\\"")
+set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/../VGA/FontColorLUT.sv PROPERTIES
+                            COMPILE_FLAGS "--verilog_macro=\"FONT_ROM_PATH=\\\\\\\"${CMAKE_CURRENT_BINARY_DIR}\\\\\\\"\"")
 
 add_custom_command(OUTPUT microcode.mif
                    COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/microcode.mif .
@@ -46,11 +54,14 @@ add_custom_command(OUTPUT microcode.mif
 add_custom_command(OUTPUT bios.mif
                    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/make-bios-mif ${CMAKE_CURRENT_BINARY_DIR}/bios/bios-de0-cv bios.mif
                    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/bios/bios-de0-cv)
+add_custom_command(OUTPUT font.bin
+                   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/mkfontrom ${CMAKE_CURRENT_SOURCE_DIR}/../../vendor/fonts/cp437-8x8 font.bin
+                   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/../../vendor/fonts/cp437-8x8)
 add_fpga(PROJECT Top
          FAMILY "Cyclone V"
          PART "5CEBA4F23C7"
          SOURCES ${ALL_SOURCES}
-         DEPENDS microcode.mif bios.mif)
+         DEPENDS microcode.mif bios.mif font.bin)
 
 add_custom_command(OUTPUT __program_de0_cv__
                    COMMAND ${QUARTUS_PGM_EXECUTABLE} --mode=jtag -o \"P\;Top.sof\"

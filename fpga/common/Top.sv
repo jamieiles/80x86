@@ -13,6 +13,13 @@ module Top(input logic clk,
 `ifdef CONFIG_LEDS
            output logic [7:0] leds,
 `endif // CONFIG_LEDS
+`ifdef CONFIG_VGA
+	   output logic vga_hsync,
+	   output logic vga_vsync,
+	   output logic [3:0] vga_r,
+	   output logic [3:0] vga_g,
+	   output logic [3:0] vga_b,
+`endif // CONFIG_VGA
            input logic uart_rx,
            output logic uart_tx,
            output logic spi_sclk,
@@ -24,6 +31,18 @@ reg poweron_reset = 1'b1;
 wire sys_clk;
 wire reset_n;
 wire reset = ~reset_n | debug_reset | poweron_reset;
+
+`ifdef CONFIG_VGA
+wire vga_clk;
+
+wire vga_mode_access;
+wire vga_mode_ack;
+wire [15:0] vga_mode_data;
+
+wire vga_access;
+wire vga_ack;
+wire [15:0] vga_data;
+`endif
 
 wire [1:0] ir;
 wire tdo;
@@ -41,8 +60,15 @@ wire [15:0] debug_wr_val;
 wire [15:0] debug_val;
 wire debug_wr_en;
 
-wire [15:0] io_data = sdram_config_data | uart_data | spi_data |
-    timer_data | irq_control_data | bios_control_data;
+wire [15:0] io_data = sdram_config_data |
+    uart_data |
+    spi_data |
+    timer_data |
+    irq_control_data |
+`ifdef CONFIG_VGA
+    vga_mode_data |
+`endif // CONFIG_VGA
+    bios_control_data;
 wire [15:0] mem_data;
 
 // Data bus
@@ -63,8 +89,16 @@ wire instr_m_ack;
 // Multiplexed I/D bus.
 wire [19:1] q_m_addr;
 wire [15:0] q_m_data_out;
-wire [15:0] q_m_data_in = sdram_data | bios_data;
-wire q_m_ack = sdram_ack | bios_ack;
+wire [15:0] q_m_data_in = sdram_data |
+`ifdef CONFIG_VGA
+    vga_data |
+`endif // CONFIG_VGA
+    bios_data;
+wire q_m_ack = sdram_ack |
+`ifdef CONFIG_VGA
+    vga_ack |
+`endif // CONFIG_VGA
+    bios_ack;
 wire q_m_access;
 wire q_m_wr_en;
 wire [1:0] q_m_bytesel;
@@ -127,6 +161,9 @@ wire io_ack = sdram_config_ack |
               spi_ack |
               irq_control_ack |
               timer_ack |
+`ifdef CONFIG_VGA
+              vga_mode_ack |
+`endif // CONFIG_VGA
               bios_control_ack;
 
 always_ff @(posedge clk)
@@ -143,6 +180,9 @@ always_comb begin
     irq_control_access = 1'b0;
     timer_access = 1'b0;
     bios_control_access = 1'b0;
+`ifdef CONFIG_VGA
+    vga_mode_access = 1'b0;
+`endif // CONFIG_VGA
 
     if (d_io && data_m_access) begin
         casez ({data_m_addr[15:1], 1'b0})
@@ -155,6 +195,9 @@ always_comb begin
         16'b1111_1111_1111_01z0: irq_control_access = 1'b1;
         16'b1111_1111_1110_1110: timer_access = 1'b1;
         16'b1111_1111_1110_1100: bios_control_access = 1'b1;
+`ifdef CONFIG_VGA
+        16'b0000_0011_1101_1010: vga_mode_access = 1'b1;
+`endif // CONFIG_VGA
         default:  default_io_access = 1'b1;
         endcase
     end
@@ -163,10 +206,16 @@ end
 always_comb begin
     sdram_access = 1'b0;
     bios_access = 1'b0;
+`ifdef CONFIG_VGA
+    vga_access = 1'b0;
+`endif // CONFIG_VGA
 
     if (q_m_access) begin
         casez ({bios_enabled, q_m_addr, 1'b0})
         {1'b1, 20'b1111_111?_????_????_????}: bios_access = 1'b1;
+`ifdef CONFIG_VGA
+        {1'b?, 20'b1011_1000_????_????_????}: vga_access = 1'b1;
+`endif // CONFIG_VGA
         default: sdram_access = 1'b1;
         endcase
     end
@@ -295,6 +344,24 @@ Timer Timer(.clk(sys_clk),
             .data_m_addr(data_m_addr),
             .intr(timer_intr),
             .*);
+
+`ifdef CONFIG_VGA
+VGAController(.clk(vga_clk),
+              .cs(vga_access),
+              .data_m_access(q_m_access),
+              .data_m_ack(vga_ack),
+              .data_m_addr(q_m_addr),
+              .data_m_data_out(vga_data),
+              .data_m_data_in(q_m_data_out),
+              .data_m_bytesel(q_m_bytesel),
+	      .*);
+
+VGAModeRegister VGAModeRegister(.clk(sys_clk),
+                                .cs(vga_mode_access),
+                                .data_m_ack(vga_mode_ack),
+                                .data_m_data_out(vga_mode_data),
+                                .*);
+`endif
 
 always_ff @(posedge clk)
     poweron_reset <= 1'b0;
