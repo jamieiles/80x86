@@ -71,8 +71,8 @@ private:
         SDL_DisplayMode display_mode;
         SDL_GetCurrentDisplayMode(0, &display_mode);
 
-        auto window_width = display_mode.w / 2;
-        auto window_height = ((float)height / (float)width) * window_width * 2;
+        window_width = display_mode.w / 2;
+        window_height = ((float)height / (float)width) * window_width * 2;
 
         x_scale_factor = window_width / (float)width;
         y_scale_factor = window_height / (float)height;
