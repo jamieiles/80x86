@@ -47,6 +47,13 @@ static void __attribute__((noinline)) emit_char(char c)
     if (c == '\b')
         do_backspace();
 
+    if (c == '\r' || c == '\n') {
+        unsigned m = 0;
+        --col;
+        for (m = col; m < 80; ++m)
+            writew(frame_buffer_segment, frame_buffer_offset + (row * 80 + m) * 2, ' ');
+    }
+
     if (col == 80 || c == '\n') {
         col = 0;
         ++row;
