@@ -2,6 +2,8 @@
 
 #include "bda.h"
 
+#define __unused __attribute__((unused))
+
 /* Pushed by the INT handlers in the order that a PUSHA would. */
 union reg {
     struct {

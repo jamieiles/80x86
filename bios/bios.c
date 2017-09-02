@@ -81,16 +81,14 @@ static void printer_services(struct callregs *regs)
 }
 VECTOR(0x17, printer_services);
 
-static void basic_services(struct callregs *regs)
+static void basic_services(struct callregs __unused *regs)
 {
-    (void)regs;
     panic("No basic services\n");
 }
 VECTOR(0x18, basic_services);
 
-static void boostrap_loader(struct callregs *regs)
+static void boostrap_loader(struct callregs __unused *regs)
 {
-    (void)regs;
     asm volatile("jmp $0xffff, $0x0");
 }
 VECTOR(0x19, boostrap_loader);
@@ -101,9 +99,8 @@ static void conventional_memory(struct callregs *regs)
 }
 VECTOR(0x12, conventional_memory);
 
-static void break_handler(struct callregs *regs)
+static void break_handler(struct callregs __unused *regs)
 {
-    (void)regs;
     panic("No break handler\n");
 }
 VECTOR(0x1b, break_handler);
