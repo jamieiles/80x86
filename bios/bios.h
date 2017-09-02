@@ -77,9 +77,9 @@ enum Flag {
 #define bda_read(field) ({ \
     typeof (((struct bios_data_area *)0)->field) _p; \
     if (__builtin_types_compatible_p(typeof(_p), unsigned short)) \
-        _p = readw(0x40, (void *)offsetof(struct bios_data_area, field)); \
+        _p = readw(0x40, offsetof(struct bios_data_area, field)); \
     else if (__builtin_types_compatible_p(typeof(_p), unsigned char)) \
-        _p = readb(0x40, (void *)offsetof(struct bios_data_area, field)); \
+        _p = readb(0x40, offsetof(struct bios_data_area, field)); \
     else \
         memcpy_seg(get_cs(), &_p, \
                    0x40, (void *)offsetof(struct bios_data_area, field), \

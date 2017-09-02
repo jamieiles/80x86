@@ -76,7 +76,7 @@ static inline void memcpy_seg(unsigned short dseg, void *dst,
                     "S"(src), "D"(dst), [len]"r"(len) : "memory", "cc");
 }
 
-static inline unsigned char readb(unsigned short segment, const void *address)
+static inline unsigned char readb(unsigned short segment, unsigned short address)
 {
     unsigned char v;
 
@@ -90,7 +90,7 @@ static inline unsigned char readb(unsigned short segment, const void *address)
     return v;
 }
 
-static inline unsigned short readw(unsigned short segment, const void *address)
+static inline unsigned short readw(unsigned short segment, unsigned short address)
 {
     unsigned short v;
 
