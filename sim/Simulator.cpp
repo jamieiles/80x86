@@ -133,23 +133,18 @@ void Simulator<T>::run()
         cpu.debug_detach();
 
     while (!got_exit) {
-        auto prev_count = cpu.cycle_count();
-
         auto io_callback = [&](unsigned long cycle_num) {
             if (cycle_num % 1000000 == 0)
                 cga.update();
             if (cycle_num % 1000 == 0)
                 process_io();
+            timer.tick(1);
         };
 
         if (detached)
             cpu.cycle_cpu_with_io(io_callback);
         else
             cpu.step_with_io(io_callback);
-
-        auto new_count = cpu.cycle_count();
-
-        timer.tick((new_count - prev_count) * 2);
     }
 
     auto end_time = std::chrono::system_clock::now();
