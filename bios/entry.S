@@ -153,3 +153,7 @@ timer_irq:
     iret
 
 int_handler 0x08, timer_irq
+
+.pushsection ".bios_date", "a"
+    .ascii BIOS_BUILD_DATE
+.popsection

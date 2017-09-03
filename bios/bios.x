@@ -35,6 +35,10 @@ SECTIONS {
         *(.reset.text);
     }
 
+    .bios_date 0xfff6 : AT(0xfff6) {
+        *(.bios_date);
+    }
+
     .model 0xfffe : AT(0xfffe) {
         *(.model);
     }

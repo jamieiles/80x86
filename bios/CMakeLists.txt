@@ -15,9 +15,11 @@ set(CMAKE_SHARED_LIBRARY_LINK_C_FLAGS "-Wl,-Map=${CMAKE_CURRENT_BINARY_DIR}/bios
 
 get_git_head_revision(BIOS_NAME BIOS_BUILD HEAD)
 git_local_changes(LOCAL_CHANGES)
+string(TIMESTAMP BIOS_BUILD_DATE "%m/%d/%y")
 
 add_definitions(-D__PLATFORM__="${BIOS_PLATFORM}"
-                -D__BUILD__="${BIOS_BUILD}+${LOCAL_CHANGES}")
+                -D__BUILD__="${BIOS_BUILD}+${LOCAL_CHANGES}"
+                -DBIOS_BUILD_DATE=\"${BIOS_BUILD_DATE}\")
 
 add_executable(bios-${BIOS_PLATFORM}
                bios.c
