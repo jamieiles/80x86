@@ -1,0 +1,3 @@
+#pragma once
+
+#cmakedefine01 S80X86_TRAP_ESCAPE

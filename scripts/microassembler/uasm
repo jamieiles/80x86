@@ -49,7 +49,7 @@ def field_type(size):
 
 class MicroAssembler(object):
     def __init__(self, infiles, bin_output, mif_output, verilog_output,
-                 verilog_types_output, cpp_types_output):
+                 verilog_types_output, cpp_types_output, include):
         self._infiles = infiles
         self._bin_output = bin_output
         self._mif_output = mif_output
@@ -58,6 +58,7 @@ class MicroAssembler(object):
         self._cpp_types_output = cpp_types_output
         self._immediate_pool = []
         self._update_flags_pool = []
+        self._include = include
 
     def _build_microcode(self, files):
         label_map = {}
@@ -82,7 +83,11 @@ class MicroAssembler(object):
                     instr.next = instr.address + 1
 
         def preprocess(filename):
-            return subprocess.check_output(['cpp', '-nostdinc', filename, '-o', '-']).decode('utf-8')
+            includes = []
+            for i in self._include:
+                includes.append('-I')
+                includes.append(i)
+            return subprocess.check_output(['cpp', '-nostdinc', filename, '-o', '-'] + includes).decode('utf-8')
 
         for f in files:
             model = mm.model_from_str(preprocess(f))
@@ -412,6 +417,7 @@ class MicroInstruction(object):
         return ''.join(field_values)
 
 parser = argparse.ArgumentParser()
+parser.add_argument('--include', '-I', action='append', default=[])
 parser.add_argument('bin_output')
 parser.add_argument('mif_output')
 parser.add_argument('verilog_output')
@@ -422,5 +428,5 @@ args = parser.parse_args()
 
 assembler = MicroAssembler(args.input, args.bin_output, args.mif_output,
                            args.verilog_output, args.verilog_types_output,
-                           args.cpp_types_output)
+                           args.cpp_types_output, args.include)
 assembler.assemble()

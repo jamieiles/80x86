@@ -1,3 +1,5 @@
+#include <config.h>
+
 .at 0xd8;
     modrm_start, jmp do_esc;
 .at 0xd9;
@@ -17,4 +19,8 @@
 
 .auto_address;
 do_esc:
+#if (S80X86_TRAP_ESCAPE == 1)
     b_sel IMMEDIATE, immediate 0x1c, alu_op SELB, tmp_wr_en, jmp do_int;
+#else
+    next_instruction;
+#endif

@@ -64,7 +64,7 @@ add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/microcode.bin
                           ${CMAKE_CURRENT_BINARY_DIR}/Microcode.sv
                           ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.sv
                           ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.h
-                   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/microassembler/uasm
+                   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/microassembler/uasm -I${CMAKE_CURRENT_BINARY_DIR}/../..
                            ${CMAKE_CURRENT_BINARY_DIR}/microcode.bin
                            ${CMAKE_CURRENT_BINARY_DIR}/microcode.mif
                            ${CMAKE_CURRENT_BINARY_DIR}/Microcode.sv

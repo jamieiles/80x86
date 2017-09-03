@@ -44,6 +44,11 @@ add_definitions(-DMEM_INT_BYTE_VAL=${POISON_MEMORY_VALUE})
 set(BUILD_DE0_CV OFF CACHE STRING "Build an image for the DE0-CV board")
 set(BUILD_DE0_NANO OFF CACHE STRING "Build an image for the DE0-nano board")
 
+option(S80X86_TRAP_ESCAPE "Trap on ESC opcodes" OFF)
+
+configure_file(config.h.in config.h)
+include_directories(${CMAKE_CURRENT_BINARY_DIR})
+
 enable_testing()
 
 add_subdirectory(vendor/googletest)

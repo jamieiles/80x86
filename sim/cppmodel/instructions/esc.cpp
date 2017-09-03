@@ -2,6 +2,9 @@ void EmulatorPimpl::escd8()
 {
     modrm_decoder->decode();
 
+    if (!S80X86_TRAP_ESCAPE)
+        return;
+
     auto flags = registers->get_flags();
 
     push_word(flags);

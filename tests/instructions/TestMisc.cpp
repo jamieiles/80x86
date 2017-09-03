@@ -2,6 +2,7 @@
 
 #include "EmulateFixture.h"
 #include "Flags.h"
+#include "config.h"
 
 TEST_F(EmulateFixture, Wait)
 {
@@ -27,14 +28,19 @@ TEST_F(EmulateFixture, EscReg)
         set_instruction({ v, 0xc0 });
         emulate();
 
-        EXPECT_EQ(read_reg(CS), 0x8000);
-        EXPECT_EQ(read_reg(IP), 0x0100);
-        EXPECT_EQ(read_reg(SP), 0x0100 - 6);
+        if (S80X86_TRAP_ESCAPE) {
+            EXPECT_EQ(read_reg(CS), 0x8000);
+            EXPECT_EQ(read_reg(IP), 0x0100);
+            EXPECT_EQ(read_reg(SP), 0x0100 - 6);
 
-        EXPECT_EQ(read_mem16(0x100 - 2, SS), FLAGS_STUCK_BITS);
-        EXPECT_EQ(read_mem16(0x100 - 4, SS), 0x7c00);
-        // Return to the same instruction
-        EXPECT_EQ(read_mem16(0x100 - 6, SS), 0x0001);
+            EXPECT_EQ(read_mem16(0x100 - 2, SS), FLAGS_STUCK_BITS);
+            EXPECT_EQ(read_mem16(0x100 - 4, SS), 0x7c00);
+            // Return to the same instruction
+            EXPECT_EQ(read_mem16(0x100 - 6, SS), 0x0001);
+        } else {
+            EXPECT_EQ(read_reg(CS), 0x7c00);
+            EXPECT_EQ(read_reg(IP), 0x0001 +  2);
+        }
     }
 }
 
@@ -54,14 +60,19 @@ TEST_F(EmulateFixture, EscMem)
         set_instruction({ v, 0x87, 0x34, 0x12 });
         emulate();
 
-        EXPECT_EQ(read_reg(CS), 0x8000);
-        EXPECT_EQ(read_reg(IP), 0x0100);
-        EXPECT_EQ(read_reg(SP), 0x0100 - 6);
+        if (S80X86_TRAP_ESCAPE) {
+            EXPECT_EQ(read_reg(CS), 0x8000);
+            EXPECT_EQ(read_reg(IP), 0x0100);
+            EXPECT_EQ(read_reg(SP), 0x0100 - 6);
 
-        EXPECT_EQ(read_mem16(0x100 - 2, SS), FLAGS_STUCK_BITS);
-        EXPECT_EQ(read_mem16(0x100 - 4, SS), 0x7c00);
-        // Return to the same instruction
-        EXPECT_EQ(read_mem16(0x100 - 6, SS), 0x0001);
+            EXPECT_EQ(read_mem16(0x100 - 2, SS), FLAGS_STUCK_BITS);
+            EXPECT_EQ(read_mem16(0x100 - 4, SS), 0x7c00);
+            // Return to the same instruction
+            EXPECT_EQ(read_mem16(0x100 - 6, SS), 0x0001);
+        } else {
+            EXPECT_EQ(read_reg(CS), 0x7c00);
+            EXPECT_EQ(read_reg(IP), 0x0001 +  4);
+        }
     }
 }
 
@@ -78,12 +89,17 @@ TEST_F(EmulateFixture, EscMemSegmentOverride)
     set_instruction({ 0x26, 0xd8, 0x87, 0x34, 0x12 });
     emulate();
 
-    EXPECT_EQ(read_reg(CS), 0x8000);
-    EXPECT_EQ(read_reg(IP), 0x0100);
-    EXPECT_EQ(read_reg(SP), 0x0100 - 6);
+    if (S80X86_TRAP_ESCAPE) {
+        EXPECT_EQ(read_reg(CS), 0x8000);
+        EXPECT_EQ(read_reg(IP), 0x0100);
+        EXPECT_EQ(read_reg(SP), 0x0100 - 6);
 
-    EXPECT_EQ(read_mem16(0x100 - 2, SS), FLAGS_STUCK_BITS);
-    EXPECT_EQ(read_mem16(0x100 - 4, SS), 0x7c00);
-    // Return to the same instruction
-    EXPECT_EQ(read_mem16(0x100 - 6, SS), 0x0001);
+        EXPECT_EQ(read_mem16(0x100 - 2, SS), FLAGS_STUCK_BITS);
+        EXPECT_EQ(read_mem16(0x100 - 4, SS), 0x7c00);
+        // Return to the same instruction
+        EXPECT_EQ(read_mem16(0x100 - 6, SS), 0x0001);
+    } else {
+        EXPECT_EQ(read_reg(CS), 0x7c00);
+        EXPECT_EQ(read_reg(IP), 0x0001 +  5);
+    }
 }

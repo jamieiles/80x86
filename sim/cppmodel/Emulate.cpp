@@ -8,6 +8,8 @@
 #include "Memory.h"
 #include "SoftwareCPU.h"
 
+#include <config.h>
+
 template <typename Out, typename In>
 static inline Out sign_extend(In v)
 {
