@@ -131,7 +131,6 @@ static void install_vectors(void)
         set_vector(v->num, v->handler);
 
     set_vector(0x1d, vpt);
-    bda_write(num_screen_cols, 80);
 }
 
 void root(void)

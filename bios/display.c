@@ -145,4 +145,8 @@ void display_init(void)
         for (c = 0; c < 80; ++c)
             writew(frame_buffer_segment,
                    frame_buffer_offset + (r * 80 + c) * 2, ' ');
+
+    bda_write(video_mode, 0x03);
+    bda_write(num_screen_cols, 80);
+    bda_write(crt_controller_base, 0x3d0);
 }
