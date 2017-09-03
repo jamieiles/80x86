@@ -74,14 +74,16 @@ reg [3:0] next_state;
 
 reg [3:0] cmd;
 
-reg [15:0] outdata;
+reg [15:0] outdata /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_REGISTER=ON ; FAST_OUTPUT_ENABLE_REGISTER=ON" */;
 reg [1:0] outbytesel;
+
+wire oe = state == STATE_WRITE && timec < {{timec_width-2{1'b0}}, 2'd2} /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_ENABLE_REGISTER=ON"  */;
 
 assign s_cs_n           = cmd[3];
 assign s_ras_n          = cmd[2];
 assign s_cas_n          = cmd[1];
 assign s_wr_en          = cmd[0];
-assign s_data           = state == STATE_WRITE && timec < {{timec_width-2{1'b0}}, 2'd2} ? outdata : {16{1'bz}};
+assign s_data           = oe ? outdata : {16{1'bz}};
 assign s_bytesel        = outbytesel;
 assign s_clken          = 1'b1;
 
