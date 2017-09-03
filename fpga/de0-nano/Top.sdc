@@ -21,7 +21,7 @@ derive_clock_uncertainty
 # SDRAM
 set sdram_tsu       1.5
 set sdram_th        0.8
-set sdram_tco_min   1.0
+set sdram_tco_min   2.7
 set sdram_tco_max   6.4
 
 # FPGA timing constraints
