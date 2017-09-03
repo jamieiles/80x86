@@ -133,8 +133,17 @@ static void install_vectors(void)
     set_vector(0x1d, vpt);
 }
 
+static void bda_init(void)
+{
+    int i;
+
+    for (i = 0; i < 256; ++i)
+        writeb(0x40, i, 0);
+}
+
 void root(void)
 {
+    bda_init();
     display_init();
 
     putstr("s80x86 BIOS, (C) Jamie Iles, " __DATE__ " " __TIME__ "\n");
