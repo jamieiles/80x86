@@ -1,5 +1,6 @@
 #pragma once
 
+#include <functional>
 #include <map>
 #include <string>
 
@@ -8,6 +9,10 @@
 
 #include "CPU.h"
 #include "RegisterFile.h"
+
+static inline void null_io(unsigned long __unused v)
+{
+}
 
 template <bool debug_enabled=verilator_debug_enabled>
 class RTLCPU : public VerilogDriver<VRTLCPU, debug_enabled>,
@@ -23,6 +28,8 @@ public:
     {
         this->cycle();
     }
+    size_t step_with_io(std::function<void(unsigned long)> io_callback);
+    void cycle_cpu_with_io(std::function<void(unsigned long)> io_callback);
     void complete_instruction();
     bool int_yield_ready();
     void debug_detach();
@@ -33,9 +40,10 @@ public:
     uint16_t read_flags();
     bool has_trapped();
 
-    int debug_run_proc(unsigned addr);
+    int debug_run_proc(unsigned addr,
+                       std::function<void(unsigned long)> io_callback=null_io);
     void debug_seize();
-    int debug_step();
+    int debug_step(std::function<void(unsigned long)> io_callback);
     bool debug_is_stopped() const
     {
         return is_stopped;

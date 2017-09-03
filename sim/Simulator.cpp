@@ -127,8 +127,6 @@ void Simulator<T>::process_io()
 template <typename T>
 void Simulator<T>::run()
 {
-    unsigned cycle_count = 0;
-
     auto start_time = std::chrono::system_clock::now();
 
     if (detached)
@@ -137,14 +135,17 @@ void Simulator<T>::run()
     while (!got_exit) {
         auto prev_count = cpu.cycle_count();
 
-        if (cycle_count % 1000000 == 0)
-            cga.update();
-        if (++cycle_count % 1000 == 0)
-            process_io();
+        auto io_callback = [&](unsigned long cycle_num) {
+            if (cycle_num % 1000000 == 0)
+                cga.update();
+            if (cycle_num % 1000 == 0)
+                process_io();
+        };
+
         if (detached)
-            cpu.cycle_cpu();
+            cpu.cycle_cpu_with_io(io_callback);
         else
-            cpu.step();
+            cpu.step_with_io(io_callback);
 
         auto new_count = cpu.cycle_count();
 

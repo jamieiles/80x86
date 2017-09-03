@@ -34,6 +34,8 @@ public:
     EmulatorPimpl(RegisterFile *registers);
 
     size_t step();
+    size_t step_with_io(std::function<void(unsigned long)> io_callback,
+                unsigned long cur_cycle_count);
 
     void set_memory(Memory *mem)
     {
@@ -555,6 +557,14 @@ size_t EmulatorPimpl::step()
         single_step();
 
     return len;
+}
+
+size_t EmulatorPimpl::step_with_io(std::function<void(unsigned long)> io_callback,
+                                   unsigned long cur_cycle_count)
+{
+    io_callback(cur_cycle_count);
+
+    return this->step();
 }
 
 size_t EmulatorPimpl::emulate_insn()
@@ -1422,6 +1432,13 @@ size_t Emulator::step()
     ++num_cycles;
 
     return pimpl->step();
+}
+
+size_t Emulator::step_with_io(std::function<void(unsigned long)> io_callback)
+{
+    ++num_cycles;
+
+    return pimpl->step_with_io(io_callback, num_cycles);
 }
 
 void Emulator::set_memory(Memory *mem)

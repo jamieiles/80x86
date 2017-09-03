@@ -19,6 +19,7 @@ public:
     Emulator(RegisterFile *registers);
     virtual ~Emulator();
     size_t step();
+    size_t step_with_io(std::function<void(unsigned long)> io_callback);
     void set_memory(Memory *mem);
     void set_io(std::map<uint16_t, IOPorts *> *io);
     bool has_trapped() const;

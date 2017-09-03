@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <functional>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -141,6 +142,20 @@ public:
     Memory *get_memory()
     {
         return &mem;
+    }
+
+    virtual size_t step_with_io(std::function<void(unsigned long)> io_callback)
+    {
+        (void)io_callback;
+
+        throw NotImplemented("step_with_io not implemented");
+    }
+
+    virtual void cycle_cpu_with_io(std::function<void(unsigned long)> io_callback)
+    {
+        (void)io_callback;
+
+        throw NotImplemented("cycle_with_io not implemented");
     }
 protected:
     Memory mem;

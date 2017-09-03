@@ -34,6 +34,11 @@ public:
         return emulator.step();
     }
 
+    size_t step_with_io(std::function<void(unsigned long)> io_callback)
+    {
+        return emulator.step_with_io(io_callback);
+    }
+
     void write_flags(uint16_t val)
     {
         registers.set_flags(val);

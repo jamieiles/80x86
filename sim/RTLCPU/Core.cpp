@@ -87,7 +87,8 @@ RTLCPU<debug_enabled>::RTLCPU(const std::string &test_name)
 }
 
 template <bool debug_enabled>
-int RTLCPU<debug_enabled>::debug_run_proc(unsigned addr)
+int RTLCPU<debug_enabled>::debug_run_proc(unsigned addr,
+                                          std::function<void(unsigned long)> io_callback)
 {
     this->after_n_cycles(0, [&]{
         this->dut.debug_addr = addr;
@@ -114,6 +115,8 @@ int RTLCPU<debug_enabled>::debug_run_proc(unsigned addr)
         // Dispatch address and debug idle don't count
         if (addr != 0x100 && addr != 0x102)
             ++cycle_count;
+
+        io_callback(this->cur_cycle());
     }
 
     if (cycle_count >= max_cycles_per_step)
@@ -123,11 +126,11 @@ int RTLCPU<debug_enabled>::debug_run_proc(unsigned addr)
 }
 
 template <bool debug_enabled>
-int RTLCPU<debug_enabled>::debug_step()
+int RTLCPU<debug_enabled>::debug_step(std::function<void(unsigned long)> io_callback)
 {
     assert(is_stopped);
 
-    return debug_run_proc(0x00);
+    return debug_run_proc(0x00, io_callback);
 }
 
 template <bool debug_enabled>
@@ -328,11 +331,25 @@ size_t RTLCPU<debug_enabled>::get_and_clear_instr_length()
 template <bool debug_enabled>
 size_t RTLCPU<debug_enabled>::step()
 {
+    return step_with_io(null_io);
+}
+
+template <bool debug_enabled>
+size_t RTLCPU<debug_enabled>::step_with_io(std::function<void(unsigned long)> io_callback)
+{
     this->get_and_clear_instr_length();
 
-    this->debug_step();
+    this->debug_step(io_callback);
 
     return this->get_and_clear_instr_length();
+}
+
+template <bool debug_enabled>
+void RTLCPU<debug_enabled>::cycle_cpu_with_io(std::function<void(unsigned long)> io_callback)
+{
+    this->cycle();
+
+    io_callback(this->cur_cycle());
 }
 
 template <bool debug_enabled>
@@ -344,7 +361,7 @@ void RTLCPU<debug_enabled>::idle(int count)
 template <bool debug_enabled>
 int RTLCPU<debug_enabled>::time_step()
 {
-    return this->debug_step();
+    return this->debug_step(null_io);
 }
 
 template <bool debug_enabled>
