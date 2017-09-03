@@ -65,6 +65,11 @@ static void __attribute__((noinline)) emit_char(char c)
     }
 }
 
+static void read_char(struct callregs *regs)
+{
+    regs->ax.x = readw(frame_buffer_segment, frame_buffer_offset + (row * 80 + col) * 2);
+}
+
 void video_putchar(char c)
 {
     if (c == '\r')
@@ -130,6 +135,9 @@ static void video_services(struct callregs *regs)
         break;
     case 0xf:
         get_video_mode(regs);
+        break;
+    case 0x8:
+        read_char(regs);
         break;
     default:
         regs->flags |= CF;
