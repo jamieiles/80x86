@@ -29,7 +29,7 @@ void serial_putchar(unsigned char c)
     while (inb(UART_STATUS_PORT) & UART_TX_BUSY)
         continue;
     if (c == '\n')
-        putchar('\r');
+        serial_putchar('\r');
 }
 
 int serial_poll(void)
