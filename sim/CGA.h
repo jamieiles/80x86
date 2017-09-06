@@ -8,22 +8,43 @@ public:
     const phys_addr buffer_phys = 0xb8000;
 
     CGA(Memory *mem)
-        : IOPorts(0x03da, 1),
-        mem(mem)
+        : IOPorts(0x03d4, 8),
+        mem(mem),
+        reg_idx(0),
+        status(0)
     {
+        memset(idx_regs, 0, sizeof(idx_regs));
     }
 
     void write8(uint16_t __unused port_num, unsigned __unused offs,
-                uint8_t __unused v) {}
+                uint8_t __unused v)
+    {
+        if (port_num == 0 && offs == 0) {
+            reg_idx = v;
+        } else if (port_num == 0 && offs == 1) {
+            idx_regs[reg_idx] = v;
+        }
+    }
+
     uint8_t read8(uint16_t __unused port_num, unsigned __unused offs)
     {
-        return 0x9;
+        if (port_num == 0)
+            return offs == 0 ? reg_idx : idx_regs[reg_idx];
+        else if (port_num == 6 && offs == 0) {
+            status ^= 0x1;
+            return status;
+        }
+
+        return 0;
     }
 
     void update();
 private:
     Memory *mem;
     Display display;
+    uint8_t reg_idx;
+    uint8_t idx_regs[256];
+    uint8_t status;
 };
 
 void CGA::update()
