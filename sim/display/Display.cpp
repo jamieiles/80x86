@@ -18,7 +18,7 @@ Display::Display(int num_rows, int num_cols)
     cursor{0, 0}
 {
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
-        throw std::runtime_error("Failed to initialize SDL");
+        throw std::runtime_error("Failed to initialize SDL " + std::string(SDL_GetError()));
 
     characters = std::make_unique<uint16_t[]>(num_rows * (num_cols + 1));
     window = std::make_unique<Window>("8086sim", 8 * num_cols, 8 * num_rows);
