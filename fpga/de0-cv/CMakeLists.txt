@@ -28,7 +28,7 @@ set(FPGA_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../VGA/FontColorLUT.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../VGA/FrameBuffer.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../VGA/FrameBufferRAM.sv
-    ${CMAKE_CURRENT_SOURCE_DIR}/../VGA/VGAModeRegister.sv
+    ${CMAKE_CURRENT_SOURCE_DIR}/../VGA/VGARegisters.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/MemArbiter.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/cdc/BitSync.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/cdc/SyncPulse.sv

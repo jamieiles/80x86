@@ -35,9 +35,9 @@ wire reset = ~reset_n | debug_reset | poweron_reset;
 `ifdef CONFIG_VGA
 wire vga_clk;
 
-wire vga_mode_access;
-wire vga_mode_ack;
-wire [15:0] vga_mode_data;
+wire vga_reg_access;
+wire vga_reg_ack;
+wire [15:0] vga_reg_data;
 
 wire vga_access;
 wire vga_ack;
@@ -66,7 +66,7 @@ wire [15:0] io_data = sdram_config_data |
     timer_data |
     irq_control_data |
 `ifdef CONFIG_VGA
-    vga_mode_data |
+    vga_reg_data |
 `endif // CONFIG_VGA
     bios_control_data;
 wire [15:0] mem_data;
@@ -162,7 +162,7 @@ wire io_ack = sdram_config_ack |
               irq_control_ack |
               timer_ack |
 `ifdef CONFIG_VGA
-              vga_mode_ack |
+              vga_reg_ack |
 `endif // CONFIG_VGA
               bios_control_ack;
 
@@ -181,7 +181,7 @@ always_comb begin
     timer_access = 1'b0;
     bios_control_access = 1'b0;
 `ifdef CONFIG_VGA
-    vga_mode_access = 1'b0;
+    vga_reg_access = 1'b0;
 `endif // CONFIG_VGA
 
     if (d_io && data_m_access) begin
@@ -196,7 +196,7 @@ always_comb begin
         16'b1111_1111_1110_1110: timer_access = 1'b1;
         16'b1111_1111_1110_1100: bios_control_access = 1'b1;
 `ifdef CONFIG_VGA
-        16'b0000_0011_1101_1010: vga_mode_access = 1'b1;
+        16'b0000_0011_1101_zzzz: vga_reg_access = 1'b1;
 `endif // CONFIG_VGA
         default:  default_io_access = 1'b1;
         endcase
@@ -356,11 +356,12 @@ VGAController VGAController(.clk(vga_clk),
                             .data_m_bytesel(q_m_bytesel),
                             .*);
 
-VGAModeRegister VGAModeRegister(.clk(sys_clk),
-                                .cs(vga_mode_access),
-                                .data_m_ack(vga_mode_ack),
-                                .data_m_data_out(vga_mode_data),
-                                .*);
+VGARegisters VGARegisters(.clk(sys_clk),
+                          .cs(vga_reg_access),
+                          .data_m_ack(vga_reg_ack),
+                          .data_m_data_out(vga_reg_data),
+                          .data_m_data_in(data_m_data_out),
+                          .*);
 `endif
 
 always_ff @(posedge clk)
