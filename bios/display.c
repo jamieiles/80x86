@@ -152,7 +152,7 @@ void display_init(void)
     for (r = 0; r < 25; ++r)
         for (c = 0; c < 80; ++c)
             writew(frame_buffer_segment,
-                   frame_buffer_offset + (r * 80 + c) * 2, ' ');
+                   frame_buffer_offset + (r * 80 + c) * 2, 0x0720);
 
     bda_write(video_mode, 0x03);
     bda_write(num_screen_cols, 80);
