@@ -97,6 +97,22 @@ class Debugger(cmd.Cmd):
         self._update_prompt()
         return False
 
+    def do_in8(self, line):
+        '''Read a 8-bit IO port'''
+        tokens = split(line)
+        assert len(tokens) == 1
+        print('{0:04x}'.format(self.c.read_io8(int(tokens[0], 16))))
+        self._update_prompt()
+        return False
+
+    def do_out8(self, line):
+        '''Write a 8-bit IO port'''
+        tokens = split(line)
+        assert len(tokens) == 2
+        self.c.write_io8(int(tokens[0], 16), int(tokens[1], 16))
+        self._update_prompt()
+        return False
+
     def do_w16(self, line):
         '''Write a 16-bit value to memory'''
         tokens = split(line)
