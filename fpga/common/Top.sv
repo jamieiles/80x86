@@ -346,15 +346,15 @@ Timer Timer(.clk(sys_clk),
             .*);
 
 `ifdef CONFIG_VGA
-VGAController(.clk(vga_clk),
-              .cs(vga_access),
-              .data_m_access(q_m_access),
-              .data_m_ack(vga_ack),
-              .data_m_addr(q_m_addr),
-              .data_m_data_out(vga_data),
-              .data_m_data_in(q_m_data_out),
-              .data_m_bytesel(q_m_bytesel),
-	      .*);
+VGAController VGAController(.clk(vga_clk),
+                            .cs(vga_access),
+                            .data_m_access(q_m_access),
+                            .data_m_ack(vga_ack),
+                            .data_m_addr(q_m_addr),
+                            .data_m_data_out(vga_data),
+                            .data_m_data_in(q_m_data_out),
+                            .data_m_bytesel(q_m_bytesel),
+                            .*);
 
 VGAModeRegister VGAModeRegister(.clk(sys_clk),
                                 .cs(vga_mode_access),
