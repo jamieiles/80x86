@@ -3,10 +3,11 @@
 #include "EmulateFixture.h"
 #include "Flags.h"
 
-class StringIntTest : public EmulateFixture {
+class StringIntTest : public EmulateFixture
+{
 public:
     void setup_nmi_handler();
-    void assert_nmi_taken();
+    void assert_nmi_taken(int return_offset);
     void inject_nmi();
 };
 
@@ -29,7 +30,7 @@ void StringIntTest::inject_nmi()
     cpu->complete_instruction();
 }
 
-void StringIntTest::assert_nmi_taken()
+void StringIntTest::assert_nmi_taken(int return_offset)
 {
     EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags() & (TF | IF), 0);
     EXPECT_EQ(read_reg(CS), 0x8000);
@@ -37,8 +38,7 @@ void StringIntTest::assert_nmi_taken()
     EXPECT_EQ(read_reg(SP), 0x0100 - 6);
 
     EXPECT_EQ(read_mem16(0x100 - 4, SS), 0x0000);
-    // The instruction will be retried
-    EXPECT_EQ(read_mem16(0x100 - 6, SS), 0x1000);
+    EXPECT_EQ(read_mem16(0x100 - 6, SS), 0x1000 + return_offset);
 }
 
 // These tests only run on the RTL CPU where we know that we can start single
@@ -54,13 +54,13 @@ TEST_F(StringIntTest, ScasbInt)
     write_cstring(0x800, "8086", ES);
 
     // repne scasb
-    set_instruction({ 0xf2, 0xae });
+    set_instruction({0xf2, 0xae});
 
     inject_nmi();
 
     ASSERT_EQ(read_reg(DI), 0x801);
 
-    assert_nmi_taken();
+    assert_nmi_taken(0);
 }
 
 TEST_F(StringIntTest, ScaswInt)
@@ -76,13 +76,13 @@ TEST_F(StringIntTest, ScaswInt)
     write_mem16(0x800 + 2 * 2, 0x0000, ES);
 
     // repne scasw
-    set_instruction({ 0xf2, 0xaf });
+    set_instruction({0xf2, 0xaf});
 
     inject_nmi();
 
     ASSERT_EQ(read_reg(DI), 0x802);
 
-    assert_nmi_taken();
+    assert_nmi_taken(0);
 }
 
 TEST_F(StringIntTest, MovsbInt)
@@ -97,7 +97,7 @@ TEST_F(StringIntTest, MovsbInt)
     write_mem8(0x404, 0, ES);
 
     // repne movsb
-    set_instruction({ 0x26, 0xf3, 0xa4 });
+    set_instruction({0x26, 0xf3, 0xa4});
 
     inject_nmi();
 
@@ -105,7 +105,7 @@ TEST_F(StringIntTest, MovsbInt)
     ASSERT_EQ(read_reg(SI), 0x801);
     ASSERT_EQ(read_reg(CX), 0x3);
 
-    assert_nmi_taken();
+    assert_nmi_taken(0);
 }
 
 TEST_F(StringIntTest, MovswInt)
@@ -120,14 +120,14 @@ TEST_F(StringIntTest, MovswInt)
     write_mem16(0x802, 0x55aa);
 
     // repne movsw
-    set_instruction({ 0xf3, 0xa5 });
+    set_instruction({0xf3, 0xa5});
 
     inject_nmi();
 
     ASSERT_EQ(read_reg(DI), 0x402);
     ASSERT_EQ(read_reg(SI), 0x802);
 
-    assert_nmi_taken();
+    assert_nmi_taken(0);
 }
 
 TEST_F(StringIntTest, CmpsbInt)
@@ -144,16 +144,16 @@ TEST_F(StringIntTest, CmpsbInt)
         write_mem8(0x400 + i, 0, ES);
         write_mem8(0x800 + i, 0);
     }
-    write_vector8(0x800, { 0, 1, 2, 4, 5, 6, 7 });
-    write_vector8(0x400, { 0, 1, 2, 4, 5, 6, 7 }, ES);
+    write_vector8(0x800, {0, 1, 2, 4, 5, 6, 7});
+    write_vector8(0x400, {0, 1, 2, 4, 5, 6, 7}, ES);
 
-    set_instruction({ 0xf3, 0xa6 });
+    set_instruction({0xf3, 0xa6});
 
     inject_nmi();
 
     ASSERT_EQ(1, read_reg(SI) - 0x800);
 
-    assert_nmi_taken();
+    assert_nmi_taken(0);
 }
 
 TEST_F(StringIntTest, CmpswInt)
@@ -170,16 +170,16 @@ TEST_F(StringIntTest, CmpswInt)
         write_mem8(0x400 + i, 0, ES);
         write_mem8(0x800 + i, 0);
     }
-    write_vector8(0x800, { 0, 1, 2, 4, 5, 6, 7 });
-    write_vector8(0x400, { 0, 1, 2, 4, 5, 6, 7 }, ES);
+    write_vector8(0x800, {0, 1, 2, 4, 5, 6, 7});
+    write_vector8(0x400, {0, 1, 2, 4, 5, 6, 7}, ES);
 
-    set_instruction({ 0xf3, 0xa7 });
+    set_instruction({0xf3, 0xa7});
 
     inject_nmi();
 
     ASSERT_EQ(2, read_reg(SI) - 0x800);
 
-    assert_nmi_taken();
+    assert_nmi_taken(0);
 }
 
 TEST_F(StringIntTest, LodsbInt)
@@ -191,13 +191,13 @@ TEST_F(StringIntTest, LodsbInt)
     write_cstring(0x800, "foo");
     write_reg(CX, 3);
 
-    set_instruction({ 0xf2, 0xac });
+    set_instruction({0xf2, 0xac});
 
     inject_nmi();
 
     ASSERT_EQ(read_reg(SI), 0x801);
 
-    assert_nmi_taken();
+    assert_nmi_taken(0);
 }
 
 TEST_F(StringIntTest, LodswInt)
@@ -206,16 +206,16 @@ TEST_F(StringIntTest, LodswInt)
 
     write_flags(0);
     write_reg(SI, 0x800);
-    write_vector16(0x800, { 0x1234, 0x5678 });
+    write_vector16(0x800, {0x1234, 0x5678});
     write_reg(CX, 2);
 
-    set_instruction({ 0xf2, 0xad });
+    set_instruction({0xf2, 0xad});
 
     inject_nmi();
 
     ASSERT_EQ(read_reg(SI), 0x802);
 
-    assert_nmi_taken();
+    assert_nmi_taken(0);
 }
 
 TEST_F(StringIntTest, StosbInt)
@@ -229,13 +229,13 @@ TEST_F(StringIntTest, StosbInt)
     write_reg(CX, 3);
     write_vector8(0x800, {0, 0, 0, 0, 0, 0, 0, 0}, ES);
 
-    set_instruction({ 0xf2, 0xaa });
+    set_instruction({0xf2, 0xaa});
 
     inject_nmi();
 
     ASSERT_EQ(read_reg(DI), 0x801);
 
-    assert_nmi_taken();
+    assert_nmi_taken(0);
 }
 
 TEST_F(StringIntTest, StoswInt)
@@ -249,13 +249,13 @@ TEST_F(StringIntTest, StoswInt)
     write_reg(CX, 3);
     write_vector16(0x800, {0, 0, 0, 0, 0, 0, 0, 0}, ES);
 
-    set_instruction({ 0xf2, 0xab });
+    set_instruction({0xf2, 0xab});
 
     inject_nmi();
 
     ASSERT_EQ(read_reg(DI), 0x802);
 
-    assert_nmi_taken();
+    assert_nmi_taken(0);
 }
 
 TEST_F(StringIntTest, HltBlocks)
@@ -264,7 +264,7 @@ TEST_F(StringIntTest, HltBlocks)
 
     write_flags(0);
 
-    set_instruction({ 0xf4 });
+    set_instruction({0xf4});
 
     cpu->start_instruction();
 
@@ -276,5 +276,5 @@ TEST_F(StringIntTest, HltBlocks)
 
     cpu->complete_instruction();
 
-    assert_nmi_taken();
+    assert_nmi_taken(1);
 }

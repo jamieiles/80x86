@@ -27,6 +27,7 @@ module Microcode(input logic clk,
                  input logic rb_zero,
                  output logic lock,
                  output logic multibit_shift,
+                 output logic is_hlt,
                  // Microinstruction fields.
                  <%#exported_fields%>
                  output logic <%type%><%name%>,
@@ -119,6 +120,7 @@ assign start_interrupt = next_addr == nmi_address ||
 assign inta = next_addr == irq_address;
 assign irq_to_mdr = inta;
 reg trap_flag_set;
+assign is_hlt = opcode == 8'hf4;
 
 reg seized;
 wire seizing = debug_seize & ~seized;

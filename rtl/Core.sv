@@ -172,6 +172,7 @@ wire ext_int_yield;
 wire irq_to_mdr;
 wire loop_next;
 wire loop_done;
+wire is_hlt;
 
 // Misc control signals
 wire debug_set_ip = debug_stopped && ip_wr_en;
@@ -182,7 +183,7 @@ wire start_interrupt;
 // IP
 wire ip_inc = fifo_rd_en & ~fifo_empty & ~start_interrupt;
 wire do_escape_fault;
-wire ip_rollback = (start_interrupt & ext_int_yield) | do_escape_fault;
+wire ip_rollback = (start_interrupt & ext_int_yield & ~is_hlt) | do_escape_fault;
 
 // Divider
 wire [31:0] dividend8 = divide_signed ? {{16{tmp_val[15]}}, tmp_val} : {16'b0, tmp_val};
@@ -416,6 +417,7 @@ Microcode       Microcode(.clk(clk),
                           .fifo_resetting(fifo_reset),
                           .loop_next(loop_next),
                           .loop_done(loop_done),
+                          .is_hlt(is_hlt),
                           // Debug
                           .debug_stopped(debug_stopped),
                           .debug_seize(debug_seize),
