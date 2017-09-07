@@ -15,3 +15,6 @@ map <Leader>c :Copen<cr>
 au BufNewFile,BufRead *.us set filetype=asm
 let g:gtest#gtest_command = "./scripts/run-dev-unittest"
 let g:gtest#highlight_failing_tests = 1
+
+autocmd FileType c,cpp ClangFormatAutoEnable
+let g:clang_format#detect_style_file = 1
