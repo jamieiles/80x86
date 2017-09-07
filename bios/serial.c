@@ -32,14 +32,14 @@ void serial_putchar(unsigned char c)
         serial_putchar('\r');
 }
 
+extern void kbd_buffer_add(unsigned short key);
+
 int serial_poll(void)
 {
     int ready = inb(UART_STATUS_PORT) & UART_RX_READY;
 
-    if (ready) {
-        bda_write(kbd_buffer[0], inb(UART_DATA_PORT));
-        bda_write(kbd_buffer_tail, 0x20);
-    }
+    if (ready)
+        kbd_buffer_add(inb(UART_DATA_PORT));
 
     return ready;
 }
