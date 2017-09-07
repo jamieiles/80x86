@@ -1,8 +1,8 @@
 void EmulatorPimpl::lodsbac()
 {
     auto lods = [&]() {
-        auto v = mem->read<uint8_t>(get_phys_addr(registers->get(get_segment(false)),
-                                                  registers->get(SI)));
+        auto v = mem->read<uint8_t>(get_phys_addr(
+            registers->get(get_segment(false)), registers->get(SI)));
         registers->set(AL, v);
 
         if (registers->get_flag(DF))
@@ -16,8 +16,8 @@ void EmulatorPimpl::lodsbac()
 void EmulatorPimpl::lodswad()
 {
     auto lods = [&]() {
-        auto v = mem->read<uint16_t>(get_phys_addr(registers->get(get_segment(false)),
-                                                   registers->get(SI)));
+        auto v = mem->read<uint16_t>(get_phys_addr(
+            registers->get(get_segment(false)), registers->get(SI)));
         registers->set(AX, v);
 
         if (registers->get_flag(DF))

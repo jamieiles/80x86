@@ -4,7 +4,8 @@
 #include "VerilogTestbench.h"
 
 class PosedgeToPulseTestFixture : public VerilogTestbench<VPosedgeToPulse>,
-    public ::testing::Test {
+                                  public ::testing::Test
+{
 public:
     PosedgeToPulseTestFixture();
 };
@@ -26,9 +27,7 @@ TEST_F(PosedgeToPulseTestFixture, PosedgeTriggersOnce)
 {
     EXPECT_EQ(dut.q, 0);
 
-    after_n_cycles(0, [&]{
-        this->dut.d = 1;
-    });
+    after_n_cycles(0, [&] { this->dut.d = 1; });
     cycle(2);
     EXPECT_EQ(this->dut.q, 1);
 
@@ -43,11 +42,9 @@ TEST_F(PosedgeToPulseTestFixture, PosedgePulseTriggersN)
     EXPECT_EQ(dut.q, 0);
 
     for (auto i = 0; i < 8; ++i) {
-        after_n_cycles(0, [&]{
+        after_n_cycles(0, [&] {
             this->dut.d = 1;
-            after_n_cycles(1, [&]{
-                this->dut.d = 0;
-            });
+            after_n_cycles(1, [&] { this->dut.d = 0; });
         });
         cycle(2);
         EXPECT_EQ(this->dut.q, 1);

@@ -5,7 +5,7 @@
 TEST_F(EmulateFixture, LeaAxBx)
 {
     // lea ax, [bx]
-    set_instruction({ 0x8d, 0x07 });
+    set_instruction({0x8d, 0x07});
     write_reg(BX, 0x1234);
 
     emulate();
@@ -16,7 +16,7 @@ TEST_F(EmulateFixture, LeaAxBx)
 TEST_F(EmulateFixture, LeaAxBxSiDisplacement)
 {
     // lea ax, [bx+si+0x1234]
-    set_instruction({ 0x8d, 0x80, 0x34, 0x12 });
+    set_instruction({0x8d, 0x80, 0x34, 0x12});
     write_reg(BX, 0x0400);
     write_reg(SI, 0x0100);
 
@@ -28,7 +28,7 @@ TEST_F(EmulateFixture, LeaAxBxSiDisplacement)
 TEST_F(EmulateFixture, Lds)
 {
     // lds si, [0x0100]
-    set_instruction({ 0xc5, 0x36, 0x00, 0x01 });
+    set_instruction({0xc5, 0x36, 0x00, 0x01});
     write_mem32(0x0100, 0x80001234);
     emulate();
 
@@ -39,7 +39,7 @@ TEST_F(EmulateFixture, Lds)
 TEST_F(EmulateFixture, Les)
 {
     // les si, [0x0100]
-    set_instruction({ 0xc4, 0x36, 0x00, 0x01 });
+    set_instruction({0xc4, 0x36, 0x00, 0x01});
     write_mem32(0x0100, 0x80001234);
     emulate();
 

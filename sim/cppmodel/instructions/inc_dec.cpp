@@ -9,11 +9,10 @@ void EmulatorPimpl::inc_dec_fe()
         return;
     }
 
-    if (modrm_decoder->raw_reg() != 0 &&
-        modrm_decoder->raw_reg() != 1) {
-        std::cerr << "warning: invalid reg " << std::hex <<
-            (unsigned)modrm_decoder->raw_reg() <<
-            " for opcode 0x" << opcode << std::endl;
+    if (modrm_decoder->raw_reg() != 0 && modrm_decoder->raw_reg() != 1) {
+        std::cerr << "warning: invalid reg " << std::hex
+                  << (unsigned)modrm_decoder->raw_reg() << " for opcode 0x"
+                  << opcode << std::endl;
         return;
     }
 

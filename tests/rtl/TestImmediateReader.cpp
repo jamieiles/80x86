@@ -6,7 +6,8 @@
 #include "VerilogTestbench.h"
 
 class ImmediateReaderTestbench : public VerilogTestbench<VImmediateReader>,
-    public ::testing::Test {
+                                 public ::testing::Test
+{
 public:
     ImmediateReaderTestbench();
 
@@ -18,11 +19,9 @@ public:
 
     void fetch()
     {
-        after_n_cycles(0, [&]{
+        after_n_cycles(0, [&] {
             this->dut.start = 1;
-            after_n_cycles(1, [&]{
-                this->dut.start = 0;
-            });
+            after_n_cycles(1, [&] { this->dut.start = 0; });
         });
 
         for (auto i = 0; i < 1000; ++i) {
@@ -34,23 +33,19 @@ public:
         FAIL() << "failed to complete immediate fetch" << std::endl;
     }
 
-    bool is_complete() const
-    {
-        return complete;
-    }
+    bool is_complete() const { return complete; }
 
 private:
     std::deque<uint8_t> stream;
     bool complete;
 };
 
-ImmediateReaderTestbench::ImmediateReaderTestbench()
-    : complete(false)
+ImmediateReaderTestbench::ImmediateReaderTestbench() : complete(false)
 {
     dut.reset = 0;
     reset();
 
-    periodic(ClockSetup, [&]{
+    periodic(ClockSetup, [&] {
         this->dut.fifo_empty = this->stream.size() == 0;
 
         if (!this->dut.reset && this->dut.fifo_rd_en &&
@@ -59,21 +54,19 @@ ImmediateReaderTestbench::ImmediateReaderTestbench()
 
     });
 
-    periodic(ClockCapture, [&]{
+    periodic(ClockCapture, [&] {
         this->complete = this->dut.complete;
         if (!this->dut.reset && this->dut.fifo_rd_en &&
             this->stream.size() > 0) {
             this->stream.pop_front();
         }
-        after_n_cycles(1, [&]{
-            this->dut.fifo_rd_data = this->stream[0];
-        });
+        after_n_cycles(1, [&] { this->dut.fifo_rd_data = this->stream[0]; });
     });
 }
 
 TEST_F(ImmediateReaderTestbench, Immed8PopsOne)
 {
-    add_bytes({ 0x80 });
+    add_bytes({0x80});
     dut.is_8bit = 1;
 
     fetch();
@@ -83,7 +76,7 @@ TEST_F(ImmediateReaderTestbench, Immed8PopsOne)
 
 TEST_F(ImmediateReaderTestbench, Immed8SignExtendPositive)
 {
-    add_bytes({ 0x7f });
+    add_bytes({0x7f});
     dut.is_8bit = 1;
 
     fetch();
@@ -93,7 +86,7 @@ TEST_F(ImmediateReaderTestbench, Immed8SignExtendPositive)
 
 TEST_F(ImmediateReaderTestbench, Immed16PopsTwo)
 {
-    add_bytes({ 0xaa, 0x55 });
+    add_bytes({0xaa, 0x55});
     dut.is_8bit = 0;
 
     fetch();
@@ -103,7 +96,7 @@ TEST_F(ImmediateReaderTestbench, Immed16PopsTwo)
 
 TEST_F(ImmediateReaderTestbench, ImmedPersistsAfterCompletion)
 {
-    add_bytes({ 0xaa, 0x55 });
+    add_bytes({0xaa, 0x55});
     dut.is_8bit = 0;
 
     fetch();

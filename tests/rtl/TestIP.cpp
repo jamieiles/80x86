@@ -3,8 +3,8 @@
 
 #include "VerilogTestbench.h"
 
-class IPTestFixture : public VerilogTestbench<VIP>,
-    public ::testing::Test {
+class IPTestFixture : public VerilogTestbench<VIP>, public ::testing::Test
+{
 public:
     void inc();
     uint16_t get();
@@ -16,9 +16,7 @@ public:
 void IPTestFixture::inc()
 {
     this->dut.inc = 1;
-    after_n_cycles(1, [&]{
-        this->dut.inc = 0;
-    });
+    after_n_cycles(1, [&] { this->dut.inc = 0; });
     cycle();
 }
 
@@ -31,27 +29,21 @@ void IPTestFixture::set(uint16_t val)
 {
     this->dut.wr_val = val;
     this->dut.wr_en = 1;
-    after_n_cycles(1, [&]{
-        this->dut.wr_en = 0;
-    });
+    after_n_cycles(1, [&] { this->dut.wr_en = 0; });
     cycle();
 }
 
 void IPTestFixture::commit()
 {
     this->dut.start_instruction = 1;
-    after_n_cycles(1, [&]{
-        this->dut.start_instruction = 0;
-    });
+    after_n_cycles(1, [&] { this->dut.start_instruction = 0; });
     cycle();
 }
 
 void IPTestFixture::rollback()
 {
     this->dut.rollback = 1;
-    after_n_cycles(1, [&]{
-        this->dut.rollback = 0;
-    });
+    after_n_cycles(1, [&] { this->dut.rollback = 0; });
     cycle();
 }
 

@@ -27,31 +27,33 @@ double sc_time_stamp()
 template <bool debug_enabled>
 RTLCPU<debug_enabled>::RTLCPU(const std::string &test_name)
     : VerilogDriver<VRTLCPU, debug_enabled>(test_name),
-    SimCPU(test_name),
-    mem_in_progress(false),
-    io_in_progress(false),
-    mem_latency(0),
-    test_name(test_name),
-    is_stopped(true)
+      SimCPU(test_name),
+      mem_in_progress(false),
+      io_in_progress(false),
+      mem_latency(0),
+      test_name(test_name),
+      is_stopped(true)
 {
     this->dut.debug_seize = 1;
     this->reset();
 
-    this->periodic(ClockSetup, [&]{ this->mem_access(); });
-    this->periodic(ClockSetup, [&]{ this->io_access(); });
-    this->periodic(ClockCapture, [&]{
+    this->periodic(ClockSetup, [&] { this->mem_access(); });
+    this->periodic(ClockSetup, [&] { this->io_access(); });
+    this->periodic(ClockCapture, [&] {
         auto dev = &this->mem;
         if (this->dut.q_m_access && !this->dut.d_io && this->dut.q_m_wr_en) {
             if (this->dut.q_m_bytesel & (1 << 0))
                 dev->template write<uint8_t>(this->dut.q_m_addr << 1,
                                              this->dut.q_m_data_out & 0xff);
             if (this->dut.q_m_bytesel & (1 << 1))
-                dev->template write<uint8_t>((this->dut.q_m_addr << 1) + 1,
-                                             (this->dut.q_m_data_out >> 8) & 0xff);
+                dev->template write<uint8_t>(
+                    (this->dut.q_m_addr << 1) + 1,
+                    (this->dut.q_m_data_out >> 8) & 0xff);
         }
     });
-    this->periodic(ClockCapture, [&]{
-        if (this->dut.io_m_access && this->dut.d_io && this->dut.io_m_wr_en && !io_in_progress) {
+    this->periodic(ClockCapture, [&] {
+        if (this->dut.io_m_access && this->dut.d_io && this->dut.io_m_wr_en &&
+            !io_in_progress) {
             if (!this->io.count(this->dut.io_m_addr << 1))
                 return;
             auto addr = this->dut.io_m_addr << 1;
@@ -61,13 +63,13 @@ RTLCPU<debug_enabled>::RTLCPU(const std::string &test_name)
             else if (this->dut.io_m_bytesel & (1 << 0))
                 p->write8(addr - p->get_base(), 0, this->dut.io_m_data_out);
             else if (this->dut.io_m_bytesel & (1 << 1))
-                p->write8(addr - p->get_base(), 1, this->dut.io_m_data_out >> 8);
+                p->write8(addr - p->get_base(), 1,
+                          this->dut.io_m_data_out >> 8);
         }
     });
-    this->periodic(ClockCapture, [&]{
-        this->is_stopped = this->dut.debug_stopped;
-    });
-    this->periodic(ClockSetup, [&]{
+    this->periodic(ClockCapture,
+                   [&] { this->is_stopped = this->dut.debug_stopped; });
+    this->periodic(ClockSetup, [&] {
         if (this->int_in_progress || !this->pending_irqs) {
             this->dut.intr = 0;
             return;
@@ -80,22 +82,21 @@ RTLCPU<debug_enabled>::RTLCPU(const std::string &test_name)
         this->dut.intr = 1;
         this->dut.irq = 8 + irq_num;
     });
-    this->periodic(ClockCapture, [&]{
+    this->periodic(ClockCapture, [&] {
         if (this->dut.inta)
             this->int_in_progress = false;
     });
 }
 
 template <bool debug_enabled>
-int RTLCPU<debug_enabled>::debug_run_proc(unsigned addr,
-                                          std::function<void(unsigned long)> io_callback)
+int RTLCPU<debug_enabled>::debug_run_proc(
+    unsigned addr,
+    std::function<void(unsigned long)> io_callback)
 {
-    this->after_n_cycles(0, [&]{
+    this->after_n_cycles(0, [&] {
         this->dut.debug_addr = addr;
         this->dut.debug_run = 1;
-        this->after_n_cycles(1, [&] {
-            this->dut.debug_run = 0;
-        });
+        this->after_n_cycles(1, [&] { this->dut.debug_run = 0; });
     });
 
     int cycle_count = 0;
@@ -126,7 +127,8 @@ int RTLCPU<debug_enabled>::debug_run_proc(unsigned addr,
 }
 
 template <bool debug_enabled>
-int RTLCPU<debug_enabled>::debug_step(std::function<void(unsigned long)> io_callback)
+int RTLCPU<debug_enabled>::debug_step(
+    std::function<void(unsigned long)> io_callback)
 {
     assert(is_stopped);
 
@@ -136,13 +138,11 @@ int RTLCPU<debug_enabled>::debug_step(std::function<void(unsigned long)> io_call
 template <bool debug_enabled>
 void RTLCPU<debug_enabled>::debug_detach()
 {
-    this->after_n_cycles(0, [&]{
+    this->after_n_cycles(0, [&] {
         this->dut.debug_seize = 0;
         this->dut.debug_addr = 0;
         this->dut.debug_run = 1;
-        this->after_n_cycles(1, [&] {
-            this->dut.debug_run = 0;
-        });
+        this->after_n_cycles(1, [&] { this->dut.debug_run = 0; });
     });
 }
 
@@ -155,12 +155,10 @@ void RTLCPU<debug_enabled>::start_instruction()
     // instruction and can detect the first real yield.
     this->cycle((mem_latency + 1) * 128);
 
-    this->after_n_cycles(0, [&]{
+    this->after_n_cycles(0, [&] {
         this->dut.debug_addr = 0;
         this->dut.debug_run = 1;
-        this->after_n_cycles(1, [&] {
-            this->dut.debug_run = 0;
-        });
+        this->after_n_cycles(1, [&] { this->dut.debug_run = 0; });
     });
 
     while (debug_is_stopped())
@@ -240,9 +238,7 @@ void RTLCPU<debug_enabled>::debug_write_data(uint16_t val)
     this->after_n_cycles(0, [&] {
         this->dut.debug_wr_en = 1;
         this->dut.debug_wr_val = val;
-        this->after_n_cycles(1, [&] {
-            this->dut.debug_wr_en = 0;
-        });
+        this->after_n_cycles(1, [&] { this->dut.debug_wr_en = 0; });
     });
     this->cycle();
 }
@@ -335,7 +331,8 @@ size_t RTLCPU<debug_enabled>::step()
 }
 
 template <bool debug_enabled>
-size_t RTLCPU<debug_enabled>::step_with_io(std::function<void(unsigned long)> io_callback)
+size_t RTLCPU<debug_enabled>::step_with_io(
+    std::function<void(unsigned long)> io_callback)
 {
     this->get_and_clear_instr_length();
 
@@ -345,7 +342,8 @@ size_t RTLCPU<debug_enabled>::step_with_io(std::function<void(unsigned long)> io
 }
 
 template <bool debug_enabled>
-void RTLCPU<debug_enabled>::cycle_cpu_with_io(std::function<void(unsigned long)> io_callback)
+void RTLCPU<debug_enabled>::cycle_cpu_with_io(
+    std::function<void(unsigned long)> io_callback)
 {
     this->cycle();
 
@@ -395,14 +393,14 @@ void RTLCPU<debug_enabled>::mem_access()
         mem_in_progress)
         return;
 
-    this->after_n_cycles(0,[&]{
+    this->after_n_cycles(0, [&] {
         auto v = this->mem.template read<uint16_t>(this->dut.q_m_addr << 1);
         this->dut.q_m_data_in = v;
     });
     mem_in_progress = true;
-    this->after_n_cycles(mem_latency, [&]{
+    this->after_n_cycles(mem_latency, [&] {
         this->dut.q_m_ack = 1;
-        this->after_n_cycles(1, [&]{
+        this->after_n_cycles(1, [&] {
             this->dut.q_m_ack = 0;
             mem_in_progress = false;
         });
@@ -416,11 +414,11 @@ void RTLCPU<debug_enabled>::io_access()
         io_in_progress)
         return;
 
-    this->after_n_cycles(0,[&]{
+    this->after_n_cycles(0, [&] {
         if (!this->io.count(this->dut.io_m_addr << 1)) {
             this->dut.io_m_data_in = 0;
             return;
-            }
+        }
 
         auto addr = this->dut.io_m_addr << 1;
         auto p = this->io[this->dut.io_m_addr << 1];
@@ -432,9 +430,9 @@ void RTLCPU<debug_enabled>::io_access()
             this->dut.io_m_data_in = p->read8(addr - p->get_base(), 1) << 8;
     });
     io_in_progress = true;
-    this->after_n_cycles(mem_latency, [&]{
+    this->after_n_cycles(mem_latency, [&] {
         this->dut.io_m_ack = 1;
-        this->after_n_cycles(1, [&]{
+        this->after_n_cycles(1, [&] {
             this->dut.io_m_ack = 0;
             io_in_progress = false;
         });
@@ -450,7 +448,8 @@ uint16_t RTLCPU<debug_enabled>::get_microcode_address()
 }
 
 template <bool debug_enabled>
-void RTLCPU<debug_enabled>::write_mem8(uint16_t segment, uint16_t addr,
+void RTLCPU<debug_enabled>::write_mem8(uint16_t segment,
+                                       uint16_t addr,
                                        uint8_t val)
 {
     auto prev_ds = read_reg(DS);
@@ -463,7 +462,8 @@ void RTLCPU<debug_enabled>::write_mem8(uint16_t segment, uint16_t addr,
 }
 
 template <bool debug_enabled>
-void RTLCPU<debug_enabled>::write_mem16(uint16_t segment, uint16_t addr,
+void RTLCPU<debug_enabled>::write_mem16(uint16_t segment,
+                                        uint16_t addr,
                                         uint16_t val)
 {
     auto prev_ds = read_reg(DS);
@@ -476,7 +476,8 @@ void RTLCPU<debug_enabled>::write_mem16(uint16_t segment, uint16_t addr,
 }
 
 template <bool debug_enabled>
-void RTLCPU<debug_enabled>::write_vector8(uint16_t segment, uint16_t addr,
+void RTLCPU<debug_enabled>::write_vector8(uint16_t segment,
+                                          uint16_t addr,
                                           const std::vector<uint8_t> &v)
 {
     auto prev_ds = read_reg(DS);
@@ -484,7 +485,7 @@ void RTLCPU<debug_enabled>::write_vector8(uint16_t segment, uint16_t addr,
     write_reg(DS, segment);
 
     write_mar(addr);
-    for (auto &b: v) {
+    for (auto &b : v) {
         write_mdr(b);
         debug_run_proc(0x23); // Write mem 8
     }
@@ -493,7 +494,8 @@ void RTLCPU<debug_enabled>::write_vector8(uint16_t segment, uint16_t addr,
 }
 
 template <bool debug_enabled>
-void RTLCPU<debug_enabled>::write_vector16(uint16_t segment, uint16_t addr,
+void RTLCPU<debug_enabled>::write_vector16(uint16_t segment,
+                                           uint16_t addr,
                                            const std::vector<uint16_t> &v)
 {
     auto prev_ds = read_reg(DS);
@@ -501,7 +503,7 @@ void RTLCPU<debug_enabled>::write_vector16(uint16_t segment, uint16_t addr,
     write_reg(DS, segment);
 
     write_mar(addr);
-    for (auto &b: v) {
+    for (auto &b : v) {
         write_mdr(b);
         debug_run_proc(0x24); // Write mem 16
     }
@@ -510,7 +512,8 @@ void RTLCPU<debug_enabled>::write_vector16(uint16_t segment, uint16_t addr,
 }
 
 template <bool debug_enabled>
-void RTLCPU<debug_enabled>::write_mem32(uint16_t segment, uint16_t addr,
+void RTLCPU<debug_enabled>::write_mem32(uint16_t segment,
+                                        uint16_t addr,
                                         uint32_t val)
 {
     write_mem16(segment, addr, val & 0xffff);
@@ -567,7 +570,7 @@ template <bool debug_enabled>
 uint32_t RTLCPU<debug_enabled>::read_mem32(uint16_t segment, uint16_t addr)
 {
     return read_mem16(segment, addr) |
-        (static_cast<uint32_t>(read_mem16(segment, addr + 2)) << 16);
+           (static_cast<uint32_t>(read_mem16(segment, addr + 2)) << 16);
 }
 
 template <bool debug_enabled>

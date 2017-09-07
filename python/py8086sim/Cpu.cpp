@@ -11,7 +11,9 @@ using namespace boost::python;
 typedef RTLCPU<verilator_debug_enabled> rtlcpu;
 
 template <typename T>
-void write_vector8(T *c, uint16_t segment, uint16_t addr,
+void write_vector8(T *c,
+                   uint16_t segment,
+                   uint16_t addr,
                    boost::python::list vals)
 {
     std::vector<uint8_t> vec;
@@ -23,7 +25,9 @@ void write_vector8(T *c, uint16_t segment, uint16_t addr,
 }
 
 template <typename T>
-void write_vector16(T *c, uint16_t segment, uint16_t addr,
+void write_vector16(T *c,
+                    uint16_t segment,
+                    uint16_t addr,
                     boost::python::list vals)
 {
     std::vector<uint16_t> vec;

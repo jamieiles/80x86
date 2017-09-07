@@ -4,9 +4,9 @@
 #include "UART.h"
 #include "CPU.h"
 
-UART::UART()
-    : IOPorts(0xfffa, 1)
-{}
+UART::UART() : IOPorts(0xfffa, 1)
+{
+}
 
 void UART::write8(uint16_t __unused port_num, unsigned offs, uint8_t v)
 {

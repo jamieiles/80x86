@@ -5,12 +5,10 @@
 using DivideError = std::runtime_error;
 
 class DividerTestbench : public VerilogTestbench<VDivider>,
-    public ::testing::Test {
+                         public ::testing::Test
+{
 public:
-    DividerTestbench()
-        : done(false),
-        quotient(0),
-        remainder(0)
+    DividerTestbench() : done(false), quotient(0), remainder(0)
     {
         reset();
 
@@ -22,15 +20,20 @@ public:
             }
         });
     }
-    void divide(uint32_t dividend, uint16_t divisor,
-                bool is_8_bit=false, bool is_signed=false);
+    void divide(uint32_t dividend,
+                uint16_t divisor,
+                bool is_8_bit = false,
+                bool is_signed = false);
+
 protected:
     bool done;
     uint16_t quotient, remainder;
 };
 
-void DividerTestbench::divide(uint32_t dividend, uint16_t divisor,
-                              bool is_8_bit, bool is_signed)
+void DividerTestbench::divide(uint32_t dividend,
+                              uint16_t divisor,
+                              bool is_8_bit,
+                              bool is_signed)
 {
     after_n_cycles(0, [this, dividend, divisor, is_8_bit, is_signed] {
         this->dut.dividend = dividend;
@@ -38,9 +41,7 @@ void DividerTestbench::divide(uint32_t dividend, uint16_t divisor,
         this->dut.start = 1;
         this->dut.is_8_bit = is_8_bit;
         this->dut.is_signed = is_signed;
-        after_n_cycles(1, [this] {
-            this->dut.start = 0;
-        });
+        after_n_cycles(1, [this] { this->dut.start = 0; });
     });
 
     for (int i = 0; i < 100; ++i) {
@@ -70,7 +71,8 @@ using IDiv8Params = struct DivTest<int16_t, int8_t>;
 using IDiv16Params = struct DivTest<int32_t, int16_t>;
 
 class DivTests16 : public DividerTestbench,
-    public ::testing::WithParamInterface<Div16Params> {
+                   public ::testing::WithParamInterface<Div16Params>
+{
 };
 TEST_P(DivTests16, Result)
 {
@@ -86,22 +88,23 @@ TEST_P(DivTests16, Result)
 
     cycle(3);
 }
-INSTANTIATE_TEST_CASE_P(Div, DivTests16,
-    ::testing::Values(
-    Div16Params{ 100, 20, 5, 0, false },
-    Div16Params{ 500, 250, 2, 0, false },
-    Div16Params{ 10, 3, 3, 1, false },
-    Div16Params{ 128000, 10, 12800, 0, false },
-    Div16Params{ 130000, 32500, 4, 0, false },
-    Div16Params{ 0xffff, 1, 0xffff, 0, false },
-    // Divide by zero
-    Div16Params{ 130000, 0, 0, 0, true },
-    // Destination overflow
-    Div16Params{ 0x10000, 1, 0, 0, true }
-));
+INSTANTIATE_TEST_CASE_P(
+    Div,
+    DivTests16,
+    ::testing::Values(Div16Params{100, 20, 5, 0, false},
+                      Div16Params{500, 250, 2, 0, false},
+                      Div16Params{10, 3, 3, 1, false},
+                      Div16Params{128000, 10, 12800, 0, false},
+                      Div16Params{130000, 32500, 4, 0, false},
+                      Div16Params{0xffff, 1, 0xffff, 0, false},
+                      // Divide by zero
+                      Div16Params{130000, 0, 0, 0, true},
+                      // Destination overflow
+                      Div16Params{0x10000, 1, 0, 0, true}));
 
 class DivTests8 : public DividerTestbench,
-    public ::testing::WithParamInterface<Div8Params> {
+                  public ::testing::WithParamInterface<Div8Params>
+{
 };
 TEST_P(DivTests8, Result)
 {
@@ -117,17 +120,16 @@ TEST_P(DivTests8, Result)
 
     cycle(3);
 }
-INSTANTIATE_TEST_CASE_P(Div, DivTests8,
-    ::testing::Values(
-    Div8Params{ 100, 20, 5, 0, false },
-    Div8Params{ 500, 250, 2, 0, false },
-    Div8Params{ 10, 3, 3, 1, false },
-    Div8Params{ 0xff, 1, 0xff, 0, false },
-    // Divide by zero
-    Div8Params{ 1, 0, 0, 0, true },
-    // Destination overflow
-    Div8Params{ 0x100, 1, 0, 0, true }
-));
+INSTANTIATE_TEST_CASE_P(Div,
+                        DivTests8,
+                        ::testing::Values(Div8Params{100, 20, 5, 0, false},
+                                          Div8Params{500, 250, 2, 0, false},
+                                          Div8Params{10, 3, 3, 1, false},
+                                          Div8Params{0xff, 1, 0xff, 0, false},
+                                          // Divide by zero
+                                          Div8Params{1, 0, 0, 0, true},
+                                          // Destination overflow
+                                          Div8Params{0x100, 1, 0, 0, true}));
 
 TEST_F(DividerTestbench, MSBsIgnored8Bit)
 {
@@ -138,7 +140,8 @@ TEST_F(DividerTestbench, MSBsIgnored8Bit)
 }
 
 class IDivTests16 : public DividerTestbench,
-    public ::testing::WithParamInterface<IDiv16Params> {
+                    public ::testing::WithParamInterface<IDiv16Params>
+{
 };
 TEST_P(IDivTests16, Result)
 {
@@ -154,23 +157,24 @@ TEST_P(IDivTests16, Result)
 
     cycle(3);
 }
-INSTANTIATE_TEST_CASE_P(IDiv, IDivTests16,
-    ::testing::Values(
-    IDiv16Params{ 10, 3, 3, 1, false },
-    IDiv16Params{ 10, -3, -3, 1, false },
-    IDiv16Params{ -10, -3, 3, -1, false },
-    IDiv16Params{ -10, 3, -3, -1, false },
-    IDiv16Params{ -10, 0, 0, 0, true },
-    IDiv16Params{ 65534, 2, 32767, 0, false },
-    IDiv16Params{ -65536, 2, -32768, 0, false },
-    // Positive integer overflow
-    IDiv16Params{ 65536, 2, 0, 0, true },
-    // Negative integer overflow
-    IDiv16Params{ -65538, 2, 0, 0, true }
-));
+INSTANTIATE_TEST_CASE_P(
+    IDiv,
+    IDivTests16,
+    ::testing::Values(IDiv16Params{10, 3, 3, 1, false},
+                      IDiv16Params{10, -3, -3, 1, false},
+                      IDiv16Params{-10, -3, 3, -1, false},
+                      IDiv16Params{-10, 3, -3, -1, false},
+                      IDiv16Params{-10, 0, 0, 0, true},
+                      IDiv16Params{65534, 2, 32767, 0, false},
+                      IDiv16Params{-65536, 2, -32768, 0, false},
+                      // Positive integer overflow
+                      IDiv16Params{65536, 2, 0, 0, true},
+                      // Negative integer overflow
+                      IDiv16Params{-65538, 2, 0, 0, true}));
 
 class IDivTests8 : public DividerTestbench,
-    public ::testing::WithParamInterface<IDiv8Params> {
+                   public ::testing::WithParamInterface<IDiv8Params>
+{
 };
 TEST_P(IDivTests8, Result)
 {
@@ -186,18 +190,17 @@ TEST_P(IDivTests8, Result)
 
     cycle(3);
 }
-INSTANTIATE_TEST_CASE_P(IDiv, IDivTests8,
-    ::testing::Values(
-    IDiv8Params{ 10, 3, 3, 1, false },
-    IDiv8Params{ 10, -3, -3, 1, false },
-    IDiv8Params{ -10, -3, 3, -1, false },
-    IDiv8Params{ -10, 3, -3, -1, false },
-    // Divide by zero
-    IDiv8Params{ -10, 0, 0, 0, true },
-    IDiv8Params{ 254, 2, 127, 0, false },
-    IDiv8Params{ -256, 2, -128, 0, false },
-    // Positive integer overflow
-    IDiv8Params{ 256, 2, 0, 0, true },
-    // Negative integer overflow
-    IDiv8Params{ -258, 2, 0, 0, true }
-));
+INSTANTIATE_TEST_CASE_P(IDiv,
+                        IDivTests8,
+                        ::testing::Values(IDiv8Params{10, 3, 3, 1, false},
+                                          IDiv8Params{10, -3, -3, 1, false},
+                                          IDiv8Params{-10, -3, 3, -1, false},
+                                          IDiv8Params{-10, 3, -3, -1, false},
+                                          // Divide by zero
+                                          IDiv8Params{-10, 0, 0, 0, true},
+                                          IDiv8Params{254, 2, 127, 0, false},
+                                          IDiv8Params{-256, 2, -128, 0, false},
+                                          // Positive integer overflow
+                                          IDiv8Params{256, 2, 0, 0, true},
+                                          // Negative integer overflow
+                                          IDiv8Params{-258, 2, 0, 0, true}));

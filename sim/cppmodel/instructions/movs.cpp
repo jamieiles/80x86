@@ -1,10 +1,10 @@
 void EmulatorPimpl::movsba4()
 {
     auto movs = [&]() {
-        auto v = mem->read<uint8_t>(get_phys_addr(registers->get(get_segment(false)),
-                                                  registers->get(SI)));
-        mem->write<uint8_t>(get_phys_addr(registers->get(ES),
-                                          registers->get(DI)), v);
+        auto v = mem->read<uint8_t>(get_phys_addr(
+            registers->get(get_segment(false)), registers->get(SI)));
+        mem->write<uint8_t>(
+            get_phys_addr(registers->get(ES), registers->get(DI)), v);
 
         if (registers->get_flag(DF)) {
             registers->set(DI, registers->get(DI) - 1);
@@ -20,10 +20,10 @@ void EmulatorPimpl::movsba4()
 void EmulatorPimpl::movswa5()
 {
     auto movs = [&]() {
-        auto v = mem->read<uint16_t>(get_phys_addr(registers->get(get_segment(false)),
-                                                   registers->get(SI)));
-        mem->write<uint16_t>(get_phys_addr(registers->get(ES),
-                                           registers->get(DI)), v);
+        auto v = mem->read<uint16_t>(get_phys_addr(
+            registers->get(get_segment(false)), registers->get(SI)));
+        mem->write<uint16_t>(
+            get_phys_addr(registers->get(ES), registers->get(DI)), v);
 
         if (registers->get_flag(DF)) {
             registers->set(DI, registers->get(DI) - 2);

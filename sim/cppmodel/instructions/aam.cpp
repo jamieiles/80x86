@@ -41,4 +41,3 @@ void EmulatorPimpl::aamd4()
 
     registers->set_flags(flags, SF | ZF | PF);
 }
-

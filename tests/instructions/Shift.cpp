@@ -4,7 +4,7 @@
 
 TEST_P(ShiftReg8Test, ResultAndFlags)
 {
-    for (auto &t: GetParam().second) {
+    for (auto &t : GetParam().second) {
         reset();
 
         write_flags(t.flags);
@@ -25,7 +25,7 @@ TEST_P(ShiftReg8Test, ResultAndFlags)
 
 TEST_P(ShiftMem8Test, ResultAndFlags)
 {
-    for (auto &t: GetParam().second) {
+    for (auto &t : GetParam().second) {
         reset();
 
         write_flags(t.flags);
@@ -47,7 +47,7 @@ TEST_P(ShiftMem8Test, ResultAndFlags)
 
 TEST_P(ShiftRegImm8Test, ResultAndFlags)
 {
-    for (auto &t: GetParam().second) {
+    for (auto &t : GetParam().second) {
         reset();
 
         write_flags(t.flags);
@@ -69,7 +69,7 @@ TEST_P(ShiftRegImm8Test, ResultAndFlags)
 
 TEST_P(ShiftMemImm8Test, ResultAndFlags)
 {
-    for (auto &t: GetParam().second) {
+    for (auto &t : GetParam().second) {
         reset();
 
         write_flags(t.flags);
@@ -93,7 +93,7 @@ TEST_P(ShiftMemImm8Test, ResultAndFlags)
 TEST_P(ShiftReg16Test, ResultAndFlags)
 {
     // shl ax, COUNT
-    for (auto &t: GetParam().second) {
+    for (auto &t : GetParam().second) {
         reset();
 
         write_flags(t.flags);
@@ -114,7 +114,7 @@ TEST_P(ShiftReg16Test, ResultAndFlags)
 
 TEST_P(ShiftMem16Test, ResultAndFlags)
 {
-    for (auto &t: GetParam().second) {
+    for (auto &t : GetParam().second) {
         reset();
 
         write_flags(t.flags);
@@ -136,7 +136,7 @@ TEST_P(ShiftMem16Test, ResultAndFlags)
 
 TEST_P(ShiftRegImm16Test, ResultAndFlags)
 {
-    for (auto &t: GetParam().second) {
+    for (auto &t : GetParam().second) {
         reset();
 
         write_flags(t.flags);
@@ -158,7 +158,7 @@ TEST_P(ShiftRegImm16Test, ResultAndFlags)
 
 TEST_P(ShiftMemImm16Test, ResultAndFlags)
 {
-    for (auto &t: GetParam().second) {
+    for (auto &t : GetParam().second) {
         reset();
 
         write_flags(t.flags);

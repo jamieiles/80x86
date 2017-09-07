@@ -10,7 +10,7 @@ TEST_F(EmulateFixture, RetIntra)
     write_reg(SP, 0x00fe);
     write_mem16(0x00fe, 0x0100, SS);
 
-    set_instruction({ 0xc3 });
+    set_instruction({0xc3});
 
     emulate();
 
@@ -26,7 +26,7 @@ TEST_F(EmulateFixture, RetIntraAddSp)
     write_reg(SP, 0x00fe);
     write_mem16(0x00fe, 0x0100, SS);
 
-    set_instruction({ 0xc2, 0x10, 0x00 });
+    set_instruction({0xc2, 0x10, 0x00});
 
     emulate();
 
@@ -43,7 +43,7 @@ TEST_F(EmulateFixture, RetInter)
     write_mem16(0x00fe, 0x8000, SS);
     write_mem16(0x00fc, 0x0100, SS);
 
-    set_instruction({ 0xcb });
+    set_instruction({0xcb});
 
     emulate();
 
@@ -60,7 +60,7 @@ TEST_F(EmulateFixture, RetInterAddSp)
     write_mem16(0x00fe, 0x8000, SS);
     write_mem16(0x00fc, 0x0100, SS);
 
-    set_instruction({ 0xca, 0x10, 0x00 });
+    set_instruction({0xca, 0x10, 0x00});
 
     emulate();
 
@@ -78,13 +78,12 @@ TEST_F(EmulateFixture, Iret)
     write_mem16(0x00fc, 0x8000, SS);
     write_mem16(0x00fa, 0x0100, SS);
 
-    set_instruction({ 0xcf });
+    set_instruction({0xcf});
 
     emulate();
 
     ASSERT_EQ(0x0100, read_reg(SP));
     ASSERT_EQ(0x8000, read_reg(CS));
     ASSERT_EQ(0x0100, read_reg(IP));
-    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                        FLAGS_STUCK_BITS | CF);
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), FLAGS_STUCK_BITS | CF);
 }

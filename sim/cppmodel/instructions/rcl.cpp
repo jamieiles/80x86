@@ -84,8 +84,7 @@ void EmulatorPimpl::rcld2()
     if (!registers->get(CL))
         return;
 
-    std::tie(flags, v) = do_rcl(v, registers->get(CL),
-                                registers->get_flag(CF));
+    std::tie(flags, v) = do_rcl(v, registers->get(CL), registers->get_flag(CF));
 
     write_data<uint8_t>(v);
     registers->set_flags(flags, CF);
@@ -100,8 +99,7 @@ void EmulatorPimpl::rcld3()
     if (!registers->get(CL))
         return;
 
-    std::tie(flags, v) = do_rcl(v, registers->get(CL),
-                                registers->get_flag(CF));
+    std::tie(flags, v) = do_rcl(v, registers->get(CL), registers->get_flag(CF));
 
     write_data<uint16_t>(v);
     registers->set_flags(flags, CF);

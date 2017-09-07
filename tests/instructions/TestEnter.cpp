@@ -8,7 +8,7 @@ TEST_F(EmulateFixture, EnterNoNestNoAlloc)
     write_reg(SP, 0x0100);
     write_reg(BP, 0x0200);
 
-    set_instruction({ 0xc8, 0x00, 0x00, 0x00 });
+    set_instruction({0xc8, 0x00, 0x00, 0x00});
 
     emulate();
 
@@ -21,7 +21,7 @@ TEST_F(EmulateFixture, EnterNoNestAlloc10)
     write_reg(SP, 0x0100);
     write_reg(BP, 0x0200);
 
-    set_instruction({ 0xc8, 0x10, 0x00, 0x00 });
+    set_instruction({0xc8, 0x10, 0x00, 0x00});
 
     emulate();
 
@@ -35,10 +35,9 @@ TEST_F(EmulateFixture, EnterNest4)
     write_reg(BP, 0x0200);
 
     for (int i = 0; i < 3; ++i)
-        write_mem16(0x200 - (i + 1) * sizeof(uint16_t),
-                    i + 1, SS);
+        write_mem16(0x200 - (i + 1) * sizeof(uint16_t), i + 1, SS);
 
-    set_instruction({ 0xc8, 0x00, 0x00, 0x04 });
+    set_instruction({0xc8, 0x00, 0x00, 0x04});
 
     emulate();
 
@@ -62,10 +61,9 @@ TEST_F(EmulateFixture, EnterNestMask32)
     write_reg(BP, 0x0200);
 
     for (int i = 0; i < 128; ++i)
-        write_mem16(0x200 - (i + 1) * sizeof(uint16_t),
-                    0xa5a5, SS);
+        write_mem16(0x200 - (i + 1) * sizeof(uint16_t), 0xa5a5, SS);
 
-    set_instruction({ 0xc8, 0x00, 0x00, 0xff });
+    set_instruction({0xc8, 0x00, 0x00, 0xff});
 
     emulate();
 

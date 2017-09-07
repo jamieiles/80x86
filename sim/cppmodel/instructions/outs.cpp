@@ -1,8 +1,8 @@
 void EmulatorPimpl::outsb6e()
 {
     auto outs = [&]() {
-        auto v = mem->read<uint8_t>(get_phys_addr(registers->get(DS),
-                                                  registers->get(SI)));
+        auto v = mem->read<uint8_t>(
+            get_phys_addr(registers->get(DS), registers->get(SI)));
         write_io8(registers->get(DX), v);
 
         if (registers->get_flag(DF))
@@ -16,8 +16,8 @@ void EmulatorPimpl::outsb6e()
 void EmulatorPimpl::outsw6f()
 {
     auto outs = [&]() {
-        auto v = mem->read<uint16_t>(get_phys_addr(registers->get(DS),
-                                                   registers->get(SI)));
+        auto v = mem->read<uint16_t>(
+            get_phys_addr(registers->get(DS), registers->get(SI)));
         write_io16(registers->get(DX), v);
 
         if (registers->get_flag(DF))

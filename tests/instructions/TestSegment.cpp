@@ -18,7 +18,8 @@ struct MovOverrideTest {
 };
 
 class MovOverride : public EmulateFixture,
-    public ::testing::WithParamInterface<struct MovOverrideTest> {
+                    public ::testing::WithParamInterface<struct MovOverrideTest>
+{
 };
 TEST_P(MovOverride, MemWriteSegmentOverriden)
 {
@@ -32,7 +33,7 @@ TEST_P(MovOverride, MemWriteSegmentOverriden)
 
     write_reg(t.segment_register, 0x8000);
     // mov word [SEGMENT:0x0100], 0xaa55
-    set_instruction({ t.prefix_byte, 0xc7, 0x06, 0x00, 0x01, 0x55, 0xaa });
+    set_instruction({t.prefix_byte, 0xc7, 0x06, 0x00, 0x01, 0x55, 0xaa});
 
     emulate();
 
@@ -50,24 +51,23 @@ TEST_P(MovOverride, MemReadSegmentOverriden)
     write_reg(t.segment_register, 0x8000);
     write_mem16(0x100, 0xa5a5, t.segment_register);
     // mov word ax, [SEGMENT:0x0100]
-    set_instruction({ t.prefix_byte, 0xa1, 0x00, 0x01 });
+    set_instruction({t.prefix_byte, 0xa1, 0x00, 0x01});
 
     emulate();
 
     ASSERT_EQ(0xa5a5, read_reg(AX));
 }
-INSTANTIATE_TEST_CASE_P(SegmentOverride, MovOverride,
-    ::testing::Values(
-        MovOverrideTest{"ES", ES, 0x26},
-        MovOverrideTest{"CS", CS, 0x2e},
-        MovOverrideTest{"SS", SS, 0x36}
-    ));
+INSTANTIATE_TEST_CASE_P(SegmentOverride,
+                        MovOverride,
+                        ::testing::Values(MovOverrideTest{"ES", ES, 0x26},
+                                          MovOverrideTest{"CS", CS, 0x2e},
+                                          MovOverrideTest{"SS", SS, 0x36}));
 
 TEST_F(EmulateFixture, DSSegmentOverrideIsNop)
 {
     write_reg(DS, 0x8000);
     // mov word [ds:0x0100], 0xaa55
-    set_instruction({ 0x3e, 0xc7, 0x06, 0x00, 0x01, 0x55, 0xaa });
+    set_instruction({0x3e, 0xc7, 0x06, 0x00, 0x01, 0x55, 0xaa});
 
     emulate();
 
@@ -84,7 +84,7 @@ TEST_F(EmulateFixture, PushMemSegmentOverride)
     write_mem16(0x0100, 0xaa55, ES);
 
     // push word [es:bx]
-    set_instruction({ 0x26, 0xff, 0x37 });
+    set_instruction({0x26, 0xff, 0x37});
 
     emulate();
 
@@ -102,7 +102,7 @@ TEST_F(EmulateFixture, PopMemSegmentOverride)
     write_mem16(0x007e, 0xaa55, SS);
 
     // pop word [es:bx]
-    set_instruction({ 0x26, 0x8f, 0x07 });
+    set_instruction({0x26, 0x8f, 0x07});
 
     emulate();
 

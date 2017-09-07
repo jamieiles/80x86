@@ -5,7 +5,8 @@
 #include "RTLCPU.h"
 
 class RegisterFileTestFixture : public VerilogTestbench<VRegisterFile>,
-    public ::testing::Test {
+                                public ::testing::Test
+{
 public:
     void write8(uint8_t reg, uint8_t v);
     void write16(uint8_t reg, uint16_t v);
@@ -16,35 +17,31 @@ public:
 
 void RegisterFileTestFixture::write8(uint8_t reg, uint8_t v)
 {
-    after_n_cycles(0, [&]{
+    after_n_cycles(0, [&] {
         this->dut.wr_sel = reg;
         this->dut.wr_val = v;
         this->dut.wr_en = 1;
         this->dut.is_8_bit = 1;
-        after_n_cycles(1, [&]{
-            dut.wr_en = 0;
-        });
+        after_n_cycles(1, [&] { dut.wr_en = 0; });
     });
     cycle();
 }
 
 void RegisterFileTestFixture::write16(uint8_t reg, uint16_t v)
 {
-    after_n_cycles(0, [&]{
+    after_n_cycles(0, [&] {
         this->dut.wr_sel = reg;
         this->dut.wr_val = v;
         this->dut.wr_en = 1;
         this->dut.is_8_bit = 0;
-        after_n_cycles(1, [&]{
-            dut.wr_en = 0;
-        });
+        after_n_cycles(1, [&] { dut.wr_en = 0; });
     });
     cycle();
 }
 
 void RegisterFileTestFixture::trigger_read8(int port, uint8_t reg)
 {
-    after_n_cycles(0, [&]{
+    after_n_cycles(0, [&] {
         dut.rd_sel[port] = reg;
         dut.is_8_bit = 1;
     });
@@ -53,7 +50,7 @@ void RegisterFileTestFixture::trigger_read8(int port, uint8_t reg)
 
 void RegisterFileTestFixture::trigger_read16(int port, uint8_t reg)
 {
-    after_n_cycles(0, [&]{
+    after_n_cycles(0, [&] {
         dut.rd_sel[port] = reg;
         dut.is_8_bit = 0;
     });
@@ -122,11 +119,10 @@ TEST_F(RegisterFileTestFixture, multiple_reads)
 }
 
 class CoreFixture : public RTLCPU<verilator_debug_enabled>,
-    public ::testing::Test {
+                    public ::testing::Test
+{
 public:
-    CoreFixture():
-        RTLCPU(current_test_name())
-    {}
+    CoreFixture() : RTLCPU(current_test_name()) {}
 };
 TEST_F(CoreFixture, RegisterFileReset)
 {

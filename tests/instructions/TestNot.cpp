@@ -12,32 +12,28 @@ struct NotTest {
     T expected;
 };
 
-using Not8Params = std::pair<const std::vector<uint8_t>,
-      const struct NotTest<uint8_t>>;
-using Not16Params = std::pair<const std::vector<uint8_t>,
-      const struct NotTest<uint16_t>>;
+using Not8Params =
+    std::pair<const std::vector<uint8_t>, const struct NotTest<uint8_t>>;
+using Not16Params =
+    std::pair<const std::vector<uint8_t>, const struct NotTest<uint16_t>>;
 
 static const std::vector<struct NotTest<uint8_t>> not8_tests = {
-    { 0x00, 0xff },
-    { 0xff, 0x00 },
-    { 0xaa, 0x55 },
+    {0x00, 0xff}, {0xff, 0x00}, {0xaa, 0x55},
 };
 
 static const std::vector<struct NotTest<uint16_t>> not16_tests = {
-    { 0xaa55, 0x55aa },
-    { 0x0000, 0xffff },
-    { 0xffff, 0x0000 },
+    {0xaa55, 0x55aa}, {0x0000, 0xffff}, {0xffff, 0x0000},
 };
 
 TEST_F(EmulateFixture, Not8Reg)
 {
     // not al
-    for (auto &t: not8_tests) {
+    for (auto &t : not8_tests) {
         reset();
 
         SCOPED_TRACE("not " + std::to_string(static_cast<int>(t.val)));
         write_reg(AL, t.val);
-        set_instruction({ 0xf6, 0xd0 });
+        set_instruction({0xf6, 0xd0});
 
         emulate();
 
@@ -48,13 +44,13 @@ TEST_F(EmulateFixture, Not8Reg)
 TEST_F(EmulateFixture, Not8Mem)
 {
     // not byte [bx]
-    for (auto &t: not8_tests) {
+    for (auto &t : not8_tests) {
         reset();
 
         SCOPED_TRACE("not " + std::to_string(static_cast<int>(t.val)));
         write_reg(BX, 0x0100);
         write_mem8(0x0100, t.val);
-        set_instruction({ 0xf6, 0x17 });
+        set_instruction({0xf6, 0x17});
 
         emulate();
 
@@ -65,12 +61,12 @@ TEST_F(EmulateFixture, Not8Mem)
 TEST_F(EmulateFixture, Not16Reg)
 {
     // not ax
-    for (auto &t: not16_tests) {
+    for (auto &t : not16_tests) {
         reset();
 
         SCOPED_TRACE("not " + std::to_string(static_cast<int>(t.val)));
         write_reg(AX, t.val);
-        set_instruction({ 0xf7, 0xd0 });
+        set_instruction({0xf7, 0xd0});
 
         emulate();
 
@@ -81,13 +77,13 @@ TEST_F(EmulateFixture, Not16Reg)
 TEST_F(EmulateFixture, Not16Mem)
 {
     // not byte [bx]
-    for (auto &t: not16_tests) {
+    for (auto &t : not16_tests) {
         reset();
 
         SCOPED_TRACE("not " + std::to_string(static_cast<int>(t.val)));
         write_reg(BX, 0x0100);
         write_mem16(0x0100, t.val);
-        set_instruction({ 0xf7, 0x17 });
+        set_instruction({0xf7, 0x17});
 
         emulate();
 

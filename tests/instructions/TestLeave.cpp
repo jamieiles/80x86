@@ -9,7 +9,7 @@ TEST_F(EmulateFixture, Leave)
     write_reg(BP, 0x00fe);
     write_mem16(0x00fe, 0x01fe, SS);
 
-    set_instruction({ 0xc9 });
+    set_instruction({0xc9});
 
     emulate();
 

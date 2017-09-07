@@ -8,8 +8,8 @@ void EmulatorPimpl::enterc8()
 
     for (int i = 1; i < nest; ++i) {
         registers->set(BP, registers->get(BP) - 2);
-        push_word(mem->read<uint16_t>(get_phys_addr(registers->get(SS),
-                                                    registers->get(BP))));
+        push_word(mem->read<uint16_t>(
+            get_phys_addr(registers->get(SS), registers->get(BP))));
     }
 
     if (nest)

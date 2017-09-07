@@ -4,7 +4,7 @@
 
 TEST_F(EmulateFixture, Lahf)
 {
-    set_instruction({ 0x9f });
+    set_instruction({0x9f});
     write_flags(0xd7);
 
     emulate();
@@ -14,7 +14,7 @@ TEST_F(EmulateFixture, Lahf)
 
 TEST_F(EmulateFixture, Sahf)
 {
-    set_instruction({ 0x9e });
+    set_instruction({0x9e});
     uint16_t old_flags = CF;
     write_flags(old_flags);
     write_reg(AH, CF | PF | AF);
@@ -28,7 +28,7 @@ TEST_F(EmulateFixture, Pushf)
 {
     write_flags(0x00d7);
     write_reg(SP, 0x0100);
-    set_instruction({ 0x9c });
+    set_instruction({0x9c});
 
     emulate();
 
@@ -40,7 +40,7 @@ TEST_F(EmulateFixture, Popf)
 {
     write_reg(SP, 0x00fe);
     write_mem16(0x00fe, 0x00d7, SS);
-    set_instruction({ 0x9d });
+    set_instruction({0x9d});
 
     emulate();
 
@@ -50,7 +50,7 @@ TEST_F(EmulateFixture, Popf)
 
 TEST_F(EmulateFixture, Setalc0)
 {
-    set_instruction({ 0xd6 });
+    set_instruction({0xd6});
 
     emulate();
 
@@ -61,7 +61,7 @@ TEST_F(EmulateFixture, Setalc1)
 {
     write_flags(CF);
 
-    set_instruction({ 0xd6 });
+    set_instruction({0xd6});
 
     emulate();
 

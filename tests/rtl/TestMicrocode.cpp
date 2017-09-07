@@ -6,7 +6,8 @@
 #include "svdpi.h"
 
 class MicrocodeTestbench : public VerilogTestbench<VMicrocode>,
-    public ::testing::Test {
+                           public ::testing::Test
+{
 public:
     MicrocodeTestbench();
 
@@ -15,32 +16,26 @@ public:
         stream.insert(stream.end(), bytes.begin(), bytes.end());
     }
 
-    uint16_t current_address()
-    {
-        return this->dut.get_microcode_address();
-    }
+    uint16_t current_address() { return this->dut.get_microcode_address(); }
     bool underflowed;
+
 private:
     std::deque<uint8_t> stream;
 };
 
-MicrocodeTestbench::MicrocodeTestbench()
-    : underflowed(false), stream({})
+MicrocodeTestbench::MicrocodeTestbench() : underflowed(false), stream({})
 {
     dut.fifo_empty = stream.size() == 0;
     dut.stall = 0;
 
     svSetScope(svGetScopeFromName("TOP.Microcode"));
 
-    periodic(ClockSetup, [&]{
+    periodic(ClockSetup, [&] {
         this->dut.fifo_empty = this->stream.size() == 0;
-        this->dut.fifo_rd_data = this->stream.size() > 0 ?
-            this->stream[0] : 0;
+        this->dut.fifo_rd_data = this->stream.size() > 0 ? this->stream[0] : 0;
         if (!this->dut.reset && this->dut.fifo_rd_en &&
             this->stream.size() > 0) {
-            after_n_cycles(0, [&]{
-                this->stream.pop_front();
-            });
+            after_n_cycles(0, [&] { this->stream.pop_front(); });
         }
         if (!this->dut.reset && this->dut.fifo_rd_en &&
             this->stream.size() == 0)
@@ -127,7 +122,7 @@ TEST_F(MicrocodeTestbench, MovUnlocked)
 
 TEST_F(MicrocodeTestbench, LockPrefixMovIsLocked)
 {
-    set_instruction({ 0xf0, 0x88 });
+    set_instruction({0xf0, 0x88});
 
     while (current_address() != 0x88)
         cycle();

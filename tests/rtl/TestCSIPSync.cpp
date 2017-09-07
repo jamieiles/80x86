@@ -4,9 +4,11 @@
 #include "VerilogTestbench.h"
 
 class CSIPSyncTestFixture : public VerilogTestbench<VCSIPSync>,
-    public ::testing::Test {
+                            public ::testing::Test
+{
 public:
     CSIPSyncTestFixture();
+
 protected:
     void update_ip(uint16_t newip);
     void update_cs();
@@ -15,13 +17,11 @@ protected:
     uint16_t updated_ip;
 };
 
-CSIPSyncTestFixture::CSIPSyncTestFixture()
-    : updated(false),
-    updated_ip(true)
+CSIPSyncTestFixture::CSIPSyncTestFixture() : updated(false), updated_ip(true)
 {
     reset();
 
-    periodic(ClockCapture, [&]{
+    periodic(ClockCapture, [&] {
         if (this->dut.update_out) {
             this->updated = true;
             this->updated_ip = this->dut.ip_out;
@@ -31,10 +31,10 @@ CSIPSyncTestFixture::CSIPSyncTestFixture()
 
 void CSIPSyncTestFixture::update_ip(uint16_t newip)
 {
-    after_n_cycles(0, [&]{
+    after_n_cycles(0, [&] {
         this->dut.new_ip = newip;
         this->dut.ip_update = 1;
-        after_n_cycles(1, [&]{
+        after_n_cycles(1, [&] {
             this->dut.ip_update = 0;
             this->dut.new_ip = 0;
         });
@@ -44,22 +44,18 @@ void CSIPSyncTestFixture::update_ip(uint16_t newip)
 
 void CSIPSyncTestFixture::update_cs()
 {
-    after_n_cycles(0, [&]{
+    after_n_cycles(0, [&] {
         this->dut.cs_update = 1;
-        after_n_cycles(1, [&]{
-            this->dut.cs_update = 0;
-        });
+        after_n_cycles(1, [&] { this->dut.cs_update = 0; });
     });
     cycle(10);
 }
 
 void CSIPSyncTestFixture::propagate()
 {
-    after_n_cycles(0, [&]{
+    after_n_cycles(0, [&] {
         this->dut.propagate = 1;
-        after_n_cycles(1, [&]{
-            this->dut.propagate = 0;
-        });
+        after_n_cycles(1, [&] { this->dut.propagate = 0; });
     });
     cycle();
 }
@@ -95,11 +91,11 @@ TEST_F(CSIPSyncTestFixture, CSPropagateDelayed)
 
 TEST_F(CSIPSyncTestFixture, SimultaneousUpdatePropagateDoesntLatch)
 {
-    after_n_cycles(0, [&]{
+    after_n_cycles(0, [&] {
         this->dut.new_ip = 0xf00f;
         this->dut.propagate = 1;
         this->dut.ip_update = 1;
-        after_n_cycles(1, [&]{
+        after_n_cycles(1, [&] {
             this->dut.propagate = 0;
             this->dut.ip_in = 0x1001;
             this->dut.new_ip = 0x1001;

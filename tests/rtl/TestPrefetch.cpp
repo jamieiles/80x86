@@ -6,18 +6,19 @@
 #include "VerilogTestbench.h"
 
 class PrefetchTestFixture : public VerilogTestbench<VPrefetch>,
-    public ::testing::Test {
+                            public ::testing::Test
+{
 public:
     PrefetchTestFixture();
     std::vector<uint8_t> fifo_bytes;
     std::map<uint32_t, uint16_t> memory;
     int mem_latency;
+
 private:
     bool reading;
 };
 
-PrefetchTestFixture::PrefetchTestFixture()
-    : mem_latency(0), reading(false)
+PrefetchTestFixture::PrefetchTestFixture() : mem_latency(0), reading(false)
 {
     reset();
 
@@ -29,19 +30,23 @@ PrefetchTestFixture::PrefetchTestFixture()
     dut.mem_ack = 0;
     dut.mem_data = 0;
 
-    periodic(ClockCapture, [&]{
+    periodic(ClockCapture, [&] {
         if (!this->dut.reset && this->dut.fifo_wr_en)
             fifo_bytes.push_back(this->dut.fifo_wr_data & 0xff);
     });
-    periodic(ClockSetup, [&]{
+    periodic(ClockSetup, [&] {
         if (!this->dut.reset && this->dut.mem_access && !reading) {
             reading = true;
             if (memory.find(this->dut.mem_address << 1) == memory.end())
-                FAIL() << "no memory at 0x" << std::hex << (this->dut.mem_address << 1);
-            after_n_cycles(mem_latency, [&]{
+                FAIL() << "no memory at 0x" << std::hex
+                       << (this->dut.mem_address << 1);
+            after_n_cycles(mem_latency, [&] {
                 this->dut.mem_data = memory[this->dut.mem_address << 1];
                 this->dut.mem_ack = 1;
-                after_n_cycles(1, [&]{ this->dut.mem_ack = 0; reading = false; });
+                after_n_cycles(1, [&] {
+                    this->dut.mem_ack = 0;
+                    reading = false;
+                });
             });
         }
     });

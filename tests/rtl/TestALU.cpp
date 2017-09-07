@@ -4,7 +4,8 @@
 #include "VerilogTestbench.h"
 #include "MicrocodeTypes.h"
 
-class ALUTestFixture : public ::testing::Test {
+class ALUTestFixture : public ::testing::Test
+{
 protected:
     VALU dut;
 };

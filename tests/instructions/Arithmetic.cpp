@@ -4,7 +4,7 @@
 TEST_P(ArithmeticRegReg8Test, ResultAndFlags)
 {
     auto params = GetParam();
-    for (auto &t: params.second) {
+    for (auto &t : params.second) {
         reset();
         SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
                      std::to_string(static_cast<int>(t.v2)) + " + " +
@@ -28,7 +28,7 @@ TEST_P(ArithmeticRegReg8Test, ResultAndFlags)
 TEST_P(ArithmeticMemReg8Test, ResultAndFlags)
 {
     auto params = GetParam();
-    for (auto &t: params.second) {
+    for (auto &t : params.second) {
         reset();
         SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
                      std::to_string(static_cast<int>(t.v2)) + " + " +
@@ -54,7 +54,7 @@ TEST_P(ArithmeticMemReg8Test, ResultAndFlags)
 TEST_P(ArithmeticRegReg8TestReversed, ResultAndFlags)
 {
     auto params = GetParam();
-    for (auto &t: params.second) {
+    for (auto &t : params.second) {
         reset();
         SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
                      std::to_string(static_cast<int>(t.v2)) + " + " +
@@ -78,7 +78,7 @@ TEST_P(ArithmeticRegReg8TestReversed, ResultAndFlags)
 TEST_P(ArithmeticMemReg8TestReversed, ResultAndFlags)
 {
     auto params = GetParam();
-    for (auto &t: params.second) {
+    for (auto &t : params.second) {
         reset();
         SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
                      std::to_string(static_cast<int>(t.v2)) + " + " +
@@ -104,7 +104,7 @@ TEST_P(ArithmeticMemReg8TestReversed, ResultAndFlags)
 TEST_P(ArithmeticRegReg8TestReversedNoResult, ResultAndFlags)
 {
     auto params = GetParam();
-    for (auto &t: params.second) {
+    for (auto &t : params.second) {
         reset();
         SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
                      std::to_string(static_cast<int>(t.v2)) + " + " +
@@ -127,7 +127,7 @@ TEST_P(ArithmeticRegReg8TestReversedNoResult, ResultAndFlags)
 TEST_P(ArithmeticMemReg8TestReversedNoResult, ResultAndFlags)
 {
     auto params = GetParam();
-    for (auto &t: params.second) {
+    for (auto &t : params.second) {
         reset();
         SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
                      std::to_string(static_cast<int>(t.v2)) + " + " +
@@ -152,7 +152,7 @@ TEST_P(ArithmeticMemReg8TestReversedNoResult, ResultAndFlags)
 TEST_P(ArithmeticRegReg16Test, ResultAndFlags)
 {
     auto params = GetParam();
-    for (auto &t: params.second) {
+    for (auto &t : params.second) {
         reset();
         SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
                      std::to_string(static_cast<int>(t.v2)) + " + " +
@@ -176,7 +176,7 @@ TEST_P(ArithmeticRegReg16Test, ResultAndFlags)
 TEST_P(ArithmeticRegMem16Test, ResultAndFlags)
 {
     auto params = GetParam();
-    for (auto &t: params.second) {
+    for (auto &t : params.second) {
         reset();
         SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
                      std::to_string(static_cast<int>(t.v2)) + " + " +
@@ -202,7 +202,7 @@ TEST_P(ArithmeticRegMem16Test, ResultAndFlags)
 TEST_P(ArithmeticRegReg16TestReversed, ResultAndFlags)
 {
     auto params = GetParam();
-    for (auto &t: params.second) {
+    for (auto &t : params.second) {
         reset();
         SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
                      std::to_string(static_cast<int>(t.v2)) + " + " +
@@ -226,7 +226,7 @@ TEST_P(ArithmeticRegReg16TestReversed, ResultAndFlags)
 TEST_P(ArithmeticMemReg16TestReversed, ResultAndFlags)
 {
     auto params = GetParam();
-    for (auto &t: params.second) {
+    for (auto &t : params.second) {
         reset();
         SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
                      std::to_string(static_cast<int>(t.v2)) + " + " +
@@ -252,7 +252,7 @@ TEST_P(ArithmeticMemReg16TestReversed, ResultAndFlags)
 TEST_P(ArithmeticRegReg16TestReversedNoResult, ResultAndFlags)
 {
     auto params = GetParam();
-    for (auto &t: params.second) {
+    for (auto &t : params.second) {
         reset();
         SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
                      std::to_string(static_cast<int>(t.v2)) + " + " +
@@ -275,7 +275,7 @@ TEST_P(ArithmeticRegReg16TestReversedNoResult, ResultAndFlags)
 TEST_P(ArithmeticMemReg16TestReversedNoResult, ResultAndFlags)
 {
     auto params = GetParam();
-    for (auto &t: params.second) {
+    for (auto &t : params.second) {
         reset();
         SCOPED_TRACE(std::to_string(static_cast<int>(t.v1)) + " + " +
                      std::to_string(static_cast<int>(t.v2)) + " + " +

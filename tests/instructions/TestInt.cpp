@@ -17,11 +17,10 @@ TEST_F(EmulateFixture, Int3)
     write_reg(IP, 0x0001);
     write_flags(CF | IF);
 
-    set_instruction({ 0xcc });
+    set_instruction({0xcc});
     emulate();
 
-    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                        FLAGS_STUCK_BITS | CF);
+    ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), FLAGS_STUCK_BITS | CF);
     ASSERT_EQ(read_reg(CS), 0x8000);
     ASSERT_EQ(read_reg(IP), 0x0100);
     ASSERT_EQ(read_reg(SP), 0x0100 - 6);
@@ -43,11 +42,10 @@ TEST_F(EmulateFixture, IntN)
     write_reg(IP, 0x0001);
     write_flags(CF | IF);
 
-    set_instruction({ 0xcd, 0x03 });
+    set_instruction({0xcd, 0x03});
     emulate();
 
-    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                        FLAGS_STUCK_BITS | CF);
+    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), FLAGS_STUCK_BITS | CF);
     EXPECT_EQ(read_reg(CS), 0x8000);
     EXPECT_EQ(read_reg(IP), 0x0100);
     EXPECT_EQ(read_reg(SP), 0x0100 - 6);
@@ -64,9 +62,9 @@ TEST_F(EmulateFixture, IntoNotTaken)
     write_reg(SP, 0x100);
     write_reg(CS, 0x7c00);
     write_reg(IP, 0x0001);
-    write_flags(CF | IF );
+    write_flags(CF | IF);
 
-    set_instruction({ 0xce });
+    set_instruction({0xce});
     emulate();
 
     ASSERT_EQ(read_reg(IP), 0x0002);
@@ -82,9 +80,9 @@ TEST_F(EmulateFixture, IntoTaken)
     write_reg(SP, 0x100);
     write_reg(CS, 0x7c00);
     write_reg(IP, 0x0001);
-    write_flags(CF | IF  | OF);
+    write_flags(CF | IF | OF);
 
-    set_instruction({ 0xce });
+    set_instruction({0xce});
     emulate();
 
     ASSERT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
@@ -93,7 +91,7 @@ TEST_F(EmulateFixture, IntoTaken)
     ASSERT_EQ(read_reg(IP), 0x0100);
     ASSERT_EQ(read_reg(SP), 0x0100 - 6);
 
-    ASSERT_EQ(read_mem16(0x100 - 2, SS), FLAGS_STUCK_BITS | CF | IF  | OF);
+    ASSERT_EQ(read_mem16(0x100 - 2, SS), FLAGS_STUCK_BITS | CF | IF | OF);
     ASSERT_EQ(read_mem16(0x100 - 4, SS), 0x7c00);
     // Return to the following instruction
     ASSERT_EQ(read_mem16(0x100 - 6, SS), 0x0002);
@@ -114,8 +112,7 @@ TEST_F(EmulateFixture, NMITaken)
     raise_nmi();
     emulate();
 
-    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                        FLAGS_STUCK_BITS);
+    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), FLAGS_STUCK_BITS);
     EXPECT_EQ(read_reg(CS), 0x8000);
     EXPECT_EQ(read_reg(IP), 0x0100);
     EXPECT_EQ(read_reg(SP), 0x0100 - 6);
@@ -137,12 +134,11 @@ TEST_F(EmulateFixture, IFClearExtIntNotTaken)
 
     write_flags(0);
 
-    set_instruction({ 0x90 });
+    set_instruction({0x90});
     raise_irq(1);
     emulate();
 
-    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                        FLAGS_STUCK_BITS);
+    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), FLAGS_STUCK_BITS);
     EXPECT_EQ(read_reg(CS), 0x7c00);
     EXPECT_EQ(read_reg(IP), 0x0002);
 }
@@ -162,8 +158,7 @@ TEST_F(EmulateFixture, IFSetExtIntTaken)
     raise_irq(2);
     emulate();
 
-    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                        FLAGS_STUCK_BITS);
+    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), FLAGS_STUCK_BITS);
     EXPECT_EQ(read_reg(CS), 0x8000);
     EXPECT_EQ(read_reg(IP), 0x0100);
     EXPECT_EQ(read_reg(SP), 0x0100 - 6);
@@ -189,8 +184,7 @@ TEST_F(EmulateFixture, IFClearNMITaken)
     raise_nmi();
     emulate();
 
-    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                        FLAGS_STUCK_BITS);
+    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), FLAGS_STUCK_BITS);
     EXPECT_EQ(read_reg(CS), 0x8000);
     EXPECT_EQ(read_reg(IP), 0x0100);
     EXPECT_EQ(read_reg(SP), 0x0100 - 6);
@@ -212,15 +206,14 @@ TEST_F(EmulateFixture, STIInhibitsInterrupts)
 
     write_flags(IF);
 
-    set_instruction({ 0xfb });
+    set_instruction({0xfb});
     emulate();
 
-    set_instruction({ 0x90 });
+    set_instruction({0x90});
     raise_nmi();
     emulate();
 
-    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                        FLAGS_STUCK_BITS);
+    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), FLAGS_STUCK_BITS);
     EXPECT_EQ(read_reg(CS), 0x8000);
     EXPECT_EQ(read_reg(IP), 0x0100);
     EXPECT_EQ(read_reg(SP), 0x0100 - 6);
@@ -243,15 +236,14 @@ TEST_F(EmulateFixture, MovSRInhibitsInterrupts)
     write_flags(IF);
 
     // mov es, ax
-    set_instruction({ 0x8e, 0xc0 });
+    set_instruction({0x8e, 0xc0});
     emulate();
 
-    set_instruction({ 0x90 });
+    set_instruction({0x90});
     raise_nmi();
     emulate();
 
-    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                        FLAGS_STUCK_BITS);
+    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), FLAGS_STUCK_BITS);
     EXPECT_EQ(read_reg(CS), 0x8000);
     EXPECT_EQ(read_reg(IP), 0x0100);
     EXPECT_EQ(read_reg(SP), 0x0100 - 6);
@@ -274,15 +266,14 @@ TEST_F(EmulateFixture, PopSRInhibitsInterrupts)
     write_flags(IF);
 
     // pop es
-    set_instruction({ 0x1f });
+    set_instruction({0x1f});
     emulate();
 
-    set_instruction({ 0x90 });
+    set_instruction({0x90});
     raise_nmi();
     emulate();
 
-    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                        FLAGS_STUCK_BITS);
+    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), FLAGS_STUCK_BITS);
     EXPECT_EQ(read_reg(CS), 0x8000);
     EXPECT_EQ(read_reg(IP), 0x0100);
     EXPECT_EQ(read_reg(SP), 0x0100 - 6);
@@ -304,11 +295,10 @@ TEST_F(EmulateFixture, SingleStepTaken)
 
     write_flags(TF);
 
-    set_instruction({ 0x90 });
+    set_instruction({0x90});
     emulate();
 
-    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                        FLAGS_STUCK_BITS);
+    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), FLAGS_STUCK_BITS);
     EXPECT_EQ(read_reg(CS), 0x8000);
     EXPECT_EQ(read_reg(IP), 0x0100);
     EXPECT_EQ(read_reg(SP), 0x0100 - 6);

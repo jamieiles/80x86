@@ -8,7 +8,8 @@
 #include "../common/TestModRM.cpp"
 
 class RTLModRMDecoderTestbench : public VerilogTestbench<VModRMTestbench>,
-    public ModRMDecoderTestBench {
+                                 public ModRMDecoderTestBench
+{
 public:
     RTLModRMDecoderTestbench();
 
@@ -20,18 +21,13 @@ public:
         this->cycle();
     }
 
-    void set_width(OperandWidth width)
-    {
-        is_8bit = width == OP_WIDTH_8;
-    }
+    void set_width(OperandWidth width) { is_8bit = width == OP_WIDTH_8; }
 
     void decode()
     {
-        after_n_cycles(0, [&]{
+        after_n_cycles(0, [&] {
             this->dut.start = 1;
-            after_n_cycles(1, [&]{
-                this->dut.start = 0;
-            });
+            after_n_cycles(1, [&] { this->dut.start = 0; });
         });
 
         for (auto i = 0; i < 1000; ++i) {
@@ -43,32 +39,24 @@ public:
         FAIL() << "failed to complete decode" << std::endl;
     }
 
-    OperandType get_rm_type() const
-    {
-        return dut.rm_is_reg ? OP_REG : OP_MEM;
-    }
+    OperandType get_rm_type() const { return dut.rm_is_reg ? OP_REG : OP_MEM; }
 
-    uint16_t get_effective_address() const
-    {
-        return dut.effective_address;
-    }
+    uint16_t get_effective_address() const { return dut.effective_address; }
 
     GPR get_register() const
     {
-        return is_8bit ? static_cast<GPR>(dut.regnum + static_cast<int>(AL)) :
-            static_cast<GPR>(dut.regnum);
+        return is_8bit ? static_cast<GPR>(dut.regnum + static_cast<int>(AL))
+                       : static_cast<GPR>(dut.regnum);
     }
 
     GPR get_rm_register() const
     {
-        return is_8bit ? static_cast<GPR>(dut.rm_regnum + static_cast<int>(AL)) :
-            static_cast<GPR>(dut.rm_regnum);
+        return is_8bit ? static_cast<GPR>(dut.rm_regnum + static_cast<int>(AL))
+                       : static_cast<GPR>(dut.rm_regnum);
     }
 
-    bool is_complete() const
-    {
-        return complete;
-    }
+    bool is_complete() const { return complete; }
+
 private:
     std::deque<uint8_t> stream;
     bool is_8bit;
@@ -76,15 +64,14 @@ private:
 };
 
 RTLModRMDecoderTestbench::RTLModRMDecoderTestbench()
-    : is_8bit(false),
-    complete(false)
+    : is_8bit(false), complete(false)
 {
     reset();
 
     dut.start = 0;
     dut.fifo_rd_en = 0;
 
-    periodic(ClockSetup, [&]{
+    periodic(ClockSetup, [&] {
         this->dut.fifo_empty = this->stream.size() == 0;
 
         if (!this->dut.reset && this->dut.fifo_rd_en &&
@@ -93,22 +80,22 @@ RTLModRMDecoderTestbench::RTLModRMDecoderTestbench()
 
     });
 
-    periodic(ClockCapture, [&]{
+    periodic(ClockCapture, [&] {
         this->complete = this->dut.complete;
 
         if (!this->dut.reset && this->dut.fifo_rd_en &&
             this->stream.size() > 0) {
             this->stream.pop_front();
         }
-        after_n_cycles(1, [&]{
-            this->dut.fifo_rd_data = this->stream[0];
-        });
+        after_n_cycles(1, [&] { this->dut.fifo_rd_data = this->stream[0]; });
     });
 
-    periodic(ClockSetup, [&]{
-        after_n_cycles(0, [&]{
-            this->dut.regs[0] = regs.get(static_cast<GPR>(this->dut.reg_sel[0]));
-            this->dut.regs[1] = regs.get(static_cast<GPR>(this->dut.reg_sel[1]));
+    periodic(ClockSetup, [&] {
+        after_n_cycles(0, [&] {
+            this->dut.regs[0] =
+                regs.get(static_cast<GPR>(this->dut.reg_sel[0]));
+            this->dut.regs[1] =
+                regs.get(static_cast<GPR>(this->dut.reg_sel[1]));
         });
     });
 }
@@ -116,13 +103,13 @@ RTLModRMDecoderTestbench::RTLModRMDecoderTestbench()
 typedef ::testing::Types<RTLModRMDecoderTestbench> ModRMImplTypes;
 INSTANTIATE_TYPED_TEST_CASE_P(RTL, ModRMTestFixture, ModRMImplTypes);
 
-class ModRMFixture : public RTLModRMDecoderTestbench,
-    public ::testing::Test {
+class ModRMFixture : public RTLModRMDecoderTestbench, public ::testing::Test
+{
 };
 
 TEST_F(ModRMFixture, BPBaseInfersSS)
 {
-    set_instruction({ 0x46, 0x00 });
+    set_instruction({0x46, 0x00});
 
     decode();
 
@@ -131,7 +118,7 @@ TEST_F(ModRMFixture, BPBaseInfersSS)
 
 TEST_F(ModRMFixture, BXBaseDoesntInferSS)
 {
-    set_instruction({ 0x07 });
+    set_instruction({0x07});
 
     decode();
 
@@ -142,7 +129,7 @@ TEST_F(ModRMFixture, EAHeld)
 {
     regs.set(BX, 0x1234);
 
-    set_instruction({ 0x07 });
+    set_instruction({0x07});
 
     decode();
 
@@ -158,13 +145,12 @@ TEST_F(ModRMFixture, BPAsBase)
         for (uint8_t rm = 0; rm < 8; ++rm) {
             reset();
 
-            set_instruction({ static_cast<uint8_t>((mod << 6) | rm),
-                              0xff, 0xff  });
+            set_instruction(
+                {static_cast<uint8_t>((mod << 6) | rm), 0xff, 0xff});
             decode();
 
             if (mod == 0)
-                EXPECT_TRUE(this->dut.bp_as_base ==
-                            (rm == 2 || rm == 3));
+                EXPECT_TRUE(this->dut.bp_as_base == (rm == 2 || rm == 3));
             else if (mod == 1 || mod == 2)
                 EXPECT_TRUE(this->dut.bp_as_base ==
                             (rm == 2 || rm == 3 || rm == 6));

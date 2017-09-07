@@ -18,35 +18,32 @@ struct NegTest {
     bool carry_set;
 };
 
-using Neg8Params = std::pair<const std::vector<uint8_t>,
-      const struct NegTest<uint8_t>>;
-using Neg16Params = std::pair<const std::vector<uint8_t>,
-      const struct NegTest<uint16_t>>;
+using Neg8Params =
+    std::pair<const std::vector<uint8_t>, const struct NegTest<uint8_t>>;
+using Neg16Params =
+    std::pair<const std::vector<uint8_t>, const struct NegTest<uint16_t>>;
 
 static const std::vector<struct NegTest<uint8_t>> neg8_tests = {
-    { 0, 0, ZF | PF, false },
-    { 0, 0, ZF | PF, true },
-    { 64, 0xc0, SF | CF | PF, false },
-    { 0x80, 0x80, CF | SF | OF, false },
+    {0, 0, ZF | PF, false}, {0, 0, ZF | PF, true},
+        {64, 0xc0, SF | CF | PF, false}, {0x80, 0x80, CF | SF | OF, false},
 };
 
 static const std::vector<struct NegTest<uint16_t>> neg16_tests = {
-    { 0, 0, ZF | PF, false },
-    { 0, 0, ZF | PF, true },
-    { 256, 0xff00, SF | CF | PF, false },
+    {0, 0, ZF | PF, false}, {0, 0, ZF | PF, true},
+        {256, 0xff00, SF | CF | PF, false},
 };
 
 TEST_F(EmulateFixture, Neg8Reg)
 {
     // neg al
-    for (auto &t: neg8_tests) {
+    for (auto &t : neg8_tests) {
         reset();
 
         SCOPED_TRACE("neg " + std::to_string(static_cast<int>(t.val)) +
                      " cf=" + std::to_string(static_cast<int>(!!t.carry_set)));
         write_reg(AL, t.val);
         write_flags(t.carry_set ? CF : 0);
-        set_instruction({ 0xf6, 0xd8 });
+        set_instruction({0xf6, 0xd8});
 
         emulate();
 
@@ -59,7 +56,7 @@ TEST_F(EmulateFixture, Neg8Reg)
 TEST_F(EmulateFixture, Neg8Mem)
 {
     // neg byte [bx]
-    for (auto &t: neg8_tests) {
+    for (auto &t : neg8_tests) {
         reset();
 
         SCOPED_TRACE("neg " + std::to_string(static_cast<int>(t.val)) +
@@ -67,7 +64,7 @@ TEST_F(EmulateFixture, Neg8Mem)
         write_reg(BX, 0x0100);
         write_mem8(0x0100, t.val);
         write_flags(t.carry_set ? CF : 0);
-        set_instruction({ 0xf6, 0x1f });
+        set_instruction({0xf6, 0x1f});
 
         emulate();
 
@@ -80,14 +77,14 @@ TEST_F(EmulateFixture, Neg8Mem)
 TEST_F(EmulateFixture, Neg16Reg)
 {
     // neg ax
-    for (auto &t: neg16_tests) {
+    for (auto &t : neg16_tests) {
         reset();
 
         SCOPED_TRACE("neg " + std::to_string(static_cast<int>(t.val)) +
                      " cf=" + std::to_string(static_cast<int>(!!t.carry_set)));
         write_reg(AX, t.val);
         write_flags(t.carry_set ? CF : 0);
-        set_instruction({ 0xf7, 0xd8 });
+        set_instruction({0xf7, 0xd8});
 
         emulate();
 
@@ -100,7 +97,7 @@ TEST_F(EmulateFixture, Neg16Reg)
 TEST_F(EmulateFixture, Neg16Mem)
 {
     // neg byte [bx]
-    for (auto &t: neg16_tests) {
+    for (auto &t : neg16_tests) {
         reset();
 
         SCOPED_TRACE("neg " + std::to_string(static_cast<int>(t.val)) +
@@ -108,7 +105,7 @@ TEST_F(EmulateFixture, Neg16Mem)
         write_reg(BX, 0x0100);
         write_mem16(0x0100, t.val);
         write_flags(t.carry_set ? CF : 0);
-        set_instruction({ 0xf7, 0x1f });
+        set_instruction({0xf7, 0x1f});
 
         emulate();
 

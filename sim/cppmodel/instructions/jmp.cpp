@@ -129,7 +129,8 @@ void EmulatorPimpl::jnle7f()
 {
     int8_t displacement = static_cast<int8_t>(fetch_byte());
 
-    if (((registers->get_flag(SF) ^ registers->get_flag(OF)) | registers->get_flag(ZF)) == 0) {
+    if (((registers->get_flag(SF) ^ registers->get_flag(OF)) |
+         registers->get_flag(ZF)) == 0) {
         registers->set(IP, registers->get(IP) + displacement + instr_length);
         jump_taken = true;
     }

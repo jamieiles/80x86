@@ -22,8 +22,7 @@ union reg_converter {
 
 using JTAGError = std::runtime_error;
 
-JTAGCPU::JTAGCPU(const std::string &test_name)
-    : test_name(test_name)
+JTAGCPU::JTAGCPU(const std::string &test_name) : test_name(test_name)
 {
     if (jtag_open_virtual_device(0x00))
         throw JTAGError("Failed to open Virtual JTAG");
@@ -238,7 +237,8 @@ void JTAGCPU::write_mem16(uint16_t segment, uint16_t addr, uint16_t val)
     write_reg(DS, prev_ds);
 }
 
-void JTAGCPU::write_vector8(uint16_t segment, uint16_t addr,
+void JTAGCPU::write_vector8(uint16_t segment,
+                            uint16_t addr,
                             const std::vector<uint8_t> &v)
 {
     auto prev_ds = read_reg(DS);
@@ -246,7 +246,7 @@ void JTAGCPU::write_vector8(uint16_t segment, uint16_t addr,
     write_reg(DS, segment);
 
     write_mar(addr);
-    for (auto &b: v) {
+    for (auto &b : v) {
         write_mdr(b);
         debug_run_proc(0x23); // Write mem 8
     }
@@ -254,7 +254,8 @@ void JTAGCPU::write_vector8(uint16_t segment, uint16_t addr,
     write_reg(DS, prev_ds);
 }
 
-void JTAGCPU::write_vector16(uint16_t segment, uint16_t addr,
+void JTAGCPU::write_vector16(uint16_t segment,
+                             uint16_t addr,
                              const std::vector<uint16_t> &v)
 {
     auto prev_ds = read_reg(DS);
@@ -262,7 +263,7 @@ void JTAGCPU::write_vector16(uint16_t segment, uint16_t addr,
     write_reg(DS, segment);
 
     write_mar(addr);
-    for (auto &b: v) {
+    for (auto &b : v) {
         write_mdr(b);
         debug_run_proc(0x24); // Write mem 16
     }
@@ -317,7 +318,7 @@ uint16_t JTAGCPU::read_mem16(uint16_t segment, uint16_t addr)
 uint32_t JTAGCPU::read_mem32(uint16_t segment, uint16_t addr)
 {
     return read_mem16(segment, addr) |
-        (static_cast<uint32_t>(read_mem16(segment, addr + 2)) << 16);
+           (static_cast<uint32_t>(read_mem16(segment, addr + 2)) << 16);
 }
 
 void JTAGCPU::write_io8(uint32_t addr, uint8_t val)

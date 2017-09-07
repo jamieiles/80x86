@@ -88,8 +88,7 @@ void EmulatorPimpl::movb8_bf()
 void EmulatorPimpl::mova0()
 {
     auto displacement = fetch_16bit();
-    auto addr = get_phys_addr(registers->get(get_segment(false)),
-                              displacement);
+    auto addr = get_phys_addr(registers->get(get_segment(false)), displacement);
     auto val = mem->read<uint8_t>(addr);
     registers->set(AL, val);
 }
@@ -98,8 +97,7 @@ void EmulatorPimpl::mova0()
 void EmulatorPimpl::mova1()
 {
     auto displacement = fetch_16bit();
-    auto addr = get_phys_addr(registers->get(get_segment(false)),
-                              displacement);
+    auto addr = get_phys_addr(registers->get(get_segment(false)), displacement);
     auto val = mem->read<uint16_t>(addr);
     registers->set(AX, val);
 }

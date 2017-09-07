@@ -6,7 +6,7 @@
 
 TEST_F(EmulateFixture, TrapOnInt3)
 {
-    set_instruction({ 0x90 });
+    set_instruction({0x90});
     write_mem16(VEC_INT + 2, 0x8000, CS);
     write_mem16(VEC_INT + 0, 0x0100, CS);
     emulate();
@@ -15,7 +15,7 @@ TEST_F(EmulateFixture, TrapOnInt3)
 
     reset();
 
-    set_instruction({ 0xcc });
+    set_instruction({0xcc});
     emulate();
 
     ASSERT_TRUE(cpu->has_trapped());

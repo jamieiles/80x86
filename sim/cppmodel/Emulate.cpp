@@ -13,7 +13,8 @@
 template <typename Out, typename In>
 static inline Out sign_extend(In v)
 {
-    static_assert(sizeof(Out) > sizeof(In), "May only sign extend to larger types");
+    static_assert(sizeof(Out) > sizeof(In),
+                  "May only sign extend to larger types");
 
     size_t bit_shift = (sizeof(Out) - sizeof(In)) * 8;
     Out o = static_cast<Out>(v);
@@ -26,40 +27,35 @@ static inline Out sign_extend(In v)
 
 enum RepMode {
     REPNE, // Prefix 0xf2
-    REPE, // Prefix 0xf3
+    REPE,  // Prefix 0xf3
 };
 
-class EmulatorPimpl {
+class EmulatorPimpl
+{
 public:
     EmulatorPimpl(RegisterFile *registers);
 
     size_t step();
     size_t step_with_io(std::function<void(unsigned long)> io_callback,
-                unsigned long cur_cycle_count);
+                        unsigned long cur_cycle_count);
 
-    void set_memory(Memory *mem)
-    {
-        this->mem = mem;
-    }
+    void set_memory(Memory *mem) { this->mem = mem; }
 
-    void set_io(std::map<uint16_t, IOPorts *> *io)
-    {
-        this->io = io;
-    }
+    void set_io(std::map<uint16_t, IOPorts *> *io) { this->io = io; }
 
     bool has_trapped() const
     {
         auto int_cs = mem->read<uint16_t>(VEC_INT + 2);
         auto int_ip = mem->read<uint16_t>(VEC_INT + 0);
 
-        return registers->get(CS) == int_cs &&
-            registers->get(IP) == int_ip;
+        return registers->get(CS) == int_cs && registers->get(IP) == int_ip;
     }
 
     void reset();
     void raise_nmi();
     void raise_irq(int irq_num);
     void clear_irq(int irq_num);
+
 private:
     size_t emulate_insn();
     void mov88();
@@ -309,11 +305,13 @@ private:
     template <typename T>
     std::pair<uint16_t, T> do_mul(int32_t v1, int32_t v2);
     template <typename T>
-    std::pair<uint16_t, T> do_add(uint16_t v1, uint16_t v2,
-                                  uint16_t carry_in=0);
+    std::pair<uint16_t, T> do_add(uint16_t v1,
+                                  uint16_t v2,
+                                  uint16_t carry_in = 0);
     template <typename T>
-    std::pair<uint16_t, T> do_sub(uint16_t v1, uint16_t v2,
-                                  uint16_t carry_in=0);
+    std::pair<uint16_t, T> do_sub(uint16_t v1,
+                                  uint16_t v2,
+                                  uint16_t carry_in = 0);
     template <typename T>
     std::pair<uint16_t, T> do_xor(uint16_t v1, uint16_t v2);
     template <typename T>
@@ -326,13 +324,15 @@ private:
     void push_word(uint16_t v);
     uint16_t pop_word();
     template <typename T>
-    std::pair<uint16_t, T> do_alu(int32_t v1, int32_t v2,
-                                  int32_t carry_in,
-                                  std::function<uint32_t(uint32_t, uint32_t, uint32_t)> alu_op);
+    std::pair<uint16_t, T> do_alu(
+        int32_t v1,
+        int32_t v2,
+        int32_t carry_in,
+        std::function<uint32_t(uint32_t, uint32_t, uint32_t)> alu_op);
     template <typename T>
-        void write_data(T val, bool stack=false);
+    void write_data(T val, bool stack = false);
     template <typename T>
-        T read_data(bool stack=false);
+    T read_data(bool stack = false);
     uint16_t fetch_16bit();
     GPR get_segment(bool is_stack_reference);
     void set_override_segment(GPR segment);
@@ -423,13 +423,10 @@ bool EmulatorPimpl::string_rep_complete()
     return false;
 }
 
-EmulatorPimpl::EmulatorPimpl(RegisterFile *registers)
-    : registers(registers)
+EmulatorPimpl::EmulatorPimpl(RegisterFile *registers) : registers(registers)
 {
     modrm_decoder = std::make_unique<ModRMDecoder>(
-        [&]{ return this->fetch_byte(); },
-        this->registers
-    );
+        [&] { return this->fetch_byte(); }, this->registers);
 
     reset();
 }
@@ -490,7 +487,7 @@ void EmulatorPimpl::handle_irq()
 
     int irq_num;
     for (irq_num = 0; irq_num < 8; ++irq_num)
-         if (pending_irqs & (1 << irq_num))
+        if (pending_irqs & (1 << irq_num))
             break;
 
     auto flags = registers->get_flags();
@@ -559,8 +556,9 @@ size_t EmulatorPimpl::step()
     return len;
 }
 
-size_t EmulatorPimpl::step_with_io(std::function<void(unsigned long)> io_callback,
-                                   unsigned long cur_cycle_count)
+size_t EmulatorPimpl::step_with_io(
+    std::function<void(unsigned long)> io_callback,
+    unsigned long cur_cycle_count)
 {
     io_callback(cur_cycle_count);
 
@@ -580,6 +578,7 @@ size_t EmulatorPimpl::emulate_insn()
     do {
         processing_prefixes = false;
         opcode = fetch_byte();
+        // clang-format off
         switch (opcode) {
         case 0x06: // fallthrough
         case 0x0e: // fallthrough
@@ -809,6 +808,7 @@ size_t EmulatorPimpl::emulate_insn()
                 (unsigned)opcode << " at " << (unsigned)registers->get(CS) <<
                 ":" << (unsigned)registers->get(IP) << std::endl;
         }
+        // clang-format on
     } while (processing_prefixes);
 
     if (!jump_taken)
@@ -841,17 +841,19 @@ void EmulatorPimpl::push_inc_jmp_call_ff()
 }
 
 template <typename T>
-std::pair<uint16_t, T>
-EmulatorPimpl::do_alu(int32_t v1, int32_t v2, int32_t carry,
-                      std::function<uint32_t(uint32_t, uint32_t, uint32_t)> alu_op)
+std::pair<uint16_t, T> EmulatorPimpl::do_alu(
+    int32_t v1,
+    int32_t v2,
+    int32_t carry,
+    std::function<uint32_t(uint32_t, uint32_t, uint32_t)> alu_op)
 {
     uint16_t flags = registers->get_flags();
 
     flags &= ~(AF | CF | OF | PF | SF | ZF);
 
-    uint32_t result32 = alu_op(static_cast<uint32_t>(v1),
-                               static_cast<uint32_t>(v2),
-                               static_cast<uint32_t>(carry));
+    uint32_t result32 =
+        alu_op(static_cast<uint32_t>(v1), static_cast<uint32_t>(v2),
+               static_cast<uint32_t>(carry));
     bool af = !!(alu_op(v1 & 0xf, v2 & 0xf, carry) & (1 << 4));
 
     auto sign_bit = (8 * sizeof(T)) - 1;
@@ -869,7 +871,8 @@ EmulatorPimpl::do_alu(int32_t v1, int32_t v2, int32_t carry,
         flags |= PF;
     bool carry_in = !!(alu_op(static_cast<uint32_t>(v1) & ~(1 << sign_bit),
                               static_cast<uint32_t>(v2) & ~(1 << sign_bit),
-                              static_cast<uint32_t>(carry)) & (1 << sign_bit));
+                              static_cast<uint32_t>(carry)) &
+                       (1 << sign_bit));
     if (carry_in ^ !!(flags & CF))
         flags |= OF;
 
@@ -877,59 +880,57 @@ EmulatorPimpl::do_alu(int32_t v1, int32_t v2, int32_t carry,
 }
 
 template <typename T>
-std::pair<uint16_t, T> EmulatorPimpl::do_add(uint16_t v1, uint16_t v2,
+std::pair<uint16_t, T> EmulatorPimpl::do_add(uint16_t v1,
+                                             uint16_t v2,
                                              uint16_t carry_in)
 {
     return do_alu<T>(v1, v2, carry_in,
-        [](uint32_t a, uint32_t b, uint32_t c) -> uint32_t {
-            return a + b + c;
-        });
+                     [](uint32_t a, uint32_t b, uint32_t c) -> uint32_t {
+                         return a + b + c;
+                     });
 }
 
 template <typename T>
 std::pair<uint16_t, T> EmulatorPimpl::do_xor(uint16_t v1, uint16_t v2)
 {
-    return do_alu<T>(v1, v2, 0,
-        [](uint32_t a, uint32_t b, uint32_t __attribute__((unused)) c) -> uint32_t {
-            return a ^ b;
-        });
+    return do_alu<T>(
+        v1, v2, 0, [](uint32_t a, uint32_t b, uint32_t __attribute__((unused))
+                                              c) -> uint32_t { return a ^ b; });
 }
 
 template <typename T>
 std::pair<uint16_t, T> EmulatorPimpl::do_or(uint16_t v1, uint16_t v2)
 {
-    return do_alu<T>(v1, v2, 0,
-        [](uint32_t a, uint32_t b, uint32_t __attribute__((unused)) c) -> uint32_t {
-            return a | b;
-        });
+    return do_alu<T>(
+        v1, v2, 0, [](uint32_t a, uint32_t b, uint32_t __attribute__((unused))
+                                              c) -> uint32_t { return a | b; });
 }
 
 template <typename T>
 std::pair<uint16_t, T> EmulatorPimpl::do_and(uint16_t v1, uint16_t v2)
 {
-    return do_alu<T>(v1, v2, 0,
-        [](uint32_t a, uint32_t b, uint32_t __attribute__((unused)) c) -> uint32_t {
-            return a & b;
-        });
+    return do_alu<T>(
+        v1, v2, 0, [](uint32_t a, uint32_t b, uint32_t __attribute__((unused))
+                                              c) -> uint32_t { return a & b; });
 }
 
 template <typename T>
-std::pair<uint16_t, T> EmulatorPimpl::do_sub(uint16_t v1, uint16_t v2,
+std::pair<uint16_t, T> EmulatorPimpl::do_sub(uint16_t v1,
+                                             uint16_t v2,
                                              uint16_t carry_in)
 {
     return do_alu<T>(v1, v2, carry_in,
-        [](uint32_t a, uint32_t b, uint32_t c) -> uint32_t {
-            return a - b - c;
-        });
+                     [](uint32_t a, uint32_t b, uint32_t c) -> uint32_t {
+                         return a - b - c;
+                     });
 }
 
 template <typename T>
 std::pair<uint16_t, T> EmulatorPimpl::do_mul(int32_t v1, int32_t v2)
 {
-    return do_alu<T>(v1, v2, 0,
-        [](uint32_t a, uint32_t b, uint32_t __attribute__((unused)) c) -> uint32_t {
-            return a * b;
-        });
+    return do_alu<T>(
+        v1, v2, 0, [](uint32_t a, uint32_t b, uint32_t __attribute__((unused))
+                                              c) -> uint32_t { return a * b; });
 }
 
 void EmulatorPimpl::add_adc_sub_sbb_cmp_xor_or_and_80()
@@ -939,14 +940,15 @@ void EmulatorPimpl::add_adc_sub_sbb_cmp_xor_or_and_80()
 
     uint8_t v1 = read_data<uint8_t>();
     uint8_t v2 = fetch_byte();
-    bool carry_in = modrm_decoder->raw_reg() == 2 || modrm_decoder->raw_reg() == 3 ?
-        !!(registers->get_flags() & CF) : 0;
+    bool carry_in =
+        modrm_decoder->raw_reg() == 2 || modrm_decoder->raw_reg() == 3
+            ? !!(registers->get_flags() & CF)
+            : 0;
 
     uint8_t result;
     uint16_t flags;
     uint16_t update_mask = OF | SF | ZF | CF | PF | AF;
-    if (modrm_decoder->raw_reg() == 0 ||
-        modrm_decoder->raw_reg() == 2)
+    if (modrm_decoder->raw_reg() == 0 || modrm_decoder->raw_reg() == 2)
         std::tie(flags, result) = do_add<uint8_t>(v1, v2, carry_in);
     else if (modrm_decoder->raw_reg() == 6) {
         std::tie(flags, result) = do_xor<uint8_t>(v1, v2);
@@ -982,14 +984,15 @@ void EmulatorPimpl::add_adc_sub_sbb_cmp_xor_or_and_81()
 
     uint16_t v1 = read_data<uint16_t>();
     uint16_t v2 = fetch_16bit();
-    bool carry_in = modrm_decoder->raw_reg() == 2 || modrm_decoder->raw_reg() == 3 ?
-        !!(registers->get_flags() & CF) : 0;
+    bool carry_in =
+        modrm_decoder->raw_reg() == 2 || modrm_decoder->raw_reg() == 3
+            ? !!(registers->get_flags() & CF)
+            : 0;
 
     uint16_t result;
     uint16_t flags;
     uint16_t update_mask = OF | SF | ZF | CF | PF | AF;
-    if (modrm_decoder->raw_reg() == 0 ||
-        modrm_decoder->raw_reg() == 2)
+    if (modrm_decoder->raw_reg() == 0 || modrm_decoder->raw_reg() == 2)
         std::tie(flags, result) = do_add<uint16_t>(v1, v2, carry_in);
     else if (modrm_decoder->raw_reg() == 6) {
         std::tie(flags, result) = do_xor<uint16_t>(v1, v2);
@@ -1020,14 +1023,15 @@ void EmulatorPimpl::add_adc_sub_sbb_cmp_83()
 
     uint16_t v1 = read_data<uint16_t>();
     int16_t v2 = sign_extend<int16_t, uint8_t>(fetch_byte());
-    bool carry_in = modrm_decoder->raw_reg() == 2 || modrm_decoder->raw_reg() == 3 ?
-        !!(registers->get_flags() & CF) : 0;
+    bool carry_in =
+        modrm_decoder->raw_reg() == 2 || modrm_decoder->raw_reg() == 3
+            ? !!(registers->get_flags() & CF)
+            : 0;
 
     uint16_t result;
     uint16_t flags;
     uint16_t update_mask = OF | SF | ZF | CF | PF | AF;
-    if (modrm_decoder->raw_reg() == 0 ||
-        modrm_decoder->raw_reg() == 2)
+    if (modrm_decoder->raw_reg() == 0 || modrm_decoder->raw_reg() == 2)
         std::tie(flags, result) = do_add<uint16_t>(v1, v2, carry_in);
     else if (modrm_decoder->raw_reg() == 6) {
         std::tie(flags, result) = do_xor<uint16_t>(v1, v2);
@@ -1052,8 +1056,8 @@ void EmulatorPimpl::add_adc_sub_sbb_cmp_83()
 
 uint8_t EmulatorPimpl::fetch_byte()
 {
-    return mem->read<uint8_t>(get_phys_addr(registers->get(CS),
-                                            registers->get(IP) + instr_length++));
+    return mem->read<uint8_t>(
+        get_phys_addr(registers->get(CS), registers->get(IP) + instr_length++));
 }
 
 void EmulatorPimpl::neg_mul_not_test_div_f6()
@@ -1076,9 +1080,9 @@ void EmulatorPimpl::neg_mul_not_test_div_f6()
     else if (modrm_decoder->raw_reg() == 0x7)
         idivf6();
     else
-        std::cerr << "warning: invalid reg " << std::hex <<
-            (unsigned)modrm_decoder->raw_reg() <<
-            " for opcode 0x" << (unsigned)opcode << std::endl;
+        std::cerr << "warning: invalid reg " << std::hex
+                  << (unsigned)modrm_decoder->raw_reg() << " for opcode 0x"
+                  << (unsigned)opcode << std::endl;
 }
 
 void EmulatorPimpl::neg_mul_not_test_div_f7()
@@ -1101,9 +1105,9 @@ void EmulatorPimpl::neg_mul_not_test_div_f7()
     else if (modrm_decoder->raw_reg() == 0x7)
         idivf7();
     else
-        std::cerr << "warning: invalid reg " << std::hex <<
-            (unsigned)modrm_decoder->raw_reg() <<
-            " for opcode 0x" << (unsigned)opcode << std::endl;
+        std::cerr << "warning: invalid reg " << std::hex
+                  << (unsigned)modrm_decoder->raw_reg() << " for opcode 0x"
+                  << (unsigned)opcode << std::endl;
 }
 
 void EmulatorPimpl::shiftc0()
@@ -1111,8 +1115,7 @@ void EmulatorPimpl::shiftc0()
     modrm_decoder->set_width(OP_WIDTH_8);
     modrm_decoder->decode();
 
-    if (modrm_decoder->raw_reg() == 4 ||
-        modrm_decoder->raw_reg() == 6)
+    if (modrm_decoder->raw_reg() == 4 || modrm_decoder->raw_reg() == 6)
         shlc0();
     else if (modrm_decoder->raw_reg() == 5)
         shrc0();
@@ -1127,9 +1130,9 @@ void EmulatorPimpl::shiftc0()
     else if (modrm_decoder->raw_reg() == 1)
         rorc0();
     else
-        std::cerr << "warning: invalid reg " << std::hex <<
-            (unsigned)modrm_decoder->raw_reg() <<
-            " for opcode 0x" << (unsigned)opcode << std::endl;
+        std::cerr << "warning: invalid reg " << std::hex
+                  << (unsigned)modrm_decoder->raw_reg() << " for opcode 0x"
+                  << (unsigned)opcode << std::endl;
 }
 
 void EmulatorPimpl::shiftc1()
@@ -1137,8 +1140,7 @@ void EmulatorPimpl::shiftc1()
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
 
-    if (modrm_decoder->raw_reg() == 4 ||
-        modrm_decoder->raw_reg() == 6)
+    if (modrm_decoder->raw_reg() == 4 || modrm_decoder->raw_reg() == 6)
         shlc1();
     else if (modrm_decoder->raw_reg() == 5)
         shrc1();
@@ -1153,9 +1155,9 @@ void EmulatorPimpl::shiftc1()
     else if (modrm_decoder->raw_reg() == 1)
         rorc1();
     else
-        std::cerr << "warning: invalid reg " << std::hex <<
-            (unsigned)modrm_decoder->raw_reg() <<
-            " for opcode 0x" << (unsigned)opcode << std::endl;
+        std::cerr << "warning: invalid reg " << std::hex
+                  << (unsigned)modrm_decoder->raw_reg() << " for opcode 0x"
+                  << (unsigned)opcode << std::endl;
 }
 
 void EmulatorPimpl::shiftd0()
@@ -1163,8 +1165,7 @@ void EmulatorPimpl::shiftd0()
     modrm_decoder->set_width(OP_WIDTH_8);
     modrm_decoder->decode();
 
-    if (modrm_decoder->raw_reg() == 4 ||
-        modrm_decoder->raw_reg() == 6)
+    if (modrm_decoder->raw_reg() == 4 || modrm_decoder->raw_reg() == 6)
         shld0();
     else if (modrm_decoder->raw_reg() == 5)
         shrd0();
@@ -1179,9 +1180,9 @@ void EmulatorPimpl::shiftd0()
     else if (modrm_decoder->raw_reg() == 1)
         rord0();
     else
-        std::cerr << "warning: invalid reg " << std::hex <<
-            (unsigned)modrm_decoder->raw_reg() <<
-            " for opcode 0x" << (unsigned)opcode << std::endl;
+        std::cerr << "warning: invalid reg " << std::hex
+                  << (unsigned)modrm_decoder->raw_reg() << " for opcode 0x"
+                  << (unsigned)opcode << std::endl;
 }
 
 void EmulatorPimpl::shiftd1()
@@ -1189,8 +1190,7 @@ void EmulatorPimpl::shiftd1()
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
 
-    if (modrm_decoder->raw_reg() == 4 ||
-        modrm_decoder->raw_reg() == 6)
+    if (modrm_decoder->raw_reg() == 4 || modrm_decoder->raw_reg() == 6)
         shld1();
     else if (modrm_decoder->raw_reg() == 5)
         shrd1();
@@ -1205,9 +1205,9 @@ void EmulatorPimpl::shiftd1()
     else if (modrm_decoder->raw_reg() == 1)
         rord1();
     else
-        std::cerr << "warning: invalid reg " << std::hex <<
-            (unsigned)modrm_decoder->raw_reg() <<
-            " for opcode 0x" << (unsigned)opcode << std::endl;
+        std::cerr << "warning: invalid reg " << std::hex
+                  << (unsigned)modrm_decoder->raw_reg() << " for opcode 0x"
+                  << (unsigned)opcode << std::endl;
 }
 
 void EmulatorPimpl::shiftd2()
@@ -1215,8 +1215,7 @@ void EmulatorPimpl::shiftd2()
     modrm_decoder->set_width(OP_WIDTH_8);
     modrm_decoder->decode();
 
-    if (modrm_decoder->raw_reg() == 4 ||
-        modrm_decoder->raw_reg() == 6)
+    if (modrm_decoder->raw_reg() == 4 || modrm_decoder->raw_reg() == 6)
         shld2();
     else if (modrm_decoder->raw_reg() == 5)
         shrd2();
@@ -1231,9 +1230,9 @@ void EmulatorPimpl::shiftd2()
     else if (modrm_decoder->raw_reg() == 3)
         rcrd2();
     else
-        std::cerr << "warning: invalid reg " << std::hex <<
-            (unsigned)modrm_decoder->raw_reg() <<
-            " for opcode 0x" << (unsigned)opcode << std::endl;
+        std::cerr << "warning: invalid reg " << std::hex
+                  << (unsigned)modrm_decoder->raw_reg() << " for opcode 0x"
+                  << (unsigned)opcode << std::endl;
 }
 
 void EmulatorPimpl::shiftd3()
@@ -1241,8 +1240,7 @@ void EmulatorPimpl::shiftd3()
     modrm_decoder->set_width(OP_WIDTH_16);
     modrm_decoder->decode();
 
-    if (modrm_decoder->raw_reg() == 4 ||
-        modrm_decoder->raw_reg() == 6)
+    if (modrm_decoder->raw_reg() == 4 || modrm_decoder->raw_reg() == 6)
         shld3();
     else if (modrm_decoder->raw_reg() == 5)
         shrd3();
@@ -1257,9 +1255,9 @@ void EmulatorPimpl::shiftd3()
     else if (modrm_decoder->raw_reg() == 3)
         rcrd3();
     else
-        std::cerr << "warning: invalid reg " << std::hex <<
-            (unsigned)modrm_decoder->raw_reg() <<
-            " for opcode 0x" << (unsigned)opcode << std::endl;
+        std::cerr << "warning: invalid reg " << std::hex
+                  << (unsigned)modrm_decoder->raw_reg() << " for opcode 0x"
+                  << (unsigned)opcode << std::endl;
 }
 
 void EmulatorPimpl::invalid_opcode()

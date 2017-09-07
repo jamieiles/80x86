@@ -5,7 +5,7 @@
 TEST_F(EmulateFixture, PushRegFF)
 {
     // push ax
-    set_instruction({ 0xff, 0xf0 });
+    set_instruction({0xff, 0xf0});
 
     write_reg(AX, 0xaa55);
     write_reg(SP, 0x100);
@@ -19,7 +19,7 @@ TEST_F(EmulateFixture, PushRegFF)
 TEST_F(EmulateFixture, PushImm16)
 {
     // push $0xaa55
-    set_instruction({ 0x68, 0x55, 0xaa });
+    set_instruction({0x68, 0x55, 0xaa});
 
     write_reg(SP, 0x100);
 
@@ -32,7 +32,7 @@ TEST_F(EmulateFixture, PushImm16)
 TEST_F(EmulateFixture, PushImm8)
 {
     // push $0x80
-    set_instruction({ 0x6a, 0x80 });
+    set_instruction({0x6a, 0x80});
 
     write_reg(SP, 0x100);
 
@@ -45,7 +45,7 @@ TEST_F(EmulateFixture, PushImm8)
 TEST_F(EmulateFixture, PushMemFF)
 {
     // push [1234]
-    set_instruction({ 0xff, 0x36, 0x34, 0x12 });
+    set_instruction({0xff, 0x36, 0x34, 0x12});
 
     write_mem16(0x1234, 0xaa55);
     write_reg(SP, 0x100);
@@ -66,7 +66,7 @@ TEST_F(EmulateFixture, PushReg5X)
         write_reg(reg, 0x0100 + i);
         write_reg(SP, 0x0100);
 
-        set_instruction({ static_cast<uint8_t>(0x50 + i) });
+        set_instruction({static_cast<uint8_t>(0x50 + i)});
         emulate();
 
         ASSERT_EQ(0x0fe, read_reg(SP));
@@ -87,7 +87,7 @@ TEST_F(EmulateFixture, PushSR)
         write_reg(reg, 0x0100 + i);
         write_reg(SP, 0x0100);
 
-        set_instruction({ static_cast<uint8_t>((i << 3) | 0x6) });
+        set_instruction({static_cast<uint8_t>((i << 3) | 0x6)});
         emulate();
 
         ASSERT_EQ(0x0fe, read_reg(SP));
@@ -106,7 +106,7 @@ TEST_F(EmulateFixture, Pusha)
     write_reg(SI, 6);
     write_reg(DI, 7);
 
-    set_instruction({ 0x60 });
+    set_instruction({0x60});
     emulate();
 
     EXPECT_EQ(0x0f0, read_reg(SP));
@@ -133,7 +133,7 @@ TEST_F(EmulateFixture, Popa)
     write_mem16(0xf2, 6, SS);
     write_mem16(0xf0, 7, SS);
 
-    set_instruction({ 0x61 });
+    set_instruction({0x61});
     emulate();
 
     EXPECT_EQ(read_reg(AX), 1);
@@ -149,7 +149,7 @@ TEST_F(EmulateFixture, Popa)
 TEST_F(EmulateFixture, PopReg8F)
 {
     // pop ax
-    set_instruction({ 0x8f, 0xc0 });
+    set_instruction({0x8f, 0xc0});
 
     write_mem16(0x0fe, 0xaa55, SS);
     write_reg(SP, 0x0fe);
@@ -163,7 +163,7 @@ TEST_F(EmulateFixture, PopReg8F)
 TEST_F(EmulateFixture, PopMem8F)
 {
     // pop [1234]
-    set_instruction({ 0x8f, 0x06, 0x34, 0x12 });
+    set_instruction({0x8f, 0x06, 0x34, 0x12});
 
     write_mem16(0x0fe, 0xaa55, SS);
     write_reg(SP, 0x0fe);
@@ -177,7 +177,7 @@ TEST_F(EmulateFixture, PopMem8F)
 TEST_F(EmulateFixture, PopReg8FInvalidReg)
 {
     // pop ax
-    set_instruction({ 0x8f, 0xc8 });
+    set_instruction({0x8f, 0xc8});
 
     write_mem16(0x0fe, 0xaa55, SS);
     write_reg(SP, 0x0fe);
@@ -200,7 +200,7 @@ TEST_F(EmulateFixture, PopReg5X)
         write_mem16(0x0fe, 0x0100 + i, SS);
         write_reg(SP, 0x0fe);
 
-        set_instruction({ static_cast<uint8_t>(0x58 + i) });
+        set_instruction({static_cast<uint8_t>(0x58 + i)});
         emulate();
 
         if (reg != SP)
@@ -224,7 +224,7 @@ TEST_F(EmulateFixture, PopSR)
         write_mem16(0x0fe, 0x0100 + i, SS);
         write_reg(SP, 0x0fe);
 
-        set_instruction({ static_cast<uint8_t>((i << 3) | 0x7) });
+        set_instruction({static_cast<uint8_t>((i << 3) | 0x7)});
         emulate();
 
         ASSERT_EQ(0x100, read_reg(SP));

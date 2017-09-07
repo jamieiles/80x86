@@ -3,34 +3,27 @@
 
 #include "VerilogTestbench.h"
 
-class FifoTestFixture : public VerilogTestbench<VFifo>,
-    public ::testing::Test {
+class FifoTestFixture : public VerilogTestbench<VFifo>, public ::testing::Test
+{
 public:
     FifoTestFixture();
     void push(uint32_t val);
-    bool is_empty() const
-    {
-        return empty;
-    }
-    uint32_t get_head() const
-    {
-        return head;
-    }
+    bool is_empty() const { return empty; }
+    uint32_t get_head() const { return head; }
     uint32_t pop();
+
 private:
     bool empty;
     uint32_t head;
 };
 
-FifoTestFixture::FifoTestFixture()
-    : empty(true),
-    head(0x7777)
+FifoTestFixture::FifoTestFixture() : empty(true), head(0x7777)
 {
     dut.wr_en = 0;
     dut.wr_data = 0LU;
     dut.rd_en = 0;
 
-    periodic(ClockCapture, [&]{
+    periodic(ClockCapture, [&] {
         this->empty = this->dut.empty;
         this->head = this->dut.rd_data;
     });
@@ -40,12 +33,10 @@ FifoTestFixture::FifoTestFixture()
 
 void FifoTestFixture::push(uint32_t val)
 {
-    after_n_cycles(0, [&]{
+    after_n_cycles(0, [&] {
         this->dut.wr_data = val;
         this->dut.wr_en = 1;
-        after_n_cycles(1, [&]{
-            this->dut.wr_en = 0;
-        });
+        after_n_cycles(1, [&] { this->dut.wr_en = 0; });
     });
     cycle(2);
 }
@@ -56,11 +47,9 @@ uint32_t FifoTestFixture::pop()
         cycle();
     auto v = head;
 
-    after_n_cycles(0, [&]{
+    after_n_cycles(0, [&] {
         this->dut.rd_en = 1;
-        after_n_cycles(1, [&]{
-            this->dut.rd_en = 0;
-        });
+        after_n_cycles(1, [&] { this->dut.rd_en = 0; });
     });
     cycle(2);
 
@@ -128,11 +117,11 @@ TEST_F(FifoTestFixture, read_during_write)
 {
     push(0x1234);
 
-    after_n_cycles(0, [&]{
+    after_n_cycles(0, [&] {
         this->dut.wr_en = 1;
         this->dut.wr_data = 0xaa55;
         this->dut.rd_en = 1;
-        after_n_cycles(1, [&]{
+        after_n_cycles(1, [&] {
             this->dut.wr_en = 0;
             this->dut.rd_en = 0;
         });

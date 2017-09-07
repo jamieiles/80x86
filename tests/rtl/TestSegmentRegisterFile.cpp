@@ -4,8 +4,10 @@
 #include "VerilogTestbench.h"
 #include "RTLCPU.h"
 
-class SegmentRegisterFileTestFixture : public VerilogTestbench<VSegmentRegisterFile>,
-    public ::testing::Test {
+class SegmentRegisterFileTestFixture
+    : public VerilogTestbench<VSegmentRegisterFile>,
+      public ::testing::Test
+{
 public:
     void write_sr(uint8_t sr, uint16_t v);
     void trigger_read_sr(uint8_t sr);
@@ -56,11 +58,10 @@ TEST_F(SegmentRegisterFileTestFixture, cs_output_during_write)
 }
 
 class CoreFixture : public RTLCPU<verilator_debug_enabled>,
-    public ::testing::Test {
+                    public ::testing::Test
+{
 public:
-    CoreFixture():
-        RTLCPU(current_test_name())
-    {}
+    CoreFixture() : RTLCPU(current_test_name()) {}
 };
 TEST_F(CoreFixture, SegmentRegisterFileReset)
 {
@@ -72,5 +73,6 @@ TEST_F(CoreFixture, SegmentRegisterFileReset)
     reset();
 
     for (auto r = static_cast<int>(ES); r <= static_cast<int>(DS); ++r)
-        EXPECT_EQ(read_reg(static_cast<GPR>(r)), static_cast<GPR>(r) == CS ? 0xffff : 0);
+        EXPECT_EQ(read_reg(static_cast<GPR>(r)),
+                  static_cast<GPR>(r) == CS ? 0xffff : 0);
 }

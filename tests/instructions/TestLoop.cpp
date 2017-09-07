@@ -9,7 +9,7 @@ TEST_F(EmulateFixture, LoopNotTaken)
     write_reg(IP, 0x100);
 
     // loop ip-3
-    set_instruction({ 0xe2, 0xfd });
+    set_instruction({0xe2, 0xfd});
 
     emulate();
 
@@ -22,7 +22,7 @@ TEST_F(EmulateFixture, LoopTaken)
     write_reg(IP, 0x100);
 
     // loop ip-3
-    set_instruction({ 0xe2, 0xfd });
+    set_instruction({0xe2, 0xfd});
 
     emulate();
 
@@ -36,7 +36,7 @@ TEST_F(EmulateFixture, LoopeNotTakenNonZero)
     write_flags(0);
 
     // loope ip-3
-    set_instruction({ 0xe1, 0xfd });
+    set_instruction({0xe1, 0xfd});
 
     emulate();
 
@@ -50,7 +50,7 @@ TEST_F(EmulateFixture, LoopeNotTaken)
     write_flags(ZF);
 
     // loope ip-3
-    set_instruction({ 0xe1, 0xfd });
+    set_instruction({0xe1, 0xfd});
 
     emulate();
 
@@ -64,7 +64,7 @@ TEST_F(EmulateFixture, LoopeTaken)
     write_flags(ZF);
 
     // loope ip-3
-    set_instruction({ 0xe1, 0xfd });
+    set_instruction({0xe1, 0xfd});
 
     emulate();
 
@@ -78,7 +78,7 @@ TEST_F(EmulateFixture, LoopnzNotTakenNonZero)
     write_flags(0);
 
     // loopnz ip-3
-    set_instruction({ 0xe0, 0xfd });
+    set_instruction({0xe0, 0xfd});
 
     emulate();
 
@@ -92,7 +92,7 @@ TEST_F(EmulateFixture, LoopnzNotTaken)
     write_flags(ZF);
 
     // loopnz ip-3
-    set_instruction({ 0xe0, 0xfd });
+    set_instruction({0xe0, 0xfd});
 
     emulate();
 
@@ -106,7 +106,7 @@ TEST_F(EmulateFixture, LoopnzTaken)
     write_flags(0);
 
     // loopnz ip-3
-    set_instruction({ 0xe0, 0xfd });
+    set_instruction({0xe0, 0xfd});
 
     emulate();
 

@@ -12,11 +12,10 @@ TEST_F(EmulateFixture, BoundInvalidOperand)
     write_reg(CS, 0x7c00);
     write_reg(IP, 0x0001);
 
-    set_instruction({ 0x62, 0xd8 });
+    set_instruction({0x62, 0xd8});
     emulate();
 
-    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(),
-                        FLAGS_STUCK_BITS);
+    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), FLAGS_STUCK_BITS);
     EXPECT_EQ(read_reg(CS), 0x8000);
     EXPECT_EQ(read_reg(IP), 0x0100);
     EXPECT_EQ(read_reg(SP), 0x0100 - 6);
@@ -35,7 +34,8 @@ struct BoundParams {
 };
 
 class BoundFixture : public EmulateFixture,
-    public ::testing::WithParamInterface<BoundParams> {
+                     public ::testing::WithParamInterface<BoundParams>
+{
 };
 TEST_P(BoundFixture, Bound)
 {
@@ -49,7 +49,7 @@ TEST_P(BoundFixture, Bound)
     write_reg(IP, 0x0001);
 
     // bound ax, [bx]
-    set_instruction({ 0x62, 0x07 });
+    set_instruction({0x62, 0x07});
     write_mem16(0x1000, p.lower);
     write_mem16(0x1002, p.upper);
     write_reg(BX, 0x1000);
@@ -73,15 +73,14 @@ TEST_P(BoundFixture, Bound)
         EXPECT_EQ(read_flags(), FLAGS_STUCK_BITS);
     }
 }
-INSTANTIATE_TEST_CASE_P(Bound, BoundFixture,
-    ::testing::Values(
-        BoundParams{ 100, 200, 150, false },
-        BoundParams{ 100, 200, 100, false },
-        BoundParams{ 100, 200, 200, false },
-        BoundParams{ 100, 200, 99, true },
-        BoundParams{ 100, 200, 201, true },
-        BoundParams{ -8, -4, -10, true },
-        BoundParams{ -8, -4, -2, true },
-        BoundParams{ -8, -4, -6, false },
-        BoundParams{ -8, -4, -6, false }
-    ));
+INSTANTIATE_TEST_CASE_P(Bound,
+                        BoundFixture,
+                        ::testing::Values(BoundParams{100, 200, 150, false},
+                                          BoundParams{100, 200, 100, false},
+                                          BoundParams{100, 200, 200, false},
+                                          BoundParams{100, 200, 99, true},
+                                          BoundParams{100, 200, 201, true},
+                                          BoundParams{-8, -4, -10, true},
+                                          BoundParams{-8, -4, -2, true},
+                                          BoundParams{-8, -4, -6, false},
+                                          BoundParams{-8, -4, -6, false}));

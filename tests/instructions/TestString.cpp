@@ -11,7 +11,7 @@ TEST_F(EmulateFixture, ScasbNoRep)
     write_cstring(0x800, "8086", ES);
 
     // repne scasb
-    set_instruction({ 0xae });
+    set_instruction({0xae});
 
     emulate();
 
@@ -28,7 +28,7 @@ TEST_F(EmulateFixture, ScasbInc)
     write_cstring(0x800, "8086", ES);
 
     // repne scasb
-    set_instruction({ 0xf2, 0xae });
+    set_instruction({0xf2, 0xae});
 
     emulate();
 
@@ -44,7 +44,7 @@ TEST_F(EmulateFixture, ScasbDec)
     write_cstring(0x800, "1234", ES);
 
     // repne scasb
-    set_instruction({ 0xf2, 0xae });
+    set_instruction({0xf2, 0xae});
 
     emulate();
 
@@ -59,7 +59,7 @@ TEST_F(EmulateFixture, ScasbIncRepe)
     write_cstring(0x800, "aaab", ES);
 
     // repe scasb
-    set_instruction({ 0xf3, 0xae });
+    set_instruction({0xf3, 0xae});
 
     emulate();
 
@@ -75,7 +75,7 @@ TEST_F(EmulateFixture, ScasbDecRepe)
     write_cstring(0x800, "abbb", ES);
 
     // repe scasb
-    set_instruction({ 0xf3, 0xae });
+    set_instruction({0xf3, 0xae});
 
     emulate();
 
@@ -93,7 +93,7 @@ TEST_F(EmulateFixture, ScaswNoRep)
     write_mem16(0x800 + 2 * 2, 0x0000, ES);
 
     // scasw
-    set_instruction({ 0xaf });
+    set_instruction({0xaf});
 
     emulate();
 
@@ -113,7 +113,7 @@ TEST_F(EmulateFixture, ScaswInc)
     write_mem16(0x800 + 2 * 2, 0x0000, ES);
 
     // repne scasw
-    set_instruction({ 0xf2, 0xaf });
+    set_instruction({0xf2, 0xaf});
 
     emulate();
 
@@ -133,7 +133,7 @@ TEST_F(EmulateFixture, ScaswDec)
     write_mem16(0x7fe, 0x0000, ES);
 
     // repne scasw
-    set_instruction({ 0xf2, 0xaf });
+    set_instruction({0xf2, 0xaf});
 
     emulate();
 
@@ -150,7 +150,7 @@ TEST_F(EmulateFixture, ScaswIncRepe)
         write_mem16(0x800 + i * 2, 0xaa55, ES);
 
     // repe scasw
-    set_instruction({ 0xf3, 0xaf });
+    set_instruction({0xf3, 0xaf});
 
     emulate();
 
@@ -168,7 +168,7 @@ TEST_F(EmulateFixture, ScaswDecRepe)
         write_mem16(0x800 + i * 2, 0xaa55, ES);
 
     // repe scasw
-    set_instruction({ 0xf3, 0xaf });
+    set_instruction({0xf3, 0xaf});
 
     emulate();
 
@@ -185,7 +185,7 @@ TEST_F(EmulateFixture, MovsbInc)
     write_mem8(0x404, 0, ES);
 
     // repne movsb
-    set_instruction({ 0xf3, 0xa4 });
+    set_instruction({0xf3, 0xa4});
 
     emulate();
 
@@ -205,7 +205,7 @@ TEST_F(EmulateFixture, MovsbDec)
     write_mem8(0x404, 0, ES);
 
     // repne movsb
-    set_instruction({ 0xf3, 0xa4 });
+    set_instruction({0xf3, 0xa4});
 
     emulate();
 
@@ -224,7 +224,7 @@ TEST_F(EmulateFixture, MovswInc)
     write_mem16(0x802, 0x55aa);
 
     // repne movsw
-    set_instruction({ 0xf3, 0xa5 });
+    set_instruction({0xf3, 0xa5});
 
     emulate();
 
@@ -245,7 +245,7 @@ TEST_F(EmulateFixture, MovswDec)
     write_mem16(0x802, 0x55aa);
 
     // repne movsw
-    set_instruction({ 0xf3, 0xa5 });
+    set_instruction({0xf3, 0xa5});
 
     emulate();
 
@@ -268,7 +268,8 @@ using Cmps8Test = struct CmpsTest<uint8_t>;
 using Cmps16Test = struct CmpsTest<uint16_t>;
 
 class Cmps8Fixture : public EmulateFixture,
-    public ::testing::WithParamInterface<Cmps8Test> {
+                     public ::testing::WithParamInterface<Cmps8Test>
+{
 };
 TEST_P(Cmps8Fixture, Flags)
 {
@@ -287,7 +288,7 @@ TEST_P(Cmps8Fixture, Flags)
     write_vector8(0x800, p.src);
     write_vector8(0x400, p.dst, ES);
 
-    set_instruction({ p.prefix, 0xa6 });
+    set_instruction({p.prefix, 0xa6});
 
     emulate();
 
@@ -295,18 +296,22 @@ TEST_P(Cmps8Fixture, Flags)
                         FLAGS_STUCK_BITS | p.expected_flags);
     ASSERT_EQ(p.expected_length, read_reg(SI) - 0x800);
 }
-INSTANTIATE_TEST_CASE_P(CmpsRepe, Cmps8Fixture,
-    ::testing::Values(
-        Cmps8Test{std::vector<uint8_t>{'f', 'o', 'o'},
-                  std::vector<uint8_t>{'f', 'o', 'o'}, ZF | PF, 0xf3, 4},
-        Cmps8Test{std::vector<uint8_t>{'a'},
-                  std::vector<uint8_t>{'b'}, SF | PF | CF | AF, 0xf3, 1},
-        Cmps8Test{std::vector<uint8_t>{'b'},
-                  std::vector<uint8_t>{'a'}, 0, 0xf3, 1},
-        Cmps8Test{std::vector<uint8_t>{'b'},
-                  std::vector<uint8_t>{}, 0, 0xf3, 1}
-    ));
-INSTANTIATE_TEST_CASE_P(CmpsRepne, Cmps8Fixture,
+INSTANTIATE_TEST_CASE_P(
+    CmpsRepe,
+    Cmps8Fixture,
+    ::testing::Values(Cmps8Test{std::vector<uint8_t>{'f', 'o', 'o'},
+                                std::vector<uint8_t>{'f', 'o', 'o'}, ZF | PF,
+                                0xf3, 4},
+                      Cmps8Test{std::vector<uint8_t>{'a'},
+                                std::vector<uint8_t>{'b'}, SF | PF | CF | AF,
+                                0xf3, 1},
+                      Cmps8Test{std::vector<uint8_t>{'b'},
+                                std::vector<uint8_t>{'a'}, 0, 0xf3, 1},
+                      Cmps8Test{std::vector<uint8_t>{'b'},
+                                std::vector<uint8_t>{}, 0, 0xf3, 1}));
+INSTANTIATE_TEST_CASE_P(
+    CmpsRepne,
+    Cmps8Fixture,
     ::testing::Values(
         Cmps8Test{std::vector<uint8_t>{'b', 'a', 'r'},
                   std::vector<uint8_t>{'b', 'a', 'r'}, ZF | PF, 0xf2, 1},
@@ -315,8 +320,7 @@ INSTANTIATE_TEST_CASE_P(CmpsRepne, Cmps8Fixture,
         Cmps8Test{std::vector<uint8_t>{'b', 'a', 'r'},
                   std::vector<uint8_t>{'f', 'o', 'r'}, ZF | PF, 0xf2, 3},
         Cmps8Test{std::vector<uint8_t>{'b', 'a', 'r'},
-                  std::vector<uint8_t>{'c'}, ZF | PF, 0xf2, 4}
-    ));
+                  std::vector<uint8_t>{'c'}, ZF | PF, 0xf2, 4}));
 
 TEST_F(EmulateFixture, CmpsbDec)
 {
@@ -327,7 +331,7 @@ TEST_F(EmulateFixture, CmpsbDec)
     write_mem8(0x800, 'f');
     write_mem8(0x400, 'g', ES);
 
-    set_instruction({ 0xa6 });
+    set_instruction({0xa6});
 
     emulate();
 
@@ -338,7 +342,8 @@ TEST_F(EmulateFixture, CmpsbDec)
 }
 
 class Cmps16Fixture : public EmulateFixture,
-    public ::testing::WithParamInterface<Cmps16Test> {
+                      public ::testing::WithParamInterface<Cmps16Test>
+{
 };
 TEST_P(Cmps16Fixture, Flags)
 {
@@ -357,7 +362,7 @@ TEST_P(Cmps16Fixture, Flags)
     write_vector16(0x800, p.src);
     write_vector16(0x400, p.dst, ES);
 
-    set_instruction({ p.prefix, 0xa7 });
+    set_instruction({p.prefix, 0xa7});
 
     emulate();
 
@@ -365,28 +370,34 @@ TEST_P(Cmps16Fixture, Flags)
                         FLAGS_STUCK_BITS | p.expected_flags);
     ASSERT_EQ(p.expected_length, read_reg(SI) - 0x800);
 }
-INSTANTIATE_TEST_CASE_P(CmpsRepe, Cmps16Fixture,
-    ::testing::Values(
-        Cmps16Test{std::vector<uint16_t>{0xaa55, 0xaa56, 0xaa57},
-                  std::vector<uint16_t>{0xaa55, 0xaa56, 0xaa57}, ZF | PF, 0xf3, 8},
-        Cmps16Test{std::vector<uint16_t>{0x1000},
-                  std::vector<uint16_t>{0x2000}, SF | PF | CF, 0xf3, 2},
-        Cmps16Test{std::vector<uint16_t>{0x2000},
-                  std::vector<uint16_t>{0x1000}, PF, 0xf3, 2},
-        Cmps16Test{std::vector<uint16_t>{0x2000},
-                  std::vector<uint16_t>{}, PF, 0xf3, 2}
-    ));
-INSTANTIATE_TEST_CASE_P(CmpsRepne, Cmps16Fixture,
-    ::testing::Values(
-        Cmps16Test{std::vector<uint16_t>{0xaa55, 0xaa56, 0xaa57},
-                  std::vector<uint16_t>{0xaa55, 0xaa56, 0xaa57}, ZF | PF, 0xf2, 2},
-        Cmps16Test{std::vector<uint16_t>{0xaa55, 0xaa56, 0xaa57},
-                  std::vector<uint16_t>{0x55aa, 0x55ab, 0x55ac}, ZF | PF, 0xf2, 8},
-        Cmps16Test{std::vector<uint16_t>{0xaa55, 0xaa56, 0xaa57},
-                  std::vector<uint16_t>{0x55aa, 0x55aa, 0xaa57}, ZF | PF, 0xf2, 6},
-        Cmps16Test{std::vector<uint16_t>{0xaa55, 0xaa56, 0xaa57},
-                  std::vector<uint16_t>{0x1234}, ZF | PF, 0xf2, 8}
-    ));
+INSTANTIATE_TEST_CASE_P(
+    CmpsRepe,
+    Cmps16Fixture,
+    ::testing::Values(Cmps16Test{std::vector<uint16_t>{0xaa55, 0xaa56, 0xaa57},
+                                 std::vector<uint16_t>{0xaa55, 0xaa56, 0xaa57},
+                                 ZF | PF, 0xf3, 8},
+                      Cmps16Test{std::vector<uint16_t>{0x1000},
+                                 std::vector<uint16_t>{0x2000}, SF | PF | CF,
+                                 0xf3, 2},
+                      Cmps16Test{std::vector<uint16_t>{0x2000},
+                                 std::vector<uint16_t>{0x1000}, PF, 0xf3, 2},
+                      Cmps16Test{std::vector<uint16_t>{0x2000},
+                                 std::vector<uint16_t>{}, PF, 0xf3, 2}));
+INSTANTIATE_TEST_CASE_P(
+    CmpsRepne,
+    Cmps16Fixture,
+    ::testing::Values(Cmps16Test{std::vector<uint16_t>{0xaa55, 0xaa56, 0xaa57},
+                                 std::vector<uint16_t>{0xaa55, 0xaa56, 0xaa57},
+                                 ZF | PF, 0xf2, 2},
+                      Cmps16Test{std::vector<uint16_t>{0xaa55, 0xaa56, 0xaa57},
+                                 std::vector<uint16_t>{0x55aa, 0x55ab, 0x55ac},
+                                 ZF | PF, 0xf2, 8},
+                      Cmps16Test{std::vector<uint16_t>{0xaa55, 0xaa56, 0xaa57},
+                                 std::vector<uint16_t>{0x55aa, 0x55aa, 0xaa57},
+                                 ZF | PF, 0xf2, 6},
+                      Cmps16Test{std::vector<uint16_t>{0xaa55, 0xaa56, 0xaa57},
+                                 std::vector<uint16_t>{0x1234}, ZF | PF, 0xf2,
+                                 8}));
 
 TEST_F(EmulateFixture, CmpswDec)
 {
@@ -397,7 +408,7 @@ TEST_F(EmulateFixture, CmpswDec)
     write_mem16(0x800, 0xaa55);
     write_mem16(0x400, 0xaa56, ES);
 
-    set_instruction({ 0xa7 });
+    set_instruction({0xa7});
 
     emulate();
 
@@ -414,7 +425,7 @@ TEST_F(EmulateFixture, Lodsb)
     write_cstring(0x800, "foo");
     write_reg(CX, 3);
 
-    set_instruction({ 0xf2, 0xac });
+    set_instruction({0xf2, 0xac});
 
     emulate();
 
@@ -426,10 +437,10 @@ TEST_F(EmulateFixture, Lodsw)
 {
     write_flags(0);
     write_reg(SI, 0x800);
-    write_vector16(0x800, { 0x1234, 0x5678 });
+    write_vector16(0x800, {0x1234, 0x5678});
     write_reg(CX, 2);
 
-    set_instruction({ 0xf2, 0xad });
+    set_instruction({0xf2, 0xad});
 
     emulate();
 
@@ -444,7 +455,7 @@ TEST_F(EmulateFixture, LodsbDec)
     write_cstring(0x800, "foo");
     write_reg(CX, 3);
 
-    set_instruction({ 0xf2, 0xac });
+    set_instruction({0xf2, 0xac});
 
     emulate();
 
@@ -456,10 +467,10 @@ TEST_F(EmulateFixture, LodswDec)
 {
     write_flags(DF);
     write_reg(SI, 0x802);
-    write_vector16(0x800, { 0x1234, 0x5678 });
+    write_vector16(0x800, {0x1234, 0x5678});
     write_reg(CX, 2);
 
-    set_instruction({ 0xf2, 0xad });
+    set_instruction({0xf2, 0xad});
 
     emulate();
 
@@ -476,7 +487,7 @@ TEST_F(EmulateFixture, Stosb)
     write_reg(CX, 3);
     write_vector8(0x800, {0, 0, 0, 0, 0, 0, 0, 0}, ES);
 
-    set_instruction({ 0xf2, 0xaa });
+    set_instruction({0xf2, 0xaa});
 
     emulate();
 
@@ -492,7 +503,7 @@ TEST_F(EmulateFixture, StosbDec)
     write_reg(AL, 'a');
     write_reg(CX, 3);
 
-    set_instruction({ 0xf2, 0xaa });
+    set_instruction({0xf2, 0xaa});
     write_vector8(0x800, {0, 0, 0, 0, 0, 0, 0, 0}, ES);
 
     emulate();
@@ -510,7 +521,7 @@ TEST_F(EmulateFixture, Stosw)
     write_reg(CX, 3);
     write_vector16(0x800, {0, 0, 0, 0, 0, 0, 0, 0}, ES);
 
-    set_instruction({ 0xf2, 0xab });
+    set_instruction({0xf2, 0xab});
 
     emulate();
 
@@ -527,7 +538,7 @@ TEST_F(EmulateFixture, StoswDec)
     write_reg(CX, 3);
     write_vector16(0x800, {0, 0, 0, 0, 0, 0, 0, 0}, ES);
 
-    set_instruction({ 0xf2, 0xab });
+    set_instruction({0xf2, 0xab});
 
     emulate();
 

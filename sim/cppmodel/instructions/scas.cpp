@@ -1,8 +1,8 @@
 void EmulatorPimpl::scasbae()
 {
     auto scas = [&]() {
-        auto v = mem->read<uint8_t>(get_phys_addr(registers->get(ES),
-                                                  registers->get(DI)));
+        auto v = mem->read<uint8_t>(
+            get_phys_addr(registers->get(ES), registers->get(DI)));
 
         uint8_t result;
         uint16_t flags;
@@ -20,8 +20,8 @@ void EmulatorPimpl::scasbae()
 void EmulatorPimpl::scasbaf()
 {
     auto scas = [&]() {
-        auto v = mem->read<uint16_t>(get_phys_addr(registers->get(ES),
-                                                   registers->get(DI)));
+        auto v = mem->read<uint16_t>(
+            get_phys_addr(registers->get(ES), registers->get(DI)));
 
         uint16_t result;
         uint16_t flags;

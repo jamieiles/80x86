@@ -38,7 +38,7 @@ SignMagnitude<UT> twos_comp_to_sm(UT v)
 // Non-restoring division
 std::tuple<uint16_t, uint16_t> divide(uint32_t dividend,
                                       uint16_t divisor,
-                                      bool is_signed=false)
+                                      bool is_signed = false)
 {
     int64_t P;
     uint32_t D;
@@ -77,13 +77,11 @@ std::tuple<uint16_t, uint16_t> divide(uint32_t dividend,
 }
 
 // Non-restoring division
-std::tuple<int16_t, int16_t> idivide(int32_t dividend,
-                                     int16_t divisor)
+std::tuple<int16_t, int16_t> idivide(int32_t dividend, int16_t divisor)
 {
     int16_t quotient, remainder;
-    std::tie(quotient, remainder) = divide(static_cast<uint32_t>(dividend),
-                                           static_cast<uint16_t>(divisor),
-                                           true);
+    std::tie(quotient, remainder) = divide(
+        static_cast<uint32_t>(dividend), static_cast<uint16_t>(divisor), true);
 
     if ((dividend < 0 && divisor >= 0) || (dividend >= 0 && divisor < 0))
         quotient = -quotient;
@@ -93,42 +91,40 @@ std::tuple<int16_t, int16_t> idivide(int32_t dividend,
     return std::tuple<int16_t, int16_t>(quotient, remainder);
 }
 
-class DivisionAlg16 : public ::testing::TestWithParam<Div16Params> {
+class DivisionAlg16 : public ::testing::TestWithParam<Div16Params>
+{
 };
 TEST_P(DivisionAlg16, Result)
 {
     uint16_t quotient, remainder;
 
-    std::tie(quotient, remainder) = divide(GetParam().v1,
-                                           GetParam().v2);
+    std::tie(quotient, remainder) = divide(GetParam().v1, GetParam().v2);
     EXPECT_EQ(quotient, GetParam().quotient);
     EXPECT_EQ(remainder, GetParam().remainder);
 }
-INSTANTIATE_TEST_CASE_P(Div, DivisionAlg16,
-    ::testing::Values(
-    Div16Params{ 100, 20, 5, 0 },
-    Div16Params{ 500, 250, 2, 0 },
-    Div16Params{ 10, 3, 3, 1 },
-    Div16Params{ 128000, 10, 12800, 0 },
-    Div16Params{ 130000, 65000, 2, 0 },
-    Div16Params{ 0x109, 0xe90b, 0, 265 }
-));
+INSTANTIATE_TEST_CASE_P(Div,
+                        DivisionAlg16,
+                        ::testing::Values(Div16Params{100, 20, 5, 0},
+                                          Div16Params{500, 250, 2, 0},
+                                          Div16Params{10, 3, 3, 1},
+                                          Div16Params{128000, 10, 12800, 0},
+                                          Div16Params{130000, 65000, 2, 0},
+                                          Div16Params{0x109, 0xe90b, 0, 265}));
 
-class IDivisionAlg16 : public ::testing::TestWithParam<IDiv16Params> {
+class IDivisionAlg16 : public ::testing::TestWithParam<IDiv16Params>
+{
 };
 TEST_P(IDivisionAlg16, Result)
 {
     int16_t quotient, remainder;
 
-    std::tie(quotient, remainder) = idivide(GetParam().v1,
-                                            GetParam().v2);
+    std::tie(quotient, remainder) = idivide(GetParam().v1, GetParam().v2);
     EXPECT_EQ(quotient, GetParam().quotient);
     EXPECT_EQ(remainder, GetParam().remainder);
 }
-INSTANTIATE_TEST_CASE_P(IDiv, IDivisionAlg16,
-    ::testing::Values(
-    IDiv16Params{ 10, 3, 3, 1 },
-    IDiv16Params{ 10, -3, -3, 1 },
-    IDiv16Params{ -10, -3, 3, -1 },
-    IDiv16Params{ -10, 3, -3, -1 }
-));
+INSTANTIATE_TEST_CASE_P(IDiv,
+                        IDivisionAlg16,
+                        ::testing::Values(IDiv16Params{10, 3, 3, 1},
+                                          IDiv16Params{10, -3, -3, 1},
+                                          IDiv16Params{-10, -3, 3, -1},
+                                          IDiv16Params{-10, 3, -3, -1}));

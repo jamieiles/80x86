@@ -8,7 +8,7 @@ TEST_F(EmulateFixture, CallDirectIntra)
     write_reg(CS, 0x2000);
     write_reg(IP, 0x0030);
     write_reg(SP, 0x0100);
-    set_instruction({ 0xe8, 0x10, 0x20 });
+    set_instruction({0xe8, 0x10, 0x20});
 
     emulate();
 
@@ -27,7 +27,7 @@ TEST_F(EmulateFixture, CallIndirectIntraReg)
     write_reg(BX, 0x2010);
 
     // call near bx
-    set_instruction({ 0xff, 0xd3 });
+    set_instruction({0xff, 0xd3});
 
     emulate();
 
@@ -47,7 +47,7 @@ TEST_F(EmulateFixture, CallIndirectIntraMem)
     write_mem16(0x0200, 0x2010);
 
     // call near [bx]
-    set_instruction({ 0xff, 0x17 });
+    set_instruction({0xff, 0x17});
 
     emulate();
 
@@ -62,7 +62,7 @@ TEST_F(EmulateFixture, CallDirectInter)
     write_reg(CS, 0x2000);
     write_reg(IP, 0x0030);
     write_reg(SP, 0x0100);
-    set_instruction({ 0x9a, 0x10, 0x20, 0x00, 0x80 });
+    set_instruction({0x9a, 0x10, 0x20, 0x00, 0x80});
 
     emulate();
 
@@ -84,7 +84,7 @@ TEST_F(EmulateFixture, CallIndirectInter)
     write_mem16(0x0200, 0x2010);
 
     // call far [bx]
-    set_instruction({ 0xff, 0x1f });
+    set_instruction({0xff, 0x1f});
 
     emulate();
 

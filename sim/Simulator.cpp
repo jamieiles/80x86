@@ -20,20 +20,23 @@
 #include "SPI.h"
 #include "Timer.h"
 
-namespace tty {
-    const std::string green = "\x1b[32m";
-    const std::string normal = "\x1b[39;49;0m";
-    const std::string bold = "\x1b[1m";
+namespace tty
+{
+const std::string green = "\x1b[32m";
+const std::string normal = "\x1b[39;49;0m";
+const std::string bold = "\x1b[1m";
 };
 
-class SDRAMConfigRegister : public IOPorts {
+class SDRAMConfigRegister : public IOPorts
+{
 public:
-    SDRAMConfigRegister()
-        : IOPorts(0xfffc, 1)
-    {}
+    SDRAMConfigRegister() : IOPorts(0xfffc, 1) {}
 
-    void write8(uint16_t __unused port_num, unsigned __unused offs,
-                uint8_t __unused v) {}
+    void write8(uint16_t __unused port_num,
+                unsigned __unused offs,
+                uint8_t __unused v)
+    {
+    }
     uint8_t read8(uint16_t __unused port_num, unsigned offs)
     {
         return offs == 0 ? 0x1 : 0;
@@ -41,12 +44,14 @@ public:
 };
 
 template <typename T>
-class Simulator {
+class Simulator
+{
 public:
     Simulator<T>(const std::string &bios_path,
                  const std::string &disk_image_path,
                  bool detached);
     void run();
+
 private:
     void load_bios(const std::string &bios_path);
     void process_io();
@@ -67,12 +72,12 @@ Simulator<T>::Simulator(const std::string &bios_path,
                         const std::string &disk_image_path,
                         bool detached)
     : cpu("simulator"),
-    spi(disk_image_path),
-    timer(&this->cpu),
-    cga(this->cpu.get_memory()),
-    kbd(&this->cpu),
-    got_exit(false),
-    detached(detached)
+      spi(disk_image_path),
+      timer(&this->cpu),
+      cga(this->cpu.get_memory()),
+      kbd(&this->cpu),
+      got_exit(false),
+      detached(detached)
 {
     cpu.add_ioport(&sdram_config_register);
     cpu.add_ioport(&uart);
@@ -87,7 +92,8 @@ Simulator<T>::Simulator(const std::string &bios_path,
 template <typename T>
 void Simulator<T>::load_bios(const std::string &bios_path)
 {
-    std::cout << tty::bold << tty::green << "Loading bios: " << bios_path << tty::normal << "\r\n";
+    std::cout << tty::bold << tty::green << "Loading bios: " << bios_path
+              << tty::normal << "\r\n";
 
     std::ifstream bios(bios_path, std::ios::binary);
     for (unsigned offs = 0; !bios.eof(); ++offs) {
@@ -151,7 +157,10 @@ void Simulator<T>::run()
 
     std::chrono::duration<double> elapsed_seconds = end_time - start_time;
 
-    std::cout << tty::bold << tty::green << "\r\nOperating frequency: " << (cpu.cycle_count() / 1000000.0) / elapsed_seconds.count() << "MHz\r\n" << tty::normal;
+    std::cout << tty::bold << tty::green << "\r\nOperating frequency: "
+              << (cpu.cycle_count() / 1000000.0) / elapsed_seconds.count()
+              << "MHz\r\n"
+              << tty::normal;
 }
 
 int main(int argc, char **argv)
@@ -163,6 +172,7 @@ int main(int argc, char **argv)
     bool detached;
 
     po::options_description desc("Options");
+    // clang-format off
     desc.add_options()
         ("help,h", "print this usage information and exit")
         ("backend,b", po::value<std::string>(&backend),
@@ -173,6 +183,7 @@ int main(int argc, char **argv)
          "the bios image to use")
         ("diskimage", po::value<std::string>(&disk_image)->required(),
          "the boot disk image");
+    // clang-format on
 
     po::positional_options_description positional;
     positional.add("bios", 1);
@@ -181,7 +192,9 @@ int main(int argc, char **argv)
     po::variables_map variables_map;
     try {
         po::store(po::command_line_parser(argc, argv)
-                    .options(desc).positional(positional).run(),
+                      .options(desc)
+                      .positional(positional)
+                      .run(),
                   variables_map);
         if (variables_map.count("help")) {
             std::cout << desc << std::endl;
@@ -203,10 +216,12 @@ int main(int argc, char **argv)
         Simulator<SoftwareCPU> sim(bios_image, disk_image, detached);
         sim.run();
     } else if (backend == "RTLCPU") {
-        Simulator<RTLCPU<verilator_debug_enabled>> sim(bios_image, disk_image, detached);
+        Simulator<RTLCPU<verilator_debug_enabled>> sim(bios_image, disk_image,
+                                                       detached);
         sim.run();
     } else {
-        std::cerr << "Error: invalid simulation backend \"" << backend << "\"" << std::endl;
+        std::cerr << "Error: invalid simulation backend \"" << backend << "\""
+                  << std::endl;
         return 3;
     }
 
