@@ -121,14 +121,16 @@ stub_irq:
 int_handler 0x1c, stub_irq
 
 kbd_irq:
-     push %ax
-     inw $0x60, %ax
-     pop %ax
-     iret
+    cli
+    push %ax
+    inw $0x60, %ax
+    pop %ax
+    iret
 
 int_handler 0x9, kbd_irq
 
 timer_irq:
+    cli
     push %ds
     push %bx
     push %ax
