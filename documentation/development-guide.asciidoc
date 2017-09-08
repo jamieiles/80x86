@@ -589,7 +589,9 @@ load the design into the FPGA via the Altera USB Blaster.
 
 | 16'h0061 | 8 a| PS/2 control/status register:
 
-  - [7:1]: reserved
+  - [7:2]: reserved
+  - [1]: a byte with a parity error was received and discarded.  Cleared on
+  read.
   - [0]: receive FIFO not empty/acknowledge.  Write to acknowledge the last
   received byte and pop it from the FIFO.
 

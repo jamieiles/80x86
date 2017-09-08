@@ -3,6 +3,7 @@ module PS2Host(input logic clk,
                // Host signals
                output logic [7:0] rx,
                output logic rx_valid,
+               output logic error,
                // Connector signals
                input logic ps2_clk,
                input logic ps2_dat);
@@ -65,5 +66,13 @@ always_ff @(posedge clk)
 always_ff @(posedge clk)
     if (state == STATE_RX && do_sample)
         rx <= {ps2_dat_sync, rx[7:1]};
+
+always_ff @(posedge clk or posedge reset)
+    if (reset)
+        error <= 1'b0;
+    else if (state == STATE_IDLE)
+        error <= 1'b0;
+    else if (state == STATE_PARITY && do_sample)
+        error <= ~^{rx, ps2_dat_sync};
 
 endmodule
