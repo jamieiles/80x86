@@ -25,7 +25,6 @@ VECTOR(0x1a, timer_services);
 
 void init_timer(void)
 {
-    outb(0xfff5, 8);
-    outb(0xfff4, 1);
+    outb(0xfff4, inb(0xfff4) | 1);
     outw(0xffee, (1 << 15) | 55);
 }

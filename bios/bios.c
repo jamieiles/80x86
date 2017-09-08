@@ -141,8 +141,15 @@ static void bda_init(void)
         writeb(0x40, i, 0);
 }
 
+static void irq_init(void)
+{
+    // IRQ base
+    outb(0xfff5, 8);
+}
+
 void root(void)
 {
+    irq_init();
     bda_init();
     display_init();
 
