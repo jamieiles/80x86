@@ -61,7 +61,9 @@ class CoreFixture : public RTLCPU<verilator_debug_enabled>,
                     public ::testing::Test
 {
 public:
-    CoreFixture() : RTLCPU(current_test_name()) {}
+    CoreFixture() : RTLCPU(current_test_name())
+    {
+    }
 };
 TEST_F(CoreFixture, SegmentRegisterFileReset)
 {

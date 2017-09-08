@@ -30,7 +30,9 @@ const std::string bold = "\x1b[1m";
 class SDRAMConfigRegister : public IOPorts
 {
 public:
-    SDRAMConfigRegister() : IOPorts(0xfffc, 1) {}
+    SDRAMConfigRegister() : IOPorts(0xfffc, 1)
+    {
+    }
 
     void write8(uint16_t __unused port_num,
                 unsigned __unused offs,

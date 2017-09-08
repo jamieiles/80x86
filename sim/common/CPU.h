@@ -22,23 +22,23 @@ enum InterruptVectorOffset {
     VEC_ESCAPE = 28
 };
 
-static inline phys_addr get_phys_addr(uint16_t segment,
-                                      uint32_t displacement)
+static inline phys_addr get_phys_addr(uint16_t segment, uint32_t displacement)
 {
-    return ((static_cast<uint32_t>(segment) << 4) + displacement) % (1 * 1024 * 1024);
+    return ((static_cast<uint32_t>(segment) << 4) + displacement) %
+           (1 * 1024 * 1024);
 }
 
-class IOPorts {
+class IOPorts
+{
 public:
-    IOPorts(uint16_t base, size_t num_ports)
-        : base(base),
-        num_ports(num_ports)
-    {}
-    virtual uint8_t read8(uint16_t port_num,
-                          unsigned offs) = 0;
+    IOPorts(uint16_t base, size_t num_ports) : base(base), num_ports(num_ports)
+    {
+    }
+    virtual uint8_t read8(uint16_t port_num, unsigned offs) = 0;
     virtual uint16_t read16(uint16_t port_num)
     {
-        return read8(port_num, 0) | (static_cast<uint16_t>(read8(port_num, 1)) << 8);
+        return read8(port_num, 0) |
+               (static_cast<uint16_t>(read8(port_num, 1)) << 8);
     }
     virtual void write8(uint16_t port_num, unsigned offs, uint8_t v) = 0;
     virtual void write16(uint16_t port_num, uint16_t v)
@@ -54,6 +54,7 @@ public:
     {
         return num_ports;
     }
+
 private:
     uint16_t base;
     size_t num_ports;
@@ -61,18 +62,20 @@ private:
 
 using NotImplemented = std::runtime_error;
 
-class CPU {
+class CPU
+{
 public:
-    CPU()
-        : CPU("default")
+    CPU() : CPU("default")
     {
     }
     CPU(const std::string __unused &name)
     {
     }
-    virtual ~CPU() {};
+    virtual ~CPU(){};
     virtual bool has_instruction_length() const = 0;
-    virtual void write_coverage() {}
+    virtual void write_coverage()
+    {
+    }
     virtual void write_reg(GPR regnum, uint16_t val) = 0;
     virtual uint16_t read_reg(GPR regnum) = 0;
     virtual void cycle_cpu()
@@ -113,16 +116,20 @@ public:
     virtual uint16_t read_io16(uint32_t addr) = 0;
     virtual void add_ioport(IOPorts *p) = 0;
 
-    virtual void write_vector8(uint16_t segment, uint16_t addr, const std::vector<uint8_t> &v)
+    virtual void write_vector8(uint16_t segment,
+                               uint16_t addr,
+                               const std::vector<uint8_t> &v)
     {
         uint16_t offs = 0;
-        for (auto &b: v)
+        for (auto &b : v)
             write_mem8(segment, addr + offs++, b);
     }
-    virtual void write_vector16(uint16_t segment, uint16_t addr, const std::vector<uint16_t> &v)
+    virtual void write_vector16(uint16_t segment,
+                                uint16_t addr,
+                                const std::vector<uint16_t> &v)
     {
         uint16_t offs = 0;
-        for (auto &w: v) {
+        for (auto &w : v) {
             write_mem16(segment, addr + offs, w);
             offs += 2;
         }
@@ -133,11 +140,12 @@ public:
     virtual unsigned long cycle_count() const = 0;
 };
 
-class SimCPU : public CPU {
+class SimCPU : public CPU
+{
 public:
-    SimCPU(const std::string &name)
-        : CPU(name)
-    {}
+    SimCPU(const std::string &name) : CPU(name)
+    {
+    }
 
     Memory *get_memory()
     {
@@ -151,12 +159,14 @@ public:
         throw NotImplemented("step_with_io not implemented");
     }
 
-    virtual void cycle_cpu_with_io(std::function<void(unsigned long)> io_callback)
+    virtual void cycle_cpu_with_io(
+        std::function<void(unsigned long)> io_callback)
     {
         (void)io_callback;
 
         throw NotImplemented("cycle_with_io not implemented");
     }
+
 protected:
     Memory mem;
 };

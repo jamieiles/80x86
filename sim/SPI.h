@@ -11,7 +11,8 @@
 //
 // Blocklen is ignored and will always be 512 bytes.
 // ACMD messages are ignored too.
-class SPI : public IOPorts {
+class SPI : public IOPorts
+{
 private:
     enum SPIState {
         STATE_IDLE,
@@ -20,12 +21,14 @@ private:
         STATE_WAIT_FOR_DATA,
         STATE_DO_WRITE_BLOCK,
     };
+
 public:
     SPI(const std::string &disk_image_path);
     void write8(uint16_t port_num, unsigned offs, uint8_t v);
     void write16(uint16_t port_num, uint16_t v);
     uint8_t read8(uint16_t port_num, unsigned offs);
     uint16_t read16(uint16_t __unused port_num);
+
 private:
     void transfer(uint8_t mosi_val);
     bool transmit_ready();

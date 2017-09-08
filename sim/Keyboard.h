@@ -96,7 +96,9 @@ template <typename CPU_t>
 class Keyboard : public IOPorts
 {
 public:
-    Keyboard(CPU_t *cpu) : IOPorts(0x0060, 1), cpu(cpu) {}
+    Keyboard(CPU_t *cpu) : IOPorts(0x0060, 1), cpu(cpu)
+    {
+    }
 
     void write8(uint16_t __unused port_num,
                 unsigned __unused offs,

@@ -8,8 +8,14 @@ class FifoTestFixture : public VerilogTestbench<VFifo>, public ::testing::Test
 public:
     FifoTestFixture();
     void push(uint32_t val);
-    bool is_empty() const { return empty; }
-    uint32_t get_head() const { return head; }
+    bool is_empty() const
+    {
+        return empty;
+    }
+    uint32_t get_head() const
+    {
+        return head;
+    }
     uint32_t pop();
 
 private:

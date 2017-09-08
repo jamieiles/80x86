@@ -33,7 +33,10 @@ public:
         FAIL() << "failed to complete immediate fetch" << std::endl;
     }
 
-    bool is_complete() const { return complete; }
+    bool is_complete() const
+    {
+        return complete;
+    }
 
 private:
     std::deque<uint8_t> stream;

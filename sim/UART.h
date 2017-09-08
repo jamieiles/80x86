@@ -9,7 +9,8 @@
 #include "UART.h"
 #include "CPU.h"
 
-class RawTTY {
+class RawTTY
+{
 public:
     RawTTY()
     {
@@ -28,11 +29,13 @@ public:
     {
         tcsetattr(STDIN_FILENO, TCSANOW, &old_termios);
     }
+
 private:
     struct termios old_termios;
 };
 
-class UART : public IOPorts {
+class UART : public IOPorts
+{
 public:
     UART();
     void write8(uint16_t port_num, unsigned offs, uint8_t v);
@@ -40,6 +43,7 @@ public:
     uint8_t read8(uint16_t port_num, unsigned offs);
     uint16_t read16(uint16_t port_num);
     void add_char(int c);
+
 private:
     RawTTY raw_tty;
     std::deque<uint8_t> charbuf;

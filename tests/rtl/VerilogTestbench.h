@@ -5,11 +5,11 @@
 #include "VerilogDriver.h"
 #include "TestUtils.h"
 
-template <typename T, bool debug_enabled=verilator_debug_enabled>
-class VerilogTestbench : public VerilogDriver<T, debug_enabled> {
+template <typename T, bool debug_enabled = verilator_debug_enabled>
+class VerilogTestbench : public VerilogDriver<T, debug_enabled>
+{
 public:
-    VerilogTestbench()
-        : VerilogDriver<T, debug_enabled>(current_test_name())
+    VerilogTestbench() : VerilogDriver<T, debug_enabled>(current_test_name())
     {
     }
 };

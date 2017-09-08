@@ -11,9 +11,10 @@ struct Cursor {
     int col;
 };
 
-class Display {
+class Display
+{
 public:
-    Display(int num_rows=25, int num_cols=80);
+    Display(int num_rows = 25, int num_cols = 80);
     ~Display();
 
     void set_cursor(int row, int col);

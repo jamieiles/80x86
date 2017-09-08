@@ -14,7 +14,8 @@ class EmulatorPimpl;
 class Memory;
 class RegisterFile;
 
-class Emulator {
+class Emulator
+{
 public:
     Emulator(RegisterFile *registers);
     virtual ~Emulator();
@@ -28,6 +29,7 @@ public:
     void raise_irq(int irq_num);
     void clear_irq(int irq_num);
     unsigned long cycle_count() const;
+
 private:
     std::unique_ptr<EmulatorPimpl> pimpl;
     unsigned long num_cycles;

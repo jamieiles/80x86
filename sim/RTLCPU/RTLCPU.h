@@ -14,9 +14,9 @@ static inline void null_io(unsigned long __unused v)
 {
 }
 
-template <bool debug_enabled=verilator_debug_enabled>
-class RTLCPU : public VerilogDriver<VRTLCPU, debug_enabled>,
-    public SimCPU {
+template <bool debug_enabled = verilator_debug_enabled>
+class RTLCPU : public VerilogDriver<VRTLCPU, debug_enabled>, public SimCPU
+{
 public:
     RTLCPU(const std::string &test_name);
     void write_coverage();
@@ -40,8 +40,9 @@ public:
     uint16_t read_flags();
     bool has_trapped();
 
-    int debug_run_proc(unsigned addr,
-                       std::function<void(unsigned long)> io_callback=null_io);
+    int debug_run_proc(
+        unsigned addr,
+        std::function<void(unsigned long)> io_callback = null_io);
     void debug_seize();
     int debug_step(std::function<void(unsigned long)> io_callback);
     bool debug_is_stopped() const
@@ -75,8 +76,12 @@ public:
             io[p->get_base() + m * sizeof(uint16_t)] = p;
     }
 
-    void write_vector8(uint16_t segment, uint16_t addr, const std::vector<uint8_t> &v);
-    void write_vector16(uint16_t segment, uint16_t addr, const std::vector<uint16_t> &v);
+    void write_vector8(uint16_t segment,
+                       uint16_t addr,
+                       const std::vector<uint8_t> &v);
+    void write_vector16(uint16_t segment,
+                        uint16_t addr,
+                        const std::vector<uint16_t> &v);
 
     virtual bool has_instruction_length() const
     {
@@ -85,11 +90,9 @@ public:
 
     virtual void raise_nmi()
     {
-        this->after_n_cycles(0, [this]{
+        this->after_n_cycles(0, [this] {
             this->dut.nmi = 1;
-            this->after_n_cycles(1, [this]{
-                this->dut.nmi = 0;
-            });
+            this->after_n_cycles(1, [this] { this->dut.nmi = 0; });
         });
         this->cycle();
     }
@@ -112,6 +115,7 @@ public:
     {
         return static_cast<unsigned long>(this->cur_cycle());
     }
+
 private:
     uint16_t get_microcode_address();
     void mem_access();

@@ -16,7 +16,10 @@ public:
         stream.insert(stream.end(), bytes.begin(), bytes.end());
     }
 
-    uint16_t current_address() { return this->dut.get_microcode_address(); }
+    uint16_t current_address()
+    {
+        return this->dut.get_microcode_address();
+    }
     bool underflowed;
 
 private:

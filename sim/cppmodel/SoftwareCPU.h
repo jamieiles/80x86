@@ -4,14 +4,13 @@
 #include "CPU.h"
 #include "Emulate.h"
 
-class SoftwareCPU : public SimCPU {
+class SoftwareCPU : public SimCPU
+{
 public:
-    SoftwareCPU()
-        : SoftwareCPU("default")
+    SoftwareCPU() : SoftwareCPU("default")
     {
     }
-    SoftwareCPU(const std::string &name)
-        : SimCPU(name), emulator(&registers)
+    SoftwareCPU(const std::string &name) : SimCPU(name), emulator(&registers)
     {
         (void)name;
 
@@ -160,6 +159,7 @@ public:
     {
         return emulator.cycle_count();
     }
+
 private:
     RegisterFile registers;
     Emulator emulator;

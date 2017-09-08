@@ -289,9 +289,9 @@ static void keyboard_services(struct callregs *regs)
     regs->flags |= CF;
 
     switch (regs->ax.h) {
-    case 0x0:  // Fallthrough
+    case 0x0: // Fallthrough
     case 0x10: keyboard_wait(regs); break;
-    case 0x1:  // Fallthrough
+    case 0x1: // Fallthrough
     case 0x11: keyboard_status(regs); break;
     case 0x2: keyboard_shift_status(regs); break;
     default: break;

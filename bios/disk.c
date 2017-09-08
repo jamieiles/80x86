@@ -10,8 +10,8 @@ static void disk_read(struct callregs *regs)
         return;
     }
 
-    unsigned short cylinder = regs->cx.h |
-        (((unsigned short)regs->cx.l & 0xc0) << 2);
+    unsigned short cylinder =
+        regs->cx.h | (((unsigned short)regs->cx.l & 0xc0) << 2);
     unsigned short head = regs->dx.h;
     unsigned short sector = regs->cx.l & 0x3f;
     unsigned short lba = (cylinder * 2 + head) * 0x12 + (sector - 1);
@@ -39,8 +39,8 @@ static void disk_write(struct callregs *regs)
         return;
     }
 
-    unsigned short cylinder = regs->cx.h |
-        (((unsigned short)regs->cx.l & 0xc0) << 2);
+    unsigned short cylinder =
+        regs->cx.h | (((unsigned short)regs->cx.l & 0xc0) << 2);
     unsigned short head = regs->dx.h;
     unsigned short sector = regs->cx.l & 0x3f;
     unsigned short lba = (cylinder * 2 + head) * 0x12 + (sector - 1);
@@ -123,24 +123,12 @@ static void disk_services(struct callregs *regs)
     regs->flags |= CF;
 
     switch (regs->ax.h) {
-    case 0x00:
-        disk_reset(regs);
-        break;
-    case 0x01:
-        disk_status(regs);
-        break;
-    case 0x02:
-        disk_read(regs);
-        break;
-    case 0x03:
-        disk_write(regs);
-        break;
-    case 0x08:
-        disk_parameters(regs);
-        break;
-    case 0x15:
-        disk_get_type(regs);
-        break;
+    case 0x00: disk_reset(regs); break;
+    case 0x01: disk_status(regs); break;
+    case 0x02: disk_read(regs); break;
+    case 0x03: disk_write(regs); break;
+    case 0x08: disk_parameters(regs); break;
+    case 0x15: disk_get_type(regs); break;
     }
 }
 VECTOR(0x13, disk_services);

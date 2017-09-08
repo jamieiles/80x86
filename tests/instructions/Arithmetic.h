@@ -13,10 +13,12 @@ struct ArithmeticTest {
     uint16_t carry_set;
 };
 
-using Arith8Params = std::pair<const std::vector<uint8_t>,
-      const std::vector<struct ArithmeticTest<uint8_t>>>;
-using Arith16Params = std::pair<const std::vector<uint8_t>,
-      const std::vector<struct ArithmeticTest<uint16_t>>>;
+using Arith8Params =
+    std::pair<const std::vector<uint8_t>,
+              const std::vector<struct ArithmeticTest<uint8_t>>>;
+using Arith16Params =
+    std::pair<const std::vector<uint8_t>,
+              const std::vector<struct ArithmeticTest<uint16_t>>>;
 
 template <typename T>
 struct ArithmeticImmediateTest {
@@ -26,87 +28,127 @@ struct ArithmeticImmediateTest {
     bool carry_set;
 };
 
-using ArithImmed8Params = std::pair<const std::vector<uint8_t>,
-      const struct ArithmeticImmediateTest<uint8_t>>;
-using ArithImmed16Params = std::pair<const std::vector<uint8_t>,
-      const struct ArithmeticImmediateTest<uint16_t>>;
+using ArithImmed8Params =
+    std::pair<const std::vector<uint8_t>,
+              const struct ArithmeticImmediateTest<uint8_t>>;
+using ArithImmed16Params =
+    std::pair<const std::vector<uint8_t>,
+              const struct ArithmeticImmediateTest<uint16_t>>;
 
 class ArithmeticRegReg8Test : public EmulateFixture,
-    public ::testing::WithParamInterface<Arith8Params> {
+                              public ::testing::WithParamInterface<Arith8Params>
+{
 };
 
 class ArithmeticMemReg8Test : public EmulateFixture,
-    public ::testing::WithParamInterface<Arith8Params> {
+                              public ::testing::WithParamInterface<Arith8Params>
+{
 };
 
-class ArithmeticRegReg8TestReversed : public EmulateFixture,
-    public ::testing::WithParamInterface<Arith8Params> {
+class ArithmeticRegReg8TestReversed
+    : public EmulateFixture,
+      public ::testing::WithParamInterface<Arith8Params>
+{
 };
 
-class ArithmeticRegReg8TestReversedNoResult : public EmulateFixture,
-    public ::testing::WithParamInterface<Arith8Params> {
+class ArithmeticRegReg8TestReversedNoResult
+    : public EmulateFixture,
+      public ::testing::WithParamInterface<Arith8Params>
+{
 };
 
-class ArithmeticMemReg8TestReversed : public EmulateFixture,
-    public ::testing::WithParamInterface<Arith8Params> {
+class ArithmeticMemReg8TestReversed
+    : public EmulateFixture,
+      public ::testing::WithParamInterface<Arith8Params>
+{
 };
 
-class ArithmeticMemReg8TestReversedNoResult : public EmulateFixture,
-    public ::testing::WithParamInterface<Arith8Params> {
+class ArithmeticMemReg8TestReversedNoResult
+    : public EmulateFixture,
+      public ::testing::WithParamInterface<Arith8Params>
+{
 };
 
-class ArithmeticRegReg16Test : public EmulateFixture,
-    public ::testing::WithParamInterface<Arith16Params> {
+class ArithmeticRegReg16Test
+    : public EmulateFixture,
+      public ::testing::WithParamInterface<Arith16Params>
+{
 };
 
-class ArithmeticRegMem16Test : public EmulateFixture,
-    public ::testing::WithParamInterface<Arith16Params> {
+class ArithmeticRegMem16Test
+    : public EmulateFixture,
+      public ::testing::WithParamInterface<Arith16Params>
+{
 };
 
-class ArithmeticRegReg16TestReversed : public EmulateFixture,
-    public ::testing::WithParamInterface<Arith16Params> {
+class ArithmeticRegReg16TestReversed
+    : public EmulateFixture,
+      public ::testing::WithParamInterface<Arith16Params>
+{
 };
 
-class ArithmeticMemReg16TestReversed : public EmulateFixture,
-    public ::testing::WithParamInterface<Arith16Params> {
+class ArithmeticMemReg16TestReversed
+    : public EmulateFixture,
+      public ::testing::WithParamInterface<Arith16Params>
+{
 };
 
-class ArithmeticRegReg16TestReversedNoResult : public EmulateFixture,
-    public ::testing::WithParamInterface<Arith16Params> {
+class ArithmeticRegReg16TestReversedNoResult
+    : public EmulateFixture,
+      public ::testing::WithParamInterface<Arith16Params>
+{
 };
 
-class ArithmeticMemReg16TestReversedNoResult : public EmulateFixture,
-    public ::testing::WithParamInterface<Arith16Params> {
+class ArithmeticMemReg16TestReversedNoResult
+    : public EmulateFixture,
+      public ::testing::WithParamInterface<Arith16Params>
+{
 };
 
-class ArithmeticRegImmed8Test : public EmulateFixture,
-    public ::testing::WithParamInterface<ArithImmed8Params> {
+class ArithmeticRegImmed8Test
+    : public EmulateFixture,
+      public ::testing::WithParamInterface<ArithImmed8Params>
+{
 };
 
-class ArithmeticMemImmed8Test : public EmulateFixture,
-    public ::testing::WithParamInterface<ArithImmed8Params> {
+class ArithmeticMemImmed8Test
+    : public EmulateFixture,
+      public ::testing::WithParamInterface<ArithImmed8Params>
+{
 };
 
-class ArithmeticRegImmed16Test : public EmulateFixture,
-    public ::testing::WithParamInterface<ArithImmed16Params> {
+class ArithmeticRegImmed16Test
+    : public EmulateFixture,
+      public ::testing::WithParamInterface<ArithImmed16Params>
+{
 };
 
-class ArithmeticMemImmed16Test : public EmulateFixture,
-    public ::testing::WithParamInterface<ArithImmed16Params> {
+class ArithmeticMemImmed16Test
+    : public EmulateFixture,
+      public ::testing::WithParamInterface<ArithImmed16Params>
+{
 };
 
-class ArithmeticRegImmed16TestExtend : public EmulateFixture,
-    public ::testing::WithParamInterface<ArithImmed16Params> {
+class ArithmeticRegImmed16TestExtend
+    : public EmulateFixture,
+      public ::testing::WithParamInterface<ArithImmed16Params>
+{
 };
 
-class ArithmeticMemImmed16TestExtend : public EmulateFixture,
-    public ::testing::WithParamInterface<ArithImmed16Params> {
+class ArithmeticMemImmed16TestExtend
+    : public EmulateFixture,
+      public ::testing::WithParamInterface<ArithImmed16Params>
+{
 };
 
-class ArithmeticAlImmedTest : public EmulateFixture,
-    public ::testing::WithParamInterface<ArithImmed8Params> {
+class ArithmeticAlImmedTest
+    : public EmulateFixture,
+      public ::testing::WithParamInterface<ArithImmed8Params>
+{
 };
 
-class ArithmeticAxImmedTest : public EmulateFixture,
-    public ::testing::WithParamInterface<ArithImmed16Params> {
+class ArithmeticAxImmedTest
+    : public EmulateFixture,
+      public ::testing::WithParamInterface<ArithImmed16Params>
+{
 };

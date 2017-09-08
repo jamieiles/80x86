@@ -5,7 +5,8 @@
 #include "RegisterFile.h"
 #include "ModRM.h"
 
-class ModRMDecoderTestBench {
+class ModRMDecoderTestBench
+{
 public:
     virtual void set_instruction(const std::vector<uint8_t> instruction) = 0;
     virtual void decode() = 0;
@@ -17,6 +18,7 @@ public:
     {
         return &regs;
     }
+
 protected:
     RegisterFile regs;
 };

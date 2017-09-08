@@ -11,12 +11,10 @@ enum OperandType {
     OP_MEM,
 };
 
-enum OperandWidth {
-    OP_WIDTH_8,
-    OP_WIDTH_16
-};
+enum OperandWidth { OP_WIDTH_8, OP_WIDTH_16 };
 
-class ModRMDecoder {
+class ModRMDecoder
+{
 public:
     ModRMDecoder(std::function<uint8_t()> get_byte,
                  const RegisterFile *registers);

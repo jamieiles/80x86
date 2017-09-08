@@ -31,7 +31,8 @@ const int evals_per_cycle = 10;
 extern double sc_time_stamp();
 extern double cur_time_stamp;
 
-static_assert(evals_per_cycle % 2 == 0, "evals_per_cycle must be divisible by 2");
+static_assert(evals_per_cycle % 2 == 0,
+              "evals_per_cycle must be divisible by 2");
 
 #ifdef DEBUG
 const bool verilator_debug_enabled = true;
@@ -45,16 +46,16 @@ const bool verilator_coverage_enabled = true;
 const bool verilator_coverage_enabled = false;
 #endif
 
-template <typename T, bool debug_enabled=verilator_debug_enabled>
-class VerilogDriver {
+template <typename T, bool debug_enabled = verilator_debug_enabled>
+class VerilogDriver
+{
 public:
     VerilogDriver();
     VerilogDriver(const std::string &instance_name);
     VerilogDriver(const VerilogDriver &rhs) = delete;
     virtual ~VerilogDriver();
-    void reset(int count=2);
-    void after_n_cycles(vluint64_t delta,
-                        std::function<void()> cb)
+    void reset(int count = 2);
+    void after_n_cycles(vluint64_t delta, std::function<void()> cb)
     {
         at_cycle(cycle_num + delta, cb);
     }
@@ -62,13 +63,15 @@ public:
     {
         periodic_events[edge_type].push_back(fn);
     }
-    virtual void cycle(int count=1);
+    virtual void cycle(int count = 1);
     vluint64_t cur_cycle() const
     {
         return cycle_num;
     }
+
 protected:
     T dut;
+
 private:
     void at_cycle(vluint64_t cycle_num, std::function<void()> cb);
     void run_deferred_events();
@@ -84,14 +87,14 @@ private:
 };
 template <typename T, bool debug_enabled>
 VerilogDriver<T, debug_enabled>::VerilogDriver()
-    : VerilogDriver<T, debug_enabled>(boost::typeindex::type_id<T>().pretty_name())
+    : VerilogDriver<T, debug_enabled>(
+          boost::typeindex::type_id<T>().pretty_name())
 {
 }
 
 template <typename T, bool debug_enabled>
 VerilogDriver<T, debug_enabled>::VerilogDriver(const std::string &instance_name)
-    : cycle_num(0),
-    instance_name(instance_name)
+    : cycle_num(0), instance_name(instance_name)
 {
     dut.reset = 0;
     dut.clk = 0;
@@ -164,9 +167,7 @@ template <typename T, bool debug_enabled>
 void VerilogDriver<T, debug_enabled>::reset(int count)
 {
     this->dut.reset = 1;
-    after_n_cycles(count, [&]{
-        this->dut.reset = 0;
-    });
+    after_n_cycles(count, [&] { this->dut.reset = 0; });
     do {
         cycle();
     } while (dut.reset);
@@ -177,7 +178,6 @@ void VerilogDriver<T, debug_enabled>::cycle(int count)
 {
     for (int i = 0; i < count; ++i) {
         for (auto j = 0; j < evals_per_cycle; ++j) {
-
             if (debug_enabled)
                 tracer.dump(cur_time);
             if (j == 0) {
@@ -202,9 +202,10 @@ void VerilogDriver<T, debug_enabled>::cycle(int count)
 }
 
 template <typename T, bool debug_enabled>
-void VerilogDriver<T, debug_enabled>::run_periodic_events(PeriodicEventType edge_type)
+void VerilogDriver<T, debug_enabled>::run_periodic_events(
+    PeriodicEventType edge_type)
 {
-    for (auto &e: periodic_events[edge_type])
+    for (auto &e : periodic_events[edge_type])
         e();
 }
 
@@ -213,7 +214,7 @@ void VerilogDriver<T, debug_enabled>::run_deferred_events()
 {
     auto events = deferred_events[cycle_num];
     deferred_events.erase(cycle_num);
-    for (auto &e: events)
+    for (auto &e : events)
         e();
 }
 

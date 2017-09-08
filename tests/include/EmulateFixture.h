@@ -10,12 +10,12 @@
 
 extern std::unique_ptr<CPU> get_cpu(const std::string &test_name);
 
-class DummyIO : public IOPorts {
+class DummyIO : public IOPorts
+{
 public:
-    DummyIO(uint16_t addr, size_t num_ports)
-        : IOPorts(addr, num_ports),
-        val(0)
-    {}
+    DummyIO(uint16_t addr, size_t num_ports) : IOPorts(addr, num_ports), val(0)
+    {
+    }
 
     uint8_t read8(uint16_t port_num, unsigned offs)
     {
@@ -52,12 +52,14 @@ public:
     {
         return write_vals;
     }
+
 private:
     uint16_t val;
     std::vector<uint16_t> write_vals;
 };
 
-class EmulateFixture : public ::testing::Test {
+class EmulateFixture : public ::testing::Test
+{
 public:
     EmulateFixture()
         : cpu(get_cpu(current_test_name())),
@@ -113,20 +115,20 @@ public:
         return cpu->read_reg(regnum);
     }
 
-    void write_mem8(uint16_t addr, uint8_t val, GPR segment=DS)
+    void write_mem8(uint16_t addr, uint8_t val, GPR segment = DS)
     {
         cpu->write_mem8(cpu->read_reg(segment), addr, val);
     }
-    void write_mem16(uint16_t addr, uint16_t val, GPR segment=DS)
+    void write_mem16(uint16_t addr, uint16_t val, GPR segment = DS)
     {
         cpu->write_mem16(cpu->read_reg(segment), addr, val);
     }
-    void write_mem32(uint16_t addr, uint32_t val, GPR segment=DS)
+    void write_mem32(uint16_t addr, uint32_t val, GPR segment = DS)
     {
         cpu->write_mem32(cpu->read_reg(segment), addr, val);
     }
 
-    void write_cstring(uint16_t addr, const char *str, GPR segment=DS)
+    void write_cstring(uint16_t addr, const char *str, GPR segment = DS)
     {
         do {
             write_mem8(addr++, *str++, segment);
@@ -134,22 +136,26 @@ public:
         write_mem8(addr, 0, segment);
     }
 
-    void write_vector8(uint16_t addr, std::vector<uint8_t> vec, GPR segment=DS)
+    void write_vector8(uint16_t addr,
+                       std::vector<uint8_t> vec,
+                       GPR segment = DS)
     {
-        for (auto v: vec) {
+        for (auto v : vec) {
             write_mem8(addr, v, segment);
             ++addr;
         }
     }
-    void write_vector16(uint16_t addr, std::vector<uint16_t> vec, GPR segment=DS)
+    void write_vector16(uint16_t addr,
+                        std::vector<uint16_t> vec,
+                        GPR segment = DS)
     {
-        for (auto v: vec) {
+        for (auto v : vec) {
             write_mem16(addr, v, segment);
             addr += sizeof(uint16_t);
         }
     }
 
-    std::string read_cstring(uint16_t addr, GPR segment=DS)
+    std::string read_cstring(uint16_t addr, GPR segment = DS)
     {
         std::string str;
 
@@ -164,15 +170,15 @@ public:
         return str;
     }
 
-    uint8_t read_mem8(uint16_t addr, GPR segment=DS)
+    uint8_t read_mem8(uint16_t addr, GPR segment = DS)
     {
         return cpu->read_mem8(cpu->read_reg(segment), addr);
     }
-    uint16_t read_mem16(uint16_t addr, GPR segment=DS)
+    uint16_t read_mem16(uint16_t addr, GPR segment = DS)
     {
         return cpu->read_mem16(cpu->read_reg(segment), addr);
     }
-    uint32_t read_mem32(uint16_t addr, GPR segment=DS)
+    uint32_t read_mem32(uint16_t addr, GPR segment = DS)
     {
         return cpu->read_mem32(cpu->read_reg(segment), addr);
     }
@@ -195,14 +201,14 @@ public:
         return cpu->read_io16(addr);
     }
 
-    void emulate(int count=1)
+    void emulate(int count = 1)
     {
         cpu->clear_side_effects();
 
         assert(count > 0);
         size_t len = 0;
         for (auto i = 0; i < count; ++i)
-             len += cpu->step();
+            len += cpu->step();
         if (cpu->has_instruction_length())
             ASSERT_EQ(len, instr_len);
     }
@@ -242,6 +248,7 @@ public:
     {
         cpu->clear_irq(irq_num);
     }
+
 protected:
     size_t instr_len;
     std::unique_ptr<CPU> cpu;

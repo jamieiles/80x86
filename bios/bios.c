@@ -23,9 +23,7 @@ static void serial_services(struct callregs *regs)
 }
 VECTOR(0x14, serial_services);
 
-static const unsigned char bios_params_rec[] = {
-    8, 0, 0xff, 0, 0, 0, 0, 0
-};
+static const unsigned char bios_params_rec[] = {8, 0, 0xff, 0, 0, 0, 0, 0};
 
 static void system_configuration_parameters(struct callregs *regs)
 {
@@ -56,20 +54,11 @@ static void system_services(struct callregs *regs)
     regs->flags |= CF;
 
     switch (regs->ax.h) {
-    case 0xc0:
-        system_configuration_parameters(regs);
-        break;
-    case 0x41:
-        wait_event(regs);
-        break;
-    case 0x88:
-        system_extended_memory_size(regs);
-        break;
-    case 0x24:
-        a20_gate(regs);
-        break;
-    default:
-        break;
+    case 0xc0: system_configuration_parameters(regs); break;
+    case 0x41: wait_event(regs); break;
+    case 0x88: system_extended_memory_size(regs); break;
+    case 0x24: a20_gate(regs); break;
+    default: break;
     }
 }
 VECTOR(0x15, system_services);
@@ -111,9 +100,7 @@ static void set_vector(int vector, void *handler)
     writew(0, vector * 4 + 2, get_cs());
 }
 
-static unsigned char vpt[] = {
-        80, 25, 8, 4000 & 0xff, 4000 >> 8
-};
+static unsigned char vpt[] = {80, 25, 8, 4000 & 0xff, 4000 >> 8};
 
 static void install_vectors(void)
 {

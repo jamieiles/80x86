@@ -4,11 +4,12 @@
 #include <vector>
 
 template <typename T>
-class Fifo {
+class Fifo
+{
 public:
-    explicit Fifo(unsigned int max_depth)
-        : max_depth(max_depth)
-    {}
+    explicit Fifo(unsigned int max_depth) : max_depth(max_depth)
+    {
+    }
 
     T pop()
     {
@@ -32,6 +33,7 @@ public:
     {
         return entries.size() == max_depth;
     }
+
 private:
     const unsigned int max_depth;
     std::vector<T> entries;

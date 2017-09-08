@@ -54,7 +54,8 @@ enum Flag {
 
 enum { FLAGS_STUCK_BITS = 0xf000 | (1 << 1) };
 
-class RegisterFile {
+class RegisterFile
+{
 public:
     RegisterFile();
     virtual void reset();
@@ -62,10 +63,10 @@ public:
     virtual uint16_t get(GPR regnum) const;
     virtual uint16_t get_flags() const;
     virtual bool get_flag(enum Flag f) const;
-    virtual void set_flags(uint16_t val,
-                           uint16_t mask=0xffff);
+    virtual void set_flags(uint16_t val, uint16_t mask = 0xffff);
     virtual bool has_written() const;
     virtual void clear_has_written();
+
 private:
     uint16_t registers[NUM_16BIT_REGS];
     uint16_t flags;

@@ -21,7 +21,10 @@ public:
         this->cycle();
     }
 
-    void set_width(OperandWidth width) { is_8bit = width == OP_WIDTH_8; }
+    void set_width(OperandWidth width)
+    {
+        is_8bit = width == OP_WIDTH_8;
+    }
 
     void decode()
     {
@@ -39,9 +42,15 @@ public:
         FAIL() << "failed to complete decode" << std::endl;
     }
 
-    OperandType get_rm_type() const { return dut.rm_is_reg ? OP_REG : OP_MEM; }
+    OperandType get_rm_type() const
+    {
+        return dut.rm_is_reg ? OP_REG : OP_MEM;
+    }
 
-    uint16_t get_effective_address() const { return dut.effective_address; }
+    uint16_t get_effective_address() const
+    {
+        return dut.effective_address;
+    }
 
     GPR get_register() const
     {
@@ -55,7 +64,10 @@ public:
                        : static_cast<GPR>(dut.rm_regnum);
     }
 
-    bool is_complete() const { return complete; }
+    bool is_complete() const
+    {
+        return complete;
+    }
 
 private:
     std::deque<uint8_t> stream;

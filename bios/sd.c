@@ -79,9 +79,9 @@ struct r1_response {
 };
 
 #define R1_ERROR_MASK 0xfe
-#define SD_NCR		8
-#define DATA_START_TOKEN	0xfe
-#define BLOCK_SIZE		512
+#define SD_NCR 8
+#define DATA_START_TOKEN 0xfe
+#define BLOCK_SIZE 512
 /* Maximum number of high bytes to read before a data start token. */
 #define MAX_DATA_START_OFFS 512
 
@@ -135,9 +135,7 @@ static int find_r1_response(struct r1_response *r1)
 static int sd_send_reset(void)
 {
     struct spi_cmd cmd = {
-        .cmd = 0x40,
-        .crc = 0x95,
-        .rx_datalen = 1,
+        .cmd = 0x40, .crc = 0x95, .rx_datalen = 1,
     };
     struct r1_response r1;
 
@@ -153,7 +151,7 @@ static int sd_send_if_cond(void)
     struct spi_cmd cmd = {
         .cmd = 0x48,
         .crc = 0x87,
-        .arg = { 0x00, 0x00, 0x01, 0xaa },
+        .arg = {0x00, 0x00, 0x01, 0xaa},
         .rx_datalen = 1,
     };
     struct r1_response r1;
@@ -168,8 +166,7 @@ static int sd_send_if_cond(void)
 static int sd_send_read_ocr(void)
 {
     struct spi_cmd cmd = {
-        .cmd = 0x7a,
-        .rx_datalen = 5,
+        .cmd = 0x7a, .rx_datalen = 5,
     };
     struct r1_response r1;
 
@@ -182,12 +179,11 @@ static int sd_send_read_ocr(void)
         unsigned char u8[4];
         unsigned long u32;
     } converter = {
-        .u8 = {
-            spi_xfer_buf_get(r1_offs + 4),
-            spi_xfer_buf_get(r1_offs + 3),
-            spi_xfer_buf_get(r1_offs + 2),
-            spi_xfer_buf_get(r1_offs + 1),
-        },
+        .u8 =
+            {
+                spi_xfer_buf_get(r1_offs + 4), spi_xfer_buf_get(r1_offs + 3),
+                spi_xfer_buf_get(r1_offs + 2), spi_xfer_buf_get(r1_offs + 1),
+            },
     };
 
     if (converter.u32 & (1LU << 30))
@@ -201,9 +197,7 @@ static int sd_send_read_ocr(void)
 static int send_acmd(void)
 {
     struct spi_cmd cmd = {
-        .cmd = 0x77,
-        .arg = { 0x00, 0x00, 0x00, 0x00 },
-        .rx_datalen = 1,
+        .cmd = 0x77, .arg = {0x00, 0x00, 0x00, 0x00}, .rx_datalen = 1,
     };
     struct r1_response r1;
 
@@ -220,9 +214,7 @@ static int sd_wait_ready(void)
 
     do {
         struct spi_cmd cmd = {
-            .cmd = 0x69,
-            .arg = { 0x40, 0x00, 0x00, 0x00 },
-            .rx_datalen = 1,
+            .cmd = 0x69, .arg = {0x40, 0x00, 0x00, 0x00}, .rx_datalen = 1,
         };
         int rc = send_acmd();
 
@@ -245,7 +237,7 @@ static int sd_set_blocklen(void)
     struct spi_cmd cmd = {
         .cmd = 0x50,
         /* BLOCK_SIZE bytes */
-        .arg = { 0x00, 0x00, 0x02, 0x00 },
+        .arg = {0x00, 0x00, 0x02, 0x00},
         .rx_datalen = 1,
     };
     struct r1_response r1;
@@ -271,15 +263,14 @@ static int __attribute__((noinline))
 sd_make_write_request(unsigned long address)
 {
     struct spi_cmd cmd = {
-        .cmd = 0x58,
-        .rx_datalen = 1,
+        .cmd = 0x58, .rx_datalen = 1,
     };
     struct r1_response r1;
 
     cmd.arg[0] = (address >> 24) & 0xff;
     cmd.arg[1] = (address >> 16) & 0xff;
-    cmd.arg[2] = (address >> 8)  & 0xff;
-    cmd.arg[3] = (address >> 0)  & 0xff;
+    cmd.arg[2] = (address >> 8) & 0xff;
+    cmd.arg[3] = (address >> 0) & 0xff;
 
     spi_do_command(&cmd);
     if (find_r1_response(&r1) < 0)
@@ -294,8 +285,8 @@ sd_write_block(unsigned short sseg, unsigned short saddr)
     spi_xfer_buf_set(0, 0xff); // Gap
     spi_xfer_buf_set(1, 0xfe); // Data start token
     memcpy_seg(get_cs(), spi_xfer_buf + 2, sseg, (const void *)saddr, 512);
-    spi_xfer_buf_set(2 + 512, 0x0); // CRC1
-    spi_xfer_buf_set(3 + 512, 0x0); // CRC2
+    spi_xfer_buf_set(2 + 512, 0x0);  // CRC1
+    spi_xfer_buf_set(3 + 512, 0x0);  // CRC2
     spi_xfer_buf_set(4 + 512, 0xff); // Packet response
 
     spi_xfer(5 + 512);
@@ -307,8 +298,7 @@ write_received(unsigned char packet_response)
     return (packet_response & 0x1) && ((packet_response >> 1) & 0x7) == 0x2;
 }
 
-static int __attribute__((noinline))
-wait_for_write_completion(void)
+static int __attribute__((noinline)) wait_for_write_completion(void)
 {
     int i = 0;
 
@@ -322,7 +312,8 @@ wait_for_write_completion(void)
     return -1;
 }
 
-int write_sector(unsigned short sector, unsigned short sseg,
+int write_sector(unsigned short sector,
+                 unsigned short sseg,
                  unsigned short saddr)
 {
     unsigned long address = sector;
@@ -342,7 +333,8 @@ int write_sector(unsigned short sector, unsigned short sseg,
     return wait_for_write_completion();
 }
 
-int read_sector(unsigned short sector, unsigned short dseg,
+int read_sector(unsigned short sector,
+                unsigned short dseg,
                 unsigned short daddr)
 {
     struct spi_cmd cmd = {
@@ -359,8 +351,8 @@ int read_sector(unsigned short sector, unsigned short dseg,
 
     cmd.arg[0] = (address >> 24) & 0xff;
     cmd.arg[1] = (address >> 16) & 0xff;
-    cmd.arg[2] = (address >> 8)  & 0xff;
-    cmd.arg[3] = (address >> 0)  & 0xff;
+    cmd.arg[2] = (address >> 8) & 0xff;
+    cmd.arg[3] = (address >> 0) & 0xff;
 
     spi_do_command(&cmd);
     r1offs = find_r1_response(&r1);
@@ -379,8 +371,7 @@ int read_sector(unsigned short sector, unsigned short dseg,
         return -1;
     }
 
-    memcpy_seg(dseg, (void *)daddr, get_cs(), spi_xfer_buf + data_start,
-               512);
+    memcpy_seg(dseg, (void *)daddr, get_cs(), spi_xfer_buf + data_start, 512);
 
     return 0;
 }
@@ -411,6 +402,7 @@ void sd_boot(void)
         panic("Failed to read boot sector\n");
 
     putstr("Booting from SD card...\n");
-    asm volatile("mov $0, %dl\n"
-                 "jmp $0x0000, $0x7c00");
+    asm volatile(
+        "mov $0, %dl\n"
+        "jmp $0x0000, $0x7c00");
 }

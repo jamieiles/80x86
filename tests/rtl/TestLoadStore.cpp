@@ -15,7 +15,10 @@ public:
 
     LoadStoreTestbench();
     void add_memory(physaddr start, const std::vector<uint8_t> &bytes);
-    std::vector<uint16_t> get_read_values() const { return read_values; }
+    std::vector<uint16_t> get_read_values() const
+    {
+        return read_values;
+    }
     void write_mar(physaddr address)
     {
         after_n_cycles(0, [&] {
@@ -40,8 +43,14 @@ public:
         });
         cycle();
     }
-    void read(MemWidth width) { access(width, false); }
-    void write(MemWidth width) { access(width, true); }
+    void read(MemWidth width)
+    {
+        access(width, false);
+    }
+    void write(MemWidth width)
+    {
+        access(width, true);
+    }
     std::map<physaddr, uint8_t> mem_bytes;
 
 private:

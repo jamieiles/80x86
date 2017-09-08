@@ -39,9 +39,15 @@ public:
     size_t step_with_io(std::function<void(unsigned long)> io_callback,
                         unsigned long cur_cycle_count);
 
-    void set_memory(Memory *mem) { this->mem = mem; }
+    void set_memory(Memory *mem)
+    {
+        this->mem = mem;
+    }
 
-    void set_io(std::map<uint16_t, IOPorts *> *io) { this->io = io; }
+    void set_io(std::map<uint16_t, IOPorts *> *io)
+    {
+        this->io = io;
+    }
 
     bool has_trapped() const
     {

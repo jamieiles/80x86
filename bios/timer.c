@@ -17,8 +17,7 @@ static void timer_services(struct callregs *regs)
         bda_write(timer_counter_high, regs->cx.x);
         regs->flags &= ~CF;
         break;
-    default:
-        regs->flags |= CF;
+    default: regs->flags |= CF;
     }
 }
 VECTOR(0x1a, timer_services);

@@ -3,18 +3,19 @@
 #include "CPU.h"
 #include <stdint.h>
 
-class TimerTick : public IOPorts {
+class TimerTick : public IOPorts
+{
 public:
     TimerTick(CPU *cpu)
-        : IOPorts(0xffee, 1),
-        cpu(cpu),
-        ms_count(0),
-        count(0),
-        enabled(false)
-    {}
+        : IOPorts(0xffee, 1), cpu(cpu), ms_count(0), count(0), enabled(false)
+    {
+    }
 
-    void write8(uint16_t __unused port_num, unsigned __unused offs,
-                uint8_t __unused v) {}
+    void write8(uint16_t __unused port_num,
+                unsigned __unused offs,
+                uint8_t __unused v)
+    {
+    }
     void write16(uint16_t __unused port_num, uint16_t v)
     {
         reload = v & 0x7fff;
@@ -48,6 +49,7 @@ public:
             count -= microseconds;
         }
     }
+
 private:
     void do_reload()
     {

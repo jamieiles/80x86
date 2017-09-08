@@ -3,18 +3,17 @@
 #include <SDL.h>
 #include <stdexcept>
 
-class Window {
+class Window
+{
 public:
     Window(const char *name, int width, int height)
-        : width(width),
-        height(height)
+        : width(width), height(height)
     {
         compute_scale();
 
-        auto ret = SDL_CreateWindowAndRenderer(window_width,
-                                               window_height,
-                                               SDL_WINDOWPOS_UNDEFINED,
-                                               &window, &renderer);
+        auto ret = SDL_CreateWindowAndRenderer(window_width, window_height,
+                                               SDL_WINDOWPOS_UNDEFINED, &window,
+                                               &renderer);
         if (ret)
             throw std::runtime_error("unable to create window");
 
@@ -44,7 +43,10 @@ public:
         SDL_RenderClear(renderer);
     }
 
-    void set_pixel(int row, int col, unsigned char r, unsigned char g,
+    void set_pixel(int row,
+                   int col,
+                   unsigned char r,
+                   unsigned char g,
                    unsigned char b)
     {
         SDL_SetRenderDrawColor(renderer, r, g, b, 255);
@@ -65,6 +67,7 @@ public:
     {
         return height;
     }
+
 private:
     void compute_scale()
     {

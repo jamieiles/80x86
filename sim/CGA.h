@@ -3,20 +3,18 @@
 #include "CPU.h"
 #include "Display.h"
 
-class CGA : public IOPorts {
+class CGA : public IOPorts
+{
 public:
     const phys_addr buffer_phys = 0xb8000;
 
-    CGA(Memory *mem)
-        : IOPorts(0x03d4, 8),
-        mem(mem),
-        reg_idx(0),
-        status(0)
+    CGA(Memory *mem) : IOPorts(0x03d4, 8), mem(mem), reg_idx(0), status(0)
     {
         memset(idx_regs, 0, sizeof(idx_regs));
     }
 
-    void write8(uint16_t __unused port_num, unsigned __unused offs,
+    void write8(uint16_t __unused port_num,
+                unsigned __unused offs,
                 uint8_t __unused v)
     {
         if (port_num == 0 && offs == 0) {
@@ -39,6 +37,7 @@ public:
     }
 
     void update();
+
 private:
     Memory *mem;
     Display display;

@@ -19,26 +19,16 @@ FlagsTestFixture::FlagsTestFixture()
 static int flag_to_update_mask(Flag f)
 {
     switch (f) {
-        case CF:
-            return 1 << static_cast<int>(UpdateFlags_CF);
-        case PF:
-            return 1 << static_cast<int>(UpdateFlags_PF);
-        case AF:
-            return 1 << static_cast<int>(UpdateFlags_AF);
-        case ZF:
-            return 1 << static_cast<int>(UpdateFlags_ZF);
-        case SF:
-            return 1 << static_cast<int>(UpdateFlags_SF);
-        case TF:
-            return 1 << static_cast<int>(UpdateFlags_TF);
-        case IF:
-            return 1 << static_cast<int>(UpdateFlags_IF);
-        case DF:
-            return 1 << static_cast<int>(UpdateFlags_DF);
-        case OF:
-            return 1 << static_cast<int>(UpdateFlags_OF);
-        default:
-            abort();
+    case CF: return 1 << static_cast<int>(UpdateFlags_CF);
+    case PF: return 1 << static_cast<int>(UpdateFlags_PF);
+    case AF: return 1 << static_cast<int>(UpdateFlags_AF);
+    case ZF: return 1 << static_cast<int>(UpdateFlags_ZF);
+    case SF: return 1 << static_cast<int>(UpdateFlags_SF);
+    case TF: return 1 << static_cast<int>(UpdateFlags_TF);
+    case IF: return 1 << static_cast<int>(UpdateFlags_IF);
+    case DF: return 1 << static_cast<int>(UpdateFlags_DF);
+    case OF: return 1 << static_cast<int>(UpdateFlags_OF);
+    default: abort();
     }
 }
 
