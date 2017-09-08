@@ -125,7 +125,7 @@ void Simulator<T>::process_io()
     if (SDL_PollEvent(&e)) {
         if (e.type == SDL_QUIT)
             got_exit = true;
-        else if (e.type == SDL_KEYDOWN)
+        else if (e.type == SDL_KEYDOWN || e.type == SDL_KEYUP)
             kbd.process_event(e);
     }
 }

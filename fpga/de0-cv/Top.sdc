@@ -99,3 +99,6 @@ set_multicycle_path -setup -end -from [get_clocks {spi_clk}] -to [get_clocks $sy
 set_multicycle_path -hold -end -from [get_clocks {spi_clk}] -to [get_clocks $sys_clk] 1
 
 set_false_path -to [get_ports {spi_ncs}]
+
+# PS2
+set_false_path -from [get_ports {ps2_clk ps2_dat}]

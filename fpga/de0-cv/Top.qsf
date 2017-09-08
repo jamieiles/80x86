@@ -100,3 +100,11 @@ set_location_assignment PIN_A7 -to vga_b[3]
 set_location_assignment PIN_H8 -to vga_hsync
 set_location_assignment PIN_G8 -to vga_vsync
 set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to vga*
+
+# PS2
+set_location_assignment PIN_D3 -to ps2_clk
+set_location_assignment PIN_G2 -to ps2_dat
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to ps2_clk
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to ps2_dat
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to ps2_clk
+set_instance_assignment -name IO_STANDARD "3.3-V LVTTL" -to ps2_dat

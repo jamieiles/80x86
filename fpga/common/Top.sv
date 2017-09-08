@@ -20,6 +20,10 @@ module Top(input logic clk,
 	   output logic [3:0] vga_g,
 	   output logic [3:0] vga_b,
 `endif // CONFIG_VGA
+`ifdef CONFIG_PS2
+           input logic ps2_clk,
+           input logic ps2_dat,
+`endif // CONFIG_PS2
            input logic uart_rx,
            output logic uart_tx,
            output logic spi_sclk,
@@ -68,6 +72,9 @@ wire [15:0] io_data = sdram_config_data |
 `ifdef CONFIG_VGA
     vga_reg_data |
 `endif // CONFIG_VGA
+`ifdef CONFIG_PS2
+    ps2_data |
+`endif // CONFIG_PS2
     bios_control_data;
 wire [15:0] mem_data;
 
@@ -128,6 +135,15 @@ wire sdram_config_ack;
 wire sdram_config_done;
 wire [15:0] sdram_config_data;
 
+`ifdef CONFIG_PS2
+wire ps2_access;
+wire ps2_ack;
+wire [15:0] ps2_data;
+wire ps2_intr;
+`else
+wire ps2_intr = 1'b0;
+`endif // CONFIG_PS2
+
 wire uart_access;
 wire uart_ack;
 wire [15:0] uart_data;
@@ -164,6 +180,9 @@ wire io_ack = sdram_config_ack |
 `ifdef CONFIG_VGA
               vga_reg_ack |
 `endif // CONFIG_VGA
+`ifdef CONFIG_PS2
+              ps2_ack |
+`endif // CONFIG_PS2
               bios_control_ack;
 
 always_ff @(posedge clk)
@@ -183,6 +202,9 @@ always_comb begin
 `ifdef CONFIG_VGA
     vga_reg_access = 1'b0;
 `endif // CONFIG_VGA
+`ifdef CONFIG_PS2
+    ps2_access = 1'b0;
+`endif // CONFIG_PS2
 
     if (d_io && data_m_access) begin
         casez ({data_m_addr[15:1], 1'b0})
@@ -198,6 +220,9 @@ always_comb begin
 `ifdef CONFIG_VGA
         16'b0000_0011_1101_zzzz: vga_reg_access = 1'b1;
 `endif // CONFIG_VGA
+`ifdef CONFIG_PS2
+        16'b0000_0000_0110_0000: ps2_access = 1'b1;
+`endif // CONFIG_PS2
         default:  default_io_access = 1'b1;
         endcase
     end
@@ -333,7 +358,7 @@ IRQController IRQController(.clk(sys_clk),
                             .data_m_data_out(irq_control_data),
                             .data_m_data_in(data_m_data_out),
                             .data_m_addr(data_m_addr),
-                            .intr_in({7'b0, timer_intr}),
+                            .intr_in({6'b0, ps2_intr, timer_intr}),
                             .*);
 
 Timer Timer(.clk(sys_clk),
@@ -362,6 +387,14 @@ VGARegisters VGARegisters(.clk(sys_clk),
                           .data_m_data_out(vga_reg_data),
                           .data_m_data_in(data_m_data_out),
                           .*);
+`endif
+
+`ifdef CONFIG_PS2
+PS2Controller PS2Controller(.clk(sys_clk),
+                            .cs(ps2_access),
+                            .data_m_ack(ps2_ack),
+                            .data_m_data_out(ps2_data),
+                            .*);
 `endif
 
 always_ff @(posedge clk)

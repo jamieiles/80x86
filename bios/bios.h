@@ -88,3 +88,5 @@ enum Flag {
 })
 
 #define offsetof __builtin_offsetof
+
+#define ARRAY_SIZE(__a) (sizeof(__a) / sizeof(__a[0]))
