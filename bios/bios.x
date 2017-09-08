@@ -5,7 +5,7 @@ ENTRY(_start)
 SECTIONS {
     . = 0x0;
 
-    .text 0xe000 : {
+    .text 0xc000 : {
         *(.entry.text);
         . = ALIGN(4);
         *(.text);
@@ -19,7 +19,7 @@ SECTIONS {
 
     _data_load = . ;
 
-    .data 0xd000 : AT(_data_load) {
+    .data 0xb000 : AT(_data_load) {
         stack_start = . ;
         data_start = . ;
         *(.data*);

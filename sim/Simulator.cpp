@@ -99,7 +99,7 @@ void Simulator<T>::load_bios(const std::string &bios_path)
     for (unsigned offs = 0; !bios.eof(); ++offs) {
         char v;
         bios.read(&v, 1);
-        cpu.write_mem8(0xfe00, offs, v);
+        cpu.write_mem8(0xfc00, offs, v);
     }
 
     cpu.write_mem8(0xf000, 0xfffe, 0xff);

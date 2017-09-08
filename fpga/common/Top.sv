@@ -212,7 +212,7 @@ always_comb begin
 
     if (q_m_access) begin
         casez ({bios_enabled, q_m_addr, 1'b0})
-        {1'b1, 20'b1111_111?_????_????_????}: bios_access = 1'b1;
+        {1'b1, 20'b1111_11??_????_????_????}: bios_access = 1'b1;
 `ifdef CONFIG_VGA
         {1'b?, 20'b1011_1000_????_????_????}: vga_access = 1'b1;
 `endif // CONFIG_VGA
@@ -261,7 +261,7 @@ SDRAMController #(.size(`CONFIG_SDRAM_SIZE),
                                 .h_config_done(sdram_config_done),
                                 .*);
 
-BIOS #(.depth(4096))
+BIOS #(.depth(8192))
      BIOS(.clk(sys_clk),
           .cs(bios_access),
           .data_m_access(q_m_access),
