@@ -196,7 +196,7 @@ static unsigned char get_scancode(void)
     do {
         b = inb(0x60);
         if (b)
-            outb(0x61, 0);
+            outb(0x61, 0x1);
     } while (!b);
 
     return b;
@@ -219,7 +219,7 @@ static void keyboard_poll(void)
     if (!b)
         return;
 
-    outb(0x61, 0);
+    outb(0x61, 0x1);
 
     int keyup = 0;
     if (b == 0xf0) {
