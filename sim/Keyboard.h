@@ -104,10 +104,12 @@ public:
                 unsigned __unused offs,
                 uint8_t __unused v)
     {
-        if (pending.size())
-            pending.pop_front();
-        if (pending.size() == 0)
-            cpu->clear_irq(1);
+        if (offs == 1 && (v & (1 << 0))) {
+            if (pending.size())
+                pending.pop_front();
+            if (pending.size() == 0)
+                cpu->clear_irq(1);
+        }
     }
 
     uint8_t read8(uint16_t __unused port_num, unsigned __unused offs)
