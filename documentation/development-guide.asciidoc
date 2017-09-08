@@ -535,6 +535,10 @@ to 0.
   - [8]: transfer busy.
   - [7:0]: transfer data.
 
+Writing to this register will initiate a one byte transfer.  The CPU should
+then poll until bit 8 is clear at which point [7:0] will contain the received
+data.
+
 | 16'hfff4 | 8 a| IRQ enable register:
   - [7:0]: write 1 to enable interrupt.  Lower numbered interrupts take a
   higher priority.
@@ -543,10 +547,6 @@ to 0.
 | 16'ffff6 | 8 a| IRQ test register:
   - [7]: write a 1 to raise NMI, 0 to clear NMI.
   - [6:0]: write a 1 to raise interrupt N.
-
-Writing to this register will initiate a one byte transfer.  The CPU should
-then poll until bit 8 is clear at which point [7:0] will contain the received
-data.
 
 | 16'hfffa | 8 a| UART data register, write to transmit data, read to fetch
 the received data.
