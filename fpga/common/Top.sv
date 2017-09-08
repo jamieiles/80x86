@@ -21,8 +21,8 @@ module Top(input logic clk,
 	   output logic [3:0] vga_b,
 `endif // CONFIG_VGA
 `ifdef CONFIG_PS2
-           input logic ps2_clk,
-           input logic ps2_dat,
+           inout ps2_clk,
+           inout ps2_dat,
 `endif // CONFIG_PS2
            input logic uart_rx,
            output logic uart_tx,

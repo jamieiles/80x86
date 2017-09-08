@@ -11,8 +11,8 @@ module PS2Controller(input logic clk,
                      // Interrupt
                      output logic ps2_intr,
                      // PS/2 signals
-                     input logic ps2_clk,
-                     input logic ps2_dat);
+                     inout ps2_clk,
+                     inout ps2_dat);
 
 wire [7:0] rx;
 wire rx_valid;

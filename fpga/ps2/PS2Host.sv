@@ -5,8 +5,8 @@ module PS2Host(input logic clk,
                output logic rx_valid,
                output logic error,
                // Connector signals
-               input logic ps2_clk,
-               input logic ps2_dat);
+               inout ps2_clk,
+               inout ps2_dat);
 
 wire ps2_clk_sync;
 wire ps2_dat_sync;
@@ -27,6 +27,9 @@ state_t state, next_state;
 wire do_sample = last_ps2_clk & ~ps2_clk_sync;
 
 assign rx_valid = state == STATE_STOP && do_sample;
+
+assign ps2_clk = 1'bz;
+assign ps2_dat = 1'bz;
 
 BitSync         ClkSync(.clk(clk),
                         .d(ps2_clk),
