@@ -1,7 +1,7 @@
 s80x86
 ======
 
-s80x86 is an 8086 binary compatible CPU, written in SystemVerilog suitable for
+s80x86 is an 80186 binary compatible CPU, written in SystemVerilog suitable for
 synthesis on FPGA or ASIC.
 
 System Requirements
