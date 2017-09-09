@@ -4,6 +4,9 @@
 #include "serial.h"
 #include "timer.h"
 
+#define TIMER_PORT 0xffee
+#define TIMER_ENABLE (1 << 15)
+
 static void timer_services(struct callregs *regs)
 {
     switch (regs->ax.h) {
@@ -25,5 +28,5 @@ VECTOR(0x1a, timer_services);
 void init_timer(void)
 {
     outb(0xfff4, inb(0xfff4) | 1);
-    outw(0xffee, (1 << 15) | 55);
+    outw(TIMER_PORT, TIMER_ENABLE | 55);
 }
