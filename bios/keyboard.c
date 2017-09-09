@@ -212,12 +212,31 @@ static void extended_key(void)
     keypress(extended_keycode_map, get_scancode());
 }
 
+static void keyboard_reset(void)
+{
+    // Reset
+    outb(0x60, 0xff);
+    // Flush FIFO
+    int i;
+    for (i = 0; i < 64; ++i) {
+        if (!(inb(0x61) & (1 << 0)))
+            break;
+        outb(0x61, (1 << 0));
+    }
+    if (i == 64)
+        putstr("Warning: failed to empty Keyboard FIFO.\n");
+}
+
 static void keyboard_poll(void)
 {
     unsigned char b = inb(0x60);
-
     if (!b)
         return;
+
+    if (b == 0xaa) {
+        keyboard_reset();
+        return;
+    }
 
     outb(0x61, 0x1);
 
@@ -305,6 +324,8 @@ void keyboard_init(void)
     bda_write(keyboard_flags[1], 0);
     bda_write(kbd_buffer_tail, offsetof(struct bios_data_area, kbd_buffer));
     bda_write(kbd_buffer_head, offsetof(struct bios_data_area, kbd_buffer));
+
+    keyboard_reset();
 
     // Enable IRQ
     outb(0xfff4, inb(0xfff4) | 2);
