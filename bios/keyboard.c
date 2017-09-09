@@ -4,6 +4,11 @@
 #include "serial.h"
 #include "utils.h"
 
+#define PS2_DATA_PORT 0x60
+#define PS2_CTRL_PORT 0x61
+#define PS2_CTRL_ACK (1 << 0)
+#define PS2_CTRL_RX_VALID (1 << 0)
+
 struct keydef {
     unsigned short normal;
     unsigned short shifted;
@@ -194,9 +199,9 @@ static unsigned char get_scancode(void)
     unsigned char b;
 
     do {
-        b = inb(0x60);
+        b = inb(PS2_DATA_PORT);
         if (b)
-            outb(0x61, 0x1);
+            outb(PS2_CTRL_PORT, PS2_CTRL_ACK);
     } while (!b);
 
     return b;
@@ -215,13 +220,13 @@ static void extended_key(void)
 static void keyboard_reset(void)
 {
     // Reset
-    outb(0x60, 0xff);
+    outb(PS2_DATA_PORT, 0xff);
     // Flush FIFO
     int i;
     for (i = 0; i < 64; ++i) {
-        if (!(inb(0x61) & (1 << 0)))
+        if (!(inb(PS2_CTRL_PORT) & PS2_CTRL_RX_VALID))
             break;
-        outb(0x61, (1 << 0));
+        outb(PS2_CTRL_PORT, PS2_CTRL_ACK);
     }
     if (i == 64)
         putstr("Warning: failed to empty Keyboard FIFO.\n");
@@ -229,7 +234,7 @@ static void keyboard_reset(void)
 
 static void keyboard_poll(void)
 {
-    unsigned char b = inb(0x60);
+    unsigned char b = inb(PS2_DATA_PORT);
     if (!b)
         return;
 
@@ -238,7 +243,7 @@ static void keyboard_poll(void)
         return;
     }
 
-    outb(0x61, 0x1);
+    outb(PS2_CTRL_PORT, PS2_CTRL_ACK);
 
     int keyup = 0;
     if (b == 0xf0) {
