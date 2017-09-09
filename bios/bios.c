@@ -134,6 +134,11 @@ static void irq_init(void)
     outb(0xfff5, 8);
 }
 
+void irq_enable(int irq_num)
+{
+    outb(0xfff4, inb(0xfff4) | (1 << irq_num));
+}
+
 void root(void)
 {
     irq_init();

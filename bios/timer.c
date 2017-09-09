@@ -27,6 +27,6 @@ VECTOR(0x1a, timer_services);
 
 void init_timer(void)
 {
-    outb(0xfff4, inb(0xfff4) | 1);
+    irq_enable(0);
     outw(TIMER_PORT, TIMER_ENABLE | 55);
 }

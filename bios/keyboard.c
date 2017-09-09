@@ -246,6 +246,5 @@ void keyboard_init(void)
 
     keyboard_reset();
 
-    // Enable IRQ
-    outb(0xfff4, inb(0xfff4) | 2);
+    irq_enable(1);
 }

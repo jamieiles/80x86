@@ -93,4 +93,6 @@ enum Flag {
 
 #define offsetof __builtin_offsetof
 
+void irq_enable(int irq_num);
+
 #define ARRAY_SIZE(__a) (sizeof(__a) / sizeof(__a[0]))
