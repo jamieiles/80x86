@@ -92,6 +92,8 @@ static std::map<int, std::vector<unsigned char>> sdl_to_keyboard = {
     {SDLK_LSHIFT, {0x12}},
 };
 
+static const uint8_t ps2_ctrl_rx_valid = 1 << 0;
+
 template <typename CPU_t>
 class Keyboard : public IOPorts
 {
@@ -104,7 +106,7 @@ public:
                 unsigned __unused offs,
                 uint8_t __unused v)
     {
-        if (offs == 1 && (v & (1 << 0))) {
+        if (offs == 1 && (v & ps2_ctrl_rx_valid)) {
             if (pending.size())
                 pending.pop_front();
             if (pending.size() == 0)
