@@ -128,15 +128,18 @@ static void bda_init(void)
         writeb(0x40, i, 0);
 }
 
+#define IRQ_ENABLE_PORT 0xfff4
+#define IRQ_BASE_PORT 0xfff5
+
 static void irq_init(void)
 {
     // IRQ base
-    outb(0xfff5, 8);
+    outb(IRQ_BASE_PORT, 8);
 }
 
 void irq_enable(int irq_num)
 {
-    outb(0xfff4, inb(0xfff4) | (1 << irq_num));
+    outb(IRQ_ENABLE_PORT, inb(IRQ_ENABLE_PORT) | (1 << irq_num));
 }
 
 void root(void)
