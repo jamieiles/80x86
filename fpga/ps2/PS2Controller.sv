@@ -1,21 +1,28 @@
-module PS2Controller(input logic clk,
-		     input logic reset,
-                     // CPU port
-                     input logic cs,
-                     input logic data_m_access,
-                     input logic data_m_wr_en,
-                     output logic data_m_ack,
-                     input logic [19:1] data_m_addr,
-                     output logic [15:0] data_m_data_out,
-                     input logic [1:0] data_m_bytesel,
-                     // Interrupt
-                     output logic ps2_intr,
-                     // PS/2 signals
-                     inout ps2_clk,
-                     inout ps2_dat);
+module PS2Controller #(parameter clkf=50000000)
+                      (input logic clk,
+                       input logic reset,
+                       // CPU port
+                       input logic cs,
+                       input logic data_m_access,
+                       input logic data_m_wr_en,
+                       output logic data_m_ack,
+                       output logic [15:0] data_m_data_out,
+                       input logic [15:0] data_m_data_in,
+                       input logic [1:0] data_m_bytesel,
+                       // Interrupt
+                       output logic ps2_intr,
+                       // PS/2 signals
+                       inout ps2_clk,
+                       inout ps2_dat);
+
+wire do_read = data_m_access & cs & ~data_m_wr_en;
+wire do_write = data_m_access & cs & data_m_wr_en;
 
 wire [7:0] rx;
 wire rx_valid;
+wire [7:0] tx = data_m_data_in[7:0];
+wire start_tx = do_write & data_m_bytesel[0];
+wire tx_busy;
 wire error;
 wire empty;
 wire full;
@@ -23,7 +30,6 @@ wire [7:0] fifo_rd_data;
 wire fifo_wr_en = rx_valid & ~error & ~full;
 
 wire fifo_rd_en = cs & data_m_wr_en & data_m_bytesel[1] & ~empty;
-wire do_read = data_m_access & cs & ~data_m_wr_en;
 
 reg unread_error = 1'b0;
 
@@ -40,7 +46,7 @@ Fifo    #(.data_width(8),
              // verilator lint_on PINCONNECTEMPTY
              .*);
 
-wire [7:0] status = {6'b0, unread_error, ~empty};
+wire [7:0] status = {5'b0, tx_busy, unread_error, ~empty};
 wire [7:0] data = empty ? 8'b0 : fifo_rd_data;
 
 always_ff @(posedge clk)
@@ -57,6 +63,7 @@ always_ff @(posedge clk or posedge reset)
     else if (do_read & data_m_bytesel[1])
         unread_error <= 1'b0;
 
-PS2Host PS2Host(.*);
+PS2Host #(.clkf(clkf))
+        PS2Host(.*);
 
 endmodule
