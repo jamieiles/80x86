@@ -135,6 +135,8 @@ static void keyboard_reset(void)
 {
     // Reset
     outb(PS2_DATA_PORT, 0xff);
+    // Enable
+    outb(PS2_DATA_PORT, 0xf4);
     // Flush FIFO
     int i;
     for (i = 0; i < 64; ++i) {
