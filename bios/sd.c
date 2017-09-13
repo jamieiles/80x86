@@ -403,6 +403,6 @@ void sd_boot(void)
 
     putstr("Booting from SD card...\n");
     asm volatile(
-        "mov $0, %dl\n"
+        "mov $0x80, %dl\n"
         "jmp $0x0000, $0x7c00");
 }

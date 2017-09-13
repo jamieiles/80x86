@@ -13,7 +13,7 @@
 
 static void equipment_check(struct callregs *regs)
 {
-    regs->ax.x = INT11_DISKS_PRESENT | INT11_CGA_ADAPTOR;
+    regs->ax.x = INT11_CGA_ADAPTOR;
 }
 VECTOR(0x11, equipment_check);
 
