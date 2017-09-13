@@ -1,18 +1,18 @@
 pushff_reg:
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
-        mar_write, mar_wr_sel Q, jmp pushff_reg_save,
-        ra_modrm_rm_reg, segment DS;
+        rd_sel_source MICROCODE_RD_SEL, mar_write, mar_wr_sel Q,
+        jmp pushff_reg_save, ra_modrm_rm_reg, segment DS;
 pushff_mem:
     segment DS, mem_read, jmp pushff_mem_save, ra_sel SP;
 pushff_reg_save:
     a_sel RA, alu_op SELA, mdr_write, segment_force, segment SS;
-    segment_force, segment SS, mem_write, a_sel MAR, rd_sel SP,
-        rd_sel_source MICROCODE_RD_SEL, next_instruction;
+    segment_force, segment SS, mem_write, a_sel MAR, next_instruction;
 pushff_mem_save:
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
-        mar_write, mar_wr_sel Q, segment_force, segment SS;
+        rd_sel_source MICROCODE_RD_SEL, mar_write, mar_wr_sel Q,
+        segment SS;
     segment_force, segment SS, mem_write, a_sel MAR, alu_op SELA,
-        rd_sel SP, rd_sel_source MICROCODE_RD_SEL, next_instruction;
+        next_instruction;
 
 #define PUSH_GPR(opcode, reg)                                           \
 .at opcode;                                                             \
@@ -31,7 +31,6 @@ PUSH_GPR(0x50, AX)
 PUSH_GPR(0x51, CX)
 PUSH_GPR(0x52, DX)
 PUSH_GPR(0x53, BX)
-PUSH_GPR(0x54, SP)
 PUSH_GPR(0x55, BP)
 PUSH_GPR(0x56, SI)
 PUSH_GPR(0x57, DI)
@@ -41,6 +40,17 @@ push_gpr:
     a_sel RA, alu_op SELA, mdr_write, ra_sel SP;
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
         mar_write, mar_wr_sel Q, segment_force, segment SS;
+    segment_force, segment SS, mem_write, a_sel MAR, rd_sel SP,
+        rd_sel_source MICROCODE_RD_SEL, next_instruction;
+
+// push SP, emulate broken 8086 behaviour: the decremented value gets pushed
+// rather than the original value
+.at 0x54;
+    ra_sel SP, jmp push_sp;
+.auto_address;
+push_sp:
+    a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
+        mar_write, mar_wr_sel Q, mdr_write, segment_force, segment SS;
     segment_force, segment SS, mem_write, a_sel MAR, rd_sel SP,
         rd_sel_source MICROCODE_RD_SEL, next_instruction;
 
