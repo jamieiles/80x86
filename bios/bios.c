@@ -23,43 +23,10 @@ static void serial_services(struct callregs *regs)
 }
 VECTOR(0x14, serial_services);
 
-static const unsigned char bios_params_rec[] = {8, 0, 0xff, 0, 0, 0, 0, 0};
-
-static void system_configuration_parameters(struct callregs *regs)
-{
-    regs->flags &= ~CF;
-    regs->ax.h = 0x80;
-    set_es(get_cs());
-    regs->bx.x = (unsigned short)bios_params_rec;
-}
-
-static void wait_event(struct callregs *regs)
-{
-    regs->flags &= ~CF;
-}
-
-static void system_extended_memory_size(struct callregs *regs)
-{
-    regs->flags &= ~CF;
-    regs->ax.x = 0;
-}
-
-static void a20_gate(struct callregs *regs)
-{
-    regs->flags |= CF;
-}
-
 static void system_services(struct callregs *regs)
 {
     regs->flags |= CF;
-
-    switch (regs->ax.h) {
-    case 0xc0: system_configuration_parameters(regs); break;
-    case 0x41: wait_event(regs); break;
-    case 0x88: system_extended_memory_size(regs); break;
-    case 0x24: a20_gate(regs); break;
-    default: break;
-    }
+    regs->ax.h = 0x86;
 }
 VECTOR(0x15, system_services);
 
