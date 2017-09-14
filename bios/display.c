@@ -40,22 +40,101 @@ static void __attribute__((noinline)) write_cursor(union cursor *c)
     bda_write(cursor_offsets[0], c->v);
 }
 
-static void __attribute__((noinline))
-scroll_up(union cursor *cursor, unsigned count, unsigned char blank_attr)
+static void __attribute__((noinline)) clear_row(unsigned char row,
+                                                unsigned char col_left,
+                                                unsigned char col_right,
+                                                unsigned char attr)
 {
-    unsigned start = (count * 80) * 2;
-    unsigned shift_rows = count == 0 ? 0 : 25 - count;
-    unsigned col, row;
+    unsigned char col;
+    const signed short blank = ((signed short)attr << 8) | 0x20;
 
-    memcpy_seg(frame_buffer_segment, (void *)frame_buffer_offset,
-               frame_buffer_segment, (void *)frame_buffer_offset + start,
-               shift_rows * 80 * 2);
+    for (col = col_left; col <= col_right; ++col)
+        writew(frame_buffer_segment, frame_buffer_offset + (row * 80 + col) * 2,
+               blank);
+}
 
-    for (row = shift_rows; row < 25; ++row)
-        for (col = 0; col < 80; ++col)
-            writew(frame_buffer_segment,
-                   frame_buffer_offset + (row * 80 + col) * 2,
-                   ((unsigned short)blank_attr) << 8);
+static void __attribute__((noinline)) copy_row(unsigned char dst_row,
+                                               unsigned char src_row,
+                                               unsigned char col_left,
+                                               unsigned char col_right,
+                                               unsigned char attr)
+{
+    unsigned char col;
+
+    for (col = col_left; col <= col_right; ++col) {
+        unsigned short b =
+            readw(frame_buffer_segment,
+                  frame_buffer_offset + (src_row * 80 + col) * 2);
+        writew(frame_buffer_segment,
+               frame_buffer_offset + (dst_row * 80 + col) * 2, b);
+    }
+}
+
+void __scroll_up(signed char row_top,
+                 signed char row_bottom,
+                 signed char col_left,
+                 signed char col_right,
+                 signed char blank_attr,
+                 signed char scroll_count)
+{
+    signed char row;
+
+    for (row = row_top; row <= row_bottom; ++row) {
+        if (row + scroll_count > row_bottom)
+            clear_row(row, col_left, col_right, blank_attr);
+        else
+            copy_row(row, row + scroll_count, col_left, col_right, blank_attr);
+    }
+}
+
+void __attribute__((noinline))
+scroll_up(union cursor *cursor, struct callregs *regs)
+{
+    signed char row_top = regs->cx.h;
+    signed char row_bottom = regs->dx.h;
+    signed char col_left = regs->cx.l;
+    signed char col_right = regs->dx.l;
+    signed char blank_attr = regs->bx.h;
+    signed char scroll_count = regs->ax.l == 0 ? 25 : regs->ax.l;
+
+    __scroll_up(row_top, row_bottom, col_left, col_right, blank_attr,
+                scroll_count);
+}
+
+static void __scroll_down(signed char row_top,
+                          signed char row_bottom,
+                          signed char col_left,
+                          signed char col_right,
+                          signed char blank_attr,
+                          signed char scroll_count)
+{
+    signed char row;
+
+    for (row = row_bottom; row >= row_top; --row) {
+        if (row - scroll_count < 0)
+            clear_row(row, col_left, col_right, blank_attr);
+        else
+            copy_row(row, row - scroll_count, col_left, col_right, blank_attr);
+    }
+}
+
+void __attribute__((noinline))
+scroll_down(union cursor *cursor, struct callregs *regs)
+{
+    signed char row_top = regs->cx.h;
+    signed char row_bottom = regs->dx.h;
+    signed char col_left = regs->cx.l;
+    signed char col_right = regs->dx.l;
+    signed char blank_attr = regs->bx.h;
+    signed char scroll_count = regs->ax.l == 0 ? 25 : regs->ax.l;
+
+    __scroll_down(row_top, row_bottom, col_left, col_right, blank_attr,
+                  scroll_count);
+}
+
+void __attribute__((noinline)) scroll_up_one(void)
+{
+    __scroll_up(0, 24, 0, 79, 0x07, 1);
 }
 
 static void do_backspace(union cursor *cursor)
@@ -97,7 +176,7 @@ static void __attribute__((noinline)) emit_char(char c)
     }
 
     if (cursor.c.row >= 25) {
-        scroll_up(&cursor, 1, 0x07);
+        scroll_up_one();
         cursor.c.row = 24;
     }
     write_cursor(&cursor);
@@ -184,12 +263,12 @@ static void video_services(struct callregs *regs)
     case 0x1: set_cursor_shape(regs); break;
     case 0x6:
         read_cursor(&cursor);
-        scroll_up(&cursor, regs->ax.l, regs->bx.h);
+        scroll_up(&cursor, regs);
         write_cursor(&cursor);
         break;
     case 0x7:
         read_cursor(&cursor);
-        scroll_up(&cursor, regs->ax.l, regs->bx.h);
+        scroll_down(&cursor, regs);
         write_cursor(&cursor);
         break;
     case 0xf: get_video_mode(regs); break;
