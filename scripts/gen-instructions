@@ -221,11 +221,17 @@ for mnemonic in sorted(instructions.keys()):
         # cpu before creating a new one
         cpu = None
 
-    definitions.append({
+    idef = {
         'mnemonic': mnemonic.upper(),
         'encodings': encodings,
-        'flags': definition.get('flags', {})
-    })
+        'flags': definition.get('flags', {}),
+        'notes': [],
+    }
+
+    for note in definition.get('notes', []):
+        idef['notes'].append({'note': note})
+
+    definitions.append(idef)
 
 with open(INSTR_TEMPLATE) as template:
     print pystache.render(template.read(), { 'instructions': definitions })
