@@ -11,10 +11,12 @@ extern void video_putchar(char c);
 
 void putchar(unsigned char c)
 {
+#ifdef SERIAL_STDIO
     outb(UART_DATA_PORT, c);
 
     while (inb(UART_STATUS_PORT) & UART_TX_BUSY)
         continue;
+#endif // SERIAL_STDIO
 
     video_putchar(c);
 

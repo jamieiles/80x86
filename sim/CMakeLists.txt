@@ -1,4 +1,5 @@
 set(BIOS_PLATFORM "sim")
+add_definitions(-DSERIAL_STDIO)
 add_subdirectory(../bios ${CMAKE_CURRENT_BINARY_DIR}/bios)
 
 include(Verilator)

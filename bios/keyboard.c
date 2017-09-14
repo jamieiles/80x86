@@ -189,7 +189,9 @@ static void keyboard_wait(struct callregs *regs)
     do {
         c = kbd_buffer_peek();
         if (!c) {
+#ifdef SERIAL_STDIO
             serial_poll();
+#endif // SERIAL_STDIO
             keyboard_poll();
         }
     } while (c == 0);
@@ -205,9 +207,11 @@ static void keyboard_status(struct callregs *regs)
 
     regs->flags &= ~CF;
 
+#ifdef SERIAL_STDIO
     c = kbd_buffer_peek();
     if (!c)
         serial_poll();
+#endif
     c = kbd_buffer_peek();
     if (c)
         regs->flags &= ~ZF;

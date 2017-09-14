@@ -1,11 +1,16 @@
 include(Quartus)
 
+option(DE0_CV_SERIAL_STDIO "Use the serial port for stdio" OFF)
+
 get_property(ALU_SOURCES GLOBAL PROPERTY G_ALU_SOURCES)
 get_property(CORE_SOURCES GLOBAL PROPERTY G_CORE_SOURCES)
 
 configure_file(Top.qsf Top.qsf)
 configure_file(Top.srf Top.srf)
 
+if(${DE0_CV_SERIAL_STDIO})
+add_definitions(-DSERIAL_STDIO)
+endif()
 set(BIOS_PLATFORM "de0-cv")
 add_subdirectory(../../bios ${CMAKE_CURRENT_BINARY_DIR}/bios
                  EXCLUDE_FROM_ALL)

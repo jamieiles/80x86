@@ -6,6 +6,7 @@ get_property(CORE_SOURCES GLOBAL PROPERTY G_CORE_SOURCES)
 configure_file(Top.qsf Top.qsf)
 configure_file(Top.srf Top.srf)
 
+add_definitions(-DSERIAL_STDIO)
 set(BIOS_PLATFORM "de0-nano")
 add_subdirectory(../../bios ${CMAKE_CURRENT_BINARY_DIR}/bios
                  EXCLUDE_FROM_ALL)
