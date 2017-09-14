@@ -72,13 +72,12 @@ static void do_backspace(union cursor *cursor)
 
 static void __attribute__((noinline)) emit_char(char c)
 {
-    unsigned short v = 0x0700 | c;
     union cursor cursor;
 
     read_cursor(&cursor);
 
-    writew(frame_buffer_segment,
-           frame_buffer_offset + (cursor.c.row * 80 + cursor.c.col) * 2, v);
+    writeb(frame_buffer_segment,
+           frame_buffer_offset + (cursor.c.row * 80 + cursor.c.col) * 2, c);
     ++cursor.c.col;
 
     if (c == '\b')
@@ -89,7 +88,7 @@ static void __attribute__((noinline)) emit_char(char c)
         --cursor.c.col;
         for (m = cursor.c.col; m < 80; ++m)
             writew(frame_buffer_segment,
-                   frame_buffer_offset + (cursor.c.row * 80 + m) * 2, ' ');
+                   frame_buffer_offset + (cursor.c.row * 80 + m) * 2, 0x0720);
     }
 
     if (cursor.c.col == 80 || c == '\n') {
@@ -113,6 +112,16 @@ static void read_char(struct callregs *regs)
         readw(frame_buffer_segment,
               frame_buffer_offset + (cursor.c.row * 80 + cursor.c.col) * 2);
     write_cursor(&cursor);
+}
+
+static void write_char_and_attribute(struct callregs *regs)
+{
+    union cursor cursor;
+
+    read_cursor(&cursor);
+    unsigned short v = ((unsigned short)regs->bx.l << 8) | regs->ax.l;
+    writew(frame_buffer_segment,
+           frame_buffer_offset + (cursor.c.row * 80 + cursor.c.col) * 2, v);
 }
 
 void video_putchar(char c)
@@ -184,7 +193,7 @@ static void video_services(struct callregs *regs)
         write_cursor(&cursor);
         break;
     case 0xf: get_video_mode(regs); break;
-    case 0x9: write_char(regs); break;
+    case 0x9: write_char_and_attribute(regs); break;
     case 0x8: read_char(regs); break;
     case 0x12:
         if (regs->bx.l == 0x10) {
