@@ -32,4 +32,16 @@ struct __attribute__((packed)) bios_data_area {
     unsigned char cassette_take_ctrl[5];
     unsigned short timer_counter_low;
     unsigned short timer_counter_high;
+    unsigned char clock_rollover;
+    unsigned char break_hit;
+    unsigned short soft_reset_flag;
+    unsigned char hard_disk_status;
+    unsigned char num_hard_disks;
+    unsigned char fixed_disk_control;
+    unsigned char fixed_disk_controller_port;
+    unsigned long parallel_timeout;
+    unsigned long serial_timeout;
+    unsigned short keyboard_buffer_start;
+    unsigned short keyboard_buffer_end;
+    unsigned char last_screen_row;
 };

@@ -297,6 +297,7 @@ void display_init(void)
 
     bda_write(video_mode, 0x03);
     bda_write(num_screen_cols, 80);
+    bda_write(last_screen_row, 25 - 1);
     bda_write(crt_controller_base, 0x3d4);
 
     union cursor cursor;
