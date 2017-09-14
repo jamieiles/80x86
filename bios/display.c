@@ -188,7 +188,7 @@ static void video_services(struct callregs *regs)
     case 0x8: read_char(regs); break;
     case 0x12:
         if (regs->bx.l == 0x10) {
-            regs->bx.h = 1; // cursor.c.color
+            regs->bx.h = 0; // cursor.c.color
             regs->bx.l = 0; // 64K memory
             regs->cx.x = 0; // No features
         }
