@@ -1043,6 +1043,9 @@ esc:
     - opcode: 0xdd
     - opcode: 0xde
     - opcode: 0xdf
+    notes:
+    - Acts as a NOP unless built with -S80X86_TRAP_ESCAPE=ON otherwise raises
+      trap 7.
 hlt:
     encodings:
     - opcode: 0xf4
