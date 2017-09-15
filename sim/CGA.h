@@ -1,10 +1,19 @@
 #pragma once
 
 #include "CPU.h"
+#include "Cursor.h"
 #include "Display.h"
 
 class CGA : public IOPorts
 {
+private:
+    enum CRTCRegs {
+        CURSOR_SCAN_START = 0xa,
+        CURSOR_SCAN_END = 0xb,
+        CURSOR_HIGH = 0xe,
+        CURSOR_LOW = 0xf,
+    };
+
 public:
     const phys_addr buffer_phys = 0xb8000;
 
@@ -26,9 +35,9 @@ public:
 
     uint8_t read8(uint16_t __unused port_num, unsigned __unused offs)
     {
-        if (port_num == 0)
+        if (port_num == 0) {
             return offs == 0 ? reg_idx : idx_regs[reg_idx];
-        else if (port_num == 6 && offs == 0) {
+        } else if (port_num == 6 && offs == 0) {
             status ^= 0x1;
             return status;
         }
@@ -39,6 +48,21 @@ public:
     void update();
 
 private:
+    Cursor get_cursor() const
+    {
+        auto cursor_loc = (static_cast<uint16_t>(idx_regs[CURSOR_HIGH]) << 8) |
+                          idx_regs[CURSOR_LOW];
+        auto cursor_row = cursor_loc / 80;
+        auto cursor_col = cursor_loc % 80;
+        auto cursor_scan_start = idx_regs[CURSOR_SCAN_START] & 0xf;
+        auto cursor_scan_end = idx_regs[CURSOR_SCAN_END] & 0xf;
+        auto cursor_enabled = !((idx_regs[CURSOR_SCAN_START] & 0x30) & 0x10);
+
+        return Cursor(cursor_row * 8 + (cursor_scan_start),
+                      cursor_row * 8 + (cursor_scan_end), cursor_col * 8,
+                      cursor_col * 8 + 8, cursor_enabled);
+    }
+
     Memory *mem;
     Display display;
     uint8_t reg_idx;
@@ -60,5 +84,6 @@ void CGA::update()
             display.write_char(char_attr);
         }
     }
-    display.refresh();
+
+    display.refresh(get_cursor());
 }

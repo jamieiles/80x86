@@ -12,8 +12,8 @@
 
 #include "Window.h"
 
-Display::Display(int num_rows, int num_cols)
-    : num_rows(num_rows), num_cols(num_cols), cursor{0, 0}
+Display::Display(unsigned num_rows, unsigned num_cols)
+    : num_rows(num_rows), num_cols(num_cols), row(0), col(0)
 {
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
         throw std::runtime_error("Failed to initialize SDL " +
@@ -43,23 +43,23 @@ void Display::set_cursor(int row, int col)
     assert(row >= 0 && row < num_rows);
     assert(col >= 0 && col < num_cols);
 
-    cursor.row = row;
-    cursor.col = col;
+    this->row = row;
+    this->col = col;
 }
 
 void Display::write_char(uint16_t c)
 {
     uint16_t v = c;
 
-    characters[cursor.row * (num_cols + 1) + cursor.col] = v;
-    cursor.col++;
+    characters[this->row * (num_cols + 1) + this->col] = v;
+    this->col++;
 
-    if (cursor.col == num_cols) {
-        cursor.col = 0;
-        cursor.row++;
+    if (this->col == num_cols) {
+        this->col = 0;
+        this->row++;
     }
-    if (cursor.row == num_rows)
-        cursor.row = num_rows - 1;
+    if (this->row == num_rows)
+        this->row = num_rows - 1;
 }
 
 struct color {
@@ -92,13 +92,12 @@ const struct color get_color(unsigned char idx)
     return lut[idx];
 }
 
-void Display::refresh()
+void Display::refresh(Cursor cursor)
 {
     window->clear();
-    for (int row = 0; row < num_rows; ++row) {
-        for (int col = 0; col < num_cols; ++col) {
-            uint16_t font_index =
-                characters.get()[(row * (num_cols + 1)) + col];
+    for (unsigned y = 0; y < num_rows; ++y) {
+        for (unsigned x = 0; x < num_cols; ++x) {
+            uint16_t font_index = characters.get()[(y * (num_cols + 1)) + x];
             char *font_data = &font_bitmap[(font_index & 0xff) * 8];
 
             for (int i = 0; i < 8; ++i)
@@ -106,12 +105,15 @@ void Display::refresh()
                     auto fg = get_color((font_index >> 8) & 0xf);
                     auto bg = get_color((font_index >> 12) & 0xf);
 
-                    if (font_data[i] & (1 << (8 - j)))
-                        window->set_pixel(col * 8 + j, row * 8 + i, fg.r, fg.g,
-                                          fg.b);
-                    else
-                        window->set_pixel(col * 8 + j, row * 8 + i, bg.r, bg.g,
-                                          bg.b);
+                    auto render_cursor =
+                        cursor.is_active_at(y * 8 + i, x * 8 + j);
+                    bool pixel_set = (font_data[i] & (1 << (8 - j)));
+                    auto color = (pixel_set && !render_cursor) ||
+                                         (!pixel_set && render_cursor)
+                                     ? fg
+                                     : bg;
+                    window->set_pixel(x * 8 + j, y * 8 + i, color.r, color.g,
+                                      color.b);
                 }
         }
     }

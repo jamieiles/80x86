@@ -4,30 +4,28 @@
 #include <string>
 #include <array>
 
-class Window;
+#include "Cursor.h"
 
-struct Cursor {
-    int row;
-    int col;
-};
+class Window;
 
 class Display
 {
 public:
-    Display(int num_rows = 25, int num_cols = 80);
+    Display(unsigned num_rows = 25, unsigned num_cols = 80);
     ~Display();
 
     void set_cursor(int row, int col);
     void write_char(uint16_t c);
-    void refresh();
+    void refresh(Cursor cursor);
 
 private:
     void load_font();
 
-    int num_rows;
-    int num_cols;
+    unsigned num_rows;
+    unsigned num_cols;
     std::unique_ptr<Window> window;
-    Cursor cursor;
+    unsigned row;
+    unsigned col;
     std::unique_ptr<uint16_t[]> characters;
     char font_bitmap[256 * 8];
 };
