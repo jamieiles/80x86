@@ -2,8 +2,6 @@
 #include "serial.h"
 #include "io.h"
 
-static unsigned scan_start, scan_end;
-
 static const unsigned frame_buffer_segment = 0xb000;
 static const unsigned frame_buffer_offset = 0x8000;
 
@@ -251,17 +249,50 @@ static void get_cursor(struct callregs *regs)
     union cursor cursor;
 
     read_cursor(&cursor);
-    regs->cx.h = scan_start;
-    regs->cx.l = scan_end;
-    regs->dx.h = cursor.c.col;
-    regs->dx.l = cursor.c.row;
+    regs->cx.h = bda_read(cursor_start);
+    regs->cx.l = bda_read(cursor_end);
+    regs->dx.h = cursor.c.row;
+    regs->dx.l = cursor.c.col;
     write_cursor(&cursor);
 }
 
-static void set_cursor_shape(struct callregs *regs)
+static void __attribute__((noinline))
+set_cursor_scan_start(unsigned char scan_start)
 {
-    scan_start = regs->cx.h;
-    scan_end = regs->cx.l;
+    // Cursor disabled requested
+    if (scan_start & 0x20)
+        scan_start = 0x10 | (scan_start & 0xf);
+    crtc_reg_write(0xa, scan_start);
+}
+
+static void __attribute__((noinline))
+set_cursor_scan_end(unsigned char scan_end)
+{
+    crtc_reg_write(0xb, scan_end);
+}
+
+static void __attribute__((noinline))
+set_cursor_bda(unsigned char scan_start, unsigned char scan_end)
+{
+    bda_write(cursor_start, scan_start);
+    bda_write(cursor_end, scan_end);
+}
+
+static void __attribute__((noinline))
+__set_cursor_shape(unsigned char scan_start, unsigned char scan_end)
+{
+    set_cursor_scan_end(scan_end);
+    set_cursor_scan_start(scan_start);
+
+    set_cursor_bda(scan_start, scan_end);
+}
+
+static void __attribute__((noinline)) set_cursor_shape(struct callregs *regs)
+{
+    unsigned char scan_start = regs->cx.h;
+    unsigned char scan_end = regs->cx.l;
+
+    __set_cursor_shape(scan_start, scan_end);
 }
 
 static void get_video_mode(struct callregs *regs)
@@ -319,6 +350,8 @@ void display_init(void)
     bda_write(num_screen_cols, 80);
     bda_write(last_screen_row, 25 - 1);
     bda_write(crt_controller_base, 0x3d4);
+
+    __set_cursor_shape(7, 7);
 
     union cursor cursor;
     cursor.c.col = cursor.c.row = 0;
