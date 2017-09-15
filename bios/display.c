@@ -15,14 +15,26 @@ union cursor {
     unsigned short v;
 };
 
+static void __attribute__((noinline))
+crtc_reg_write(unsigned char reg, unsigned char val)
+{
+    outb(0x3d4, reg);
+    outb(0x3d5, val);
+}
+
+static unsigned char __attribute__((noinline)) crtc_reg_read(unsigned char reg)
+{
+    outb(0x3d4, reg);
+
+    return inb(0x3d5);
+}
+
 static void __attribute__((noinline)) read_cursor(union cursor *c)
 {
     unsigned short pos;
 
-    outb(0x3d4, 0xe);
-    pos = ((unsigned short)inb(0x3d5)) << 8;
-    outb(0x3d4, 0xf);
-    pos |= inb(0x3d5);
+    pos = (unsigned short)crtc_reg_read(0xe) << 8;
+    pos |= crtc_reg_read(0xf);
 
     c->c.row = pos / 80;
     c->c.col = pos % 80;
@@ -32,10 +44,8 @@ static void __attribute__((noinline)) write_cursor(union cursor *c)
 {
     unsigned short pos = (unsigned short)c->c.row * 80 + c->c.col;
 
-    outb(0x3d4, 0xe);
-    outb(0x3d5, pos >> 8);
-    outb(0x3d4, 0xf);
-    outb(0x3d5, pos & 0xff);
+    crtc_reg_write(0xe, pos >> 8);
+    crtc_reg_write(0xf, pos);
 
     bda_write(cursor_offsets[0], c->v);
 }
