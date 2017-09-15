@@ -97,15 +97,25 @@ void __scroll_up(signed char row_top,
     }
 }
 
+static void clear_screen(void)
+{
+    __scroll_up(0, 24, 0, 79, 0x07, 24);
+}
+
 void __attribute__((noinline))
 scroll_up(union cursor *cursor, struct callregs *regs)
 {
+    if (regs->ax.l == 0 || regs->ax.l >= 24) {
+        clear_screen();
+        return;
+    }
+
+    signed char scroll_count = regs->ax.l;
     signed char row_top = regs->cx.h;
     signed char row_bottom = regs->dx.h;
     signed char col_left = regs->cx.l;
     signed char col_right = regs->dx.l;
     signed char blank_attr = regs->bx.h;
-    signed char scroll_count = regs->ax.l == 0 ? 25 : regs->ax.l;
 
     __scroll_up(row_top, row_bottom, col_left, col_right, blank_attr,
                 scroll_count);
