@@ -11,13 +11,12 @@
 static char spi_xfer_buf[1280];
 static char sd_is_sdhc;
 
-static void __attribute__((noinline))
-spi_xfer_buf_set(int offs, unsigned char v)
+static void noinline spi_xfer_buf_set(int offs, unsigned char v)
 {
     spi_xfer_buf[offs] = v;
 }
 
-static unsigned char __attribute__((noinline)) spi_xfer_buf_get(int offs)
+static unsigned char noinline spi_xfer_buf_get(int offs)
 {
     return spi_xfer_buf[offs];
 }
@@ -259,8 +258,7 @@ static int find_data_start(int r1offs)
     return r1offs == sizeof(spi_xfer_buf) ? -1 : r1offs + 1;
 }
 
-static int __attribute__((noinline))
-sd_make_write_request(unsigned long address)
+static int noinline sd_make_write_request(unsigned long address)
 {
     struct spi_cmd cmd = {
         .cmd = 0x58, .rx_datalen = 1,
@@ -279,8 +277,7 @@ sd_make_write_request(unsigned long address)
     return r1.v & R1_ERROR_MASK;
 }
 
-static void __attribute__((noinline))
-sd_write_block(unsigned short sseg, unsigned short saddr)
+static void noinline sd_write_block(unsigned short sseg, unsigned short saddr)
 {
     spi_xfer_buf_set(0, 0xff); // Gap
     spi_xfer_buf_set(1, 0xfe); // Data start token
@@ -292,13 +289,12 @@ sd_write_block(unsigned short sseg, unsigned short saddr)
     spi_xfer(5 + 512);
 }
 
-static int __attribute__((noinline))
-write_received(unsigned char packet_response)
+static int noinline write_received(unsigned char packet_response)
 {
     return (packet_response & 0x1) && ((packet_response >> 1) & 0x7) == 0x2;
 }
 
-static int __attribute__((noinline)) wait_for_write_completion(void)
+static int noinline wait_for_write_completion(void)
 {
     int i = 0;
 

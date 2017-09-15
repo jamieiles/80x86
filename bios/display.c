@@ -13,21 +13,20 @@ union cursor {
     unsigned short v;
 };
 
-static void __attribute__((noinline))
-crtc_reg_write(unsigned char reg, unsigned char val)
+static void noinline crtc_reg_write(unsigned char reg, unsigned char val)
 {
     outb(0x3d4, reg);
     outb(0x3d5, val);
 }
 
-static unsigned char __attribute__((noinline)) crtc_reg_read(unsigned char reg)
+static unsigned char noinline crtc_reg_read(unsigned char reg)
 {
     outb(0x3d4, reg);
 
     return inb(0x3d5);
 }
 
-static void __attribute__((noinline)) read_cursor(union cursor *c)
+static void noinline read_cursor(union cursor *c)
 {
     unsigned short pos;
 
@@ -38,7 +37,7 @@ static void __attribute__((noinline)) read_cursor(union cursor *c)
     c->c.col = pos % 80;
 }
 
-static void __attribute__((noinline)) write_cursor(union cursor *c)
+static void noinline write_cursor(union cursor *c)
 {
     unsigned short pos = (unsigned short)c->c.row * 80 + c->c.col;
 
@@ -48,10 +47,10 @@ static void __attribute__((noinline)) write_cursor(union cursor *c)
     bda_write(cursor_offsets[0], c->v);
 }
 
-static void __attribute__((noinline)) clear_row(unsigned char row,
-                                                unsigned char col_left,
-                                                unsigned char col_right,
-                                                unsigned char attr)
+static void noinline clear_row(unsigned char row,
+                               unsigned char col_left,
+                               unsigned char col_right,
+                               unsigned char attr)
 {
     unsigned char col;
     const signed short blank = ((signed short)attr << 8) | 0x20;
@@ -61,11 +60,11 @@ static void __attribute__((noinline)) clear_row(unsigned char row,
                blank);
 }
 
-static void __attribute__((noinline)) copy_row(unsigned char dst_row,
-                                               unsigned char src_row,
-                                               unsigned char col_left,
-                                               unsigned char col_right,
-                                               unsigned char attr)
+static void noinline copy_row(unsigned char dst_row,
+                              unsigned char src_row,
+                              unsigned char col_left,
+                              unsigned char col_right,
+                              unsigned char attr)
 {
     unsigned char col;
 
@@ -100,8 +99,7 @@ static void clear_screen(void)
     __scroll_up(0, 24, 0, 79, 0x07, 24);
 }
 
-void __attribute__((noinline))
-scroll_up(union cursor *cursor, struct callregs *regs)
+void noinline scroll_up(union cursor *cursor, struct callregs *regs)
 {
     if (regs->ax.l == 0 || regs->ax.l >= 24) {
         clear_screen();
@@ -136,8 +134,7 @@ static void __scroll_down(signed char row_top,
     }
 }
 
-void __attribute__((noinline))
-scroll_down(union cursor *cursor, struct callregs *regs)
+void noinline scroll_down(union cursor *cursor, struct callregs *regs)
 {
     signed char row_top = regs->cx.h;
     signed char row_bottom = regs->dx.h;
@@ -150,7 +147,7 @@ scroll_down(union cursor *cursor, struct callregs *regs)
                   scroll_count);
 }
 
-void __attribute__((noinline)) scroll_up_one(void)
+void noinline scroll_up_one(void)
 {
     __scroll_up(0, 24, 0, 79, 0x07, 1);
 }
@@ -167,7 +164,7 @@ static void do_backspace(union cursor *cursor)
     }
 }
 
-static void __attribute__((noinline)) emit_char(char c)
+static void noinline emit_char(char c)
 {
     union cursor cursor;
 
@@ -256,8 +253,7 @@ static void get_cursor(struct callregs *regs)
     write_cursor(&cursor);
 }
 
-static void __attribute__((noinline))
-set_cursor_scan_start(unsigned char scan_start)
+static void noinline set_cursor_scan_start(unsigned char scan_start)
 {
     // Cursor disabled requested
     if (scan_start & 0x20)
@@ -265,21 +261,20 @@ set_cursor_scan_start(unsigned char scan_start)
     crtc_reg_write(0xa, scan_start);
 }
 
-static void __attribute__((noinline))
-set_cursor_scan_end(unsigned char scan_end)
+static void noinline set_cursor_scan_end(unsigned char scan_end)
 {
     crtc_reg_write(0xb, scan_end);
 }
 
-static void __attribute__((noinline))
-set_cursor_bda(unsigned char scan_start, unsigned char scan_end)
+static void noinline set_cursor_bda(unsigned char scan_start,
+                                    unsigned char scan_end)
 {
     bda_write(cursor_start, scan_start);
     bda_write(cursor_end, scan_end);
 }
 
-static void __attribute__((noinline))
-__set_cursor_shape(unsigned char scan_start, unsigned char scan_end)
+static void noinline __set_cursor_shape(unsigned char scan_start,
+                                        unsigned char scan_end)
 {
     set_cursor_scan_end(scan_end);
     set_cursor_scan_start(scan_start);
@@ -287,7 +282,7 @@ __set_cursor_shape(unsigned char scan_start, unsigned char scan_end)
     set_cursor_bda(scan_start, scan_end);
 }
 
-static void __attribute__((noinline)) set_cursor_shape(struct callregs *regs)
+static void noinline set_cursor_shape(struct callregs *regs)
 {
     unsigned char scan_start = regs->cx.h;
     unsigned char scan_end = regs->cx.l;

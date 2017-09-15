@@ -92,6 +92,7 @@ enum Flag {
     })
 
 #define offsetof __builtin_offsetof
+#define noinline __attribute__((noinline))
 
 void irq_enable(int irq_num);
 

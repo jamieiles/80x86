@@ -22,7 +22,7 @@ static int kbd_buffer_full(void)
     // clang-format on
 }
 
-void __attribute__((noinline)) kbd_buffer_add(unsigned short key)
+void noinline kbd_buffer_add(unsigned short key)
 {
     if (kbd_buffer_full())
         return;
@@ -87,13 +87,12 @@ void modifier_key(unsigned char b)
     bda_write(keyboard_flags[0], flags);
 }
 
-static int __attribute__((noinline)) get_kbd_flags(void)
+static int noinline get_kbd_flags(void)
 {
     return bda_read(keyboard_flags[0]);
 }
 
-static void __attribute__((noinline))
-keypress(const struct keydef *map, unsigned char b)
+static void noinline keypress(const struct keydef *map, unsigned char b)
 {
     const struct keydef *def = &map[b];
     unsigned short flags = get_kbd_flags();
