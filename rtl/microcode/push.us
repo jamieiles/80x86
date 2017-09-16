@@ -10,7 +10,7 @@ pushff_reg_save:
 pushff_mem_save:
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, rd_sel SP,
         rd_sel_source MICROCODE_RD_SEL, mar_write, mar_wr_sel Q,
-        segment SS;
+        segment_force, segment SS;
     segment_force, segment SS, mem_write, a_sel MAR, alu_op SELA,
         next_instruction;
 
