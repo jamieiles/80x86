@@ -56,7 +56,7 @@ private:
         auto cursor_col = cursor_loc % 80;
         auto cursor_scan_start = idx_regs[CURSOR_SCAN_START] & 0xf;
         auto cursor_scan_end = idx_regs[CURSOR_SCAN_END] & 0xf;
-        auto cursor_enabled = !((idx_regs[CURSOR_SCAN_START] & 0x30) & 0x10);
+        auto cursor_enabled = (idx_regs[CURSOR_SCAN_START] & 0x30) != 0x10;
 
         return Cursor(cursor_row * 8 + (cursor_scan_start),
                       cursor_row * 8 + (cursor_scan_end), cursor_col * 8,
