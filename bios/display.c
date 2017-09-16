@@ -320,13 +320,6 @@ static void video_services(struct callregs *regs)
     case 0xf: get_video_mode(regs); break;
     case 0x9: write_char_and_attribute(regs); break;
     case 0x8: read_char(regs); break;
-    case 0x12:
-        if (regs->bx.l == 0x10) {
-            regs->bx.h = 0; // cursor.c.color
-            regs->bx.l = 0; // 64K memory
-            regs->cx.x = 0; // No features
-        }
-        break;
     default: regs->flags |= CF;
     }
 }
