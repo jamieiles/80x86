@@ -38,11 +38,8 @@ void Display::load_font()
     font_file.close();
 }
 
-void Display::set_cursor(int row, int col)
+void Display::set_cursor(unsigned row, unsigned col)
 {
-    assert(row >= 0 && row < num_rows);
-    assert(col >= 0 && col < num_cols);
-
     this->row = row;
     this->col = col;
 }

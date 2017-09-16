@@ -14,7 +14,7 @@ public:
     Display(unsigned num_rows = 25, unsigned num_cols = 80);
     ~Display();
 
-    void set_cursor(int row, int col);
+    void set_cursor(unsigned row, unsigned col);
     void write_char(uint16_t c);
     void refresh(Cursor cursor);
 
