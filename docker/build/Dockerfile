@@ -3,6 +3,7 @@ MAINTAINER Jamie Iles <jamie@jamieiles.com>
 ENV DEBIAN_FRONTEND=noninteractive
 ARG MIRROR=https://sourcery.mentor.com/GNUToolchain/package14960/public/ia16-elf/
 ARG TOOLCHAIN=sourceryg++-2016.11-64-ia16-elf-x86_64-linux-gnu.tar.bz2
+ARG VERILATOR_VERSION=3.908
 RUN apt-get update && apt-get install --no-install-recommends -y \
         clang \
         clang-c++ \
@@ -33,9 +34,9 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         flex \
         bison
 RUN cd /tmp && \
-        wget https://www.veripool.org/ftp/verilator-3.900.tgz && \
-        tar xf verilator-3.900.tgz && \
-        cd verilator-3.900 && \
+        wget https://www.veripool.org/ftp/verilator-$VERILATOR_VERSION.tgz && \
+        tar xf verilator-$VERILATOR_VERSION.tgz && \
+        cd verilator-$VERILATOR_VERSION && \
         ./configure --prefix=/usr && \
         make -j4 && \
         make install && \
