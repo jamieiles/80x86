@@ -13,10 +13,10 @@ public:
     ~JTAGCPU();
     void reset();
     void write_reg(GPR regnum, uint16_t val);
-    uint16_t read_reg(GPR regnum);
+    uint16_t read_reg(GPR regnum) const;
     size_t step();
     void write_flags(uint16_t val);
-    uint16_t read_flags();
+    uint16_t read_flags() const;
     bool has_trapped();
     uint32_t idcode();
 

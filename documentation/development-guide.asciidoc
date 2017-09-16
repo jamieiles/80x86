@@ -95,9 +95,20 @@ Options:
   -h [ --help ]         print this usage information and exit
   -b [ --backend ] arg  the simulator backend module to use, either SoftwareCPU
                         or RTLCPU, default SoftwareCPU
+  -r [ --restore ] arg  restore file to load from
+  -s [ --save ] arg     save file to write from
   --bios arg            the bios image to use
   --diskimage arg       the boot disk image
 ----
+
+The save and restore functionality are a useful tool for debugging - the
+entire simulation state can be saved at exit and restored later making it
+possible to checkpoint once the system is in a known state and then repeatedly
+debug without waiting for the system to return to the same state.
+Importantly, this is transferable between backends, so it is possible to boot
+the system and run an application with the `SoftwareCPU` and then exit and
+restart with the `RTLCPU` to greatly reduce time taken to get to the
+interesting debug point.
 
 == Microcode
 

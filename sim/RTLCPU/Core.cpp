@@ -271,7 +271,7 @@ void RTLCPU<debug_enabled>::write_gpr(GPR regnum, uint16_t val)
 }
 
 template <bool debug_enabled>
-uint16_t RTLCPU<debug_enabled>::read_reg(GPR regnum)
+uint16_t RTLCPU<debug_enabled>::read_reg(GPR regnum) const
 {
     if (regnum == IP)
         return read_ip();
@@ -282,25 +282,27 @@ uint16_t RTLCPU<debug_enabled>::read_reg(GPR regnum)
 }
 
 template <bool debug_enabled>
-uint16_t RTLCPU<debug_enabled>::read_ip()
+uint16_t RTLCPU<debug_enabled>::read_ip() const
 {
     assert(this->dut.debug_stopped);
-    debug_run_proc(0x0f);
+    const_cast<RTLCPU<debug_enabled> *>(this)->debug_run_proc(0x0f);
 
     return this->dut.debug_val;
 }
 
 template <bool debug_enabled>
-uint16_t RTLCPU<debug_enabled>::read_gpr(GPR regnum)
+uint16_t RTLCPU<debug_enabled>::read_gpr(GPR regnum) const
 {
     if (regnum < NUM_16BIT_REGS) {
-        debug_run_proc(0x03 + static_cast<int>(regnum));
+        const_cast<RTLCPU<debug_enabled> *>(this)->debug_run_proc(
+            0x03 + static_cast<int>(regnum));
 
         return this->dut.debug_val;
     }
 
     auto regsel = static_cast<int>(regnum - AL) & 0x3;
-    debug_run_proc(0x03 + static_cast<int>(regsel));
+    const_cast<RTLCPU<debug_enabled> *>(this)->debug_run_proc(
+        0x03 + static_cast<int>(regsel));
 
     reg_converter conv;
     conv.v16 = this->dut.debug_val;
@@ -309,9 +311,10 @@ uint16_t RTLCPU<debug_enabled>::read_gpr(GPR regnum)
 }
 
 template <bool debug_enabled>
-uint16_t RTLCPU<debug_enabled>::read_sr(GPR regnum)
+uint16_t RTLCPU<debug_enabled>::read_sr(GPR regnum) const
 {
-    debug_run_proc(0x03 + static_cast<int>(regnum));
+    const_cast<RTLCPU<debug_enabled> *>(this)->debug_run_proc(
+        0x03 + static_cast<int>(regnum));
 
     return this->dut.debug_val;
 }
@@ -370,9 +373,9 @@ void RTLCPU<debug_enabled>::write_flags(uint16_t val)
 }
 
 template <bool debug_enabled>
-uint16_t RTLCPU<debug_enabled>::read_flags()
+uint16_t RTLCPU<debug_enabled>::read_flags() const
 {
-    this->debug_run_proc(0x10);
+    const_cast<RTLCPU<debug_enabled> *>(this)->debug_run_proc(0x10);
 
     return this->dut.debug_val;
 }

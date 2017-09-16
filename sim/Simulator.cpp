@@ -9,6 +9,8 @@
 #include <unistd.h>
 
 #include <boost/program_options.hpp>
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
 
 #include "CGA.h"
 #include "CPU.h"
@@ -57,6 +59,18 @@ public:
 private:
     void load_bios(const std::string &bios_path);
     void process_io();
+    friend class boost::serialization::access;
+    template <class Archive>
+    void serialize(Archive &ar, const unsigned int __unused version)
+    {
+        // clang-format off
+        ar & cpu;
+        ar & uart;
+        ar & spi;
+        ar & timer;
+        ar & cga;
+        // clang-format on
+    }
 
     T cpu;
     SDRAMConfigRegister sdram_config_register;
@@ -165,11 +179,39 @@ void Simulator<T>::run()
               << tty::normal;
 }
 
+template <typename T>
+static void run_sim(const std::string &bios_image,
+                    const std::string &disk_image,
+                    const bool detached,
+                    const std::string &save,
+                    const std::string &restore)
+{
+    T sim(bios_image, disk_image, detached);
+
+    if (restore != "") {
+        std::ifstream ifs(restore);
+        boost::archive::text_iarchive ia(ifs);
+        ia >> sim;
+    }
+
+    sim.run();
+
+    if (save != "") {
+        std::ofstream ofs(save);
+        {
+            boost::archive::text_oarchive oa(ofs);
+            oa << sim;
+        }
+    }
+}
+
 int main(int argc, char **argv)
 {
     namespace po = boost::program_options;
     std::string bios_image;
     std::string disk_image;
+    std::string restore;
+    std::string save;
     std::string backend = "SoftwareCPU";
     bool detached;
 
@@ -179,6 +221,10 @@ int main(int argc, char **argv)
         ("help,h", "print this usage information and exit")
         ("backend,b", po::value<std::string>(&backend),
          "the simulator backend module to use, either SoftwareCPU or RTLCPU, default SoftwareCPU")
+        ("restore,r", po::value<std::string>(&restore),
+         "restore file to load from")
+        ("save,s", po::value<std::string>(&save),
+         "save file to write from")
         ("detached,d",
          "run the simulation in free-running mode")
         ("bios", po::value<std::string>(&bios_image)->required(),
@@ -215,12 +261,11 @@ int main(int argc, char **argv)
     }
 
     if (backend == "SoftwareCPU") {
-        Simulator<SoftwareCPU> sim(bios_image, disk_image, detached);
-        sim.run();
+        run_sim<Simulator<SoftwareCPU>>(bios_image, disk_image, detached, save,
+                                        restore);
     } else if (backend == "RTLCPU") {
-        Simulator<RTLCPU<verilator_debug_enabled>> sim(bios_image, disk_image,
-                                                       detached);
-        sim.run();
+        run_sim<Simulator<RTLCPU<verilator_debug_enabled>>>(
+            bios_image, disk_image, detached, save, restore);
     } else {
         std::cerr << "Error: invalid simulation backend \"" << backend << "\""
                   << std::endl;

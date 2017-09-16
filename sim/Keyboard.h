@@ -5,6 +5,11 @@
 
 #include <SDL_events.h>
 
+#include <boost/serialization/list.hpp>
+#include <boost/serialization/deque.hpp>
+#include <boost/serialization/string.hpp>
+#include <boost/serialization/version.hpp>
+
 #include <map>
 #include <deque>
 
@@ -144,4 +149,13 @@ public:
 private:
     CPU_t *cpu;
     std::deque<uint8_t> pending;
+
+    friend class boost::serialization::access;
+    template <class Archive>
+    void serialize(Archive &ar, const unsigned int __unused version)
+    {
+        // clang-format off
+        ar & pending;
+        // clang-format on
+    }
 };

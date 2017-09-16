@@ -6,6 +6,10 @@
 #include <string>
 #include <vector>
 
+#include <boost/serialization/list.hpp>
+#include <boost/serialization/string.hpp>
+#include <boost/serialization/version.hpp>
+
 #include "Memory.h"
 #include "RegisterFile.h"
 
@@ -77,7 +81,7 @@ public:
     {
     }
     virtual void write_reg(GPR regnum, uint16_t val) = 0;
-    virtual uint16_t read_reg(GPR regnum) = 0;
+    virtual uint16_t read_reg(GPR regnum) const = 0;
     virtual void cycle_cpu()
     {
         throw NotImplemented("cycle not implemented");
@@ -99,7 +103,7 @@ public:
     }
     virtual size_t step() = 0;
     virtual void write_flags(uint16_t val) = 0;
-    virtual uint16_t read_flags() = 0;
+    virtual uint16_t read_flags() const = 0;
     virtual bool has_trapped() = 0;
     virtual void reset() = 0;
     virtual bool instruction_had_side_effects() const = 0;
@@ -169,4 +173,48 @@ public:
 
 protected:
     Memory mem;
+
+private:
+    friend class boost::serialization::access;
+    template <class Archive>
+    void save(Archive &ar, const unsigned int __unused version) const
+    {
+        for (auto r = static_cast<int>(AX);
+             r <= static_cast<int>(NUM_16BIT_REGS); ++r) {
+            auto v = read_reg(static_cast<GPR>(r));
+            // clang-format off
+            ar & v;
+            // clang-format on
+        }
+
+        // clang-format off
+        auto flags = read_flags();
+        ar & flags;
+
+        ar & mem;
+        // clang-format on
+    }
+
+    template <class Archive>
+    void load(Archive &ar, const unsigned int __unused version)
+    {
+        for (auto r = static_cast<int>(AX);
+             r <= static_cast<int>(NUM_16BIT_REGS); ++r) {
+            uint16_t v;
+            // clang-format off
+            ar & v;
+            write_reg(static_cast<GPR>(r), v);
+            // clang-format on
+        }
+
+        // clang-format off
+        uint16_t flags;
+        ar & flags;
+        write_flags(flags);
+
+        ar & mem;
+        // clang-format on
+    }
+    BOOST_SERIALIZATION_SPLIT_MEMBER()
 };
+BOOST_CLASS_VERSION(SimCPU, 1)

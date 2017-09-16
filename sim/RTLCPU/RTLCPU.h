@@ -22,7 +22,7 @@ public:
     void write_coverage();
     void reset();
     void write_reg(GPR regnum, uint16_t val);
-    uint16_t read_reg(GPR regnum);
+    uint16_t read_reg(GPR regnum) const;
     void start_instruction();
     void cycle_cpu()
     {
@@ -37,7 +37,7 @@ public:
     void idle(int count);
     int time_step();
     void write_flags(uint16_t val);
-    uint16_t read_flags();
+    uint16_t read_flags() const;
     bool has_trapped();
 
     int debug_run_proc(
@@ -120,9 +120,9 @@ private:
     uint16_t get_microcode_address();
     void mem_access();
     void io_access();
-    uint16_t read_ip();
-    uint16_t read_sr(GPR regnum);
-    uint16_t read_gpr(GPR regnum);
+    uint16_t read_ip() const;
+    uint16_t read_sr(GPR regnum) const;
+    uint16_t read_gpr(GPR regnum) const;
     void write_ip(uint16_t v);
     void write_sr(GPR regnum, uint16_t v);
     void write_gpr(GPR regnum, uint16_t v);

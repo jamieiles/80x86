@@ -23,7 +23,7 @@ public:
         registers.set(regnum, val);
     }
 
-    uint16_t read_reg(GPR regnum)
+    uint16_t read_reg(GPR regnum) const
     {
         return registers.get(regnum);
     }
@@ -43,7 +43,7 @@ public:
         registers.set_flags(val);
     }
 
-    uint16_t read_flags()
+    uint16_t read_flags() const
     {
         return registers.get_flags();
     }

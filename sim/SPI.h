@@ -5,6 +5,12 @@
 #include <stdint.h>
 #include <fstream>
 
+#include <boost/serialization/list.hpp>
+#include <boost/serialization/deque.hpp>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/string.hpp>
+#include <boost/serialization/version.hpp>
+
 // A dumb SPI mode SD card emulation.  Only supports basic block operations,
 // standard capacity, no CRC checking or generation and no real errors, this
 // is not a real SD card model!
@@ -42,4 +48,19 @@ private:
     std::fstream disk_image;
     bool do_write;
     unsigned write_count;
+
+    friend class boost::serialization::access;
+    template <class Archive>
+    void serialize(Archive &ar, const unsigned int __unused version)
+    {
+        // clang-format off
+        ar & control_reg;
+        ar & rx_val;
+        ar & state;
+        ar & mosi_buf;
+        ar & miso_buf;
+        ar & do_write;
+        ar & write_count;
+        // clang-format on
+    }
 };

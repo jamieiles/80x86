@@ -1,5 +1,9 @@
 #pragma once
 
+#include <boost/serialization/list.hpp>
+#include <boost/serialization/string.hpp>
+#include <boost/serialization/version.hpp>
+
 #include "CPU.h"
 #include "Cursor.h"
 #include "Display.h"
@@ -68,6 +72,18 @@ private:
     uint8_t reg_idx;
     uint8_t idx_regs[256];
     uint8_t status;
+
+    friend class boost::serialization::access;
+    template <class Archive>
+    void serialize(Archive &ar, const unsigned int __unused version)
+    {
+        // clang-format off
+        ar & mem;
+        ar & reg_idx;
+        ar & idx_regs;
+        ar & status;
+        // clang-format on
+    }
 };
 
 void CGA::update()

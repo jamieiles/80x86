@@ -13,6 +13,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         nasm \
         libsdl2-2.0-0 \
         libsdl2-dev \
+        libboost-serialization-dev \
         libboost-program-options-dev \
         libboost-python1.58.0 \
         libboost-python-dev \

@@ -3,6 +3,12 @@
 #include <sys/types.h>
 #include <stdint.h>
 
+#include <boost/serialization/list.hpp>
+#include <boost/serialization/string.hpp>
+#include <boost/serialization/version.hpp>
+
+#define __unused __attribute__((unused))
+
 const size_t MEMORY_SIZE = 1 * 1024 * 1024;
 typedef uint32_t phys_addr;
 
@@ -20,6 +26,17 @@ public:
 private:
     uint8_t mem[MEMORY_SIZE];
     bool written;
+
+private:
+    friend class boost::serialization::access;
+    template <class Archive>
+    void serialize(Archive &ar, const unsigned int __unused version)
+    {
+        // clang-format off
+        ar & mem;
+        ar & written;
+        // clang-format on
+    }
 };
 
 #ifndef MEM_INIT_BYTE_VAL

@@ -1,5 +1,9 @@
 #pragma once
 
+#include <boost/serialization/list.hpp>
+#include <boost/serialization/string.hpp>
+#include <boost/serialization/version.hpp>
+
 #include "CPU.h"
 #include <stdint.h>
 
@@ -62,4 +66,16 @@ private:
     uint32_t count;
     bool enabled;
     uint16_t reload;
+
+    friend class boost::serialization::access;
+    template <class Archive>
+    void serialize(Archive &ar, const unsigned int __unused version)
+    {
+        // clang-format off
+        ar & ms_count;
+        ar & count;
+        ar & enabled;
+        ar & reload;
+        // clang-format on
+    }
 };

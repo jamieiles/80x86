@@ -6,6 +6,11 @@
 #include <unistd.h>
 #include <stdexcept>
 
+#include <boost/serialization/list.hpp>
+#include <boost/serialization/deque.hpp>
+#include <boost/serialization/string.hpp>
+#include <boost/serialization/version.hpp>
+
 #include "UART.h"
 #include "CPU.h"
 
@@ -47,4 +52,13 @@ public:
 private:
     RawTTY raw_tty;
     std::deque<uint8_t> charbuf;
+
+    friend class boost::serialization::access;
+    template <class Archive>
+    void serialize(Archive &ar, const unsigned int __unused version)
+    {
+        // clang-format off
+        ar & charbuf;
+        // clang-format on
+    }
 };

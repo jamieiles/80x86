@@ -154,14 +154,14 @@ void JTAGCPU::write_gpr(GPR regnum, uint16_t val)
     }
 }
 
-uint16_t JTAGCPU::read_reg(GPR regnum)
+uint16_t JTAGCPU::read_reg(GPR regnum) const
 {
     if (regnum == IP)
-        return read_ip();
+        return const_cast<JTAGCPU *>(this)->read_ip();
     else if (regnum >= ES && regnum <= DS)
-        return read_sr(regnum);
+        return const_cast<JTAGCPU *>(this)->read_sr(regnum);
     else
-        return read_gpr(regnum);
+        return const_cast<JTAGCPU *>(this)->read_gpr(regnum);
 }
 
 uint16_t JTAGCPU::read_ip()
@@ -202,9 +202,9 @@ void JTAGCPU::write_flags(uint16_t val)
     debug_run_proc(0x12);
 }
 
-uint16_t JTAGCPU::read_flags()
+uint16_t JTAGCPU::read_flags() const
 {
-    return debug_run_proc(0x10);
+    return const_cast<JTAGCPU *>(this)->debug_run_proc(0x10);
 }
 
 bool JTAGCPU::has_trapped()
