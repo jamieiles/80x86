@@ -11,11 +11,17 @@ module FrameBuffer(input logic clk,
                    output logic [15:0] data_m_data_out,
                    input logic [1:0] data_m_bytesel,
                    // VGA signals
+                   input logic [2:0] glyph_row,
                    input logic is_blank,
+                   input logic cursor_enabled,
+                   input logic [14:0] cursor_pos,
+                   input logic [2:0] cursor_scan_start,
+                   input logic [2:0] cursor_scan_end,
                    input logic [10:0] address,
                    output logic [7:0] glyph,
                    output logic [3:0] background,
-                   output logic [3:0] foreground);
+                   output logic [3:0] foreground,
+                   output logic render_cursor);
 
 wire [15:0] cpu_q;
 wire cpu_wr_en = data_m_access & cs & data_m_wr_en;
@@ -24,6 +30,10 @@ assign data_m_data_out = data_m_ack ? cpu_q : 16'b0;
 logic vga_valid;
 wire [15:0] vga_q;
 assign {background, foreground, glyph} = is_border || !vga_valid ? 16'b0 : vga_q;
+
+always_ff @(posedge clk)
+    render_cursor <= ~is_blank && cursor_enabled && address == cursor_pos[10:0] &&
+        glyph_row >= cursor_scan_start && glyph_row <= cursor_scan_end;
 
 FrameBufferRAM FrameBufferRAM(.clock_a(sys_clk),
                               // CPU

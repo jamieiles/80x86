@@ -371,6 +371,11 @@ Timer Timer(.clk(sys_clk),
             .*);
 
 `ifdef CONFIG_VGA
+wire cursor_enabled;
+wire [14:0] cursor_pos;
+wire [2:0] cursor_scan_start;
+wire [2:0] cursor_scan_end;
+
 VGAController VGAController(.clk(vga_clk),
                             .cs(vga_access),
                             .data_m_access(q_m_access),

@@ -15,7 +15,11 @@ module VGAController(input logic clk,
 		     output logic vga_vsync,
 		     output logic [3:0] vga_r,
 		     output logic [3:0] vga_g,
-		     output logic [3:0] vga_b);
+		     output logic [3:0] vga_b,
+                     input logic cursor_enabled,
+                     input logic [14:0] cursor_pos,
+                     input logic [2:0] cursor_scan_start,
+                     input logic [2:0] cursor_scan_end);
 
 wire hsync;
 wire vsync;
@@ -34,6 +38,7 @@ wire [3:0] fb_foreground;
 wire [7:0] fb_glyph;
 logic [2:0] fb_fcl_col;
 logic [2:0] fb_fcl_row;
+wire render_cursor;
 
 logic [2:0] vsync_pipe;
 assign vga_vsync = vsync_pipe[0];
@@ -49,6 +54,7 @@ FrameBuffer FrameBuffer(.address(frame_buffer_address),
                         .glyph(fb_glyph),
                         .background(fb_background),
                         .foreground(fb_foreground),
+                        .glyph_row(shifted_row[3:1]),
 			.*);
 
 FontColorLUT FontColorLUT(.glyph(fb_glyph),

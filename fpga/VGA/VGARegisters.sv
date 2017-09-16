@@ -11,7 +11,11 @@ module VGARegisters(input logic clk,
                     output logic data_m_ack,
                     // VGA
                     input logic vga_vsync,
-                    input logic vga_hsync);
+                    input logic vga_hsync,
+                    output logic cursor_enabled,
+                    output logic [14:0] cursor_pos,
+                    output logic [2:0] cursor_scan_start,
+                    output logic [2:0] cursor_scan_end);
 
 wire reg_access = cs & data_m_access;
 wire sel_index  = reg_access & data_m_addr[3:1] == 3'b010 & data_m_bytesel[0];
@@ -24,13 +28,18 @@ reg [3:0] active_index;
 wire [3:0] index = data_m_wr_en & sel_index ? data_m_data_in[3:0] : active_index;
 wire [7:0] index_value;
 
-reg [14:0] cursor_pos;
+reg [1:0] cursor_mode;
 
 wire [7:0] status = {7'b0, (~vga_vsync | ~vga_hsync)};
+
+assign cursor_enabled = cursor_mode != 2'b01;
 
 always_ff @(posedge clk) begin
     if (data_m_wr_en & sel_value) begin
         case (index)
+        4'ha: {cursor_mode, cursor_scan_start} <=
+            {data_m_data_in[13:12], data_m_data_in[10:8]};
+        4'hb: cursor_scan_end <= data_m_data_in[10:8];
         4'he: cursor_pos[14:8] <= data_m_data_in[14:8];
         4'hf: cursor_pos[7:0] <= data_m_data_in[15:8];
         default: ;
@@ -44,6 +53,8 @@ always_ff @(posedge clk)
 
 always_comb begin
     case (index)
+    4'ha: index_value = {2'b0, cursor_mode, 1'b0, cursor_scan_start};
+    4'hb: index_value = {5'b0, cursor_scan_start};
     4'he: index_value = {2'b0, cursor_pos[13:8]};
     4'hf: index_value = cursor_pos[7:0];
     default: index_value = 8'b0;

@@ -3,6 +3,7 @@
 `endif
 
 module FontColorLUT(input logic clk,
+                    input logic render_cursor,
                     input logic [7:0] glyph,
                     input logic [2:0] glyph_row,
                     input logic [2:0] glyph_col,
@@ -47,7 +48,7 @@ always_ff @(posedge clk) begin
     background_rgb <= color_lut[background];
 end
 
-assign {r, g, b} = font_bit ? foreground_rgb : background_rgb;
+assign {r, g, b} = font_bit ^ render_cursor ? foreground_rgb : background_rgb;
 
 always_ff @(posedge clk)
     font_bit <= font_rom[font_mem_addr];
