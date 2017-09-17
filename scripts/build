@@ -6,4 +6,5 @@ set -e
 [ -d _build/build ] || mkdir -p _build/build
 DOCKER_NONINTERACTIVE=1 ./docker/s80x86-build -e -c 'cd _build/build; \
         cmake -GNinja ../.. ; \
-        ninja all test CTEST_OUTPUT_ON_FAILURE=TRUE;'
+        ninja all; \
+        ctest -LE JTAG --output-on-failure;'
