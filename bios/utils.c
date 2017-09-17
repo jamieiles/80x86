@@ -13,6 +13,18 @@ void *memset(void *s, int c, unsigned short n)
     return s;
 }
 
+void *memcpy(void *d, const void *s, unsigned short n)
+{
+    const unsigned char *s_p = s;
+    unsigned char *d_p = d;
+    unsigned short m;
+
+    for (m = 0; m < n; ++m)
+        d_p[m] = s_p[m];
+
+    return d;
+}
+
 void panic(const char *p)
 {
     putstr(p);
