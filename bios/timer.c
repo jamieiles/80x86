@@ -21,6 +21,18 @@ static void timer_services(struct callregs *regs)
         bda_write(timer_counter_high, regs->cx.x);
         regs->flags &= ~CF;
         break;
+    case 0x2:
+        regs->cx.h = BIOS_BUILD_HOUR;
+        regs->cx.l = BIOS_BUILD_MINUTE;
+        regs->dx.h = BIOS_BUILD_SECOND;
+        regs->flags &= ~CF;
+        break;
+    case 0x4:
+        regs->cx.x = BIOS_BUILD_YEAR;
+        regs->dx.h = BIOS_BUILD_MONTH;
+        regs->dx.l = BIOS_BUILD_DAY;
+        regs->flags &= ~CF;
+        break;
     default: regs->flags |= CF;
     }
 }
