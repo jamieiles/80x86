@@ -1,0 +1,24 @@
+#!/usr/bin/env python
+import distorm3
+import re
+import sys
+
+LOC_RE = re.compile(r'\[(?P<CS>[0-9a-f]+):(?P<IP>[0-9a-f]+)\]')
+
+with open(sys.argv[1]) as log:
+    for line in log:
+        m = LOC_RE.match(line)
+        if not m:
+            print line,
+            continue
+
+        try:
+            loc, instr_bytes = line.split(' ', 1)
+        except Exception:
+            print line,
+            continue
+
+        ip = int(m.groupdict()['IP'], 16)
+        hexbuf = instr_bytes.strip().replace(' ', '').decode('hex')
+        _, __,instruction, ___ = distorm3.Decode(ip, hexbuf, distorm3.Decode16Bits)[0]
+        print loc, instruction.lower()

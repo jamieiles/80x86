@@ -22,6 +22,8 @@
 #include "SPI.h"
 #include "Timer.h"
 
+bool trace = false;
+
 namespace tty
 {
 const std::string green = "\x1b[32m";
@@ -59,6 +61,7 @@ public:
 private:
     void load_bios(const std::string &bios_path);
     void process_io();
+    void trace_insn(uint16_t cs, uint16_t ip, size_t instr_len);
     friend class boost::serialization::access;
     template <class Archive>
     void serialize(Archive &ar, const unsigned int __unused version)
@@ -165,8 +168,14 @@ void Simulator<T>::run()
 
         if (detached)
             cpu.cycle_cpu_with_io(io_callback);
-        else
-            cpu.step_with_io(io_callback);
+        else {
+            auto cs = cpu.read_reg(CS);
+            auto ip = cpu.read_reg(IP);
+            auto instr_len = cpu.step_with_io(io_callback);
+
+            if (trace)
+                trace_insn(cs, ip, instr_len);
+        }
     }
 
     auto end_time = std::chrono::system_clock::now();
@@ -177,6 +186,22 @@ void Simulator<T>::run()
               << (cpu.cycle_count() / 1000000.0) / elapsed_seconds.count()
               << "MHz\r\n"
               << tty::normal;
+}
+
+template <typename T>
+void Simulator<T>::trace_insn(uint16_t cs, uint16_t ip, size_t instr_len)
+{
+    std::cout << "[" << std::hex << cs << ":" << ip << "] ";
+    auto bytes = cpu.read_vector8(cs, ip, instr_len);
+
+    auto flags = std::cout.flags();
+
+    for (auto b : bytes)
+        std::cout << std::hex << std::setfill('0') << std::setw(2)
+                  << static_cast<unsigned>(b) << " ";
+
+    std::cout.flags(flags);
+    std::cout << "\r\n";
 }
 
 template <typename T>
@@ -227,6 +252,8 @@ int main(int argc, char **argv)
          "save file to write from")
         ("detached,d",
          "run the simulation in free-running mode")
+        ("trace,t",
+         "trace all instructions as they are executed")
         ("bios", po::value<std::string>(&bios_image)->required(),
          "the bios image to use")
         ("diskimage", po::value<std::string>(&disk_image)->required(),
@@ -250,6 +277,7 @@ int main(int argc, char **argv)
         }
 
         detached = variables_map.count("detached");
+        trace = variables_map.count("trace");
 
         po::notify(variables_map);
     } catch (boost::program_options::required_option &e) {
