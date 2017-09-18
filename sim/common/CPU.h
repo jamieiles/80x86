@@ -120,6 +120,18 @@ public:
     virtual uint16_t read_io16(uint32_t addr) = 0;
     virtual void add_ioport(IOPorts *p) = 0;
 
+    virtual std::vector<uint8_t> read_vector8(uint16_t segment,
+                                              uint16_t addr,
+                                              size_t count)
+    {
+        std::vector<uint8_t> v;
+
+        for (size_t m = 0; m < count; ++m)
+            v.push_back(read_mem8(segment, addr + m));
+
+        return v;
+    }
+
     virtual void write_vector8(uint16_t segment,
                                uint16_t addr,
                                const std::vector<uint8_t> &v)
@@ -128,6 +140,19 @@ public:
         for (auto &b : v)
             write_mem8(segment, addr + offs++, b);
     }
+
+    virtual std::vector<uint16_t> read_vector16(uint16_t segment,
+                                                uint16_t addr,
+                                                size_t count)
+    {
+        std::vector<uint16_t> v;
+
+        for (size_t m = 0; m < count; ++m)
+            v.push_back(read_mem16(segment, addr + m * sizeof(uint16_t)));
+
+        return v;
+    }
+
     virtual void write_vector16(uint16_t segment,
                                 uint16_t addr,
                                 const std::vector<uint16_t> &v)
