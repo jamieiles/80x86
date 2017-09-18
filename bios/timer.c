@@ -13,6 +13,7 @@ static void timer_services(struct callregs *regs)
     case 0x0:
         regs->dx.x = bda_read(timer_counter_low);
         regs->cx.x = bda_read(timer_counter_high);
+        regs->ax.l = 0;
         regs->flags &= ~CF;
         break;
     case 0x1:
