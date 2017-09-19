@@ -1,25 +1,64 @@
-s80x86
-======
+# s80x86
 
-s80x86 is an 80186 binary compatible CPU, written in SystemVerilog suitable for
-synthesis on FPGA or ASIC.
+The S80186 IP core is a compact, 80186 binary compatible core, implementing
+the full 80186 ISA suitable for integration into FPGA/ASIC designs.  The core
+executes most instructions in far fewer cycles than the original Intel 8086,
+and in many cases, fewer cycles than the 80286.  The core is supplied as
+synthesizable SystemVerilog, along with a C++ reference model, extensive
+tests, a reference BIOS implementation and reference FPGA designs.
 
-System Requirements
--------------------
+## Features
 
-- Docker
-- 4GB RAM
+* Binary compatible with the Intel 80186 core
+  - MS-DOS
+  - FreeDOS
+  - OpenWatcom/GCC ia16-elf compilers
+* Separate data/IO and instruction busses
+* 1MB addressable segmented memory
+* 64KB addressable IO space
+* Lock signal for atomic accesses
+* 256 external interrupts
+* 1 non-maskable interrupt
+* Debug interface suitable
+  - JTAG TAP compatible
+  - Register/Memory access
+  - Execution control
+* FPGA builds (Intel Cyclone V)
+  - 60MHz FMax
+  - ~1800 ALMs
 
-Building
---------
+## Implementation
+
+* Full synthesizable SystemVerilog
+* C++ reference model
+* FPGA reference designs for Terasic DE0-Nano and DE0-CV
+* Extensive test suite verified against C++ model, RTL and FPGA
+* Complete Docker build environments
+* Full development documentation and programmers guide
+
+## Reference Design
+
+* SDR SDRAM controller
+* SD card for floppy disk emulation
+* Interrupt controller
+* UART
+* Periodic timer
+* CGA controller with VGA output
+* PS/2 controller
+
+## System Requirements
+
+* Docker
+* 4GB RAM
+
+## Building
 
     ./scripts/build
 
 This will build the Docker containers and then perform a release build and run
 all of the tests.
 
-Documentation
--------------
+## Documentation
 
 The build script above will create a developer's guide in
 `./_build/build/documentation/development-guide.pdf`
