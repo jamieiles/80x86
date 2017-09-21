@@ -1,6 +1,7 @@
 #include "bda.h"
 #include "bios.h"
 #include "io.h"
+#include "leds.h"
 #include "scancodes.h"
 #include "serial.h"
 #include "utils.h"
@@ -24,8 +25,13 @@ static int kbd_buffer_full(void)
 
 void noinline kbd_buffer_add(unsigned short key)
 {
-    if (kbd_buffer_full())
+    if (kbd_buffer_full()) {
+        led_set(LED_KBD_BUFFER_FULL);
         return;
+    }
+
+    led_clear(LED_KBD_BUFFER_FULL);
+    led_set(LED_KBD_BUFFER_NON_EMPTY);
 
     unsigned short tail = bda_read(kbd_buffer_tail);
     unsigned circ_offset = tail - offsetof(struct bios_data_area, kbd_buffer);
@@ -45,6 +51,9 @@ static void kbd_buffer_pop(void)
     if (head >= offsetof(struct bios_data_area, drive_recalibration_status))
         head = offsetof(struct bios_data_area, kbd_buffer);
     bda_write(kbd_buffer_head, head);
+
+    if (head == bda_read(kbd_buffer_tail))
+        led_clear(LED_KBD_BUFFER_NON_EMPTY);
 }
 
 unsigned kbd_buffer_peek(void)

@@ -1,3 +1,4 @@
+#include "leds.h"
 #include "utils.h"
 
 #include "serial.h"
@@ -27,6 +28,8 @@ void *memcpy(void *d, const void *s, unsigned short n)
 
 void panic(const char *p)
 {
+    led_set(LED_PANIC);
+
     putstr(p);
     putstr("\n\nHalted.\n");
 

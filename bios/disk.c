@@ -1,6 +1,7 @@
 #include "bios.h"
 #include "sd.h"
 #include "io.h"
+#include "leds.h"
 #include "serial.h"
 #include "utils.h"
 
@@ -138,6 +139,7 @@ static void disk_services(struct callregs *regs)
 {
     regs->flags |= CF;
 
+    led_set(LED_DISK);
     switch (regs->ax.h) {
     case 0x00: disk_reset(regs); break;
     case 0x01: disk_status(regs); break;
@@ -146,5 +148,6 @@ static void disk_services(struct callregs *regs)
     case 0x08: disk_parameters(regs); break;
     case 0x15: disk_get_type(regs); break;
     }
+    led_clear(LED_DISK);
 }
 VECTOR(0x13, disk_services);
