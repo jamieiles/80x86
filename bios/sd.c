@@ -109,7 +109,7 @@ static void spi_do_command(const struct spi_cmd *cmd)
         spi_xfer_buf_set(m, 0xff);
 
     // Fast clock, CS enabled.
-    outw(SPI_CONTROL_PORT, 0x2);
+    outw(SPI_CONTROL_PORT, 0x1);
     spi_xfer(cmdlen);
 }
 
