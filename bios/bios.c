@@ -122,9 +122,7 @@ void root(void)
 
     keyboard_init();
     install_vectors();
-    putstr("Init timers\n");
     init_timer();
-    putstr("Initalization done\n");
 
     sd_init();
     sd_boot();
