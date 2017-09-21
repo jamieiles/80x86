@@ -103,3 +103,6 @@ set_false_path -to [get_ports {spi_ncs}]
 # PS2
 set_false_path -from [get_ports {ps2_clk ps2_dat}]
 set_false_path -to [get_ports {ps2_clk ps2_dat}]
+
+# LEDs
+set_false_path -to [get_ports {leds[*]}]

@@ -108,3 +108,17 @@ set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to ps2_clk
 set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to ps2_dat
 set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to ps2_clk
 set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to ps2_dat
+
+# IO
+set_location_assignment PIN_AA2 -to leds[0]
+set_location_assignment PIN_AA1 -to leds[1]
+set_location_assignment PIN_W2 -to leds[2]
+set_location_assignment PIN_Y3 -to leds[3]
+set_location_assignment PIN_N2 -to leds[4]
+set_location_assignment PIN_N1 -to leds[5]
+set_location_assignment PIN_U2 -to leds[6]
+set_location_assignment PIN_U1 -to leds[7]
+set_location_assignment PIN_L2 -to leds[8]
+set_location_assignment PIN_L1 -to leds[9]
+
+set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to leds[*]

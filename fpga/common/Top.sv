@@ -10,9 +10,7 @@ module Top(input logic clk,
            inout [15:0] s_data,
            output logic [1:0] s_banksel,
            output logic sdr_clk,
-`ifdef CONFIG_LEDS
            output logic [`CONFIG_NUM_LEDS-1:0] leds,
-`endif // CONFIG_LEDS
 `ifdef CONFIG_VGA
 	   output logic vga_hsync,
 	   output logic vga_vsync,
@@ -116,10 +114,8 @@ wire sdram_access;
 wire sdram_ack;
 wire [15:0] sdram_data;
 
-`ifdef CONFIG_LEDS
 wire leds_access;
 wire leds_ack;
-`endif // CONFIG_LEDS
 
 wire bios_access;
 wire bios_ack;
@@ -171,9 +167,7 @@ wire default_io_ack;
 wire io_ack = sdram_config_ack |
               default_io_ack |
               uart_ack |
-`ifdef CONFIG_LEDS
               leds_ack |
-`endif // CONFIG_LEDS
               spi_ack |
               irq_control_ack |
               timer_ack |
@@ -189,9 +183,7 @@ always_ff @(posedge clk)
     default_io_ack <= default_io_access;
 
 always_comb begin
-`ifdef CONFIG_LEDS
     leds_access = 1'b0;
-`endif // CONFIG_LEDS
     sdram_config_access = 1'b0;
     default_io_access = 1'b0;
     uart_access = 1'b0;
@@ -208,9 +200,7 @@ always_comb begin
 
     if (d_io && data_m_access) begin
         casez ({data_m_addr[15:1], 1'b0})
-`ifdef CONFIG_LEDS
         16'b1111_1111_1111_1110: leds_access = 1'b1;
-`endif // CONFIG_LEDS
         16'b1111_1111_1111_1100: sdram_config_access = 1'b1;
         16'b1111_1111_1111_1010: uart_access = 1'b1;
         16'b1111_1111_1111_00z0: spi_access = 1'b1;
@@ -309,14 +299,12 @@ SDRAMConfigRegister SDRAMConfigRegister(.clk(sys_clk),
                                         .config_done(sdram_config_done),
                                         .*);
 
-`ifdef CONFIG_LEDS
 LEDSRegister     LEDSRegister(.clk(sys_clk),
                               .cs(leds_access),
                               .leds_val(leds),
                               .data_m_data_in(data_m_data_out),
                               .data_m_ack(leds_ack),
                               .*);
-`endif // CONFIG_LEDS
 
 UartPorts #(.clk_freq(50000000))
           UartPorts(.clk(sys_clk),
