@@ -40,6 +40,8 @@ add_executable(bios-${BIOS_PLATFORM}
                entry.S
                io.h
 	       keyboard.c
+	       leds.c
+	       leds.h
                sd.c
                sd.h
 	       printk.c
