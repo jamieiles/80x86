@@ -11,7 +11,7 @@ module Top(input logic clk,
            output logic [1:0] s_banksel,
            output logic sdr_clk,
 `ifdef CONFIG_LEDS
-           output logic [7:0] leds,
+           output logic [`CONFIG_NUM_LEDS-1:0] leds,
 `endif // CONFIG_LEDS
 `ifdef CONFIG_VGA
 	   output logic vga_hsync,
