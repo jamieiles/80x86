@@ -111,6 +111,8 @@ void irq_enable(int irq_num)
 
 void root(void)
 {
+    install_vectors();
+
     irq_init();
     bda_init();
     display_init();
@@ -121,7 +123,6 @@ void root(void)
     putstr("\n");
 
     keyboard_init();
-    install_vectors();
     init_timer();
 
     sd_init();
