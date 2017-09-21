@@ -573,8 +573,8 @@ the received data.
   - [0]: SDRAM configuration complete.  The SDRAM should not be accessed until
   this bit is set.
 
-| 16'hfffe | 16 | LED register, writing to the 8 MSBs will set the LED
-  registers on the board, a 1 is enabled, 0 is disabled.
+| 16'hfffe | 16 | LED register, writing will set the LED registers on the
+  board, a 1 is enabled, 0 is disabled.
 |===
 
 === DE0-CV
