@@ -114,8 +114,6 @@ public:
         if (offs == 1 && (v & ps2_ctrl_rx_valid)) {
             if (pending.size())
                 pending.pop_front();
-            if (pending.size() == 0)
-                cpu->clear_irq(1);
         }
     }
 

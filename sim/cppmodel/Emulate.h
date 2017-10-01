@@ -27,7 +27,6 @@ public:
     void reset();
     void raise_nmi();
     void raise_irq(int irq_num);
-    void clear_irq(int irq_num);
     unsigned long cycle_count() const;
 
 private:

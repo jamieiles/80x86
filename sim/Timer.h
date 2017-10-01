@@ -35,8 +35,6 @@ public:
 
     uint16_t read16(uint16_t __unused port_num)
     {
-        cpu->clear_irq(0);
-
         return ms_count | (enabled << 15);
     }
 

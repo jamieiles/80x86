@@ -60,7 +60,6 @@ public:
     void reset();
     void raise_nmi();
     void raise_irq(int irq_num);
-    void clear_irq(int irq_num);
 
 private:
     size_t emulate_insn();
@@ -458,12 +457,6 @@ void EmulatorPimpl::raise_irq(int irq_num)
     pending_irqs |= (1 << irq_num);
 }
 
-void EmulatorPimpl::clear_irq(int irq_num)
-{
-    assert(irq_num >= 0 && irq_num < 8);
-    pending_irqs &= ~(1 << irq_num);
-}
-
 void EmulatorPimpl::handle_nmi()
 {
     nmi_pending = false;
@@ -495,6 +488,7 @@ void EmulatorPimpl::handle_irq()
     for (irq_num = 0; irq_num < 8; ++irq_num)
         if (pending_irqs & (1 << irq_num))
             break;
+    pending_irqs &= ~(1 << irq_num);
 
     auto flags = registers->get_flags();
 
@@ -1473,11 +1467,6 @@ void Emulator::raise_nmi()
 void Emulator::raise_irq(int irq_num)
 {
     pimpl->raise_irq(irq_num);
-}
-
-void Emulator::clear_irq(int irq_num)
-{
-    pimpl->clear_irq(irq_num);
 }
 
 unsigned long Emulator::cycle_count() const

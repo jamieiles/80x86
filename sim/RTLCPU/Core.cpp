@@ -75,12 +75,16 @@ RTLCPU<debug_enabled>::RTLCPU(const std::string &test_name)
             return;
         }
 
-        int irq_num = 0;
-        for (; irq_num < 8; ++irq_num)
-            if (this->pending_irqs & (1 << irq_num))
-                break;
-        this->dut.intr = 1;
-        this->dut.irq = 8 + irq_num;
+        if (this->dut.inta) {
+            pending_irqs &= ~(1 << (this->dut.irq - 8));
+        } else {
+            int irq_num = 0;
+            for (; irq_num < 8; ++irq_num)
+                if (this->pending_irqs & (1 << irq_num))
+                    break;
+            this->dut.intr = 1;
+            this->dut.irq = 8 + irq_num;
+        }
     });
     this->periodic(ClockCapture, [&] {
         if (this->dut.inta)

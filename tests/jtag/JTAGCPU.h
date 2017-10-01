@@ -74,12 +74,6 @@ public:
         write_io8(0xfff6, 1 << irq_num);
     }
 
-    virtual void clear_irq(int irq_num)
-    {
-        assert(irq_num >= 0 && irq_num < 7);
-        write_io8(0xfff6, ~(1 << irq_num));
-    }
-
     unsigned long cycle_count() const
     {
         return num_cycles;

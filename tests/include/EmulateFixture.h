@@ -244,11 +244,6 @@ public:
         cpu->raise_irq(irq_num);
     }
 
-    void clear_irq(int irq_num)
-    {
-        cpu->clear_irq(irq_num);
-    }
-
 protected:
     size_t instr_len;
     std::unique_ptr<CPU> cpu;

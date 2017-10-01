@@ -104,13 +104,6 @@ public:
         pending_irqs |= (1 << irq_num);
     }
 
-    virtual void clear_irq(int irq_num)
-    {
-        assert(irq_num >= 0 && irq_num < 8);
-
-        pending_irqs &= ~(1 << irq_num);
-    }
-
     unsigned long cycle_count() const
     {
         return static_cast<unsigned long>(this->cur_cycle());

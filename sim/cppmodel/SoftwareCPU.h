@@ -150,11 +150,6 @@ public:
         emulator.raise_irq(irq_num);
     }
 
-    virtual void clear_irq(int irq_num)
-    {
-        emulator.clear_irq(irq_num);
-    }
-
     unsigned long cycle_count() const
     {
         return emulator.cycle_count();
