@@ -4,8 +4,7 @@
 #include "serial.h"
 #include "timer.h"
 
-#define TIMER_PORT 0xffee
-#define TIMER_ENABLE (1 << 15)
+#define TIMER_PORT 0x40
 
 static void timer_services(struct callregs *regs)
 {
@@ -41,5 +40,7 @@ VECTOR(0x1a, timer_services);
 void init_timer(void)
 {
     irq_enable(0);
-    outw(TIMER_PORT, TIMER_ENABLE | 55);
+    outb(TIMER_PORT + 0x3, 0x34);
+    outb(TIMER_PORT + 0x0, 0x00);
+    outb(TIMER_PORT + 0x0, 0x00);
 }

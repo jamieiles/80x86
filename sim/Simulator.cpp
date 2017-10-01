@@ -166,13 +166,15 @@ void Simulator<T>::run()
     if (detached)
         cpu.debug_detach();
 
+    unsigned long last_cycle = 0;
     while (!got_exit) {
         auto io_callback = [&](unsigned long cycle_num) {
             if (cycle_num % 1000000 == 0)
                 cga.update();
             if (cycle_num % 1000 == 0)
                 process_io();
-            timer.tick(1);
+            timer.tick((cycle_num - last_cycle) + 1);
+            last_cycle = cycle_num;
         };
 
         if (detached)

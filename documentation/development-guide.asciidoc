@@ -525,17 +525,11 @@ load the design into the FPGA via the Altera USB Blaster.
 | Address | Width (bits) | Description
 | 16'h0020 | 8 | PIC command register
 | 16'h0021 | 8 | PIC data register
+| 16'h0040 | 8 | PIT channel 0 data register
+| 16'h0043 | 8 | PIT control register
 | 16'hffec | 16 a| BIOS control register:
 
   - [0]: BIOS ROM enabled.
-
-| 16'hffee | 16 a| Timer control register:
-
-  - [15]: enable.
-  - [14:0]: reload value (ms).
-
-Reading the register clears the interrupt after the timer has counted down
-to 0.
 
 | 16'hfff0 | 16 a| SPI control register:
 
@@ -593,6 +587,8 @@ load the design into the FPGA via the Altera USB Blaster.
 | Address | Width (bits) | Description
 | 16'h0020 | 8 | PIC command register
 | 16'h0021 | 8 | PIC data register
+| 16'h0040 | 8 | PIT channel 0 data register
+| 16'h0043 | 8 | PIT control register
 | 16'h0060 | 8 a| PS/2 data register:
 
   - [7:0]: read the head of the FIFO, 0 if no bytes available.  Write to
@@ -611,14 +607,6 @@ load the design into the FPGA via the Altera USB Blaster.
 | 16'hffec | 16 a| BIOS control register:
 
   - [0]: BIOS writable.
-
-| 16'hffee | 16 a| Timer control register:
-
-  - [15]: enable.
-  - [14:0]: reload value (ms).
-
-Reading the register clears the interrupt after the timer has counted down
-to 0.
 
 | 16'hfff0 | 16 a| SPI control register:
 

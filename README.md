@@ -42,7 +42,7 @@ tests, a reference BIOS implementation and reference FPGA designs.
 * SD card for floppy disk emulation
 * Interrupt controller
 * UART
-* Periodic timer
+* 8254 PIT-lite timer operating in mode 2 only.
 * CGA controller with VGA output
 * PS/2 controller
 

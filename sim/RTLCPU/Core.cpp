@@ -16,7 +16,7 @@ union reg_converter {
     uint8_t v8[2];
 };
 
-static const int max_cycles_per_step = 1000000;
+static const int max_cycles_per_step = 100000000;
 
 double cur_time_stamp = 0;
 double sc_time_stamp()

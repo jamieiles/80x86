@@ -15,6 +15,8 @@ module  SysPLL(
 	// interface 'outclk2'
 	output wire vga_clk,
 
+        output wire pit_clk,
+
 	// interface 'locked'
 	output wire locked
 );
@@ -23,9 +25,9 @@ module  SysPLL(
 		.fractional_vco_multiplier("false"),
 		.reference_clock_frequency("50.0 MHz"),
 		.operation_mode("normal"),
-		.number_of_clocks(3),
+		.number_of_clocks(4),
 		.output_clock_frequency0("50.000000 MHz"),
-                .phase_shift0("-500 ps"),
+                .phase_shift0("-2727 ps"),
 		.duty_cycle0(50),
 		.output_clock_frequency1("50.000000 MHz"),
 		.phase_shift1("0 ps"),
@@ -33,7 +35,7 @@ module  SysPLL(
 		.output_clock_frequency2("25.000000 MHz"),
 		.phase_shift2("0 ps"),
 		.duty_cycle2(50),
-		.output_clock_frequency3("0 MHz"),
+		.output_clock_frequency3("1.193058 MHz"),
 		.phase_shift3("0 ps"),
 		.duty_cycle3(50),
 		.output_clock_frequency4("0 MHz"),
@@ -82,7 +84,7 @@ module  SysPLL(
 		.pll_subtype("General")
 	) altera_pll_i (
 		.rst	(rst),
-		.outclk	({vga_clk, sys_clk, sdr_clk}),
+		.outclk	({pit_clk, vga_clk, sys_clk, sdr_clk}),
 		.locked	(locked),
 		.fboutclk	( ),
 		.fbclk	(1'b0),

@@ -1,5 +1,6 @@
 module Timer(input logic clk,
              input logic reset,
+             input logic pit_clk,
              input logic cs,
              input logic [1:1] data_m_addr,
              input logic [15:0] data_m_data_in,
@@ -10,48 +11,87 @@ module Timer(input logic clk,
              output logic data_m_ack,
              output logic intr);
 
-parameter clkf = 50000000;
+wire pit_clk_sync;
+wire pit_clk_posedge = pit_clk_sync & ~last_pit_clk;
+wire access_data = cs & data_m_access & ~data_m_addr[1] & data_m_bytesel[0];
+wire access_ctrl = cs & data_m_access & data_m_addr[1] & data_m_bytesel[1];
+wire [7:0] ctrl_wr_val = data_m_data_in[15:8];
+wire [1:0] channel = ctrl_wr_val[7:6];
 
-localparam ticks_per_ms = clkf / 1000;
+reg last_pit_clk;
 
-localparam ms_tick_bits = $clog2(ticks_per_ms);
-reg [ms_tick_bits-1:0] ms_counter;
+reg [15:0] count, reload, latched_count;
+reg [1:0] rw;
+reg [2:0] mode;
+reg [1:0] latched;
+reg access_low;
 
-reg [14:0] counter;
-reg [14:0] reload;
-reg enabled;
+BitSync PITSync(.clk(clk),
+                .d(pit_clk),
+                .q(pit_clk_sync));
 
 always_ff @(posedge clk)
-    data_m_ack <= data_m_access & cs;
+    last_pit_clk <= pit_clk_sync;
 
 always_ff @(posedge clk)
-    data_m_data_out <= cs & data_m_access & ~data_m_wr_en ?
-        {enabled, counter} : 16'b0;
-
-always_ff @(posedge clk or posedge reset)
-    if (reset) begin
-        counter <= 15'b0;
-        ms_counter <= ms_tick_bits'(1'b0);
-        enabled <= 1'b0;
-        reload <= 15'b0;
-    end else if (cs & data_m_access & data_m_wr_en) begin
-        {enabled, counter} <= {data_m_data_in[15], data_m_data_in[14:0] - 1'b1};
-        ms_counter <= ms_tick_bits'(ticks_per_ms);
-        reload <= data_m_data_in[14:0] - 1'b1;
-    end else if (enabled) begin
-        ms_counter <= |ms_counter ? ms_counter - 1'b1 :
-            ms_tick_bits'(ticks_per_ms);
-
-        if (~|ms_counter)
-            counter <= |counter ? counter - 1'b1 : reload;
+    if (access_data && !data_m_wr_en) begin
+        if (|latched) begin
+            data_m_data_out <= {8'b0, latched_count[7:0]};
+        end else
+            data_m_data_out <= {8'b0, rw[0] ? count[7:0] : count[15:8]};
+    end else begin
+        data_m_data_out <= 16'b0;
     end
 
-always_ff @(posedge clk or posedge reset)
+always_ff @(posedge reset or posedge clk) begin
+    if (reset) begin
+        {rw, mode, access_low} <= 6'b0;
+        latched_count <= 16'b0;
+        latched <= 2'b00;
+    end else if (access_ctrl && data_m_wr_en && channel == 2'b00) begin
+        if (ctrl_wr_val[5:4] == 2'b00) begin
+            latched <= 2'b11;
+            latched_count <= ctrl_wr_val[5:4] == 2'b00 ? count : latched_count;
+        end else begin
+            mode <= ctrl_wr_val[3:1];
+            access_low <= ctrl_wr_val[4];
+            rw <= ctrl_wr_val[5:4];
+        end
+    end else if (access_data && data_m_wr_en && rw == 2'b11 & channel == 2'b00)
+        access_low <= ~access_low;
+    else if (access_data && !data_m_wr_en) begin
+        latched <= {1'b0, latched[1]};
+        latched_count <= {8'b0, latched_count[15:8]};
+    end
+end
+
+always_ff @(posedge reset or posedge clk) begin
     if (reset)
+        reload <= 16'b0;
+    else if (access_data && data_m_wr_en) begin
+        if (access_low)
+            reload[7:0] <= data_m_data_in[7:0];
+        else
+            reload[15:8] <= data_m_data_in[7:0];
+    end
+end
+
+always_ff @(posedge reset or posedge clk) begin
+    if (reset) begin
+        count <= 16'b0;
         intr <= 1'b0;
-    else if (enabled & |reload & ~|counter & ~|ms_counter)
-        intr <= 1'b1;
-    else
-        intr <= 1'b0;
+    end else begin
+        if (pit_clk_posedge && mode[1:0] == 2'b10) begin
+            count <= (count == 16'b0 ? reload : count) - 1'b1;
+            if (count == 16'b1)
+                intr <= 1'b0;
+            else
+                intr <= 1'b1;
+        end
+    end
+end
+
+always_ff @(posedge clk)
+    data_m_ack <= cs & data_m_access;
 
 endmodule

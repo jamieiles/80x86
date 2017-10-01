@@ -135,9 +135,6 @@ timer_irq:
 
     int $0x1c
 
-    movw $0xffee, %dx
-    inw (%dx), %ax
-
     movb $0x20, %al
     outb %al, $0x20
 

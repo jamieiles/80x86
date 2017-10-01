@@ -164,6 +164,7 @@ wire [15:0] pic_data;
 wire [7:0] irqs = {6'b0, ps2_intr, timer_intr} | {1'b0, intr_test};
 
 // Timer
+wire pit_clk;
 wire timer_intr;
 wire timer_access;
 wire timer_ack;
@@ -215,8 +216,8 @@ always_comb begin
         16'b1111_1111_1111_1010: uart_access = 1'b1;
         16'b1111_1111_1111_00z0: spi_access = 1'b1;
         16'b1111_1111_1111_0110: irq_control_access = 1'b1;
-        16'b1111_1111_1110_1110: timer_access = 1'b1;
         16'b1111_1111_1110_1100: bios_control_access = 1'b1;
+        16'b0000_0000_0100_00z0: timer_access = 1'b1;
         16'b0000_0000_0010_0000: pic_access = 1'b1;
 `ifdef CONFIG_VGA
         16'b0000_0011_1101_zzzz: vga_reg_access = 1'b1;
@@ -364,6 +365,7 @@ PIC PIC(.clk(sys_clk),
         .*);
 
 Timer Timer(.clk(sys_clk),
+            .pit_clk(pit_clk),
             .cs(timer_access),
             .data_m_ack(timer_ack),
             .data_m_data_out(timer_data),
