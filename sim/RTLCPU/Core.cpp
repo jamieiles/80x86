@@ -77,6 +77,7 @@ RTLCPU<debug_enabled>::RTLCPU(const std::string &test_name)
 
         if (this->dut.inta) {
             pending_irqs &= ~(1 << (this->dut.irq - 8));
+            ack_int();
         } else {
             int irq_num = 0;
             for (; irq_num < 8; ++irq_num)

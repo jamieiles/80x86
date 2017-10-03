@@ -33,7 +33,7 @@ enum RepMode {
 class EmulatorPimpl
 {
 public:
-    EmulatorPimpl(RegisterFile *registers);
+    EmulatorPimpl(RegisterFile *registers, SimCPU *sim_cpu);
 
     size_t step();
     size_t step_with_io(std::function<void(unsigned long)> io_callback,
@@ -401,6 +401,7 @@ private:
     bool ext_int_inhibit;
     uint8_t pending_irqs;
     bool tf_was_set;
+    SimCPU *sim_cpu;
 };
 
 void EmulatorPimpl::do_rep(std::function<void()> primitive,
@@ -428,7 +429,8 @@ bool EmulatorPimpl::string_rep_complete()
     return false;
 }
 
-EmulatorPimpl::EmulatorPimpl(RegisterFile *registers) : registers(registers)
+EmulatorPimpl::EmulatorPimpl(RegisterFile *registers, SimCPU *sim_cpu)
+    : registers(registers), sim_cpu(sim_cpu)
 {
     modrm_decoder = std::make_unique<ModRMDecoder>(
         [&] { return this->fetch_byte(); }, this->registers);
@@ -489,6 +491,7 @@ void EmulatorPimpl::handle_irq()
         if (pending_irqs & (1 << irq_num))
             break;
     pending_irqs &= ~(1 << irq_num);
+    sim_cpu->ack_int();
 
     auto flags = registers->get_flags();
 
@@ -1416,8 +1419,8 @@ void EmulatorPimpl::set_override_segment(GPR segment)
     override_segment = segment;
 }
 
-Emulator::Emulator(RegisterFile *registers)
-    : pimpl(std::make_unique<EmulatorPimpl>(registers))
+Emulator::Emulator(RegisterFile *registers, SoftwareCPU *cpu)
+    : pimpl(std::make_unique<EmulatorPimpl>(registers, cpu))
 {
 }
 

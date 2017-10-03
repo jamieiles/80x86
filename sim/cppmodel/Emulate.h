@@ -13,11 +13,12 @@
 class EmulatorPimpl;
 class Memory;
 class RegisterFile;
+class SoftwareCPU;
 
 class Emulator
 {
 public:
-    Emulator(RegisterFile *registers);
+    Emulator(RegisterFile *registers, SoftwareCPU *cpu);
     virtual ~Emulator();
     size_t step();
     size_t step_with_io(std::function<void(unsigned long)> io_callback);

@@ -4,13 +4,17 @@
 #include "CPU.h"
 #include "Emulate.h"
 
+class Emulator;
+class EmulatorPimpl;
+
 class SoftwareCPU : public SimCPU
 {
 public:
     SoftwareCPU() : SoftwareCPU("default")
     {
     }
-    SoftwareCPU(const std::string &name) : SimCPU(name), emulator(&registers)
+    SoftwareCPU(const std::string &name)
+        : SimCPU(name), emulator(&registers, this)
     {
         (void)name;
 

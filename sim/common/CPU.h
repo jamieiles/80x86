@@ -15,6 +15,9 @@
 
 #define __unused __attribute__((unused))
 
+class Emulator;
+class EmulatorPimpl;
+
 enum InterruptVectorOffset {
     VEC_DIVIDE_ERROR = 0,
     VEC_SINGLE_STEP = 4,
@@ -165,6 +168,10 @@ public:
     }
     virtual void raise_nmi() = 0;
     virtual void raise_irq(int irq_num) = 0;
+    virtual void set_inta_handler(std::function<void()> __unused handler)
+    {
+        throw NotImplemented("set_inta_handler not implemented");
+    }
     virtual unsigned long cycle_count() const = 0;
 };
 
@@ -173,6 +180,7 @@ class SimCPU : public CPU
 public:
     SimCPU(const std::string &name) : CPU(name)
     {
+        this->inta_handler = [] {};
     }
 
     Memory *get_memory()
@@ -195,10 +203,25 @@ public:
         throw NotImplemented("cycle_with_io not implemented");
     }
 
+    virtual void set_inta_handler(std::function<void()> handler)
+    {
+        this->inta_handler = handler;
+    }
+
 protected:
     Memory mem;
 
+    void ack_int()
+    {
+        this->inta_handler();
+    }
+
+    friend class Emulator;
+    friend class EmulatorPimpl;
+
 private:
+    std::function<void()> inta_handler;
+
     friend class boost::serialization::access;
     template <class Archive>
     void save(Archive &ar, const unsigned int __unused version) const
