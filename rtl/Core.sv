@@ -123,7 +123,8 @@ wire [15:0] mdr;
 wire microcode_write_mdr;
 wire write_mdr = microcode_write_mdr | irq_to_mdr;
 wire [15:0] mdr_in = microcode_write_mdr ? alu_out[15:0] : {8'b0, irq};
-wire write_mar;
+wire microcode_write_mar;
+wire write_mar = microcode_write_mar & ~loadstore_busy;
 wire mem_read;
 wire mem_write;
 wire mar_wr_sel;
@@ -391,7 +392,7 @@ Microcode       Microcode(.clk(clk),
                           .read_immed(microcode_immed_start),
                           .load_ip(ip_wr_en),
                           .mar_wr_sel(mar_wr_sel),
-                          .mar_write(write_mar),
+                          .mar_write(microcode_write_mar),
                           .mdr_write(microcode_write_mdr),
                           .mem_read(mem_read),
                           .mem_write(mem_write),
