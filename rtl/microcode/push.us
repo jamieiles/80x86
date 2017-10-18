@@ -174,8 +174,5 @@ popa:
 
     segment_force, segment SS, mem_read,
         rd_sel_source MICROCODE_RD_SEL, rd_sel AX, a_sel MDR;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD, mar_wr_sel Q,
-        mar_write, segment_force, segment SS;
-
-    rd_sel_source MICROCODE_RD_SEL, rd_sel SP, a_sel MAR, alu_op SELA,
-        next_instruction;
+    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD,
+        rd_sel_source MICROCODE_RD_SEL, rd_sel SP, next_instruction;
