@@ -18,3 +18,10 @@ let g:gtest#highlight_failing_tests = 1
 
 autocmd FileType c,cpp ClangFormatAutoEnable
 let g:clang_format#detect_style_file = 1
+
+let g:ale_fixers = {
+\       'verilog': ['verilator'],
+\       'verilog_systemverilog': ['verilator'],
+\}
+
+let g:ale_verilog_verilator_options = 'rtl/FlagsEnum.sv rtl/RegisterEnum.sv _build/dev/rtl/microcode/MicrocodeTypes.sv -Irtl -Irtl/alu'
