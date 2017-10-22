@@ -138,6 +138,9 @@ timer_irq:
     movw $0xffee, %dx
     inw (%dx), %ax
 
+    movb $0x20, %al
+    outb %al, $0x20
+
     pop %dx
     pop %ax
     pop %bx

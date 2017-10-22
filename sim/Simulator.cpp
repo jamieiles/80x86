@@ -18,6 +18,7 @@
 #include "Keyboard.h"
 #include "SoftwareCPU.h"
 #include "RTLCPU.h"
+#include "PIC.h"
 #include "UART.h"
 #include "SPI.h"
 #include "Timer.h"
@@ -76,6 +77,7 @@ private:
         ar & spi;
         ar & timer;
         ar & cga;
+        ar & pic;
         // clang-format on
     }
 
@@ -85,7 +87,8 @@ private:
     SPI spi;
     TimerTick timer;
     CGA cga;
-    Keyboard<T> kbd;
+    Keyboard kbd;
+    PIC pic;
     bool got_exit;
     bool detached;
 };
@@ -96,9 +99,10 @@ Simulator<T>::Simulator(const std::string &bios_path,
                         bool detached)
     : cpu("simulator"),
       spi(disk_image_path),
-      timer(&this->cpu),
+      timer(&this->pic),
       cga(this->cpu.get_memory()),
-      kbd(&this->cpu),
+      kbd(&this->pic),
+      pic(&this->cpu),
       got_exit(false),
       detached(detached)
 {
@@ -108,6 +112,7 @@ Simulator<T>::Simulator(const std::string &bios_path,
     cpu.add_ioport(&timer);
     cpu.add_ioport(&cga);
     cpu.add_ioport(&kbd);
+    cpu.add_ioport(&pic);
     cpu.reset();
     load_bios(bios_path);
 }

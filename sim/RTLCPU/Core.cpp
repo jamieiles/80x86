@@ -70,21 +70,19 @@ RTLCPU<debug_enabled>::RTLCPU(const std::string &test_name)
     this->periodic(ClockCapture,
                    [&] { this->is_stopped = this->dut.debug_stopped; });
     this->periodic(ClockSetup, [&] {
-        if (this->int_in_progress || !this->pending_irqs) {
+        if (this->int_in_progress || !this->pending_irq) {
             this->dut.intr = 0;
             return;
         }
 
         if (this->dut.inta) {
-            pending_irqs &= ~(1 << (this->dut.irq - 8));
-            ack_int();
+            auto irq_num = this->pending_irq;
+            this->pending_irq = 0;
+            ack_int(irq_num);
         } else {
-            int irq_num = 0;
-            for (; irq_num < 8; ++irq_num)
-                if (this->pending_irqs & (1 << irq_num))
-                    break;
+            int irq_num = this->pending_irq;
             this->dut.intr = 1;
-            this->dut.irq = 8 + irq_num;
+            this->dut.irq = irq_num;
         }
     });
     this->periodic(ClockCapture, [&] {
@@ -210,7 +208,7 @@ void RTLCPU<debug_enabled>::reset()
     this->dut.nmi = 0;
     this->dut.intr = 0;
 
-    pending_irqs = 0;
+    pending_irq = 0;
     int_in_progress = false;
 
     VerilogDriver<VRTLCPU, debug_enabled>::reset();

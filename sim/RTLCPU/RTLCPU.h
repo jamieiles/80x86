@@ -99,9 +99,7 @@ public:
 
     virtual void raise_irq(int irq_num)
     {
-        assert(irq_num >= 0 && irq_num < 8);
-
-        pending_irqs |= (1 << irq_num);
+        pending_irq = irq_num;
     }
 
     unsigned long cycle_count() const
@@ -130,6 +128,6 @@ private:
     std::string test_name;
     bool is_stopped;
     std::map<uint16_t, IOPorts *> io;
-    uint8_t pending_irqs;
+    uint8_t pending_irq;
     bool int_in_progress;
 };

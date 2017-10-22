@@ -14,6 +14,7 @@
 #include <deque>
 
 #include "SoftwareCPU.h"
+#include "PIC.h"
 #include "../bios/bda.h"
 
 static std::map<int, std::vector<unsigned char>> sdl_to_keyboard = {
@@ -99,11 +100,10 @@ static std::map<int, std::vector<unsigned char>> sdl_to_keyboard = {
 
 static const uint8_t ps2_ctrl_rx_valid = 1 << 0;
 
-template <typename CPU_t>
 class Keyboard : public IOPorts
 {
 public:
-    Keyboard(CPU_t *cpu) : IOPorts(0x0060, 1), cpu(cpu)
+    Keyboard(PIC *pic) : IOPorts(0x0060, 1), pic(pic)
     {
     }
 
@@ -127,7 +127,7 @@ public:
 
     void set_scancode(uint8_t v)
     {
-        cpu->raise_irq(1);
+        pic->raise_irq(1);
 
         pending.push_back(v);
     }
@@ -145,7 +145,7 @@ public:
     }
 
 private:
-    CPU_t *cpu;
+    PIC *pic;
     std::deque<uint8_t> pending;
 
     friend class boost::serialization::access;

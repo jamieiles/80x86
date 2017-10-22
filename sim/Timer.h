@@ -5,13 +5,14 @@
 #include <boost/serialization/version.hpp>
 
 #include "CPU.h"
+#include "PIC.h"
 #include <stdint.h>
 
 class TimerTick : public IOPorts
 {
 public:
-    TimerTick(CPU *cpu)
-        : IOPorts(0xffee, 1), cpu(cpu), ms_count(0), count(0), enabled(false)
+    TimerTick(PIC *pic)
+        : IOPorts(0xffee, 1), pic(pic), ms_count(0), count(0), enabled(false)
     {
     }
 
@@ -45,7 +46,7 @@ public:
 
         if (count <= microseconds) {
             count = 0;
-            cpu->raise_irq(0);
+            pic->raise_irq(0);
             do_reload();
         } else {
             count -= microseconds;
@@ -59,7 +60,7 @@ private:
         count = ms_count * 1000;
     }
 
-    CPU *cpu;
+    PIC *pic;
     uint16_t ms_count;
     uint32_t count;
     bool enabled;

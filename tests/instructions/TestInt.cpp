@@ -155,7 +155,7 @@ TEST_F(EmulateFixture, IFSetExtIntTaken)
     write_flags(IF);
 
     set_instruction({});
-    raise_irq(2);
+    raise_irq(10);
     emulate();
 
     EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), FLAGS_STUCK_BITS);

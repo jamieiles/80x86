@@ -399,7 +399,7 @@ private:
     bool has_rep_prefix;
     bool nmi_pending;
     bool ext_int_inhibit;
-    uint8_t pending_irqs;
+    uint8_t pending_irq;
     bool tf_was_set;
     SimCPU *sim_cpu;
 };
@@ -453,7 +453,7 @@ void EmulatorPimpl::reset()
     instr_length = 0;
     nmi_pending = false;
     ext_int_inhibit = false;
-    pending_irqs = 0;
+    pending_irq = 0;
 }
 
 void EmulatorPimpl::raise_nmi()
@@ -463,8 +463,7 @@ void EmulatorPimpl::raise_nmi()
 
 void EmulatorPimpl::raise_irq(int irq_num)
 {
-    assert(irq_num >= 0 && irq_num < 8);
-    pending_irqs |= (1 << irq_num);
+    pending_irq = irq_num;
 }
 
 void EmulatorPimpl::handle_nmi()
@@ -492,14 +491,11 @@ void EmulatorPimpl::handle_nmi()
 
 void EmulatorPimpl::handle_irq()
 {
-    assert(pending_irqs);
+    assert(pending_irq);
 
-    int irq_num;
-    for (irq_num = 0; irq_num < 8; ++irq_num)
-        if (pending_irqs & (1 << irq_num))
-            break;
-    pending_irqs &= ~(1 << irq_num);
-    sim_cpu->ack_int();
+    auto irq_num = pending_irq;
+    pending_irq = 0;
+    sim_cpu->ack_int(irq_num);
 
     auto flags = registers->get_flags();
 
@@ -510,8 +506,8 @@ void EmulatorPimpl::handle_irq()
     flags &= ~(IF | TF);
     registers->set_flags(flags, IF | TF);
 
-    auto new_cs = mem->read<uint16_t>((8 + irq_num) * 4 + 2);
-    auto new_ip = mem->read<uint16_t>((8 + irq_num) * 4 + 0);
+    auto new_cs = mem->read<uint16_t>(irq_num * 4 + 2);
+    auto new_ip = mem->read<uint16_t>(irq_num * 4 + 0);
 
     registers->set(CS, new_cs);
     registers->set(IP, new_ip);
@@ -547,7 +543,7 @@ size_t EmulatorPimpl::step()
     if (nmi_pending && !ext_int_inhibit) {
         handle_nmi();
         return 0;
-    } else if (pending_irqs && !ext_int_inhibit && registers->get_flag(IF)) {
+    } else if (pending_irq && !ext_int_inhibit && registers->get_flag(IF)) {
         handle_irq();
         return 0;
     }
@@ -559,7 +555,7 @@ size_t EmulatorPimpl::step()
     // instruction and then jump to the NMI/INT handler.
     if (nmi_pending && !ext_int_inhibit)
         handle_nmi();
-    else if (pending_irqs && !ext_int_inhibit && registers->get_flag(IF))
+    else if (pending_irq && !ext_int_inhibit && registers->get_flag(IF))
         handle_irq();
     else if (!ext_int_inhibit)
         single_step();

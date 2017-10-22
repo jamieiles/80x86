@@ -100,13 +100,14 @@ static void bda_init(void)
 
 static void irq_init(void)
 {
-    // IRQ base
-    outb(IRQ_BASE_PORT, 8);
+    outb(0x20, 0x13);
+    outb(0x21, 0x08);
+    outb(0x21, 0x01);
 }
 
 void irq_enable(int irq_num)
 {
-    outb(IRQ_ENABLE_PORT, inb(IRQ_ENABLE_PORT) | (1 << irq_num));
+    outb(0x21, inb(0x21) | (1 << irq_num));
 }
 
 void root(void)

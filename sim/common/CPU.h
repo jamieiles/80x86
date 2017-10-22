@@ -173,7 +173,7 @@ public:
     }
     virtual void raise_nmi() = 0;
     virtual void raise_irq(int irq_num) = 0;
-    virtual void set_inta_handler(std::function<void()> __unused handler)
+    virtual void set_inta_handler(std::function<void(int)> __unused handler)
     {
         throw NotImplemented("set_inta_handler not implemented");
     }
@@ -183,9 +183,9 @@ public:
 class SimCPU : public CPU
 {
 public:
-    SimCPU(const std::string &name) : CPU(name)
+    explicit SimCPU(const std::string &name)
+        : CPU(name), inta_handler([](int __unused irq_num) {})
     {
-        this->inta_handler = [] {};
     }
 
     Memory *get_memory()
@@ -208,7 +208,7 @@ public:
         throw NotImplemented("cycle_with_io not implemented");
     }
 
-    virtual void set_inta_handler(std::function<void()> handler)
+    virtual void set_inta_handler(std::function<void(int)> handler)
     {
         this->inta_handler = handler;
     }
@@ -216,16 +216,16 @@ public:
 protected:
     Memory mem;
 
-    void ack_int()
+    void ack_int(int irq_num)
     {
-        this->inta_handler();
+        this->inta_handler(irq_num);
     }
 
     friend class Emulator;
     friend class EmulatorPimpl;
 
 private:
-    std::function<void()> inta_handler;
+    std::function<void(int)> inta_handler;
 
     friend class boost::serialization::access;
     template <class Archive>
