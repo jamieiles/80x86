@@ -55,7 +55,7 @@ public:
     VerilogDriver(const VerilogDriver &rhs) = delete;
     virtual ~VerilogDriver();
     void reset(int count = 2);
-    void after_n_cycles(vluint64_t delta, std::function<void()> cb)
+    void after_n_cycles(vluint64_t delta, const std::function<void()> &cb)
     {
         at_cycle(cycle_num + delta, cb);
     }
