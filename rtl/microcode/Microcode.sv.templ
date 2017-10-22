@@ -28,6 +28,7 @@ module Microcode(input logic clk,
                  output logic lock,
                  output logic multibit_shift,
                  output logic is_hlt,
+                 output logic next_microinstruction,
                  // Microinstruction fields.
                  <%#exported_fields%>
                  output logic <%type%><%name%>,
@@ -130,6 +131,8 @@ reg start_instruction;
 assign loop_next = !stall && current.jump_type == JumpType_LOOP_DONE;
 
 assign reg_wr_en = current.rd_sel_source != RDSelSource_NONE & ~segment_wr_en;
+
+assign next_microinstruction = addr != next_addr;
 
 always_comb begin
     case (current.width)

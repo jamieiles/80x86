@@ -124,7 +124,7 @@ wire microcode_write_mdr;
 wire write_mdr = microcode_write_mdr | irq_to_mdr;
 wire [15:0] mdr_in = microcode_write_mdr ? alu_out[15:0] : {8'b0, irq};
 wire microcode_write_mar;
-wire write_mar = microcode_write_mar & ~loadstore_busy;
+wire write_mar = microcode_write_mar & next_microinstruction;
 wire mem_read;
 wire mem_write;
 wire mar_wr_sel;
@@ -174,6 +174,7 @@ wire irq_to_mdr;
 wire loop_next;
 wire loop_done;
 wire is_hlt;
+wire next_microinstruction;
 
 // Misc control signals
 wire debug_set_ip = debug_stopped && ip_wr_en;
@@ -419,6 +420,7 @@ Microcode       Microcode(.clk(clk),
                           .loop_next(loop_next),
                           .loop_done(loop_done),
                           .is_hlt(is_hlt),
+                          .next_microinstruction(next_microinstruction),
                           // Debug
                           .debug_stopped(debug_stopped),
                           .debug_seize(debug_seize),
