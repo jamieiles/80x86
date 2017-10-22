@@ -41,6 +41,11 @@ public:
     IOPorts(uint16_t base, size_t num_ports) : base(base), num_ports(num_ports)
     {
     }
+
+    virtual ~IOPorts()
+    {
+    }
+
     virtual uint8_t read8(uint16_t port_num, unsigned offs) = 0;
     virtual uint16_t read16(uint16_t port_num)
     {
@@ -75,7 +80,7 @@ public:
     CPU() : CPU("default")
     {
     }
-    CPU(const std::string __unused &name)
+    explicit CPU(const std::string __unused &name)
     {
     }
     virtual ~CPU(){};
@@ -247,7 +252,7 @@ private:
     {
         for (auto r = static_cast<int>(AX);
              r <= static_cast<int>(NUM_16BIT_REGS); ++r) {
-            uint16_t v;
+            uint16_t v = 0;
             // clang-format off
             ar & v;
             write_reg(static_cast<GPR>(r), v);
@@ -255,7 +260,7 @@ private:
         }
 
         // clang-format off
-        uint16_t flags;
+        uint16_t flags = 0;
         ar & flags;
         write_flags(flags);
 

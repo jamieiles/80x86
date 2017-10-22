@@ -38,6 +38,10 @@ public:
     {
     }
 
+    virtual ~SDRAMConfigRegister()
+    {
+    }
+
     void write8(uint16_t __unused port_num,
                 unsigned __unused offs,
                 uint8_t __unused v)

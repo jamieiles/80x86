@@ -21,7 +21,8 @@ private:
 public:
     const phys_addr buffer_phys = 0xb8000;
 
-    CGA(Memory *mem) : IOPorts(0x03d4, 8), mem(mem), reg_idx(0), status(0)
+    explicit CGA(Memory *mem)
+        : IOPorts(0x03d4, 8), mem(mem), reg_idx(0), status(0)
     {
         memset(idx_regs, 0, sizeof(idx_regs));
     }

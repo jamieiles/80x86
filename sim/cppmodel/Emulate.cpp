@@ -430,7 +430,15 @@ bool EmulatorPimpl::string_rep_complete()
 }
 
 EmulatorPimpl::EmulatorPimpl(RegisterFile *registers, SimCPU *sim_cpu)
-    : registers(registers), sim_cpu(sim_cpu)
+    : mem(NULL),
+      io(NULL),
+      registers(registers),
+      jump_taken(false),
+      default_segment_overriden(false),
+      rep_mode(REPE),
+      has_rep_prefix(false),
+      tf_was_set(false),
+      sim_cpu(sim_cpu)
 {
     modrm_decoder = std::make_unique<ModRMDecoder>(
         [&] { return this->fetch_byte(); }, this->registers);

@@ -51,7 +51,7 @@ class VerilogDriver
 {
 public:
     VerilogDriver();
-    VerilogDriver(const std::string &instance_name);
+    explicit VerilogDriver(const std::string &instance_name);
     VerilogDriver(const VerilogDriver &rhs) = delete;
     virtual ~VerilogDriver();
     void reset(int count = 2);
