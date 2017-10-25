@@ -156,15 +156,15 @@ static void keyboard_reset(void)
         putstr("Warning: failed to empty Keyboard FIFO.\n");
 }
 
-static void keyboard_poll(void)
+static int keyboard_poll(void)
 {
     unsigned char b = inb(PS2_DATA_PORT);
     if (!b)
-        return;
+        return 0;
 
     if (b == 0xaa) {
         keyboard_reset();
-        return;
+        return 1;
     }
 
     outb(PS2_CTRL_PORT, PS2_CTRL_ACK);
@@ -181,13 +181,16 @@ static void keyboard_poll(void)
         extended_key();
     else if (!keyup && b < ARRAY_SIZE(keycode_map))
         keypress(keycode_map, b);
+
+    return 1;
 }
 
 static void kbd_irq(struct callregs *regs)
 {
-    keyboard_poll();
     irq_ack();
 
+    while (keyboard_poll())
+        continue;
 }
 VECTOR(0x9, kbd_irq);
 
