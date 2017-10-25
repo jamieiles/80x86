@@ -186,8 +186,8 @@ static void keyboard_poll(void)
 static void kbd_irq(struct callregs *regs)
 {
     keyboard_poll();
+    irq_ack();
 
-    outb(0x20, 0x20);
 }
 VECTOR(0x9, kbd_irq);
 

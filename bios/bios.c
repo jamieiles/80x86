@@ -95,19 +95,29 @@ static void bda_init(void)
         writeb(0x40, i, 0);
 }
 
-#define IRQ_ENABLE_PORT 0xfff4
-#define IRQ_BASE_PORT 0xfff5
+#define PIC_COMMAND 0x20
+#define PIC_DATA 0x21
+
+#define PIC_ICW1_INIT (1 << 4)
+#define PIC_ICW1_SINGLE (1 << 1)
+#define PIC_ICW1_ICW4 (1 << 0)
+#define PIC_ICW4_8086 (1 << 0)
 
 static void irq_init(void)
 {
-    outb(0x20, 0x13);
-    outb(0x21, 0x08);
-    outb(0x21, 0x01);
+    outb(PIC_COMMAND, PIC_ICW1_INIT | PIC_ICW1_SINGLE | PIC_ICW1_ICW4);
+    outb(PIC_DATA, 0x08);
+    outb(PIC_DATA, PIC_ICW4_8086);
 }
 
 void irq_enable(int irq_num)
 {
-    outb(0x21, inb(0x21) | (1 << irq_num));
+    outb(PIC_DATA, inb(PIC_DATA) | (1 << irq_num));
+}
+
+void irq_ack(void)
+{
+    outb(0x20, 0x20);
 }
 
 void root(void)
