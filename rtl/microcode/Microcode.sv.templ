@@ -118,8 +118,7 @@ wire do_single_step = current.next_instruction & !ext_int_inhibit &
      current.next != debug_wait_address;
 assign start_interrupt = next_addr == nmi_address ||
                          next_addr == irq_address;
-assign inta = next_addr == irq_address;
-assign irq_to_mdr = inta;
+assign irq_to_mdr = next_addr == irq_address;
 reg trap_flag_set;
 assign is_hlt = opcode == 8'hf4;
 
@@ -142,6 +141,9 @@ always_comb begin
     default: width = 1'b0;
     endcase
 end
+
+always_ff @(posedge clk)
+    inta <= next_addr == irq_address && addr != irq_address;
 
 always_ff @(posedge clk or posedge reset)
     if (reset)
