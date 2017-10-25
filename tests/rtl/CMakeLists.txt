@@ -60,6 +60,8 @@ verilate(TOPLEVEL Divider
          VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/Divider.sv)
 verilate(TOPLEVEL PosedgeToPulse
          VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/PosedgeToPulse.sv)
+verilate(TOPLEVEL PIC
+         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../fpga/pic/PIC.sv)
 
 add_executable(rtl-unittest
                TestALU.cpp
@@ -75,6 +77,7 @@ add_executable(rtl-unittest
                TestMicrocode.cpp
                TestModRMDecode.cpp
                TestModRMDecode.cpp
+               TestPIC.cpp
                TestPosedgeToPulse.cpp
                TestPrefetch.cpp
                TestRegisterFile.cpp
@@ -97,6 +100,7 @@ target_link_libraries(rtl-unittest
                       VLoadStore
                       VMicrocode
                       VModRMTestbench
+                      VPIC
                       VPosedgeToPulse
                       VPrefetch
                       VRegisterFile

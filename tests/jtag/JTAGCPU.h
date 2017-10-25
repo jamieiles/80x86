@@ -72,6 +72,7 @@ public:
     {
         assert(irq_num >= 0 && irq_num < 7);
         write_io8(0xfff6, 1 << irq_num);
+        write_io8(0xfff6, 0);
     }
 
     unsigned long cycle_count() const

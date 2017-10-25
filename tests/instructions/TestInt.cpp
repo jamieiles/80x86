@@ -145,8 +145,13 @@ TEST_F(EmulateFixture, IFClearExtIntNotTaken)
 
 TEST_F(EmulateFixture, IFSetExtIntTaken)
 {
-    write_mem16((10 * 4) + 2, 0x8000, CS); // CS
-    write_mem16((10 * 4) + 0, 0x0100, CS); // IP
+    write_io8(0x20, 0x13);
+    write_io8(0x21, 0x00);
+    write_io8(0x21, 0x01);
+    write_io8(0x21, 0xff);
+
+    write_mem16((4 * 4) + 2, 0x8000, CS); // CS
+    write_mem16((4 * 4) + 0, 0x0100, CS); // IP
 
     write_reg(SP, 0x100);
     write_reg(CS, 0x7c00);
@@ -155,7 +160,7 @@ TEST_F(EmulateFixture, IFSetExtIntTaken)
     write_flags(IF);
 
     set_instruction({});
-    raise_irq(10);
+    raise_irq(4);
     emulate();
 
     EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), FLAGS_STUCK_BITS);

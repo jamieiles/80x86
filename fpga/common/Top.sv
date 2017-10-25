@@ -67,6 +67,7 @@ wire [15:0] io_data = sdram_config_data |
     spi_data |
     timer_data |
     irq_control_data |
+    pic_data |
 `ifdef CONFIG_VGA
     vga_reg_data |
 `endif // CONFIG_VGA
@@ -149,11 +150,18 @@ wire spi_ack;
 wire [15:0] spi_data;
 
 wire nmi;
+wire [6:0] intr_test;
 wire intr;
+wire inta;
 wire [7:0] irq;
 wire irq_control_access;
 wire irq_control_ack;
 wire [15:0] irq_control_data;
+wire pic_access;
+wire pic_ack;
+wire [15:0] pic_data;
+
+wire [7:0] irqs = {6'b0, ps2_intr, timer_intr} | {1'b0, intr_test};
 
 // Timer
 wire timer_intr;
@@ -170,6 +178,7 @@ wire io_ack = sdram_config_ack |
               leds_ack |
               spi_ack |
               irq_control_ack |
+              pic_ack |
               timer_ack |
 `ifdef CONFIG_VGA
               vga_reg_ack |
@@ -189,6 +198,7 @@ always_comb begin
     uart_access = 1'b0;
     spi_access = 1'b0;
     irq_control_access = 1'b0;
+    pic_access = 1'b0;
     timer_access = 1'b0;
     bios_control_access = 1'b0;
 `ifdef CONFIG_VGA
@@ -204,9 +214,10 @@ always_comb begin
         16'b1111_1111_1111_1100: sdram_config_access = 1'b1;
         16'b1111_1111_1111_1010: uart_access = 1'b1;
         16'b1111_1111_1111_00z0: spi_access = 1'b1;
-        16'b1111_1111_1111_01z0: irq_control_access = 1'b1;
+        16'b1111_1111_1111_0110: irq_control_access = 1'b1;
         16'b1111_1111_1110_1110: timer_access = 1'b1;
         16'b1111_1111_1110_1100: bios_control_access = 1'b1;
+        16'b0000_0000_0010_0000: pic_access = 1'b1;
 `ifdef CONFIG_VGA
         16'b0000_0011_1101_zzzz: vga_reg_access = 1'b1;
 `endif // CONFIG_VGA
@@ -335,9 +346,6 @@ SysPLL	SysPLL(.refclk(clk),
 
 Core Core(.clk(sys_clk),
 	  .lock(),
-          // No need to ack the interrupts with the simple IRQ controller,
-          // everything is in the same clock domain as the CPU.
-          .inta(),
           .*);
 
 IRQController IRQController(.clk(sys_clk),
@@ -345,9 +353,15 @@ IRQController IRQController(.clk(sys_clk),
                             .data_m_ack(irq_control_ack),
                             .data_m_data_out(irq_control_data),
                             .data_m_data_in(data_m_data_out),
-                            .data_m_addr(data_m_addr),
-                            .intr_in({6'b0, ps2_intr, timer_intr}),
                             .*);
+
+PIC PIC(.clk(sys_clk),
+        .cs(pic_access),
+        .data_m_ack(pic_ack),
+        .data_m_data_out(pic_data),
+        .data_m_data_in(data_m_data_out),
+        .intr_in(irqs),
+        .*);
 
 Timer Timer(.clk(sys_clk),
             .cs(timer_access),
