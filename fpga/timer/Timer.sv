@@ -49,9 +49,9 @@ always_ff @(posedge clk or posedge reset)
 always_ff @(posedge clk or posedge reset)
     if (reset)
         intr <= 1'b0;
-    else if (cs && data_m_access)
-        intr <= 1'b0;
     else if (enabled & |reload & ~|counter & ~|ms_counter)
         intr <= 1'b1;
+    else
+        intr <= 1'b0;
 
 endmodule
