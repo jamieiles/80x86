@@ -33,7 +33,7 @@ wire fifo_rd_en = cs & data_m_wr_en & data_m_bytesel[1] & ~empty;
 
 reg unread_error = 1'b0;
 
-assign ps2_intr = ~empty;
+assign ps2_intr = fifo_wr_en;
 
 Fifo    #(.data_width(8),
           .depth(8))
