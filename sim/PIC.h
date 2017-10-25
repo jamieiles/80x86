@@ -47,6 +47,9 @@ public:
 
     void raise_irq(int irq_num)
     {
+        if (!(mask & (1 << irq_num)))
+            return;
+
         irr |= (1 << irq_num);
 
         for (int i = 0; i < 8; ++i) {
