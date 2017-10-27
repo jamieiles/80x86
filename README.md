@@ -39,7 +39,7 @@ tests, a reference BIOS implementation and reference FPGA designs.
 ## Reference Design
 
 * SDR SDRAM controller
-* SD card for floppy disk emulation
+* SD card for fixed disk emulation
 * 8259 PIC-lite controller
 * UART
 * 8254 PIT-lite timer operating in mode 2 only.
