@@ -40,7 +40,7 @@ tests, a reference BIOS implementation and reference FPGA designs.
 
 * SDR SDRAM controller
 * SD card for floppy disk emulation
-* Interrupt controller
+* 8259 PIC-lite controller
 * UART
 * 8254 PIT-lite timer operating in mode 2 only.
 * CGA controller with VGA output
