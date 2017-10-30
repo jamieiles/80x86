@@ -20,11 +20,9 @@
 
 .auto_address;
 lodsb:
-    ra_sel SI, jmp_if_not_rep lodsb_no_rep;
-    rb_cl;
+    ra_sel SI, rb_cl, jmp_if_not_rep lodsb_no_rep;
 lodsb_rep_loop:
-    ra_sel CX, a_sel RA, b_sel IMMEDIATE, immediate 0x0, alu_op SUB,
-        jmp_rb_zero lodsb_done;
+    ra_sel CX, jmp_rb_zero lodsb_done;
     ra_sel SI, a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
         rd_sel_source MICROCODE_RD_SEL, rd_sel CX;
 lodsb_no_rep:
@@ -43,11 +41,9 @@ lodsb_done:
 
 .auto_address;
 lodsw:
-    ra_sel SI, jmp_if_not_rep lodsw_no_rep;
-    rb_cl;
+    ra_sel SI, rb_cl, jmp_if_not_rep lodsw_no_rep;
 lodsw_rep_loop:
-    ra_sel CX, a_sel RA, b_sel IMMEDIATE, immediate 0x0, alu_op SUB,
-        jmp_rb_zero lodsw_done;
+    ra_sel CX, jmp_rb_zero lodsw_done;
     ra_sel SI, a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
         rd_sel_source MICROCODE_RD_SEL, rd_sel CX;
 lodsw_no_rep:

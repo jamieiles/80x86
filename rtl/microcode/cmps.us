@@ -20,11 +20,9 @@
 
 .auto_address;
 cmpsb:
-    ra_sel DI, jmp_if_not_rep cmpsb_no_rep;
-    rb_cl;
+    ra_sel DI, rb_cl, jmp_if_not_rep cmpsb_no_rep;
 cmpsb_rep_loop:
-    ra_sel CX, a_sel RA, b_sel IMMEDIATE, immediate 0x0, alu_op SUB,
-        jmp_rb_zero cmpsb_done;
+    ra_sel CX, jmp_rb_zero cmpsb_done;
     ra_sel DI, a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
         rd_sel_source MICROCODE_RD_SEL, rd_sel CX;
 cmpsb_no_rep:
@@ -52,11 +50,9 @@ cmpsb_done:
 
 .auto_address;
 cmpsw:
-    ra_sel DI, jmp_if_not_rep cmpsw_no_rep;
-    rb_cl;
+    ra_sel DI, rb_cl, jmp_if_not_rep cmpsw_no_rep;
 cmpsw_rep_loop:
-    ra_sel CX, a_sel RA, b_sel IMMEDIATE, immediate 0x0, alu_op SUB,
-        jmp_rb_zero cmpsw_done;
+    ra_sel CX, jmp_rb_zero cmpsw_done;
     ra_sel DI, a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
         rd_sel_source MICROCODE_RD_SEL, rd_sel CX;
 cmpsw_no_rep:

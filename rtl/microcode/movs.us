@@ -20,11 +20,9 @@
 
 .auto_address;
 movsb:
-    ra_sel SI, jmp_if_not_rep movsb_no_rep;
-    rb_cl;
+    ra_sel SI, rb_cl, jmp_if_not_rep movsb_no_rep;
 movsb_rep_loop:
-    ra_sel CX, a_sel RA, b_sel IMMEDIATE, immediate 0x0, alu_op SUB,
-        jmp_rb_zero movsb_done;
+    ra_sel CX, jmp_rb_zero movsb_done;
     ra_sel SI, a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
         rd_sel_source MICROCODE_RD_SEL, rd_sel CX;
 movsb_no_rep:
@@ -50,11 +48,9 @@ movsb_done:
 
 .auto_address;
 movsw:
-    ra_sel SI, jmp_if_not_rep movsw_no_rep;
-    rb_cl;
+    ra_sel SI, rb_cl, jmp_if_not_rep movsw_no_rep;
 movsw_rep_loop:
-    ra_sel CX, a_sel RA, b_sel IMMEDIATE, immediate 0x0, alu_op SUB,
-        jmp_rb_zero movsw_done;
+    ra_sel CX, jmp_rb_zero movsw_done;
     ra_sel SI, a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
         rd_sel_source MICROCODE_RD_SEL, rd_sel CX;
 movsw_no_rep:
