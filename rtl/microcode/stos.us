@@ -16,10 +16,11 @@
 // along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
 
 .at 0xaa;
-    jmp stosb;
+    width W8, ra_sel AL, jmp stosb;
 
 .auto_address;
 stosb:
+    width W8, a_sel RA, alu_op SELA, mdr_write;
     ra_sel DI, rb_cl, jmp_if_not_rep stosb_no_rep;
 stosb_rep_loop:
     ra_sel CX, jmp_rb_zero stosb_done;
@@ -37,11 +38,12 @@ stosb_done:
     next_instruction;
 
 .at 0xab;
-    jmp stosw;
+    ra_sel AX, jmp stosw;
 
 .auto_address;
 stosw:
-    ra_sel DI, rb_cl, jmp_if_not_rep stosw_no_rep;
+    a_sel RA, alu_op SELA, mdr_write,
+        ra_sel DI, rb_cl, jmp_if_not_rep stosw_no_rep;
 stosw_rep_loop:
     ra_sel CX, jmp_rb_zero stosw_done;
     ra_sel DI, a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
@@ -49,9 +51,7 @@ stosw_rep_loop:
 stosw_no_rep:
     ra_sel DI, a_sel RA, alu_op SELA, mar_wr_sel Q, mar_write;
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op NEXT,
-        rd_sel_source MICROCODE_RD_SEL, rd_sel DI;
-    ra_sel AL;
-    alu_op SELA, mdr_write, segment ES, segment_force;
+        rd_sel_source MICROCODE_RD_SEL, rd_sel DI, segment ES, segment_force;
     segment ES, segment_force, mem_write, jmp_if_not_rep stosw_done;
     rb_cl, ext_int_yield, jmp stosw_rep_loop;
 stosw_done:

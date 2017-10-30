@@ -58,10 +58,8 @@ movsw_no_rep:
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op NEXT,
         rd_sel_source MICROCODE_RD_SEL, rd_sel SI,
         segment DS;
-    segment DS, mem_read;
-
-    ra_sel DI;
-    ra_sel DI, a_sel RA, alu_op SELA, mar_wr_sel Q, mar_write;
+    segment DS, mem_read, ra_sel DI, a_sel RA, alu_op SELA, mar_wr_sel Q,
+        mar_write;
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op NEXT,
         rd_sel_source MICROCODE_RD_SEL, rd_sel DI,
         segment ES, segment_force;

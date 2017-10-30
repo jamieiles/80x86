@@ -58,16 +58,15 @@ cmpsw_rep_loop:
 cmpsw_no_rep:
     ra_sel DI, a_sel RA, alu_op SELA, mar_wr_sel Q, mar_write, segment ES,
         segment_force;
-    segment ES, segment_force, mem_read;
-    a_sel MDR, alu_op SELA, tmp_wr_en, ra_sel DI;
+    segment ES, segment_force, mem_read, a_sel MDR, alu_op SELA, tmp_wr_en,
+        ra_sel DI;
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op NEXT,
         rd_sel_source MICROCODE_RD_SEL, rd_sel DI,
         ra_sel SI;
     a_sel RA, alu_op SELA, mar_wr_sel Q, mar_write, segment DS, ra_sel SI;
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op NEXT,
         rd_sel_source MICROCODE_RD_SEL, rd_sel SI, segment DS;
-    segment DS, mem_read;
-    a_sel MDR, b_sel TEMP, alu_op SUB,
+    segment DS, mem_read, a_sel MDR, b_sel TEMP, alu_op SUB,
         update_flags OF SF ZF CF PF AF, jmp_if_not_rep cmpsw_done;
     rb_cl, alu_op GETFLAGS, ext_int_yield,
         jmp_if_rep_not_complete cmpsw_rep_loop;
