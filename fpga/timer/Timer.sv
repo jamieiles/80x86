@@ -42,6 +42,7 @@ reg [1:0] rw;
 reg [2:0] mode;
 reg [1:0] latched;
 reg access_low;
+reg reloaded;
 
 BitSync PITSync(.clk(clk),
                 .d(pit_clk),
@@ -83,13 +84,20 @@ always_ff @(posedge reset or posedge clk) begin
 end
 
 always_ff @(posedge reset or posedge clk) begin
-    if (reset)
+    if (reset) begin
         reload <= 16'b0;
-    else if (access_data && data_m_wr_en) begin
-        if (access_low)
-            reload[7:0] <= data_m_data_in[7:0];
-        else
-            reload[15:8] <= data_m_data_in[7:0];
+        reloaded <= 1'b0;
+    end else begin
+        reloaded <= 1'b0;
+
+        if (access_data && data_m_wr_en) begin
+            if (access_low)
+                reload[7:0] <= data_m_data_in[7:0];
+            else begin
+                reload[15:8] <= data_m_data_in[7:0];
+                reloaded <= 1'b1;
+            end
+        end
     end
 end
 
@@ -98,7 +106,9 @@ always_ff @(posedge reset or posedge clk) begin
         count <= 16'b0;
         intr <= 1'b0;
     end else begin
-        if (pit_clk_posedge && mode[1:0] == 2'b10) begin
+        if (reloaded)
+            count <= reload - 1'b1;
+        else if (pit_clk_posedge && mode[1:0] == 2'b10) begin
             count <= (count == 16'b0 ? reload : count) - 1'b1;
             if (count == 16'b1)
                 intr <= 1'b0;

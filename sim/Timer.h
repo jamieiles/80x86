@@ -54,7 +54,8 @@ public:
           latched(false),
           latched_val(0),
           access_low(false),
-          reload(0)
+          reload(0),
+          enabled(false)
     {
     }
 
@@ -76,12 +77,16 @@ public:
             access_low = false;
             return counter_val;
         } else {
+            latched = false;
             return counter_val >> 8;
         }
     }
 
     void tick(unsigned cycles)
     {
+        if (!enabled)
+            return;
+
         if (count <= cycles) {
             if (operating_mode == 2) {
                 pic->raise_irq(0);
@@ -101,6 +106,7 @@ private:
     uint16_t latched_val;
     bool access_low;
     uint16_t reload;
+    bool enabled;
 
     uint16_t read_counter() const
     {
@@ -109,10 +115,8 @@ private:
 
     void do_reload()
     {
-        if (reload == 0)
-            reload = 0xffff;
-
-        count = static_cast<uint32_t>(reload) * cycles_per_tick;
+        count = (((static_cast<uint32_t>(reload) & 0xffff) - 1) & 0xffff) *
+                cycles_per_tick;
     }
 
     friend class boost::serialization::access;
@@ -127,6 +131,7 @@ private:
         ar & access_low;
         ar & reload;
         ar & count;
+        ar & enabled;
         // clang-format on
     }
 
@@ -144,11 +149,13 @@ private:
         if (this->access != 0) {
             operating_mode = (v >> 1) & 0x7;
             assert_timer(operating_mode == 2);
+
+            enabled = false;
         }
         assert_timer(is_bcd == 0);
 
         access_low = this->access != 2;
-        if (this->access == 0) {
+        if (access == 0 && !this->latched) {
             this->latched_val = read_counter();
             this->latched = true;
         }
@@ -159,15 +166,12 @@ private:
         if (this->access_low) {
             reload &= ~0xff;
             reload |= v;
+            access_low = false;
         } else {
             reload &= ~0xff00;
             reload |= static_cast<uint16_t>(v) << 8;
-        }
-
-        if (this->access == 0 && !this->access_low)
+            enabled = true;
             do_reload();
-
-        if (this->access == 0)
-            this->access_low = false;
+        }
     }
 };
