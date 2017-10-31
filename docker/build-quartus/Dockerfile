@@ -2,7 +2,7 @@ FROM ubuntu:xenial
 MAINTAINER Jamie Iles <jamie@jamieiles.com>
 ENV DEBIAN_FRONTEND=noninteractive
 
-ARG MIRROR=http://download.altera.com/akdlm/software/acdsinst/14.1/186/ib_installers/
+ARG MIRROR=http://download.altera.com/akdlm/software/acdsinst/16.1/196/ib_installers/
 ARG QUARTUS=QuartusLiteSetup-16.1.0.196-linux.run
 ARG QUARTUS_UPDATE=QuartusSetup-16.1.2.203-linux.run
 ARG DEVICE_FILES="cyclonev-16.1.0.196.qdz cyclone-16.1.0.196.qdz"
