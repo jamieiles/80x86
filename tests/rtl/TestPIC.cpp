@@ -120,7 +120,7 @@ TEST_F(PICTestBench, IRQVector)
     write_reg(1, 0x08);
     write_reg(1, 0x01);
 
-    set_mask(0xff);
+    set_mask(0x00);
 
     this->cycle(2);
     this->dut.intr_in = (1 << 3);
@@ -136,7 +136,7 @@ TEST_F(PICTestBench, IRQPriority)
     write_reg(1, 0x08);
     write_reg(1, 0x01);
 
-    set_mask(0xff);
+    set_mask(0x00);
 
     this->cycle(2);
     this->dut.intr_in = (1 << 3);
@@ -155,7 +155,7 @@ TEST_F(PICTestBench, ReadIRR)
     write_reg(1, 0x08);
     write_reg(1, 0x01);
 
-    set_mask(0xff);
+    set_mask(0x00);
 
     this->cycle(2);
     this->dut.intr_in = (1 << 3);
@@ -173,7 +173,7 @@ TEST_F(PICTestBench, MaskedIntIgnored)
     write_reg(0, 0x13);
     write_reg(1, 0x08);
     write_reg(1, 0x01);
-    set_mask(0);
+    set_mask(0xff);
 
     this->cycle(2);
     this->dut.intr_in = (1 << 3);
@@ -187,7 +187,7 @@ TEST_F(PICTestBench, NoEOISuppressesSecondIRQ)
     write_reg(0, 0x13);
     write_reg(1, 0x08);
     write_reg(1, 0x01);
-    set_mask(0xff);
+    set_mask(0x00);
 
     this->cycle(2);
     this->dut.intr_in = (1 << 3);
@@ -206,7 +206,7 @@ TEST_F(PICTestBench, NoEOIInhibitsLowerPriority)
     write_reg(0, 0x13);
     write_reg(1, 0x08);
     write_reg(1, 0x01);
-    set_mask(0xff);
+    set_mask(0x00);
 
     this->cycle(2);
     this->dut.intr_in = (1 << 3);
@@ -229,7 +229,7 @@ TEST_F(PICTestBench, NoEOIHigherPriorityTaken)
     write_reg(0, 0x13);
     write_reg(1, 0x08);
     write_reg(1, 0x01);
-    set_mask(0xff);
+    set_mask(0x00);
 
     this->cycle(2);
     this->dut.intr_in = (1 << 3);
@@ -254,7 +254,7 @@ TEST_F(PICTestBench, EOIReRaises)
     write_reg(0, 0x13);
     write_reg(1, 0x08);
     write_reg(1, 0x01);
-    set_mask(0xff);
+    set_mask(0x00);
 
     this->cycle(2);
     this->dut.intr_in = (1 << 3);

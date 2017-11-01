@@ -165,7 +165,7 @@ TEST_F(EmulateFixture, IFSetExtIntTaken)
     write_io8(0x20, 0x13);
     write_io8(0x21, 0x00);
     write_io8(0x21, 0x01);
-    write_io8(0x21, 0xff);
+    write_io8(0x21, 0x00);
 
     write_mem16((4 * 4) + 2, 0x8000, CS); // CS
     write_mem16((4 * 4) + 0, 0x0100, CS); // IP

@@ -119,7 +119,7 @@ always_ff @(posedge reset or posedge clk)
         if (inta)
             irr[delivered] <= 1'b0;
         else
-            irr <= irr | (mask & intr_edges);
+            irr <= irr | (~mask & intr_edges);
     end
 
 always_ff @(posedge reset or posedge clk)

@@ -26,7 +26,7 @@ cpu 8086
     mov         al, 0x01
     out         0x21, al
 
-    mov         al, 0xff
+    mov         al, 0x00
     out         0x21, al
 
     mov word    [8 * 4], irq0_handler

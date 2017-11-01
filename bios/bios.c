@@ -125,11 +125,13 @@ static void irq_init(void)
     outb(PIC_COMMAND, PIC_ICW1_INIT | PIC_ICW1_SINGLE | PIC_ICW1_ICW4);
     outb(PIC_DATA, 0x08);
     outb(PIC_DATA, PIC_ICW4_8086);
+    // All IRQs initially masked.
+    outb(PIC_DATA, ~0);
 }
 
 void irq_enable(int irq_num)
 {
-    outb(PIC_DATA, inb(PIC_DATA) | (1 << irq_num));
+    outb(PIC_DATA, inb(PIC_DATA) & ~(1 << irq_num));
 }
 
 void irq_ack(void)
