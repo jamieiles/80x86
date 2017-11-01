@@ -67,15 +67,15 @@ always_ff @(posedge reset or posedge clk) begin
         latched_count <= 16'b0;
         latched <= 2'b00;
     end else if (access_ctrl && data_m_wr_en && channel == 2'b00) begin
-        if (ctrl_wr_val[5:4] == 2'b00) begin
+        if (ctrl_wr_val[5:4] == 2'b00 && ~|latched) begin
             latched <= 2'b11;
-            latched_count <= ctrl_wr_val[5:4] == 2'b00 ? count : latched_count;
+            latched_count <= count;
         end else begin
             mode <= ctrl_wr_val[3:1];
             access_low <= ctrl_wr_val[4];
             rw <= ctrl_wr_val[5:4];
         end
-    end else if (access_data && data_m_wr_en && rw == 2'b11 & channel == 2'b00)
+    end else if (access_data && data_m_wr_en && rw == 2'b11)
         access_low <= ~access_low;
     else if (access_data && !data_m_wr_en) begin
         latched <= {1'b0, latched[1]};
