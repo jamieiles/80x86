@@ -99,16 +99,22 @@ static int is_modifier(unsigned char b)
     return b == SCANCODE_LALT || b == SCANCODE_LCTRL || b == SCANCODE_LSHIFT;
 }
 
-void modifier_key(unsigned char b)
+void modifier_key(unsigned char b, int keyup)
 {
     unsigned char flags = bda_read(keyboard_flags[0]);
+    unsigned char mask = 0;
 
     if (b == SCANCODE_LALT)
-        flags ^= KBD_FLAG_LALT;
+        mask = KBD_FLAG_LALT;
     if (b == SCANCODE_LSHIFT)
-        flags ^= KBD_FLAG_LSHIFT;
+        mask = KBD_FLAG_LSHIFT;
     if (b == SCANCODE_LCTRL)
-        flags ^= KBD_FLAG_LCTRL;
+        mask = KBD_FLAG_LCTRL;
+
+    if (keyup)
+        flags &= ~mask;
+    else
+        flags |= mask;
 
     bda_write(keyboard_flags[0], flags);
 }
@@ -193,7 +199,7 @@ static int keyboard_poll(void)
     }
 
     if (is_modifier(b))
-        modifier_key(b);
+        modifier_key(b, keyup);
     else if (is_extended(b))
         extended_key();
     else if (!keyup && b < ARRAY_SIZE(keycode_map))
