@@ -271,6 +271,7 @@ BitSync         ResetSync(.clk(sys_clk),
                           .d(rst_in_n),
                           .q(reset_n));
 
+// verilator lint_off PINMISSING
 VirtualJTAG VirtualJTAG(.ir_out(),
                         .tdo(tdo),
                         .ir_in(ir),
@@ -281,6 +282,7 @@ VirtualJTAG VirtualJTAG(.ir_out(),
                         .virtual_state_cdr(cdr),
                         .virtual_state_udr(udr));
 
+// verilator lint_on PINMISSING
 JTAGBridge      JTAGBridge(.cpu_clk(sys_clk),
                            .*);
 
@@ -296,7 +298,7 @@ SDRAMController #(.size(`CONFIG_SDRAM_SIZE),
                                 .reset(reset),
                                 .data_m_access(q_m_access),
                                 .cs(sdram_access),
-                                .h_addr(q_m_addr),
+                                .h_addr({6'b0, q_m_addr}),
                                 .h_wdata(q_m_data_out),
                                 .h_rdata(sdram_data),
                                 .h_wr_en(q_m_wr_en),
@@ -312,7 +314,8 @@ BIOS #(.depth(8192))
           .data_m_ack(bios_ack),
           .data_m_addr(q_m_addr),
           .data_m_data_out(bios_data),
-          .data_m_bytesel(q_m_bytesel));
+          .data_m_bytesel(q_m_bytesel),
+          .*);
 
 BIOSControlRegister BIOSControlRegister(.clk(sys_clk),
                                         .cs(bios_control_access),
@@ -357,10 +360,12 @@ SPIPorts SPIPorts(.clk(sys_clk),
                   .ncs(spi_ncs),
                   .*);
 
+`ifndef verilator
 SysPLL	SysPLL(.refclk(clk),
 	       .rst(1'b0),
                .locked(),
                .*);
+`endif // verilator
 
 Core Core(.clk(sys_clk),
 	  .lock(),
@@ -387,7 +392,7 @@ Timer Timer(.clk(sys_clk),
             .data_m_ack(timer_ack),
             .data_m_data_out(timer_data),
             .data_m_data_in(data_m_data_out),
-            .data_m_addr(data_m_addr),
+            .data_m_addr(data_m_addr[1]),
             .intr(timer_intr),
             .*);
 
