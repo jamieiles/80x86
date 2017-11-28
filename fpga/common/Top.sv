@@ -315,7 +315,8 @@ BIOS #(.depth(8192))
           .data_m_addr(q_m_addr),
           .data_m_data_out(bios_data),
           .data_m_bytesel(q_m_bytesel),
-          .*);
+          .data_m_data_in(q_m_data_out),
+          .data_m_wr_en(q_m_wr_en));
 
 BIOSControlRegister BIOSControlRegister(.clk(sys_clk),
                                         .cs(bios_control_access),
