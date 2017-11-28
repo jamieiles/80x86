@@ -63,7 +63,7 @@ logic [2:0] hsync_pipe;
 assign vga_hsync = hsync_pipe[0];
 
 // 2 vertical pixels per horizontal pixel to scale out.
-wire [10:0] frame_buffer_address = {1'b0, (shifted_row / 10'd16) * 10'd80 + (col / 10'd8)};
+wire [10:0] frame_buffer_address = ({1'b0, shifted_row} / 11'd16) * 11'd80 + ({1'b0, col} / 11'd8);
 
 VGASync VGASync(.*);
 
