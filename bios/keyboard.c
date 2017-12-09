@@ -25,8 +25,10 @@
 
 #define PS2_DATA_PORT 0x60
 #define PS2_CTRL_PORT 0x61
-#define PS2_CTRL_ACK (1 << 0)
+#define PS2_CTRL_CLEAR (1 << 7)
 #define PS2_CTRL_RX_VALID (1 << 0)
+
+static int keyboard_has_reset;
 
 static int kbd_buffer_full(void)
 {
@@ -86,9 +88,9 @@ unsigned kbd_buffer_peek(void)
     return bda_read(kbd_buffer[circ_offset / sizeof(unsigned short)]);
 }
 
-#define SCANCODE_LSHIFT 0x12
-#define SCANCODE_LCTRL 0x14
-#define SCANCODE_LALT 0x11
+#define SCANCODE_LSHIFT 0x2a
+#define SCANCODE_LCTRL 0x1d
+#define SCANCODE_LALT 0x38
 
 #define KBD_FLAG_LSHIFT (1 << 1)
 #define KBD_FLAG_LCTRL (1 << 2)
@@ -96,13 +98,17 @@ unsigned kbd_buffer_peek(void)
 
 static int is_modifier(unsigned char b)
 {
+    b &= ~0x80;
+
     return b == SCANCODE_LALT || b == SCANCODE_LCTRL || b == SCANCODE_LSHIFT;
 }
 
-void modifier_key(unsigned char b, int keyup)
+static void noinline modifier_key(unsigned char b, int keyup)
 {
     unsigned char flags = bda_read(keyboard_flags[0]);
     unsigned char mask = 0;
+
+    b &= ~0x80;
 
     if (b == SCANCODE_LALT)
         mask = KBD_FLAG_LALT;
@@ -139,44 +145,26 @@ static void noinline keypress(const struct keydef *map, unsigned char b)
         kbd_buffer_add(def->normal);
 }
 
-static unsigned char get_scancode(void)
-{
-    unsigned char b;
-
-    do {
-        b = inb(PS2_DATA_PORT);
-        if (b)
-            outb(PS2_CTRL_PORT, PS2_CTRL_ACK);
-    } while (!b);
-
-    return b;
-}
-
-static int is_extended(unsigned char b)
-{
-    return b == 0xe0;
-}
-
-static void extended_key(void)
-{
-    keypress(extended_keycode_map, get_scancode());
-}
-
 static void keyboard_reset(void)
 {
     // Reset
     outb(PS2_DATA_PORT, 0xff);
     // Enable
     outb(PS2_DATA_PORT, 0xf4);
+    // Set scan code set 1
+    outb(PS2_DATA_PORT, 0xf0);
+    outb(PS2_DATA_PORT, 0x01);
     // Flush FIFO
     int i;
     for (i = 0; i < 64; ++i) {
         if (!(inb(PS2_CTRL_PORT) & PS2_CTRL_RX_VALID))
             break;
-        outb(PS2_CTRL_PORT, PS2_CTRL_ACK);
+        outb(PS2_CTRL_PORT, PS2_CTRL_CLEAR);
     }
     if (i == 64)
         putstr("Warning: failed to empty Keyboard FIFO.\n");
+
+    keyboard_has_reset = 1;
 }
 
 static int keyboard_poll(void)
@@ -185,23 +173,19 @@ static int keyboard_poll(void)
     if (!b)
         return 0;
 
-    if (b == 0xaa) {
+    if (b == 0xaa && !keyboard_has_reset) {
         keyboard_reset();
         return 1;
     }
 
-    outb(PS2_CTRL_PORT, PS2_CTRL_ACK);
+    outb(PS2_CTRL_PORT, PS2_CTRL_CLEAR);
 
     int keyup = 0;
-    if (b == 0xf0) {
+    if (b & 0x80)
         keyup = 1;
-        b = get_scancode();
-    }
 
     if (is_modifier(b))
         modifier_key(b, keyup);
-    else if (is_extended(b))
-        extended_key();
     else if (!keyup && b < ARRAY_SIZE(keycode_map))
         keypress(keycode_map, b);
 

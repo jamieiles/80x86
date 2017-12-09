@@ -44,9 +44,10 @@ wire error;
 wire empty;
 wire full;
 wire [7:0] fifo_rd_data;
-wire fifo_wr_en = rx_valid & ~error & ~full;
+wire fifo_wr_en = rx_valid & ~error & ~full & rx != 8'he0;
+wire fifo_reset = reset | (cs & data_m_wr_en & data_m_bytesel[1] & data_m_data_in[15]);
 
-wire fifo_rd_en = cs & data_m_wr_en & data_m_bytesel[1] & ~empty;
+wire fifo_rd_en = cs & ~data_m_wr_en & data_m_bytesel[0] & ~empty;
 
 reg unread_error = 1'b0;
 
@@ -61,6 +62,7 @@ Fifo    #(.data_width(8),
              // verilator lint_off PINCONNECTEMPTY
              .nearly_full(),
              // verilator lint_on PINCONNECTEMPTY
+             .reset(fifo_reset),
              .*);
 
 wire [7:0] status = {5'b0, tx_busy, unread_error, ~empty};
