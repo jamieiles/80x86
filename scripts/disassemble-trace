@@ -38,5 +38,8 @@ with open(sys.argv[1]) as log:
 
         ip = int(m.groupdict()['IP'], 16)
         hexbuf = instr_bytes.strip().replace(' ', '').decode('hex')
-        _, __,instruction, ___ = distorm3.Decode(ip, hexbuf, distorm3.Decode16Bits)[0]
+        try:
+            _, __,instruction, ___ = distorm3.Decode(ip, hexbuf, distorm3.Decode16Bits)[0]
+        except Exception:
+            print instr_bytes
         print loc, instruction.lower()
