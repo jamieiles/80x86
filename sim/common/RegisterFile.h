@@ -75,6 +75,9 @@ class RegisterFile
 {
 public:
     RegisterFile();
+    virtual ~RegisterFile()
+    {
+    }
     virtual void reset();
     virtual void set(GPR regnum, uint16_t value);
     virtual uint16_t get(GPR regnum) const;

@@ -20,7 +20,7 @@
 #include <cstdlib>
 #include <cassert>
 
-RegisterFile::RegisterFile()
+RegisterFile::RegisterFile() : flags(FLAGS_STUCK_BITS), written(false)
 {
     reset();
 }
