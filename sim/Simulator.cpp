@@ -99,13 +99,13 @@ private:
     }
 
     T cpu;
+    PIC pic;
     SDRAMConfigRegister sdram_config_register;
     UART uart;
     SPI spi;
     TimerTick timer;
     CGA cga;
     Keyboard kbd;
-    PIC pic;
     bool got_exit;
     bool detached;
 };
@@ -115,11 +115,11 @@ Simulator<T>::Simulator(const std::string &bios_path,
                         const std::string &disk_image_path,
                         bool detached)
     : cpu("simulator"),
+      pic(&this->cpu),
       spi(disk_image_path),
       timer(&this->pic),
       cga(this->cpu.get_memory()),
       kbd(&this->pic),
-      pic(&this->cpu),
       got_exit(false),
       detached(detached)
 {
