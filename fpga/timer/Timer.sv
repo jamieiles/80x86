@@ -108,7 +108,7 @@ always_ff @(posedge reset or posedge clk) begin
     end else begin
         if (reloaded)
             count <= reload - 1'b1;
-        else if (pit_clk_posedge && mode[1:0] == 2'b10) begin
+        else if (pit_clk_posedge && mode[1] == 1'b1) begin
             count <= (count == 16'b0 ? reload : count) - 1'b1;
             if (count == 16'b1)
                 intr <= 1'b0;

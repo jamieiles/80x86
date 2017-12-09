@@ -148,7 +148,8 @@ private:
         this->access = access;
         if (this->access != 0) {
             operating_mode = (v >> 1) & 0x7;
-            assert_timer(operating_mode == 2);
+            assert_timer(operating_mode == 2 || operating_mode == 3);
+            operating_mode = 2;
 
             enabled = false;
         }
