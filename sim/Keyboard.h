@@ -122,6 +122,7 @@ class Keyboard : public IOPorts
 public:
     Keyboard(PIC *pic) : IOPorts(0x0060, 1), pic(pic)
     {
+        set_scancode(0xaa);
     }
 
     void write8(uint16_t __unused port_num,
