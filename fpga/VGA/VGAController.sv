@@ -62,16 +62,12 @@ assign vga_vsync = vsync_pipe[0];
 logic [2:0] hsync_pipe;
 assign vga_hsync = hsync_pipe[0];
 
-// 2 vertical pixels per horizontal pixel to scale out.
-wire [10:0] frame_buffer_address = ({1'b0, shifted_row} / 11'd16) * 11'd80 + ({1'b0, col} / 11'd8);
-
 VGASync VGASync(.*);
 
-FrameBuffer FrameBuffer(.address(frame_buffer_address),
-                        .glyph(fb_glyph),
+FrameBuffer FrameBuffer(.glyph(fb_glyph),
                         .background(fb_background),
                         .foreground(fb_foreground),
-                        .glyph_row(shifted_row[3:1]),
+                        .row(shifted_row),
 			.*);
 
 FontColorLUT FontColorLUT(.glyph(fb_glyph),
