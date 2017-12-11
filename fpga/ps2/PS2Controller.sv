@@ -37,15 +37,18 @@ wire do_write = data_m_access & cs & data_m_wr_en;
 
 wire [7:0] rx;
 wire rx_valid;
-wire [7:0] tx = data_m_data_in[7:0];
-wire start_tx = do_write & data_m_bytesel[0];
+wire [7:0] tx;
+wire start_tx;
 wire tx_busy;
+wire tx_complete;
 wire error;
 wire empty;
 wire full;
 wire [7:0] fifo_rd_data;
-wire fifo_wr_en = rx_valid & ~error & ~full & rx != 8'he0;
-wire fifo_reset = reset | (cs & data_m_wr_en & data_m_bytesel[1] & data_m_data_in[15]);
+wire [7:0] scancode;
+wire scancode_valid;
+wire fifo_wr_en = scancode_valid & ~full & rx != 8'he0;
+wire fifo_reset = reset | (do_write & data_m_bytesel[1] & data_m_data_in[15]);
 
 wire fifo_rd_en = cs & ~data_m_wr_en & data_m_bytesel[0] & ~empty;
 
@@ -58,7 +61,7 @@ Fifo    #(.data_width(8),
         Fifo(.rd_en(fifo_rd_en),
              .rd_data(fifo_rd_data),
              .wr_en(fifo_wr_en),
-             .wr_data(rx),
+             .wr_data(scancode),
              // verilator lint_off PINCONNECTEMPTY
              .nearly_full(),
              // verilator lint_on PINCONNECTEMPTY
@@ -84,5 +87,8 @@ always_ff @(posedge clk or posedge reset)
 
 PS2Host #(.clkf(clkf))
         PS2Host(.*);
+
+KeyboardController KeyboardController(.rx_valid(rx_valid),
+                                      .*);
 
 endmodule

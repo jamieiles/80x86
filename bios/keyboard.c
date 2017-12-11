@@ -28,8 +28,6 @@
 #define PS2_CTRL_CLEAR (1 << 7)
 #define PS2_CTRL_RX_VALID (1 << 0)
 
-static int keyboard_has_reset;
-
 static int kbd_buffer_full(void)
 {
     unsigned short tail = bda_read(kbd_buffer_tail);
@@ -147,24 +145,7 @@ static void noinline keypress(const struct keydef *map, unsigned char b)
 
 static void keyboard_reset(void)
 {
-    // Reset
-    outb(PS2_DATA_PORT, 0xff);
-    // Enable
-    outb(PS2_DATA_PORT, 0xf4);
-    // Set scan code set 1
-    outb(PS2_DATA_PORT, 0xf0);
-    outb(PS2_DATA_PORT, 0x01);
-    // Flush FIFO
-    int i;
-    for (i = 0; i < 64; ++i) {
-        if (!(inb(PS2_CTRL_PORT) & PS2_CTRL_RX_VALID))
-            break;
-        outb(PS2_CTRL_PORT, PS2_CTRL_CLEAR);
-    }
-    if (i == 64)
-        putstr("Warning: failed to empty Keyboard FIFO.\n");
-
-    keyboard_has_reset = 1;
+    outb(PS2_CTRL_PORT, PS2_CTRL_CLEAR);
 }
 
 static int keyboard_poll(void)
@@ -172,11 +153,6 @@ static int keyboard_poll(void)
     unsigned char b = inb(PS2_DATA_PORT);
     if (!b)
         return 0;
-
-    if (b == 0xaa && !keyboard_has_reset) {
-        keyboard_reset();
-        return 1;
-    }
 
     outb(PS2_CTRL_PORT, PS2_CTRL_CLEAR);
 

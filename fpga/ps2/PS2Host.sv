@@ -25,6 +25,7 @@ module PS2Host #(parameter clkf=50000000)
                  input logic start_tx,
                  input logic [7:0] tx,
                  output logic tx_busy,
+                 output logic tx_complete,
                  // Connector signals
                  inout ps2_clk,
                  inout ps2_dat);
@@ -62,6 +63,7 @@ state_t state, next_state;
 wire do_sample = last_ps2_clk & ~ps2_clk_sync;
 
 assign rx_valid = state == STATE_STOP && do_sample;
+assign tx_complete = state == STATE_TX_ACK && do_sample;
 
 reg dat_o;
 reg drive_dat;
@@ -129,11 +131,15 @@ always_ff @(posedge clk or posedge reset)
     else if (state == STATE_IDLE)
         tx_busy <= 1'b0;
 
-always_ff @(posedge clk)
-    if (state == STATE_INHIBIT)
-        clk_inhibit_count <= clk_inhibit_count - 1'b1;
-    else
+always_ff @(posedge clk or posedge reset)
+    if (reset) begin
         clk_inhibit_count <= tx_clock_inhibit_bits'(tx_clock_inhibit_reload);
+    end else begin
+        if (state == STATE_INHIBIT)
+            clk_inhibit_count <= clk_inhibit_count - 1'b1;
+        else
+            clk_inhibit_count <= tx_clock_inhibit_bits'(tx_clock_inhibit_reload);
+    end
 
 always_ff @(posedge clk)
     state <= next_state;
