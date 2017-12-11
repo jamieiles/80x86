@@ -47,7 +47,7 @@ wire [7:0] index_value;
 
 reg [1:0] cursor_mode;
 
-wire [7:0] status = {7'b0, (~vga_vsync | ~vga_hsync)};
+wire [7:0] status = {4'b0, vga_vsync, 2'b0, (~vga_vsync | ~vga_hsync)};
 
 assign cursor_enabled = cursor_mode != 2'b01;
 
