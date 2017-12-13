@@ -32,7 +32,8 @@ wire [7:0] scancode_out;
 assign scancode = is_break ? (8'h80 | scancode_out) : scancode_out;
 assign scancode_valid = state == STATE_IDLE &&
                         rx_valid && (scancode_out != 8'hf0 &&
-                                     scancode_out != 8'he0);
+                                     scancode_out != 8'he0 &&
+                                     scancode_out != 8'h00);
 
 enum {
     STATE_RESET_START,
