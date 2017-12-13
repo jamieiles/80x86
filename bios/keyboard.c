@@ -28,6 +28,8 @@
 #define PS2_CTRL_CLEAR (1 << 7)
 #define PS2_CTRL_RX_VALID (1 << 0)
 
+static int keyboard_poll(void);
+
 static int kbd_buffer_full(void)
 {
     unsigned short tail = bda_read(kbd_buffer_tail);
@@ -77,6 +79,10 @@ unsigned kbd_buffer_peek(void)
 {
     unsigned short head = bda_read(kbd_buffer_head);
     unsigned short tail = bda_read(kbd_buffer_tail);
+
+    if (head == tail)
+        while (keyboard_poll())
+            continue;
 
     if (head == tail)
         return 0;
@@ -188,7 +194,8 @@ static void keyboard_wait(struct callregs *regs)
 #ifdef SERIAL_STDIO
             serial_poll();
 #endif // SERIAL_STDIO
-            keyboard_poll();
+            while (keyboard_poll())
+                continue;
         }
     } while (c == 0);
 
