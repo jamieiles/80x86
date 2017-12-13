@@ -50,7 +50,7 @@ wire scancode_valid;
 wire fifo_wr_en = scancode_valid & ~full & |scancode;
 wire fifo_reset = reset | (do_write & data_m_bytesel[1] & data_m_data_in[15]);
 
-wire fifo_rd_en = cs & ~data_m_wr_en & data_m_bytesel[0] & ~empty;
+wire fifo_rd_en = cs & data_m_wr_en & data_m_bytesel[1] & data_m_data_in[15] & ~empty;
 
 reg unread_error = 1'b0;
 
