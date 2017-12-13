@@ -34,6 +34,15 @@ public:
     void set_cursor(unsigned row, unsigned col);
     void write_char(uint16_t c);
     void refresh(Cursor cursor);
+    void refresh();
+    void set_graphics(bool enabled)
+    {
+        is_graphics = enabled;
+    }
+    void set_pixel(int row, int col, int v)
+    {
+        pixels[row][col] = v;
+    }
 
 private:
     void load_font();
@@ -45,4 +54,6 @@ private:
     unsigned col;
     std::unique_ptr<uint16_t[]> characters;
     char font_bitmap[256 * 8];
+    char pixels[200][320];
+    bool is_graphics;
 };

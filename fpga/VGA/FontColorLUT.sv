@@ -26,6 +26,8 @@ module FontColorLUT(input logic clk,
                     input logic [2:0] glyph_col,
                     input logic [3:0] foreground,
                     input logic [3:0] background,
+                    input logic graphics_enabled,
+                    input logic [1:0] graphics_colour,
                     output logic [3:0] r,
                     output logic [3:0] g,
                     output logic [3:0] b);
@@ -38,10 +40,11 @@ logic font_bit;
 
 wire [13:0] font_mem_addr = {glyph, glyph_row[2:0], glyph_col[2:0]};
 
-wire [11:0] foreground_rgb;
-wire [11:0] background_rgb;
+reg [11:0] foreground_rgb;
+reg [11:0] background_rgb;
+reg [11:0] graphics_pixel_colour;
 
-reg [11:0] color_lut [0:15] = '{
+reg [11:0] text_color_lut [0:15] = '{
     12'h0_0_0, // black
     12'h0_0_a, // blue
     12'h0_a_0, // green
@@ -60,12 +63,22 @@ reg [11:0] color_lut [0:15] = '{
     12'hf_f_f  // bright white
 };
 
+reg [11:0] graphics_color_lut [0:3] = '{
+    12'h0_0_0, // black
+    12'h5_f_f, // bright cyan
+    12'hf_5_f, // bright magenta
+    12'hf_f_f  // bright white
+};
+
 always_ff @(posedge clk) begin
-    foreground_rgb <= color_lut[foreground];
-    background_rgb <= color_lut[background];
+    foreground_rgb <= text_color_lut[foreground];
+    background_rgb <= text_color_lut[background];
+    graphics_pixel_colour <= graphics_color_lut[graphics_colour];
 end
 
-assign {r, g, b} = font_bit ^ render_cursor ? foreground_rgb : background_rgb;
+assign {r, g, b} = graphics_enabled ?
+    graphics_pixel_colour :
+    (font_bit ^ render_cursor ? foreground_rgb : background_rgb);
 
 always_ff @(posedge clk)
     font_bit <= font_rom[font_mem_addr];

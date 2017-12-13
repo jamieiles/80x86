@@ -255,10 +255,10 @@ always_comb begin
 `endif // CONFIG_VGA
 
     if (q_m_access) begin
-        casez ({bios_enabled, q_m_addr, 1'b0})
+        unique casez ({bios_enabled, q_m_addr, 1'b0})
         {1'b1, 20'b1111_11??_????_????_????}: bios_access = 1'b1;
 `ifdef CONFIG_VGA
-        {1'b?, 20'b1011_1000_????_????_????}: vga_access = 1'b1;
+        {1'b?, 20'b1011_10??_????_????_????}: vga_access = 1'b1;
 `endif // CONFIG_VGA
         default: sdram_access = 1'b1;
         endcase
@@ -399,6 +399,7 @@ Timer Timer(.clk(sys_clk),
 
 `ifdef CONFIG_VGA
 wire cursor_enabled;
+wire graphics_enabled;
 wire [14:0] cursor_pos;
 wire [2:0] cursor_scan_start;
 wire [2:0] cursor_scan_end;
@@ -411,6 +412,7 @@ VGAController VGAController(.clk(vga_clk),
                             .data_m_data_out(vga_data),
                             .data_m_data_in(q_m_data_out),
                             .data_m_bytesel(q_m_bytesel),
+                            .data_m_wr_en(q_m_wr_en),
                             .*);
 
 VGARegisters VGARegisters(.clk(sys_clk),

@@ -18,3 +18,4 @@
 #pragma once
 
 void display_init(void);
+int in_video_mode(void);

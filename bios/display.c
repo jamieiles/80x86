@@ -19,6 +19,13 @@
 #include "serial.h"
 #include "io.h"
 
+static int _in_video_mode;
+
+int in_video_mode(void)
+{
+    return _in_video_mode;
+}
+
 static const unsigned frame_buffer_segment = 0xb000;
 static const unsigned frame_buffer_offset = 0x8000;
 
@@ -299,9 +306,29 @@ static void noinline set_cursor_shape(struct callregs *regs)
 
 static void get_video_mode(struct callregs *regs)
 {
+    if (inb(0x3d8) & (1 << 0))
+        regs->ax.l = 3;
+    else
+        regs->ax.l = 5;
     regs->ax.h = 80;
-    regs->ax.l = 0x03;
     regs->bx.h = 0;
+}
+
+static void set_video_mode(struct callregs *regs)
+{
+    switch (regs->ax.l) {
+    case 0x2:
+    case 0x3: // 80x25 chars B&W
+        outb(0x3d8, (1 << 0) | (1 << 3));
+        _in_video_mode = 0;
+        break;
+    case 0x4: // 320x200 4 color graphics
+    case 0x5: // 320x200 4 color graphics
+        outb(0x3d8, (1 << 1) | (1 << 3));
+        _in_video_mode = 1;
+        break;
+    default: regs->flags |= CF; break;
+    }
 }
 
 static void video_services(struct callregs *regs)
@@ -327,6 +354,9 @@ static void video_services(struct callregs *regs)
     case 0xf: get_video_mode(regs); break;
     case 0x9: write_char_and_attribute(regs); break;
     case 0x8: read_char(regs); break;
+    case 0x0: set_video_mode(regs); break;
+    case 0x10:
+        break; // Set palette
     default: regs->flags |= CF;
     }
 }

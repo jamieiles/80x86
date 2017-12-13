@@ -39,7 +39,7 @@ public:
     const phys_addr buffer_phys = 0xb8000;
 
     explicit CGA(Memory *mem)
-        : IOPorts(0x03d4, 8), mem(mem), reg_idx(0), status(0)
+        : IOPorts(0x03d4, 64), mem(mem), reg_idx(0), status(0), mode_reg(0)
     {
         memset(idx_regs, 0, sizeof(idx_regs));
     }
@@ -51,7 +51,10 @@ public:
         if (port_num == 0 && offs == 0) {
             reg_idx = v;
         } else if (port_num == 0 && offs == 1) {
-            idx_regs[reg_idx] = v;
+            if (reg_idx == 0xa || reg_idx == 0xb || reg_idx == 0xe || reg_idx == 0xf)
+                idx_regs[reg_idx] = v;
+        } else if (port_num == 4 && offs == 0) {
+            mode_reg = v & 0xb;
         }
     }
 
@@ -60,7 +63,7 @@ public:
         if (port_num == 0) {
             return offs == 0 ? reg_idx : idx_regs[reg_idx];
         } else if (port_num == 6 && offs == 0) {
-            status ^= 0x1;
+            status ^= 0x9;
             return status;
         }
 
@@ -85,11 +88,20 @@ private:
                       cursor_col * 8 + 8, cursor_enabled);
     }
 
+    bool is_graphics() const
+    {
+        return mode_reg & (1 << 1);
+    }
+
+    void update_text();
+    void update_graphics();
+
     Memory *mem;
     Display display;
     uint8_t reg_idx;
     uint8_t idx_regs[256];
     uint8_t status;
+    uint8_t mode_reg;
 
     friend class boost::serialization::access;
     template <class Archive>
@@ -100,11 +112,48 @@ private:
         ar & reg_idx;
         ar & idx_regs;
         ar & status;
+        ar & mode_reg;
         // clang-format on
     }
 };
 
 void CGA::update()
+{
+    display.set_graphics(is_graphics());
+
+    if (is_graphics())
+        update_graphics();
+    else
+        update_text();
+}
+
+void CGA::update_graphics()
+{
+    int cols = 320;
+    int rows = 200;
+
+    for (auto row = 0; row < rows; ++row) {
+        for (auto col = 0; col < cols; ++col) {
+            // 4 pixels per byte
+            auto pixel_mem_address = ((row / 2) * cols + col) / 4;
+            // Interlaced
+            if (row % 2)
+                pixel_mem_address += 8192;
+
+            auto pixel_shift = (3 - (col % 4)) * 2;
+
+            auto pixel = mem->read<uint8_t>(buffer_phys + pixel_mem_address);
+            pixel >>= pixel_shift;
+            pixel &= 0x3;
+
+            display.set_pixel(row, col, pixel);
+        }
+    }
+
+    display.refresh();
+}
+
+void CGA::update_text()
 {
     int cols = 80;
     int rows = 25;

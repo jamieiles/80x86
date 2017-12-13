@@ -33,6 +33,7 @@ module VGAController(input logic clk,
 		     output logic [3:0] vga_r,
 		     output logic [3:0] vga_g,
 		     output logic [3:0] vga_b,
+                     input logic graphics_enabled,
                      input logic cursor_enabled,
                      input logic [14:0] cursor_pos,
                      input logic [2:0] cursor_scan_start,
@@ -56,6 +57,7 @@ wire [7:0] fb_glyph;
 logic [2:0] fb_fcl_col;
 logic [2:0] fb_fcl_row;
 wire render_cursor;
+wire [1:0] graphics_colour;
 
 logic [2:0] vsync_pipe;
 assign vga_vsync = vsync_pipe[0];

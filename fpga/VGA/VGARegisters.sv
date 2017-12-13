@@ -30,6 +30,7 @@ module VGARegisters(input logic clk,
                     input logic vga_vsync,
                     input logic vga_hsync,
                     output logic cursor_enabled,
+                    output logic graphics_enabled,
                     output logic [14:0] cursor_pos,
                     output logic [2:0] cursor_scan_start,
                     output logic [2:0] cursor_scan_end);
@@ -37,8 +38,8 @@ module VGARegisters(input logic clk,
 wire reg_access = cs & data_m_access;
 wire sel_index  = reg_access & data_m_addr[3:1] == 3'b010 & data_m_bytesel[0];
 wire sel_value  = reg_access & data_m_addr[3:1] == 3'b010 & data_m_bytesel[1];
-wire sel_mode   = reg_access & data_m_addr[3:1] == 3'b011 & data_m_bytesel[0];
-wire sel_color  = reg_access & data_m_addr[3:1] == 3'b011 & data_m_bytesel[1];
+wire sel_mode   = reg_access & data_m_addr[3:1] == 3'b100 & data_m_bytesel[0];
+wire sel_color  = reg_access & data_m_addr[3:1] == 3'b100 & data_m_bytesel[1];
 wire sel_status = reg_access & data_m_addr[3:1] == 3'b101 & data_m_bytesel[0];
 
 reg [3:0] active_index;
@@ -46,6 +47,7 @@ wire [3:0] index = data_m_wr_en & sel_index ? data_m_data_in[3:0] : active_index
 wire [7:0] index_value;
 
 reg [1:0] cursor_mode;
+reg display_enabled;
 
 wire [7:0] status = {4'b0, vga_vsync, 2'b0, (~vga_vsync | ~vga_hsync)};
 
@@ -63,6 +65,12 @@ always_ff @(posedge clk) begin
         endcase
     end
 end
+
+always_ff @(posedge clk or posedge reset)
+    if (reset)
+        graphics_enabled <= 1'b0;
+    else if (sel_mode && data_m_wr_en)
+        {display_enabled, graphics_enabled} <= {data_m_data_in[3], data_m_data_in[1]};
 
 always_ff @(posedge clk)
     if (sel_index & data_m_wr_en)
@@ -85,7 +93,7 @@ always_ff @(posedge clk) begin
         if (sel_index)
             data_m_data_out[7:0] <= {4'b0, active_index};
         if (sel_mode)
-            data_m_data_out[7:0] <= 8'b0;
+            data_m_data_out[7:0] <= {4'b0, display_enabled, 1'b0, graphics_enabled, 1'b0};
         if (sel_status)
             data_m_data_out[7:0] <= status;
 

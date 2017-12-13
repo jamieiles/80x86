@@ -16,6 +16,7 @@
 // along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "bios.h"
+#include "display.h"
 #include "bda.h"
 #include "io.h"
 
@@ -35,7 +36,8 @@ void putchar(unsigned char c)
         continue;
 #endif // SERIAL_STDIO
 
-    video_putchar(c);
+    if (!in_video_mode())
+        video_putchar(c);
 
     if (c == '\n')
         putchar('\r');

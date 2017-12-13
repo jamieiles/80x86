@@ -30,7 +30,7 @@
 #include "Window.h"
 
 Display::Display(unsigned num_rows, unsigned num_cols)
-    : num_rows(num_rows), num_cols(num_cols), row(0), col(0)
+    : num_rows(num_rows), num_cols(num_cols), row(0), col(0), is_graphics(false)
 {
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
         throw std::runtime_error("Failed to initialize SDL " +
@@ -106,8 +106,42 @@ const struct color get_color(unsigned char idx)
     return lut[idx];
 }
 
+const struct color get_graphics_color(unsigned char idx)
+{
+    assert(idx < 16);
+
+    struct color lut[] = {
+        {0, 0, 0},          // black
+        {0x55, 0xff, 0xff}, // bright cyan
+        {0xff, 0x55, 0xff}, // bright magenta
+        {0xff, 0xff, 0xff}, // bright white
+    };
+
+    return lut[idx];
+}
+
+void Display::refresh()
+{
+    assert(is_graphics);
+    window->clear();
+
+    for (unsigned y = 0; y < 200; ++y)
+        for (unsigned x = 0; x < 320; ++x) {
+            auto color = get_graphics_color(pixels[y][x]);
+
+            for (int i = 0; i < 2; ++i)
+                window->set_pixel(x * 2 + i, y, color.r, color.g, color.b);
+        }
+
+    window->redraw();
+
+    SDL_UpdateWindowSurface(window->get());
+}
+
 void Display::refresh(Cursor cursor)
 {
+    assert(!is_graphics);
+
     window->clear();
     for (unsigned y = 0; y < num_rows; ++y) {
         for (unsigned x = 0; x < num_cols; ++x) {
