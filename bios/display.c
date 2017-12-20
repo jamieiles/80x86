@@ -321,10 +321,13 @@ static void set_video_mode(struct callregs *regs)
     case 0x3: // 80x25 chars B&W
         outb(0x3d8, (1 << 0) | (1 << 3));
         _in_video_mode = 0;
+        __scroll_up(0, 24, 0, 79, 0x70, 0);
         break;
     case 0x4: // 320x200 4 color graphics
     case 0x5: // 320x200 4 color graphics
         outb(0x3d8, (1 << 1) | (1 << 3));
+        memset_seg(frame_buffer_segment, (void *)frame_buffer_offset, 0,
+                   (320LU * 200LU) / 4LU);
         _in_video_mode = 1;
         break;
     default: regs->flags |= CF; break;
