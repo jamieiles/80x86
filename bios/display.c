@@ -314,9 +314,9 @@ static void get_video_mode(struct callregs *regs)
     regs->bx.h = 0;
 }
 
-static void set_video_mode(struct callregs *regs)
+static int __set_video_mode(int mode)
 {
-    switch (regs->ax.l) {
+    switch (mode) {
     case 0x2:
     case 0x3: // 80x25 chars B&W
         outb(0x3d8, (1 << 0) | (1 << 3));
@@ -330,8 +330,16 @@ static void set_video_mode(struct callregs *regs)
                    (320LU * 200LU) / 4LU);
         _in_video_mode = 1;
         break;
-    default: regs->flags |= CF; break;
+    default: return -1;
     }
+
+    return 0;
+}
+
+static void set_video_mode(struct callregs *regs)
+{
+    if (__set_video_mode(regs->ax.l))
+        regs->flags |= CF;
 }
 
 static void video_services(struct callregs *regs)
@@ -368,6 +376,8 @@ VECTOR(0x10, video_services);
 void display_init(void)
 {
     unsigned r, c;
+
+    __set_video_mode(3);
 
     for (r = 0; r < 25; ++r)
         for (c = 0; c < 80; ++c)
