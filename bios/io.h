@@ -112,6 +112,30 @@ static inline void memcpy_seg(unsigned short dseg,
         : "memory", "cc");
 }
 
+static inline void memset_seg(unsigned short dseg,
+                              void *dst,
+                              unsigned char v,
+                              unsigned short len)
+{
+    asm volatile(
+        "push %%ax\n"
+        "push %%es\n"
+        "push %%cx\n"
+        "push %%di\n"
+        "cld\n"
+        "mov %P[dseg], %%es\n"
+        "mov %[val], %%al\n"
+        "mov %P[len], %%cx\n"
+        "rep movsb\n"
+        "pop %%di\n"
+        "pop %%cx\n"
+        "pop %%es\n"
+        "pop %%ax\n"
+        :
+        : [dseg] "r"(dseg), [val] "r"(v), "D"(dst), [len] "r"(len)
+        : "memory", "cc");
+}
+
 static inline unsigned char readb(unsigned short segment,
                                   unsigned short address)
 {
