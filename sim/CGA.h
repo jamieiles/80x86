@@ -51,7 +51,8 @@ public:
         if (port_num == 0 && offs == 0) {
             reg_idx = v;
         } else if (port_num == 0 && offs == 1) {
-            if (reg_idx == 0xa || reg_idx == 0xb || reg_idx == 0xe || reg_idx == 0xf)
+            if (reg_idx == 0xa || reg_idx == 0xb || reg_idx == 0xe ||
+                reg_idx == 0xf)
                 idx_regs[reg_idx] = v;
         } else if (port_num == 4 && offs == 0) {
             mode_reg = v & 0xb;
@@ -62,6 +63,8 @@ public:
     {
         if (port_num == 0) {
             return offs == 0 ? reg_idx : idx_regs[reg_idx];
+        } else if (port_num == 4 && offs == 0) {
+            return mode_reg;
         } else if (port_num == 6 && offs == 0) {
             status ^= 0x9;
             return status;
