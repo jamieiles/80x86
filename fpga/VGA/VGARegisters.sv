@@ -48,6 +48,7 @@ wire [7:0] index_value;
 
 reg [1:0] cursor_mode;
 reg display_enabled;
+reg text_enabled;
 
 wire [7:0] status = {4'b0, vga_vsync, 2'b0, (~vga_vsync | ~vga_hsync)};
 
@@ -67,10 +68,12 @@ always_ff @(posedge clk) begin
 end
 
 always_ff @(posedge clk or posedge reset)
-    if (reset)
+    if (reset) begin
         graphics_enabled <= 1'b0;
-    else if (sel_mode && data_m_wr_en)
-        {display_enabled, graphics_enabled} <= {data_m_data_in[3], data_m_data_in[1]};
+        text_enabled <= 1'b0;
+    end else if (sel_mode && data_m_wr_en)
+        {display_enabled, graphics_enabled, text_enabled} <=
+            {data_m_data_in[3], data_m_data_in[1], data_m_data_in[0]};
 
 always_ff @(posedge clk)
     if (sel_index & data_m_wr_en)
@@ -93,7 +96,7 @@ always_ff @(posedge clk) begin
         if (sel_index)
             data_m_data_out[7:0] <= {4'b0, active_index};
         if (sel_mode)
-            data_m_data_out[7:0] <= {4'b0, display_enabled, 1'b0, graphics_enabled, 1'b0};
+            data_m_data_out[7:0] <= {4'b0, display_enabled, 1'b0, graphics_enabled, text_enabled};
         if (sel_status)
             data_m_data_out[7:0] <= status;
 
