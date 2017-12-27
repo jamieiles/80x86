@@ -38,6 +38,8 @@ module Top(input logic clk,
 `ifdef CONFIG_PS2
            inout ps2_clk,
            inout ps2_dat,
+           inout ps2_clk_b,
+           inout ps2_dat_b,
 `endif // CONFIG_PS2
            input logic uart_rx,
            output logic uart_tx,
@@ -89,7 +91,8 @@ wire [15:0] io_data = sdram_config_data |
     vga_reg_data |
 `endif // CONFIG_VGA
 `ifdef CONFIG_PS2
-    ps2_data |
+    ps2_kbd_data |
+    ps2_mouse_data |
 `endif // CONFIG_PS2
     bios_control_data;
 wire [15:0] mem_data;
@@ -150,12 +153,18 @@ wire sdram_config_done;
 wire [15:0] sdram_config_data;
 
 `ifdef CONFIG_PS2
-wire ps2_access;
-wire ps2_ack;
-wire [15:0] ps2_data;
-wire ps2_intr;
+wire ps2_kbd_access;
+wire ps2_kbd_ack;
+wire [15:0] ps2_kbd_data;
+wire ps2_kbd_intr;
+
+wire ps2_mouse_access;
+wire ps2_mouse_ack;
+wire [15:0] ps2_mouse_data;
+wire ps2_mouse_intr;
 `else
-wire ps2_intr = 1'b0;
+wire ps2_kbd_intr = 1'b0;
+wire ps2_mouse_intr = 1'b0;
 `endif // CONFIG_PS2
 
 wire uart_access;
@@ -178,7 +187,7 @@ wire pic_access;
 wire pic_ack;
 wire [15:0] pic_data;
 
-wire [7:0] irqs = {6'b0, ps2_intr, timer_intr} | {1'b0, intr_test};
+wire [7:0] irqs = {ps2_mouse_intr, 5'b0, ps2_kbd_intr, timer_intr} | {1'b0, intr_test};
 
 // Timer
 wire pit_clk;
@@ -202,7 +211,8 @@ wire io_ack = sdram_config_ack |
               vga_reg_ack |
 `endif // CONFIG_VGA
 `ifdef CONFIG_PS2
-              ps2_ack |
+              ps2_kbd_ack |
+              ps2_mouse_ack |
 `endif // CONFIG_PS2
               bios_control_ack;
 
@@ -223,7 +233,8 @@ always_comb begin
     vga_reg_access = 1'b0;
 `endif // CONFIG_VGA
 `ifdef CONFIG_PS2
-    ps2_access = 1'b0;
+    ps2_kbd_access = 1'b0;
+    ps2_mouse_access = 1'b0;
 `endif // CONFIG_PS2
 
     if (d_io && data_m_access) begin
@@ -240,7 +251,8 @@ always_comb begin
         16'b0000_0011_1101_zzzz: vga_reg_access = 1'b1;
 `endif // CONFIG_VGA
 `ifdef CONFIG_PS2
-        16'b0000_0000_0110_0000: ps2_access = 1'b1;
+        16'b1111_1111_1110_0000: ps2_mouse_access = 1'b1;
+        16'b0000_0000_0110_0000: ps2_kbd_access = 1'b1;
 `endif // CONFIG_PS2
         default:  default_io_access = 1'b1;
         endcase
@@ -426,11 +438,23 @@ VGARegisters VGARegisters(.clk(sys_clk),
 `ifdef CONFIG_PS2
 PS2KeyboardController #(.clkf(50000000))
 		      PS2KeyboardController(.clk(sys_clk),
-					    .cs(ps2_access),
-					    .data_m_ack(ps2_ack),
-					    .data_m_data_out(ps2_data),
+					    .cs(ps2_kbd_access),
+					    .data_m_ack(ps2_kbd_ack),
+					    .data_m_data_out(ps2_kbd_data),
 					    .data_m_data_in(data_m_data_out),
+                                            .ps2_intr(ps2_kbd_intr),
 					    .*);
+
+PS2MouseController #(.clkf(50000000))
+		   PS2MouseController(.clk(sys_clk),
+                                      .cs(ps2_mouse_access),
+                                      .data_m_ack(ps2_mouse_ack),
+                                      .data_m_data_out(ps2_mouse_data),
+                                      .data_m_data_in(data_m_data_out),
+                                      .ps2_intr(ps2_mouse_intr),
+                                      .ps2_clk(ps2_clk_b),
+                                      .ps2_dat(ps2_dat_b),
+                                      .*);
 `endif
 
 always_ff @(posedge clk)

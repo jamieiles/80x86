@@ -527,6 +527,18 @@ load the design into the FPGA via the Altera USB Blaster.
 | 16'h0021 | 8 | PIC data register
 | 16'h0040 | 8 | PIT channel 0 data register
 | 16'h0043 | 8 | PIT control register
+| 16'hffe0 | 8 a| Mouse data register:
+
+  - [7:0]: read data from the mouse, write command data
+
+| 16'hffe1 | 8 a| Mouse status register:
+
+  - [7]: write to reset
+  - [6:3]: reserved
+  - [2]: transmitter busy
+  - [1]: unread receive error
+  - [0]: receive FIFO not empty
+
 | 16'hffec | 16 a| BIOS control register:
 
   - [0]: BIOS ROM enabled.
