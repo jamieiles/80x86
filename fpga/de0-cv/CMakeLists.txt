@@ -63,7 +63,7 @@ set(FPGA_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../uart/Uart.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../uart/UartPorts.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../ps2/PS2Host.sv
-    ${CMAKE_CURRENT_SOURCE_DIR}/../ps2/PS2Controller.sv
+    ${CMAKE_CURRENT_SOURCE_DIR}/../ps2/PS2KeyboardController.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../ps2/KeyboardController.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../ps2/ScancodeTranslator.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../spi/SPIMaster.sv

@@ -15,22 +15,22 @@
 // You should have received a copy of the GNU General Public License
 // along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
 
-module PS2Controller #(parameter clkf=50000000)
-                      (input logic clk,
-                       input logic reset,
-                       // CPU port
-                       input logic cs,
-                       input logic data_m_access,
-                       input logic data_m_wr_en,
-                       output logic data_m_ack,
-                       output logic [15:0] data_m_data_out,
-                       input logic [15:0] data_m_data_in,
-                       input logic [1:0] data_m_bytesel,
-                       // Interrupt
-                       output logic ps2_intr,
-                       // PS/2 signals
-                       inout ps2_clk,
-                       inout ps2_dat);
+module PS2KeyboardController #(parameter clkf=50000000)
+                              (input logic clk,
+                               input logic reset,
+                               // CPU port
+                               input logic cs,
+                               input logic data_m_access,
+                               input logic data_m_wr_en,
+                               output logic data_m_ack,
+                               output logic [15:0] data_m_data_out,
+                               input logic [15:0] data_m_data_in,
+                               input logic [1:0] data_m_bytesel,
+                               // Interrupt
+                               output logic ps2_intr,
+                               // PS/2 signals
+                               inout ps2_clk,
+                               inout ps2_dat);
 
 wire do_read = data_m_access & cs & ~data_m_wr_en;
 wire do_write = data_m_access & cs & data_m_wr_en;

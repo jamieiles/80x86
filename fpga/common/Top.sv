@@ -424,13 +424,13 @@ VGARegisters VGARegisters(.clk(sys_clk),
 `endif
 
 `ifdef CONFIG_PS2
-PS2Controller #(.clkf(50000000))
-              PS2Controller(.clk(sys_clk),
-                            .cs(ps2_access),
-                            .data_m_ack(ps2_ack),
-                            .data_m_data_out(ps2_data),
-                            .data_m_data_in(data_m_data_out),
-                            .*);
+PS2KeyboardController #(.clkf(50000000))
+		      PS2KeyboardController(.clk(sys_clk),
+					    .cs(ps2_access),
+					    .data_m_ack(ps2_ack),
+					    .data_m_data_out(ps2_data),
+					    .data_m_data_in(data_m_data_out),
+					    .*);
 `endif
 
 always_ff @(posedge clk)
