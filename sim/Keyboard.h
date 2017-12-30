@@ -34,6 +34,7 @@
 #include "SoftwareCPU.h"
 #include "PIC.h"
 #include "../bios/bda.h"
+#include "PS2.h"
 
 static std::map<int, std::vector<unsigned char>> sdl_to_keyboard = {
     {SDLK_a, {0x1e}},
@@ -116,39 +117,12 @@ static std::map<int, std::vector<unsigned char>> sdl_to_keyboard = {
     {SDLK_LSHIFT, {0x2a}},
 };
 
-static const uint8_t ps2_ctrl_clear = 1 << 7;
-
-class Keyboard : public IOPorts
+class Keyboard : public PS2
 {
 public:
-    Keyboard(PIC *pic) : IOPorts(0x0060, 1), pic(pic)
+    explicit Keyboard(PIC *pic) : PS2(pic, 0x0060, 1)
     {
-        set_scancode(0xaa);
-    }
-
-    void write8(uint16_t __unused port_num,
-                unsigned __unused offs,
-                uint8_t __unused v)
-    {
-        if (offs == 1 && (v & ps2_ctrl_clear)) {
-            if (pending.size())
-                pending.clear();
-        }
-    }
-
-    uint8_t read8(uint16_t __unused port_num, unsigned __unused offs)
-    {
-        if (offs)
-            return 0;
-
-        return pending.size() ? pending.front() : 0;
-    }
-
-    void set_scancode(uint8_t v)
-    {
-        pic->raise_irq(1);
-
-        pending.push_back(v);
+        add_byte(0xaa);
     }
 
     void process_event(SDL_Event e)
@@ -160,20 +134,7 @@ public:
             if (b == 0xe0)
                 continue;
             else
-                set_scancode(e.type == SDL_KEYUP ? 0x80 | b : b);
+                add_byte(e.type == SDL_KEYUP ? 0x80 | b : b);
         }
-    }
-
-private:
-    PIC *pic;
-    std::deque<uint8_t> pending;
-
-    friend class boost::serialization::access;
-    template <class Archive>
-    void serialize(Archive &ar, const unsigned int __unused version)
-    {
-        // clang-format off
-        ar & pending;
-        // clang-format on
     }
 };
