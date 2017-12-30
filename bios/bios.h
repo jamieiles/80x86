@@ -112,6 +112,7 @@ enum Flag {
 #define noinline __attribute__((noinline))
 
 void irq_enable(int irq_num);
+void irq_disable(int irq_num);
 void irq_ack(void);
 void printk(const char *fmt, ...);
 

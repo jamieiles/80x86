@@ -134,6 +134,11 @@ void irq_enable(int irq_num)
     outb(PIC_DATA, inb(PIC_DATA) & ~(1 << irq_num));
 }
 
+void irq_disable(int irq_num)
+{
+    outb(PIC_DATA, inb(PIC_DATA) | (1 << irq_num));
+}
+
 void irq_ack(void)
 {
     outb(0x20, 0x20);
