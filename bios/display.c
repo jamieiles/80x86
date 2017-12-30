@@ -321,7 +321,7 @@ static int __set_video_mode(int mode)
     case 0x3: // 80x25 chars B&W
         outb(0x3d8, (1 << 0) | (1 << 3));
         _in_video_mode = 0;
-        __scroll_up(0, 24, 0, 79, 0x07, 0);
+        __scroll_up(0, 24, 0, 79, 0x07, 25);
         break;
     case 0x4: // 320x200 4 color graphics
     case 0x5: // 320x200 4 color graphics
