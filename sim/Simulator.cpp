@@ -173,6 +173,11 @@ void Simulator<T>::process_io()
         else if (e.type == SDL_KEYDOWN || e.type == SDL_KEYUP)
             kbd.process_event(e);
     }
+
+    auto kbd_state = SDL_GetKeyboardState(NULL);
+    if (kbd_state[SDL_SCANCODE_LCTRL] && kbd_state[SDL_SCANCODE_LALT] &&
+        kbd_state[SDL_SCANCODE_RIGHTBRACKET])
+        got_exit = true;
 }
 
 template <typename T>
