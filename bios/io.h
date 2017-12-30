@@ -126,7 +126,7 @@ static inline void memset_seg(unsigned short dseg,
         "mov %P[dseg], %%es\n"
         "mov %[val], %%al\n"
         "mov %P[len], %%cx\n"
-        "rep movsb\n"
+        "rep stosb\n"
         "pop %%di\n"
         "pop %%cx\n"
         "pop %%es\n"
