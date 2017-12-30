@@ -15,6 +15,8 @@
 // You should have received a copy of the GNU General Public License
 // along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
 
+#include "macros.h"
+
 .code16
 
 .section .reset.text, "ax"
@@ -121,16 +123,6 @@ irq_entry:
     add $2, %sp
 
     iret
-
-.macro int_handler vector, function
-
-.pushsection .rodata.vectors
-    .align 4
-    .word \vector
-    .word \function
-.popsection
-
-.endm
 
 stub_irq:
     iret
