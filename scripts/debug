@@ -58,8 +58,14 @@ class Debugger(cmd.Cmd):
 
     def do_disassemble(self, line):
         '''Disassemble the instruction at CS:IP'''
-        cs = self.c.read_reg(GPR.CS)
-        ip = self.c.read_reg(GPR.IP)
+        tokens = split(line)
+        if len(tokens) == 1:
+            cs, ip = tokens[0].split(':')
+            cs = int(cs, 16)
+            ip = int(ip, 16)
+        else:
+            cs = self.c.read_reg(GPR.CS)
+            ip = self.c.read_reg(GPR.IP)
 
         buf = [chr(self.c.read_mem8(cs, ip + i)) for i in xrange(15)]
         instruction = distorm3.Decode(ip, ''.join(buf), distorm3.Decode16Bits)[0]
