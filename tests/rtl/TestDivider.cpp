@@ -184,6 +184,7 @@ INSTANTIATE_TEST_CASE_P(
                       IDiv16Params{-10, 0, 0, 0, true},
                       IDiv16Params{65534, 2, 32767, 0, false},
                       IDiv16Params{-65536, 2, -32768, 0, false},
+                      IDiv16Params{-1, 2, 0, -1, false},
                       // Positive integer overflow
                       IDiv16Params{65536, 2, 0, 0, true},
                       // Negative integer overflow
@@ -213,6 +214,7 @@ INSTANTIATE_TEST_CASE_P(IDiv,
                                           IDiv8Params{10, -3, -3, 1, false},
                                           IDiv8Params{-10, -3, 3, -1, false},
                                           IDiv8Params{-10, 3, -3, -1, false},
+                                          IDiv8Params{-1, 2, 0, -1, false},
                                           // Divide by zero
                                           IDiv8Params{-10, 0, 0, 0, true},
                                           IDiv8Params{254, 2, 127, 0, false},

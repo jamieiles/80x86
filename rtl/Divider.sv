@@ -151,9 +151,9 @@ always_ff @(posedge clk or posedge reset) begin
         FIX_SIGN: begin
             if (~in_signs_equal) begin
                 quotient <= negative_quotient;
-                error <= is_signed & ~negative_quotient[is_8_bit ? 7 : 15];
+                error <= |quotient & is_signed & ~negative_quotient[is_8_bit ? 7 : 15];
             end else begin
-                error <= is_signed & quotient[is_8_bit ? 7 : 15];
+                error <= |quotient & is_signed & quotient[is_8_bit ? 7 : 15];
             end
             if (dividend_negative && is_8_bit)
                 P[15:8] <= ~P[15:8] + 1'b1;
