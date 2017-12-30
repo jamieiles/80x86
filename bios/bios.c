@@ -127,6 +127,8 @@ static void irq_init(void)
     outb(PIC_DATA, PIC_ICW4_8086);
     // All IRQs initially masked.
     outb(PIC_DATA, ~0);
+
+    irq_ack();
 }
 
 void irq_enable(int irq_num)
