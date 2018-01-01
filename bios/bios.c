@@ -22,15 +22,17 @@
 #include "io.h"
 #include "serial.h"
 #include "keyboard.h"
+#include "mouse.h"
 #include "timer.h"
 #include "utils.h"
 
 #define INT11_DISKS_PRESENT (1 << 0)
 #define INT11_CGA_ADAPTOR (2 << 4)
+#define INT11_POINTER_PRESENT (1 << 2)
 
 static void equipment_check(struct callregs *regs)
 {
-    regs->ax.x = INT11_CGA_ADAPTOR;
+    regs->ax.x = INT11_CGA_ADAPTOR | INT11_POINTER_PRESENT;
 }
 VECTOR(0x11, equipment_check);
 
@@ -43,7 +45,8 @@ VECTOR(0x14, serial_services);
 static void system_services(struct callregs *regs)
 {
     regs->flags |= CF;
-    regs->ax.h = 0x86;
+    if (regs->ax.h == 0xc2)
+        mouse_services(regs);
 }
 VECTOR(0x15, system_services);
 
@@ -173,8 +176,10 @@ void root(void)
     putstr("Build: " __BUILD__ "\n");
     putstr("\n");
 
-    keyboard_init();
     init_timer();
+
+    keyboard_init();
+    mouse_hw_init();
 
     sd_init();
     sd_boot();

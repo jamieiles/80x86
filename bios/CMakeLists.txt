@@ -59,6 +59,9 @@ add_executable(bios-${BIOS_PLATFORM}
 	       keyboard.c
 	       leds.c
 	       leds.h
+	       mouse_asm.S
+	       mouse.c
+	       mouse.h
                sd.c
                sd.h
 	       printk.c
