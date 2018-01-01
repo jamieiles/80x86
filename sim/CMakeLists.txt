@@ -42,6 +42,7 @@ add_executable(simulator
                Simulator.cpp
                CGA.h
                Keyboard.h
+               Mouse.h
                PS2.h
                UART.h
                UART.cpp

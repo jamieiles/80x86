@@ -33,6 +33,7 @@
 #include "CPU.h"
 #include "Display.h"
 #include "Keyboard.h"
+#include "Mouse.h"
 #include "SoftwareCPU.h"
 #include "RTLCPU.h"
 #include "PIC.h"
@@ -106,6 +107,7 @@ private:
     TimerTick timer;
     CGA cga;
     Keyboard kbd;
+    Mouse mouse;
     bool got_exit;
     bool detached;
 };
@@ -120,6 +122,7 @@ Simulator<T>::Simulator(const std::string &bios_path,
       timer(&this->pic),
       cga(this->cpu.get_memory()),
       kbd(&this->pic),
+      mouse(&this->pic),
       got_exit(false),
       detached(detached)
 {
@@ -130,6 +133,7 @@ Simulator<T>::Simulator(const std::string &bios_path,
     cpu.add_ioport(&cga);
     cpu.add_ioport(&kbd);
     cpu.add_ioport(&pic);
+    cpu.add_ioport(&mouse);
     cpu.reset();
     load_bios(bios_path);
 }
@@ -172,12 +176,20 @@ void Simulator<T>::process_io()
             got_exit = true;
         else if (e.type == SDL_KEYDOWN || e.type == SDL_KEYUP)
             kbd.process_event(e);
+        else if (e.type == SDL_MOUSEBUTTONDOWN || e.type == SDL_MOUSEBUTTONUP)
+            mouse.process_event(e);
     }
+
+    mouse.update();
 
     auto kbd_state = SDL_GetKeyboardState(NULL);
     if (kbd_state[SDL_SCANCODE_LCTRL] && kbd_state[SDL_SCANCODE_LALT] &&
         kbd_state[SDL_SCANCODE_RIGHTBRACKET])
         got_exit = true;
+
+    if (kbd_state[SDL_SCANCODE_LCTRL] && kbd_state[SDL_SCANCODE_LALT] &&
+        kbd_state[SDL_SCANCODE_M])
+        mouse.toggle_capture();
 }
 
 template <typename T>

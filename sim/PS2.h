@@ -45,16 +45,16 @@ public:
     {
     }
 
-    void write8(uint16_t __unused port_num,
-                unsigned __unused offs,
-                uint8_t __unused v)
+    virtual void write8(uint16_t __unused port_num,
+                        unsigned __unused offs,
+                        uint8_t __unused v)
     {
         if (offs == 1 && (v & ps2_ctrl_clear))
             if (pending.size())
                 pending.clear();
     }
 
-    uint8_t read8(uint16_t __unused port_num, unsigned __unused offs)
+    virtual uint8_t read8(uint16_t __unused port_num, unsigned __unused offs)
     {
         if (offs)
             return pending.size() ? (1 << 0) : 0;
