@@ -116,4 +116,34 @@ void irq_disable(int irq_num);
 void irq_ack(void);
 void printk(const char *fmt, ...);
 
+static inline void cli(void)
+{
+    asm volatile("cli");
+}
+
+static inline void sti(void)
+{
+    // A nop is inserted so that an sti+cli pair has chance to yield to
+    // interrupts
+    asm volatile(
+        "sti\n"
+        "nop");
+}
+
+unsigned long jiffies(void);
+
+static inline int irqs_enabled(void)
+{
+    unsigned short flags;
+
+    asm volatile(
+        "pushf\n"
+        "pop %0"
+        : "=r"(flags)
+        :
+        : "memory");
+
+    return !!(flags & (1 << 9));
+}
+
 #define ARRAY_SIZE(__a) (sizeof(__a) / sizeof(__a[0]))

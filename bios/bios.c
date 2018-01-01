@@ -146,6 +146,20 @@ void irq_ack(void)
     outb(0x20, 0x20);
 }
 
+unsigned long jiffies(void)
+{
+    unsigned short low, high;
+    int enable_irqs = irqs_enabled();
+
+    cli();
+    low = bda_read(timer_counter_low);
+    high = bda_read(timer_counter_high);
+    if (enable_irqs)
+        sti();
+
+    return ((unsigned long)high << 16) | low;
+}
+
 void root(void)
 {
     install_vectors();
