@@ -54,8 +54,8 @@ reg unread_error = 1'b0;
 assign ps2_intr = fifo_wr_en;
 
 Fifo    #(.data_width(8),
-          .depth(16),
-          .full_threshold(4))
+          .depth(128),
+          .full_threshold(3))
         Fifo(.rd_en(fifo_rd_en),
              .rd_data(fifo_rd_data),
              .wr_en(fifo_wr_en),
