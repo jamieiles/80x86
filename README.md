@@ -44,7 +44,7 @@ tests, a reference BIOS implementation and reference FPGA designs.
 * UART
 * 8254 PIT-lite timer operating in mode 2 only.
 * CGA controller with VGA output
-* PS/2 controller
+* PS/2 controller (mouse and keyboard)
 
 ## System Requirements
 
