@@ -49,6 +49,11 @@ update_mouse:
 
     cmp $0, %cs:mouse_driver_enabled
     jz 1f
+
+    push $MOUSE_IRQ
+    call irq_disable
+    add $2, %sp
+
     push %bx
     lea mouse_packet, %bx
     push %cs:0(%bx)
@@ -58,6 +63,10 @@ update_mouse:
 
     lcall *%cs:mouse_driver_addr
     add $8, %sp
+
+    push $MOUSE_IRQ
+    call irq_enable
+    add $2, %sp
 
     pop %bx
 1:
