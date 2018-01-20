@@ -35,6 +35,7 @@ localparam ptr_bits = $clog2(depth);
 
 reg [data_width-1:0] mem[depth-1:0];
 reg [ptr_bits-1:0] rd_ptr;
+reg [ptr_bits-1:0] next_rd_ptr;
 reg [ptr_bits-1:0] wr_ptr;
 reg [ptr_bits:0] count;
 
@@ -42,7 +43,10 @@ assign empty = count == 0;
 assign full = count == depth;
 assign nearly_full = count >= depth - full_threshold;
 
-assign rd_data = mem[rd_ptr];
+always_ff @(posedge clk) begin
+    rd_data <= wr_en && !full && wr_ptr == next_rd_ptr ? wr_data : mem[next_rd_ptr];
+    rd_ptr <= next_rd_ptr;
+end
 
 always_ff @(posedge clk or posedge reset) begin
     if (reset) begin
@@ -55,14 +59,15 @@ always_ff @(posedge clk or posedge reset) begin
     end
 end
 
-always_ff @(posedge clk or posedge reset) begin
+always_comb begin
     if (reset) begin
-        rd_ptr <= {ptr_bits{1'b0}};
+        next_rd_ptr = {ptr_bits{1'b0}};
     end else if (rd_en && !empty) begin
-        rd_ptr <= rd_ptr + 1'b1;
+        next_rd_ptr = rd_ptr + 1'b1;
         if (rd_ptr == depth[ptr_bits-1:0] - 1'b1)
-            rd_ptr <= {ptr_bits{1'b0}};
-    end
+            next_rd_ptr = {ptr_bits{1'b0}};
+    end else
+        next_rd_ptr = rd_ptr;
 end
 
 always_ff @(posedge clk or posedge reset) begin
