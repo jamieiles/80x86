@@ -69,14 +69,14 @@ bios_sp:
     .word stack_start
 
 .section .bss
-saved_ss:
-    .word 0
-saved_sp:
-    .word 0
+saved_ss: .word 0
+saved_sp: .word 0
+nest_count: .word 0
 
 .section .text, "ax"
 .globl irq_entry
 irq_entry:
+    incw %cs:nest_count
     // Save current stack pointer, load BIOS stack
     mov %ss, %cs:saved_ss
     mov %sp, %cs:saved_sp
@@ -101,6 +101,9 @@ irq_entry:
     mov %ss, %bp
     mov %bp, %ds
 
+    cmpw $1, %cs:nest_count
+    jne bad_nest
+
     call *%ax
     // Discard regs pointer parameter
     add $2, %sp
@@ -122,7 +125,11 @@ irq_entry:
     mov %cs:saved_sp, %sp
     add $2, %sp
 
+    decw %cs:nest_count
     iret
+
+bad_nest:
+    call error_bad_nest
 
 stub_irq:
     iret
