@@ -84,6 +84,7 @@ irq_entry:
     mov %cs:bios_sp, %sp
 
     // Save registers, setup stack frame
+    sub $2, %sp
     push %ds
     pusha
     mov %sp, %bp
@@ -119,6 +120,7 @@ irq_entry:
     // already
     popa
     pop %ds
+    add $2, %sp
 
     // Restore the callers stack
     mov %cs:saved_ss, %ss
