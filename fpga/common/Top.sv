@@ -412,6 +412,8 @@ Timer Timer(.clk(sys_clk),
 `ifdef CONFIG_VGA
 wire cursor_enabled;
 wire graphics_enabled;
+wire bright_colors;
+wire [3:0] background_color;
 wire [14:0] cursor_pos;
 wire [2:0] cursor_scan_start;
 wire [2:0] cursor_scan_end;

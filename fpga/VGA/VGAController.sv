@@ -35,6 +35,8 @@ module VGAController(input logic clk,
 		     output logic [3:0] vga_b,
                      input logic graphics_enabled,
                      input logic cursor_enabled,
+                     input logic bright_colors,
+                     input logic [3:0] background_color,
                      input logic [14:0] cursor_pos,
                      input logic [2:0] cursor_scan_start,
                      input logic [2:0] cursor_scan_end);

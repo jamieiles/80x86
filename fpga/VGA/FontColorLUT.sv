@@ -28,6 +28,8 @@ module FontColorLUT(input logic clk,
                     input logic [3:0] background,
                     input logic graphics_enabled,
                     input logic [1:0] graphics_colour,
+                    input logic bright_colors,
+                    input logic [3:0] background_color,
                     output logic [3:0] r,
                     output logic [3:0] g,
                     output logic [3:0] b);
@@ -63,17 +65,31 @@ reg [11:0] text_color_lut [0:15] = '{
     12'hf_f_f  // bright white
 };
 
-reg [11:0] graphics_color_lut [0:3] = '{
+reg [11:0] graphics_color_lut [0:7] = '{
+    12'h0_0_0, // black
+    12'h0_a_a, // bright cyan
+    12'ha_0_a, // bright magenta
+    12'ha_a_a, // bright white
     12'h0_0_0, // black
     12'h5_f_f, // bright cyan
     12'hf_5_f, // bright magenta
     12'hf_f_f  // bright white
 };
 
+wire [11:0] graphics_pixel_color_int;
+
+always_comb begin
+    if (~|graphics_colour)
+        graphics_pixel_color_int = text_color_lut[background_color];
+    else
+        graphics_pixel_color_int =
+            graphics_color_lut[{bright_colors, graphics_colour}];
+end
+
 always_ff @(posedge clk) begin
     foreground_rgb <= text_color_lut[foreground];
     background_rgb <= text_color_lut[background];
-    graphics_pixel_colour <= graphics_color_lut[graphics_colour];
+    graphics_pixel_colour <= graphics_pixel_color_int;
 end
 
 assign {r, g, b} = graphics_enabled ?

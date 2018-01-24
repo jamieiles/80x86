@@ -31,6 +31,8 @@ module VGARegisters(input logic clk,
                     input logic vga_hsync,
                     output logic cursor_enabled,
                     output logic graphics_enabled,
+                    output logic [3:0] background_color,
+                    output logic bright_colors,
                     output logic [14:0] cursor_pos,
                     output logic [2:0] cursor_scan_start,
                     output logic [2:0] cursor_scan_end);
@@ -65,6 +67,11 @@ always_ff @(posedge clk) begin
         default: ;
         endcase
     end
+end
+
+always_ff @(posedge clk) begin
+    if (data_m_wr_en & sel_color)
+        {bright_colors, background_color} <= data_m_data_in[12:8];
 end
 
 always_ff @(posedge clk or posedge reset)
@@ -103,7 +110,7 @@ always_ff @(posedge clk) begin
         if (sel_value)
             data_m_data_out[15:8] <= index_value;
         if (sel_color)
-            data_m_data_out[15:8] <= 8'b0;
+            data_m_data_out[15:8] <= {3'b0, bright_colors, background_color};
     end
 end
 

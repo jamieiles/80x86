@@ -342,6 +342,18 @@ static void set_video_mode(struct callregs *regs)
         regs->flags |= CF;
 }
 
+static void set_palette(struct callregs *regs)
+{
+    unsigned char color_reg = inb(0x3d9);
+
+    if (regs->bx.h == 0) {
+        color_reg &= ~0x0f;
+        color_reg |= (regs->bx.l & 0x0f);
+    }
+
+    outb(0x3d9, color_reg);
+}
+
 static void video_services(struct callregs *regs)
 {
     union cursor cursor;
@@ -365,6 +377,7 @@ static void video_services(struct callregs *regs)
     case 0xf: get_video_mode(regs); break;
     case 0x9: write_char_and_attribute(regs); break;
     case 0x8: read_char(regs); break;
+    case 0xb: set_palette(regs); break;
     case 0x0: set_video_mode(regs); break;
     case 0x10:
         break; // Set palette

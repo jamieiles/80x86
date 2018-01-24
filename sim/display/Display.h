@@ -25,6 +25,16 @@
 
 class Window;
 
+struct color {
+    unsigned char r, g, b;
+};
+
+struct GraphicsPalette {
+    struct color colors[4];
+};
+
+extern struct color cga_full_palette[16];
+
 class Display
 {
 public:
@@ -43,9 +53,14 @@ public:
     {
         pixels[row][col] = v;
     }
+    void set_graphics_palette(GraphicsPalette p)
+    {
+        graphics_palette = p;
+    }
 
 private:
     void load_font();
+    struct color get_graphics_color(unsigned char idx) const;
 
     unsigned num_rows;
     unsigned num_cols;
@@ -56,4 +71,5 @@ private:
     char font_bitmap[256 * 8];
     char pixels[200][320];
     bool is_graphics;
+    struct GraphicsPalette graphics_palette;
 };

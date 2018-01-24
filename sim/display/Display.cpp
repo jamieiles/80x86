@@ -76,48 +76,37 @@ void Display::write_char(uint16_t c)
         this->row = num_rows - 1;
 }
 
-struct color {
-    unsigned char r, g, b;
+struct color cga_full_palette[16] = {
+    {0, 0, 0},          // black
+    {0, 0, 0xaa},       // blue
+    {0x00, 0xaa, 0x00}, // green
+    {0x00, 0xaa, 0xaa}, // cyan
+    {0xaa, 0x00, 0x00}, // red
+    {0xaa, 0x00, 0xaa}, // magenta
+    {0xaa, 0x55, 0x00}, // brown
+    {0xaa, 0xaa, 0xaa}, // white
+    {0x55, 0x55, 0x55}, // gray
+    {0x55, 0x55, 0xff}, // bright blue
+    {0x55, 0xff, 0x55}, // bright green
+    {0x55, 0xff, 0xff}, // bright cyan
+    {0xff, 0x55, 0x55}, // bright red
+    {0xff, 0x55, 0xff}, // bright magenta
+    {0xff, 0xff, 0x55}, // yellow
+    {0xff, 0xff, 0xff}, // bright white
 };
 
 const struct color get_color(unsigned char idx)
 {
     assert(idx < 16);
 
-    struct color lut[] = {
-        {0, 0, 0},          // black
-        {0, 0, 0xaa},       // blue
-        {0x00, 0xaa, 0x00}, // green
-        {0x00, 0xaa, 0xaa}, // cyan
-        {0xaa, 0x00, 0x00}, // red
-        {0xaa, 0x00, 0xaa}, // magenta
-        {0xaa, 0x55, 0x00}, // brown
-        {0xaa, 0xaa, 0xaa}, // white
-        {0x55, 0x55, 0x55}, // gray
-        {0x55, 0x55, 0xff}, // bright blue
-        {0x55, 0xff, 0x55}, // bright green
-        {0x55, 0xff, 0xff}, // bright cyan
-        {0xff, 0x55, 0x55}, // bright red
-        {0xff, 0x55, 0xff}, // bright magenta
-        {0xff, 0xff, 0x55}, // yellow
-        {0xff, 0xff, 0xff}, // bright white
-    };
-
-    return lut[idx];
+    return cga_full_palette[idx];
 }
 
-const struct color get_graphics_color(unsigned char idx)
+struct color Display::get_graphics_color(unsigned char idx) const
 {
-    assert(idx < 16);
+    assert(idx < 4);
 
-    struct color lut[] = {
-        {0, 0, 0},          // black
-        {0x55, 0xff, 0xff}, // bright cyan
-        {0xff, 0x55, 0xff}, // bright magenta
-        {0xff, 0xff, 0xff}, // bright white
-    };
-
-    return lut[idx];
+    return graphics_palette.colors[idx];
 }
 
 void Display::refresh()

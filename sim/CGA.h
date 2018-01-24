@@ -25,6 +25,20 @@
 #include "Cursor.h"
 #include "Display.h"
 
+GraphicsPalette cga_default_palette = {{
+    {0, 0, 0},          // black
+    {0x00, 0xaa, 0xaa}, // cyan
+    {0xaa, 0x00, 0xaa}, // magenta
+    {0xaa, 0xaa, 0xaa}, // white
+}};
+
+GraphicsPalette cga_bright_palette = {{
+    {0, 0, 0},          // black
+    {0x55, 0xff, 0xff}, // bright cyan
+    {0xff, 0x55, 0xff}, // bright magenta
+    {0xff, 0xff, 0xff}, // bright white
+}};
+
 class CGA : public IOPorts
 {
 private:
@@ -42,6 +56,7 @@ public:
         : IOPorts(0x03d4, 64), mem(mem), reg_idx(0), status(0), mode_reg(0)
     {
         memset(idx_regs, 0, sizeof(idx_regs));
+        display.set_graphics_palette(cga_default_palette);
     }
 
     void write8(uint16_t __unused port_num,
@@ -56,6 +71,13 @@ public:
                 idx_regs[reg_idx] = v;
         } else if (port_num == 4 && offs == 0) {
             mode_reg = v & 0xb;
+        } else if (port_num == 4 && offs == 1) {
+            auto bright = !!(v & (1 << 4));
+            auto palette = bright ? cga_bright_palette : cga_default_palette;
+
+            palette.colors[0] = cga_full_palette[v & 0x0f];
+
+            display.set_graphics_palette(palette);
         }
     }
 
