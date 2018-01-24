@@ -91,10 +91,10 @@ reg [3:0] next_state;
 
 reg [3:0] cmd;
 
-reg [15:0] outdata /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_REGISTER=ON ; FAST_OUTPUT_ENABLE_REGISTER=ON" */;
+reg [15:0] outdata;
 reg [1:0] outbytesel;
 
-wire oe = state == STATE_WRITE && timec < {{timec_width-2{1'b0}}, 2'd2} /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_ENABLE_REGISTER=ON"  */;
+reg oe /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_ENABLE_REGISTER=ON"  */;
 
 assign s_cs_n           = cmd[3];
 assign s_ras_n          = cmd[2];
@@ -219,12 +219,14 @@ always_ff @(posedge clk or posedge reset) begin
         cmd <= CMD_NOP;
         s_addr <= 13'b0;
         s_banksel <= 2'b00;
+        oe <= 1'b0;
     end else begin
         cmd <= CMD_NOP;
         s_addr <= 13'b0;
         s_banksel <= 2'b00;
         if (state != next_state) begin
             case (next_state)
+            STATE_IDLE: oe <= 1'b0;
             STATE_RESET_PCH: begin
                 cmd <= CMD_PRE;
                 s_addr <= 13'b10000000000;
@@ -252,6 +254,7 @@ always_ff @(posedge clk or posedge reset) begin
                 /* Write with autoprecharge. */
                 s_addr <= col_pchg;
                 s_banksel <= h_banksel;
+                oe <= 1'b1;
             end
             STATE_READ: begin
                 cmd <= CMD_READ;
