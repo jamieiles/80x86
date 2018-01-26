@@ -16,6 +16,7 @@
 // along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
 
 module VGARegisters(input logic clk,
+                    input logic vga_clk,
                     input logic reset,
                     // Bus
                     input logic cs,
@@ -52,7 +53,17 @@ reg [1:0] cursor_mode;
 reg display_enabled;
 reg text_enabled;
 
-wire [7:0] status = {4'b0, vga_vsync, 2'b0, (~vga_vsync | ~vga_hsync)};
+wire hsync;
+wire vsync;
+
+BitSync         HsyncSync(.clk(clk),
+                          .d(vga_hsync),
+                          .q(hsync));
+BitSync         VsyncSync(.clk(clk),
+                          .d(vga_vsync),
+                          .q(vsync));
+
+wire [7:0] status = {4'b0, vga_vsync, 2'b0, (~vsync | ~hsync)};
 
 assign cursor_enabled = cursor_mode != 2'b01;
 

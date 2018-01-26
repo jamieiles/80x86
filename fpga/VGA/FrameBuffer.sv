@@ -31,11 +31,11 @@ module FrameBuffer(input logic clk,
                    input logic [9:0] row,
                    input logic [9:0] col,
                    input logic is_blank,
-                   input logic cursor_enabled,
+                   input logic vga_cursor_enabled,
                    input logic [14:0] cursor_pos,
                    input logic [2:0] cursor_scan_start,
                    input logic [2:0] cursor_scan_end,
-                   input logic graphics_enabled,
+                   input logic vga_graphics_enabled,
                    output logic [7:0] glyph,
                    output logic [3:0] background,
                    output logic [3:0] foreground,
@@ -54,7 +54,7 @@ assign {background, foreground, glyph} = is_border || !vga_valid ? 16'b0 : vga_q
 wire [11:0] text_address = {1'b0, ({1'b0, row} / 11'd16) * 11'd80 + ({1'b0, col} / 11'd8)};
 // Double pixels for graphics mode.
 wire [12:0] graphics_address;
-wire [12:0] address = graphics_enabled ? graphics_address : {1'b0, text_address};
+wire [12:0] address = vga_graphics_enabled ? graphics_address : {1'b0, text_address};
 wire [2:0] glyph_row = row[3:1];
 
 wire [12:0] graphics_row = {4'b0, row[9:1]};
@@ -88,7 +88,7 @@ always_comb begin
 end
 
 always_ff @(posedge clk)
-    render_cursor <= ~is_blank && cursor_enabled && address[10:0] == cursor_pos[10:0] &&
+    render_cursor <= ~is_blank && vga_cursor_enabled && address[10:0] == cursor_pos[10:0] &&
         glyph_row >= cursor_scan_start && glyph_row <= cursor_scan_end;
 
 FrameBufferRAM FrameBufferRAM(.clock_a(sys_clk),

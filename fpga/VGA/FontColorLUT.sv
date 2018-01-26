@@ -26,7 +26,7 @@ module FontColorLUT(input logic clk,
                     input logic [2:0] glyph_col,
                     input logic [3:0] foreground,
                     input logic [3:0] background,
-                    input logic graphics_enabled,
+                    input logic vga_graphics_enabled,
                     input logic [1:0] graphics_colour,
                     input logic bright_colors,
                     input logic [3:0] background_color,
@@ -92,7 +92,7 @@ always_ff @(posedge clk) begin
     graphics_pixel_colour <= graphics_pixel_color_int;
 end
 
-assign {r, g, b} = graphics_enabled ?
+assign {r, g, b} = vga_graphics_enabled ?
     graphics_pixel_colour :
     (font_bit ^ render_cursor ? foreground_rgb : background_rgb);
 
