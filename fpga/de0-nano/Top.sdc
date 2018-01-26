@@ -26,6 +26,7 @@ derive_pll_clocks
 
 set sys_clk   "SysPLL|altpll_component|auto_generated|pll1|clk[0]"
 set sdram_pll "SysPLL|altpll_component|auto_generated|pll1|clk[1]"
+set pit_clk "SysPLL|altpll_component|auto_generated|pll1|clk[2]"
 
 # SPI clock
 create_generated_clock -name {spi_clk} \
@@ -34,6 +35,8 @@ create_generated_clock -name {spi_clk} \
         [get_registers {SPIPorts:SPIPorts|SPIMaster:SPIMaster|sclk}]
 
 derive_clock_uncertainty
+
+set_false_path -from [get_clocks $pit_clk] -to [get_clocks $sys_clk]
 
 # SDRAM
 set sdram_tsu       1.5
