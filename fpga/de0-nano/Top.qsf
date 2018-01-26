@@ -24,6 +24,14 @@ set_global_assignment -name PHYSICAL_SYNTHESIS_ASYNCHRONOUS_SIGNAL_PIPELINING ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION ON
 set_global_assignment -name PHYSICAL_SYNTHESIS_EFFORT EXTRA
 set_global_assignment -name OPTIMIZATION_TECHNIQUE SPEED
+set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE SPEED
+set_global_assignment -name SYNTH_TIMING_DRIVEN_SYNTHESIS ON
+set_global_assignment -name ROUTER_CLOCKING_TOPOLOGY_ANALYSIS ON
+set_global_assignment -name MUX_RESTRUCTURE OFF
+set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
+set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
+set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
+set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 
 set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVCMOS"
 
@@ -70,7 +78,6 @@ set_location_assignment PIN_C2 -to s_wr_en
 set_location_assignment PIN_M7 -to s_banksel[0]
 set_location_assignment PIN_M6 -to s_banksel[1]
 set_location_assignment PIN_R4 -to sdr_clk
-set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to s_*
 set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to sdr_clk
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_ras_n
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_cas_n
@@ -80,6 +87,7 @@ set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to s_data
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_addr
 set_instance_assignment -name FAST_INPUT_REGISTER ON -to s_data
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_banksel
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to s_*
 
 # IO
 set_location_assignment PIN_A15 -to leds[0]

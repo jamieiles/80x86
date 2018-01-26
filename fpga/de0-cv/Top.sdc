@@ -1,4 +1,4 @@
-# Copyright Jamie Iles, 2017
+# Copyright Jamie Iles, 2017, 2018
 #
 # This file is part of s80x86.
 #
@@ -14,6 +14,8 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
+
+set_time_format -unit ns -decimal_places 3
 
 # JTAG
 set_input_delay -clock { altera_reserved_tck } 20 [get_ports altera_reserved_tdi]
@@ -89,11 +91,8 @@ set_input_delay \
 	-max $sdram_input_delay_max \
 	$sdram_inputs
 
-# SDRAM-to-FPGA multi-cycle constraint
-#
-# * The PLL is configured so that SDRAM clock leads the system
-#   clock by -2.79ns
 set_multicycle_path -setup -end -from sdram_clk -to [get_clocks $sys_clk] 2
+set_multicycle_path -hold -end -from sdram_clk -to [get_clocks $sys_clk] 1
 
 # Reset request
 set_false_path -from [get_ports {rst_in_n}]
