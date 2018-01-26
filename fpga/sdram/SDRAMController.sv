@@ -94,7 +94,7 @@ reg [3:0] cmd;
 reg [15:0] outdata;
 reg [1:0] outbytesel;
 
-reg oe /* synthesis ALTERA_ATTRIBUTE = "FAST_OUTPUT_ENABLE_REGISTER=ON"  */;
+reg oe;
 
 assign s_cs_n           = cmd[3];
 assign s_ras_n          = cmd[2];
