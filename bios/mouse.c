@@ -27,6 +27,8 @@
 
 #define CMD_TIMEOUT_JIFFIES 20
 
+#define CMD_REFRESH 0xf3
+
 extern unsigned short mouse_driver_addr[2];
 extern int mouse_driver_enabled;
 static int have_mouse;
@@ -88,6 +90,9 @@ int mouse_hw_init(void)
         printk("failed to enable scanning %02x\n", resp);
         return -1;
     }
+
+    mouse_cmd(CMD_REFRESH, &resp);
+    mouse_cmd(40, &resp);
 
     have_mouse = 1;
 
