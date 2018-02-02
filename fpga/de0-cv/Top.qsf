@@ -86,7 +86,6 @@ set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_wr_en
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_bytesel
 set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to s_data
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_addr
-set_instance_assignment -name FAST_INPUT_REGISTER ON -to s_data
 set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_banksel
 set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to s_*
 

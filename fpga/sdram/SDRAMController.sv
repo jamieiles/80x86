@@ -28,7 +28,7 @@ module SDRAMController #(parameter size = 32 * 1024 * 1024,
                          /* Host interface. */
                          input logic [25:1] h_addr,
                          input logic [15:0] h_wdata,
-                         output logic [15:0] h_rdata,
+                         output logic [15:0] h_rdata /* synthesis ALTERA_ATTRIBUTE = "FAST_INPUT_REGISTER=ON" */,
                          input logic h_wr_en,
                          input logic [1:0] h_bytesel,
                          output logic h_compl,
