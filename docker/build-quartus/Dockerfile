@@ -5,7 +5,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 ARG MIRROR=http://download.altera.com/akdlm/software/acdsinst/
 ARG QUARTUS=16.1/196/ib_installers/QuartusLiteSetup-16.1.0.196-linux.run
 ARG QUARTUS_UPDATE=16.1.2/203/update/QuartusSetup-16.1.2.203-linux.run
-ARG DEVICE_FILES="16.1/196/ib_installers/cyclonev-16.1.0.196.qdz 16.1/196/ib_installers/cyclone-16.1.0.196.qdz"
+ARG DEVICE_FILES="16.1/196/ib_installers/cyclonev-16.1.0.196.qdz 16.1/196/ib_installers/cyclone-16.1.0.196.qdz 16.1/196/ib_installers/max10-16.1.0.196.qdz"
 
 RUN dpkg --add-architecture i386
 RUN apt-get update && apt-get install --no-install-recommends -y \
