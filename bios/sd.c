@@ -334,16 +334,24 @@ int write_sector(unsigned short sector,
     if (!sd_is_sdhc)
         address *= 512;
 
-    if (sd_make_write_request(address))
+    sti();
+    if (sd_make_write_request(address)) {
+        cli();
         return -1;
+    }
 
     sd_write_block(sseg, saddr);
 
     unsigned char packet_response = spi_xfer_buf_get(4 + 512);
-    if (!write_received(packet_response))
+    if (!write_received(packet_response)) {
+        cli();
         return -1;
+    }
 
-    return wait_for_write_completion();
+    int rc = wait_for_write_completion();
+    cli();
+
+    return rc;
 }
 
 int read_sector(unsigned short sector,
@@ -367,24 +375,29 @@ int read_sector(unsigned short sector,
     cmd.arg[2] = (address >> 8) & 0xff;
     cmd.arg[3] = (address >> 0) & 0xff;
 
+    sti();
     spi_do_command(&cmd);
     r1offs = find_r1_response(&r1);
     if (r1offs < 0) {
         putstr("Failed to find R1 response\n");
+        cli();
         return -1;
     }
     if (r1.v & R1_ERROR_MASK) {
         putstr("Read sector failed\n");
+        cli();
         return -1;
     }
 
     data_start = find_data_start(r1offs);
     if (data_start < 0) {
         putstr("No data start token\n");
+        cli();
         return -1;
     }
 
     memcpy_seg(dseg, (void *)daddr, get_cs(), spi_xfer_buf + data_start, 512);
+    cli();
 
     return 0;
 }
