@@ -413,6 +413,7 @@ Timer Timer(.clk(sys_clk),
 wire cursor_enabled;
 wire graphics_enabled;
 wire bright_colors;
+wire palette_sel;
 wire [3:0] background_color;
 wire [14:0] cursor_pos;
 wire [2:0] cursor_scan_start;

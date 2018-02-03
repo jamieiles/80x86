@@ -29,6 +29,7 @@ module FontColorLUT(input logic clk,
                     input logic vga_graphics_enabled,
                     input logic [1:0] graphics_colour,
                     input logic bright_colors,
+                    input logic palette_sel,
                     input logic [3:0] background_color,
                     output logic [3:0] r,
                     output logic [3:0] g,
@@ -65,11 +66,20 @@ reg [11:0] text_color_lut [0:15] = '{
     12'hf_f_f  // bright white
 };
 
-reg [11:0] graphics_color_lut [0:7] = '{
+reg [11:0] graphics_color_lut [0:15] = '{
     12'h0_0_0, // black
-    12'h0_a_a, // bright cyan
-    12'ha_0_a, // bright magenta
-    12'ha_a_a, // bright white
+    12'h0_a_0, // green
+    12'ha_0_0, // red
+    12'ha_5_0, // brown
+    12'h0_0_0, // black
+    12'h5_f_5, // bright green
+    12'hf_5_5, // bright red
+    12'hf_f_5,  // yellow
+    // Alternate palette
+    12'h0_0_0, // black
+    12'h0_a_a, // cyan
+    12'ha_0_a, // magenta
+    12'ha_a_a, // white
     12'h0_0_0, // black
     12'h5_f_f, // bright cyan
     12'hf_5_f, // bright magenta
@@ -83,7 +93,7 @@ always_comb begin
         graphics_pixel_color_int = text_color_lut[background_color];
     else
         graphics_pixel_color_int =
-            graphics_color_lut[{bright_colors, graphics_colour}];
+            graphics_color_lut[{palette_sel, bright_colors, graphics_colour}];
 end
 
 always_ff @(posedge clk) begin
