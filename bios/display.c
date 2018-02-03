@@ -349,6 +349,9 @@ static void set_palette(struct callregs *regs)
     if (regs->bx.h == 0) {
         color_reg &= ~0x0f;
         color_reg |= (regs->bx.l & 0x0f);
+    } else if (regs->bx.h == 1) {
+        color_reg &= ~(1 << 5);
+        color_reg |= !!(regs->bx.l) << 5;
     }
 
     outb(0x3d9, color_reg);
@@ -407,4 +410,7 @@ void display_init(void)
     union cursor cursor;
     cursor.c.col = cursor.c.row = 0;
     write_cursor(&cursor);
+
+    // Default to the cyan, magenta and white palette.
+    outb(0x3d9, 1 << 5);
 }
