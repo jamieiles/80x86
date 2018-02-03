@@ -30,6 +30,7 @@ set_global_assignment -name OPTIMIZATION_TECHNIQUE SPEED
 set_global_assignment -name SYNTH_TIMING_DRIVEN_SYNTHESIS ON
 set_global_assignment -name ROUTER_CLOCKING_TOPOLOGY_ANALYSIS ON
 set_global_assignment -name MUX_RESTRUCTURE OFF
+set_global_assignment -name OPTIMIZE_HOLD_TIMING "OFF"
 
 set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVCMOS"
 
