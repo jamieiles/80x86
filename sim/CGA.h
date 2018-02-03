@@ -25,19 +25,38 @@
 #include "Cursor.h"
 #include "Display.h"
 
-static const GraphicsPalette cga_default_palette = {{
+static const GraphicsPalette cga_alt_palette = {{
     {0, 0, 0},          // black
     {0x00, 0xaa, 0xaa}, // cyan
     {0xaa, 0x00, 0xaa}, // magenta
     {0xaa, 0xaa, 0xaa}, // white
 }};
 
-static const GraphicsPalette cga_bright_palette = {{
+static const GraphicsPalette cga_alt_bright_palette = {{
     {0, 0, 0},          // black
     {0x55, 0xff, 0xff}, // bright cyan
     {0xff, 0x55, 0xff}, // bright magenta
     {0xff, 0xff, 0xff}, // bright white
 }};
+
+static const GraphicsPalette cga_default_palette = {{
+    {0, 0, 0},          // black
+    {0x00, 0xaa, 0x00}, // green
+    {0xaa, 0x00, 0x00}, // red
+    {0xaa, 0x55, 0x00}, // brown
+}};
+
+static const GraphicsPalette cga_default_bright_palette = {{
+    {0, 0, 0},          // black
+    {0x55, 0xff, 0x55}, // bright green
+    {0xff, 0x55, 0x55}, // bright red
+    {0xff, 0xff, 0x55}, // yellow
+}};
+
+static const GraphicsPalette *color_palettes[] = {
+    &cga_default_palette, &cga_alt_bright_palette, &cga_alt_palette,
+    &cga_alt_bright_palette,
+};
 
 class CGA : public IOPorts
 {
@@ -72,8 +91,8 @@ public:
         } else if (port_num == 4 && offs == 0) {
             mode_reg = v & 0xb;
         } else if (port_num == 4 && offs == 1) {
-            auto bright = !!(v & (1 << 4));
-            auto palette = bright ? cga_bright_palette : cga_default_palette;
+            auto palette_idx = (v >> 4) & 0x3;
+            auto palette = *color_palettes[palette_idx];
 
             palette.colors[0] = cga_full_palette[v & 0x0f];
 
