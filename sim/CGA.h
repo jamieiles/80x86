@@ -25,14 +25,14 @@
 #include "Cursor.h"
 #include "Display.h"
 
-GraphicsPalette cga_default_palette = {{
+static const GraphicsPalette cga_default_palette = {{
     {0, 0, 0},          // black
     {0x00, 0xaa, 0xaa}, // cyan
     {0xaa, 0x00, 0xaa}, // magenta
     {0xaa, 0xaa, 0xaa}, // white
 }};
 
-GraphicsPalette cga_bright_palette = {{
+static const GraphicsPalette cga_bright_palette = {{
     {0, 0, 0},          // black
     {0x55, 0xff, 0xff}, // bright cyan
     {0xff, 0x55, 0xff}, // bright magenta
