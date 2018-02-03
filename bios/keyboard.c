@@ -181,7 +181,7 @@ static void kbd_irq(struct callregs *regs)
     while (keyboard_poll())
         continue;
 }
-VECTOR(0x9, kbd_irq);
+HWIRQ(0x9, kbd_irq);
 
 static void keyboard_wait(struct callregs *regs)
 {

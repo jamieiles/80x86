@@ -163,11 +163,6 @@ unsigned long jiffies(void)
     return ((unsigned long)high << 16) | low;
 }
 
-void error_bad_nest(struct callregs *regs)
-{
-    panic("nested bios interrupt, stack corrupted\n");
-}
-
 void root(void)
 {
     install_vectors();

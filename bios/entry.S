@@ -65,19 +65,21 @@ _start:
 .section .data
 bios_ss:
     .word 0xf000
-bios_sp:
+bios_sw_sp:
     .word stack_start
+bios_hw_sp:
+    .word stack_start - 8192
 
 .section .bss
-saved_ss: .word 0
-saved_sp: .word 0
-nest_count: .word 0
+saved_sw_ss: .word 0
+saved_sw_sp: .word 0
+saved_hw_ss: .word 0
+saved_hw_sp: .word 0
 
-.macro entry_fn name nest_var saved_ss_var saved_sp_var ss_var sp_var
+.macro entry_fn name saved_ss_var saved_sp_var ss_var sp_var
 .section .text, "ax"
 .globl \name
 \name:
-    incw %cs:\nest_var
     // Save current stack pointer, load BIOS stack
     mov %ss, %cs:\saved_ss_var
     mov %sp, %cs:\saved_sp_var
@@ -103,9 +105,6 @@ nest_count: .word 0
     mov %ss, %bp
     mov %bp, %ds
 
-    cmpw $1, %cs:\nest_var
-    jne bad_nest
-
     call *%ax
     // Discard regs pointer parameter
     add $2, %sp
@@ -128,14 +127,11 @@ nest_count: .word 0
     mov %cs:\saved_sp_var, %sp
     add $2, %sp
 
-    decw %cs:\nest_var
     iret
 .endm
 
-entry_fn irq_entry, nest_count, saved_ss, saved_sp, bios_ss, bios_sp
-
-bad_nest:
-    call error_bad_nest
+entry_fn irq_entry, saved_sw_ss, saved_sw_sp, bios_ss, bios_sw_sp
+entry_fn hw_irq_entry, saved_hw_ss, saved_hw_sp, bios_ss, bios_hw_sp
 
 stub_irq:
     iret
