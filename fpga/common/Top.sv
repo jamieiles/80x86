@@ -216,7 +216,7 @@ wire io_ack = sdram_config_ack |
 `endif // CONFIG_PS2
               bios_control_ack;
 
-always_ff @(posedge clk)
+always_ff @(posedge sys_clk)
     default_io_ack <= default_io_access;
 
 always_comb begin
