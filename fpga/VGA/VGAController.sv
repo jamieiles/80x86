@@ -67,16 +67,6 @@ assign vga_vsync = vsync_pipe[0];
 logic [2:0] hsync_pipe;
 assign vga_hsync = hsync_pipe[0];
 
-wire vga_graphics_enabled;
-wire vga_cursor_enabled;
-
-BitSync         GEnabledSync(.clk(clk),
-                             .d(graphics_enabled),
-                             .q(vga_graphics_enabled));
-BitSync         GCursorEnabledSync(.clk(clk),
-                                   .d(cursor_enabled),
-                                   .q(vga_cursor_enabled));
-
 VGASync VGASync(.*);
 
 FrameBuffer FrameBuffer(.glyph(fb_glyph),

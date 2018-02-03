@@ -1,4 +1,4 @@
-// Copyright Jamie Iles, 2017
+// Copyright Jamie Iles, 2017, 2018
 //
 // This file is part of s80x86.
 //
@@ -30,6 +30,7 @@ module VGARegisters(input logic clk,
                     // VGA
                     input logic vga_vsync,
                     input logic vga_hsync,
+                    // VGA clock domain signals
                     output logic cursor_enabled,
                     output logic graphics_enabled,
                     output logic [3:0] background_color,
@@ -53,6 +54,35 @@ wire [7:0] index_value;
 reg [1:0] cursor_mode;
 reg display_enabled;
 reg text_enabled;
+reg sys_graphics_enabled;
+reg sys_bright_colors;
+reg sys_cursor_enabled;
+reg sys_palette_sel;
+
+reg [14:0] sys_cursor_pos;
+wire load_vga_cursor;
+wire rdy_vga_cursor;
+wire [14:0] vga_cursor;
+
+wire [2:0] sys_cursor_scan_start;
+wire load_cursor_scan_start;
+wire rdy_vga_cursor_scan_start;
+wire [2:0] vga_cursor_scan_start;
+
+wire [2:0] sys_cursor_scan_end;
+wire load_cursor_scan_end;
+wire rdy_vga_cursor_scan_end;
+wire [2:0] vga_cursor_scan_end;
+
+wire [3:0] sys_background_color;
+wire load_background_color;
+wire rdy_vga_background_color;
+wire [3:0] vga_background_color;
+
+wire vga_send = rdy_vga_cursor &
+                rdy_vga_cursor_scan_start &
+                rdy_vga_cursor_scan_end &
+                rdy_vga_background_color;
 
 wire hsync;
 wire vsync;
@@ -63,19 +93,83 @@ BitSync         HsyncSync(.clk(clk),
 BitSync         VsyncSync(.clk(clk),
                           .d(vga_vsync),
                           .q(vsync));
+BitSync         GraphicsEnabledSync(.clk(vga_clk),
+                                    .d(sys_graphics_enabled),
+                                    .q(graphics_enabled));
+BitSync         BrightColorsSync(.clk(vga_clk),
+                                    .d(sys_bright_colors),
+                                    .q(bright_colors));
+BitSync         CursorEnabledSync(.clk(vga_clk),
+                                  .d(sys_cursor_enabled),
+                                  .q(cursor_enabled));
+BitSync         PaletteSelSync(.clk(vga_clk),
+                               .d(sys_palette_sel),
+                               .q(palette_sel));
+MCP             #(.width(15),
+                  .reset_val(15'b0))
+                CursorMCP(.reset(reset),
+                          .clk_a(clk),
+                          .a_ready(rdy_vga_cursor),
+                          .a_datain(sys_cursor_pos),
+                          .a_send(vga_send),
+                          .clk_b(vga_clk),
+                          .b_data(vga_cursor),
+                          .b_load(load_vga_cursor));
+MCP             #(.width(3),
+                  .reset_val(3'b0))
+                CursorScanStartMCP(.reset(reset),
+                                   .clk_a(clk),
+                                   .a_ready(rdy_vga_cursor_scan_start),
+                                   .a_datain(sys_cursor_scan_start),
+                                   .a_send(vga_send),
+                                   .clk_b(vga_clk),
+                                   .b_data(vga_cursor_scan_start),
+                                   .b_load(load_cursor_scan_start));
+MCP             #(.width(3),
+                  .reset_val(3'b0))
+                CursorScanEndMCP(.reset(reset),
+                                 .clk_a(clk),
+                                 .a_ready(rdy_vga_cursor_scan_end),
+                                 .a_datain(sys_cursor_scan_end),
+                                 .a_send(vga_send),
+                                 .clk_b(vga_clk),
+                                 .b_data(vga_cursor_scan_end),
+                                 .b_load(load_cursor_scan_end));
+MCP             #(.width(4),
+                  .reset_val(4'b0))
+                BackgroundColorMCP(.reset(reset),
+                                   .clk_a(clk),
+                                   .a_ready(rdy_vga_background_color),
+                                   .a_datain(sys_background_color),
+                                   .a_send(vga_send),
+                                   .clk_b(vga_clk),
+                                   .b_data(vga_background_color),
+                                   .b_load(load_background_color));
+
+always_ff @(posedge vga_clk) begin
+    if (load_vga_cursor)
+        cursor_pos <= vga_cursor;
+    if (load_cursor_scan_start)
+        cursor_scan_start <= vga_cursor_scan_start;
+    if (load_cursor_scan_end)
+        cursor_scan_end <= vga_cursor_scan_end;
+    if (load_background_color)
+        background_color <= vga_background_color;
+end
 
 wire [7:0] status = {4'b0, vga_vsync, 2'b0, (~vsync | ~hsync)};
 
-assign cursor_enabled = cursor_mode != 2'b01;
+always_ff @(posedge clk)
+    sys_cursor_enabled <= cursor_mode != 2'b01;
 
 always_ff @(posedge clk) begin
     if (data_m_wr_en & sel_value) begin
         case (index)
-        4'ha: {cursor_mode, cursor_scan_start} <=
+        4'ha: {cursor_mode, sys_cursor_scan_start} <=
             {data_m_data_in[13:12], data_m_data_in[10:8]};
-        4'hb: cursor_scan_end <= data_m_data_in[10:8];
-        4'he: cursor_pos[14:8] <= data_m_data_in[14:8];
-        4'hf: cursor_pos[7:0] <= data_m_data_in[15:8];
+        4'hb: sys_cursor_scan_end <= data_m_data_in[10:8];
+        4'he: sys_cursor_pos[14:8] <= data_m_data_in[14:8];
+        4'hf: sys_cursor_pos[7:0] <= data_m_data_in[15:8];
         default: ;
         endcase
     end
@@ -83,15 +177,16 @@ end
 
 always_ff @(posedge clk) begin
     if (data_m_wr_en & sel_color)
-        {palette_sel, bright_colors, background_color} <= data_m_data_in[13:8];
+        {sys_palette_sel, sys_bright_colors, sys_background_color} <=
+            data_m_data_in[13:8];
 end
 
 always_ff @(posedge clk or posedge reset)
     if (reset) begin
-        graphics_enabled <= 1'b0;
+        sys_graphics_enabled <= 1'b0;
         text_enabled <= 1'b0;
     end else if (sel_mode && data_m_wr_en)
-        {display_enabled, graphics_enabled, text_enabled} <=
+        {display_enabled, sys_graphics_enabled, text_enabled} <=
             {data_m_data_in[3], data_m_data_in[1], data_m_data_in[0]};
 
 always_ff @(posedge clk)
@@ -100,10 +195,10 @@ always_ff @(posedge clk)
 
 always_comb begin
     case (index)
-    4'ha: index_value = {2'b0, cursor_mode, 1'b0, cursor_scan_start};
-    4'hb: index_value = {5'b0, cursor_scan_start};
-    4'he: index_value = {2'b0, cursor_pos[13:8]};
-    4'hf: index_value = cursor_pos[7:0];
+    4'ha: index_value = {2'b0, cursor_mode, 1'b0, sys_cursor_scan_start};
+    4'hb: index_value = {5'b0, sys_cursor_scan_end};
+    4'he: index_value = {2'b0, sys_cursor_pos[13:8]};
+    4'hf: index_value = sys_cursor_pos[7:0];
     default: index_value = 8'b0;
     endcase
 end
@@ -115,14 +210,16 @@ always_ff @(posedge clk) begin
         if (sel_index)
             data_m_data_out[7:0] <= {4'b0, active_index};
         if (sel_mode)
-            data_m_data_out[7:0] <= {4'b0, display_enabled, 1'b0, graphics_enabled, text_enabled};
+            data_m_data_out[7:0] <= {4'b0, display_enabled, 1'b0,
+                                     sys_graphics_enabled, text_enabled};
         if (sel_status)
             data_m_data_out[7:0] <= status;
 
         if (sel_value)
             data_m_data_out[15:8] <= index_value;
         if (sel_color)
-            data_m_data_out[15:8] <= {2'b0, palette_sel, bright_colors, background_color};
+            data_m_data_out[15:8] <= {2'b0, sys_palette_sel, sys_bright_colors,
+                                      sys_background_color};
     end
 end
 
