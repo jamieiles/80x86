@@ -73,15 +73,16 @@ saved_ss: .word 0
 saved_sp: .word 0
 nest_count: .word 0
 
+.macro entry_fn name nest_var saved_ss_var saved_sp_var ss_var sp_var
 .section .text, "ax"
-.globl irq_entry
-irq_entry:
-    incw %cs:nest_count
+.globl \name
+\name:
+    incw %cs:\nest_var
     // Save current stack pointer, load BIOS stack
-    mov %ss, %cs:saved_ss
-    mov %sp, %cs:saved_sp
-    mov %cs:bios_ss, %ss
-    mov %cs:bios_sp, %sp
+    mov %ss, %cs:\saved_ss_var
+    mov %sp, %cs:\saved_sp_var
+    mov %cs:\ss_var, %ss
+    mov %cs:\sp_var, %sp
 
     // Save registers, setup stack frame
     sub $2, %sp
@@ -91,8 +92,8 @@ irq_entry:
     push %bp
 
     // Load flags from iret frame, store in callregs
-    mov %cs:saved_ss, %ds
-    mov %cs:saved_sp, %bx
+    mov %cs:\saved_ss_var, %ds
+    mov %cs:\saved_sp_var, %bx
     mov 0(%bx), %ax
     mov 6(%bx), %bx
     mov %bx, 18(%bp)
@@ -102,7 +103,7 @@ irq_entry:
     mov %ss, %bp
     mov %bp, %ds
 
-    cmpw $1, %cs:nest_count
+    cmpw $1, %cs:\nest_var
     jne bad_nest
 
     call *%ax
@@ -112,8 +113,8 @@ irq_entry:
 
     // Write possibly updated flags to the iret frame
     mov 18(%bp), %ax
-    mov %cs:saved_ss, %ds
-    mov %cs:saved_sp, %bx
+    mov %cs:\saved_ss_var, %ds
+    mov %cs:\saved_sp_var, %bx
     mov %ax, 6(%bx)
 
     // Restore all regs apart from flags - the iret frame has been updated
@@ -123,12 +124,15 @@ irq_entry:
     add $2, %sp
 
     // Restore the callers stack
-    mov %cs:saved_ss, %ss
-    mov %cs:saved_sp, %sp
+    mov %cs:\saved_ss_var, %ss
+    mov %cs:\saved_sp_var, %sp
     add $2, %sp
 
-    decw %cs:nest_count
+    decw %cs:\nest_var
     iret
+.endm
+
+entry_fn irq_entry, nest_count, saved_ss, saved_sp, bios_ss, bios_sp
 
 bad_nest:
     call error_bad_nest
