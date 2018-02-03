@@ -460,7 +460,7 @@ PS2MouseController #(.clkf(50000000))
                                       .*);
 `endif
 
-always_ff @(posedge clk)
+always_ff @(posedge sys_clk)
     poweron_reset <= 1'b0;
 
 endmodule
