@@ -48,9 +48,10 @@ module Top(input logic clk,
            input logic spi_miso,
            output logic spi_ncs);
 
-reg poweron_reset = 1'b1;
+wire poweron_reset;
 wire sys_clk;
 wire reset_n;
+wire pll_locked;
 wire reset = ~reset_n | debug_reset | poweron_reset;
 
 `ifdef CONFIG_VGA
@@ -376,7 +377,7 @@ SPIPorts SPIPorts(.clk(sys_clk),
 `ifndef verilator
 SysPLL	SysPLL(.refclk(clk),
 	       .rst(1'b0),
-               .locked(),
+               .locked(pll_locked),
                .*);
 `endif // verilator
 
@@ -460,7 +461,6 @@ PS2MouseController #(.clkf(50000000))
                                       .*);
 `endif
 
-always_ff @(posedge sys_clk)
-    poweron_reset <= 1'b0;
+PoweronReset PoweronReset(.*);
 
 endmodule
