@@ -16,6 +16,9 @@
 # along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
 
 include(Quartus)
+include(ProcessorCount)
+
+ProcessorCount(NPROCS)
 
 option(DE0_CV_SERIAL_STDIO "Use the serial port for stdio" OFF)
 

@@ -16,6 +16,9 @@
 # along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
 
 include(Quartus)
+include(ProcessorCount)
+
+ProcessorCount(NPROCS)
 
 get_property(ALU_SOURCES GLOBAL PROPERTY G_ALU_SOURCES)
 get_property(CORE_SOURCES GLOBAL PROPERTY G_CORE_SOURCES)

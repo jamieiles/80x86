@@ -15,6 +15,7 @@
 # You should have received a copy of the GNU General Public License
 # along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
 
+set_global_assignment -name NUM_PARALLEL_PROCESSORS @NPROCS@
 set_global_assignment -name USE_CONFIGURATION_DEVICE OFF
 
 set_global_assignment -name SLOW_SLEW_RATE Off
