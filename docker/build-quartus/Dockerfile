@@ -3,9 +3,9 @@ MAINTAINER Jamie Iles <jamie@jamieiles.com>
 ENV DEBIAN_FRONTEND=noninteractive
 
 ARG MIRROR=http://download.altera.com/akdlm/software/acdsinst/
-ARG QUARTUS=16.1/196/ib_installers/QuartusLiteSetup-16.1.0.196-linux.run
-ARG QUARTUS_UPDATE=16.1.2/203/update/QuartusSetup-16.1.2.203-linux.run
-ARG DEVICE_FILES="16.1/196/ib_installers/cyclonev-16.1.0.196.qdz 16.1/196/ib_installers/cyclone-16.1.0.196.qdz 16.1/196/ib_installers/max10-16.1.0.196.qdz"
+ARG QUARTUS=17.1std/590/ib_installers/QuartusLiteSetup-17.1.0.590-linux.run
+ARG QUARTUS_UPDATE=17.1std.1/593/update/QuartusSetup-17.1.1.593-linux.run
+ARG DEVICE_FILES="17.1std/590/ib_installers/cyclonev-17.1.0.590.qdz 17.1std/590/ib_installers/cyclone-17.1.0.590.qdz 17.1std/590/ib_installers/max10-17.1.0.590.qdz"
 
 RUN dpkg --add-architecture i386
 RUN apt-get update && apt-get install --no-install-recommends -y \
@@ -42,7 +42,7 @@ RUN cd /tmp && wget -q $MIRROR$QUARTUS && \
         chmod +x $(basename $QUARTUS_UPDATE) && \
         for DEV_FILE in $DEVICE_FILES; do wget -q $MIRROR$DEV_FILE; done && \
         chmod +x $(basename $QUARTUS) && \
-        ./$(basename $QUARTUS) --mode unattended --installdir /opt/altera/ && \
+        ./$(basename $QUARTUS) --accept_eula 1 --mode unattended --installdir /opt/altera/ && \
         rm /tmp/* /opt/altera/uninstall -rf
 # These files conflict with the Ubuntu versions and cause random segfaults.
 RUN rm /opt/altera/quartus/linux64/libccl_curl_drl.so \
