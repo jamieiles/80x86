@@ -153,6 +153,25 @@ TEST_F(FifoTestFixture, read_during_write)
     ASSERT_EQ(pop(), 0xaa55LU);
 }
 
+TEST_F(FifoTestFixture, continuous_read_during_write)
+{
+    std::vector<uint32_t> rd_vals;
+
+    periodic(ClockCapture, [&] {
+        if (!this->dut.empty)
+            rd_vals.push_back(this->dut.rd_data);
+    });
+
+    after_n_cycles(0, [&] {
+        this->dut.wr_en = 1;
+        this->dut.wr_data = 0xaa55;
+        this->dut.rd_en = 1;
+    });
+
+    cycle(128);
+    ASSERT_EQ(127LU, rd_vals.size());
+}
+
 TEST_F(FifoTestFixture, fill_at_threshold)
 {
     int pushed = 0;

@@ -73,9 +73,11 @@ end
 always_ff @(posedge clk or posedge reset) begin
     if (reset)
         count <= {ptr_bits + 1{1'b0}};
-    else if (wr_en && !full && !rd_en)
+    else if (wr_en && !full && rd_en && !empty)
+        ;
+    else if (wr_en && !full)
         count <= count + 1'b1;
-    else if (rd_en && !empty && !wr_en)
+    else if (rd_en && !empty)
         count <= count - 1'b1;
 end
 
