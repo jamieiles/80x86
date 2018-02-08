@@ -20,6 +20,8 @@ module BitSync(input logic clk,
                input logic d,
                output logic q);
 
+`ifdef verilator
+
 reg p1;
 reg p2;
 
@@ -36,5 +38,14 @@ always_ff @(posedge clk or posedge reset)
         p2 <= 1'b0;
     else
         p2 <= p1;
+
+`else
+
+altera_std_synchronizer sync(.clk(clk),
+                             .reset_n(~reset),
+                             .din(d),
+                             .dout(q));
+
+`endif
 
 endmodule
