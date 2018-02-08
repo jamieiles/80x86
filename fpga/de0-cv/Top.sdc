@@ -103,3 +103,6 @@ set_false_path -to [get_ports {ps2_clk_b ps2_dat_b}]
 
 # LEDs
 set_false_path -to [get_ports {leds[*]}]
+
+set_clock_uncertainty -add -from [get_clocks *] -to [get_clocks *] -setup 0.2
+set_clock_uncertainty -add -from [get_clocks *] -to [get_clocks *] -hold 0.2
