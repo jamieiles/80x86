@@ -45,6 +45,7 @@ reg access_low;
 reg reloaded;
 
 BitSync PITSync(.clk(clk),
+                .reset(reset),
                 .d(pit_clk),
                 .q(pit_clk_sync));
 

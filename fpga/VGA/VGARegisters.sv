@@ -88,21 +88,27 @@ wire hsync;
 wire vsync;
 
 BitSync         HsyncSync(.clk(clk),
+                          .reset(reset),
                           .d(vga_hsync),
                           .q(hsync));
 BitSync         VsyncSync(.clk(clk),
+                          .reset(reset),
                           .d(vga_vsync),
                           .q(vsync));
 BitSync         GraphicsEnabledSync(.clk(vga_clk),
+                                    .reset(reset),
                                     .d(sys_graphics_enabled),
                                     .q(graphics_enabled));
 BitSync         BrightColorsSync(.clk(vga_clk),
-                                    .d(sys_bright_colors),
-                                    .q(bright_colors));
+                                 .reset(reset),
+                                 .d(sys_bright_colors),
+                                 .q(bright_colors));
 BitSync         CursorEnabledSync(.clk(vga_clk),
+                                  .reset(reset),
                                   .d(sys_cursor_enabled),
                                   .q(cursor_enabled));
 BitSync         PaletteSelSync(.clk(vga_clk),
+                               .reset(reset),
                                .d(sys_palette_sel),
                                .q(palette_sel));
 MCP             #(.width(15),

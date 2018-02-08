@@ -281,6 +281,7 @@ end
 wire data_mem_ack;
 
 BitSync         ResetSync(.clk(sys_clk),
+                          .reset(1'b0),
                           .d(rst_in_n),
                           .q(reset_n));
 

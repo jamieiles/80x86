@@ -16,6 +16,7 @@
 // along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
 
 module SyncPulse(input logic clk,
+                 input logic reset,
                  input logic d,
                  output logic p,
                  output logic q);
@@ -26,10 +27,14 @@ reg last_val;
 assign p = synced ^ last_val;
 assign q = last_val;
 
-always_ff @(posedge clk)
-    last_val <= synced;
+always_ff @(posedge clk or posedge reset)
+    if (reset)
+        last_val <= 1'b0;
+    else
+        last_val <= synced;
 
 BitSync         BitSync(.clk(clk),
+                        .reset(reset),
                         .d(d),
                         .q(synced));
 endmodule

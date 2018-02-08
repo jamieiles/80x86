@@ -16,6 +16,7 @@
 // along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
 
 module BitSync(input logic clk,
+               input logic reset,
                input logic d,
                output logic q);
 
@@ -24,9 +25,16 @@ reg p2;
 
 assign q = p2;
 
-always_ff @(posedge clk)
-    p1 <= d;
-always_ff @(posedge clk)
-    p2 <= p1;
+always_ff @(posedge clk or posedge reset)
+    if (reset)
+        p1 <= 1'b0;
+    else
+        p1 <= d;
+
+always_ff @(posedge clk or posedge reset)
+    if (reset)
+        p2 <= 1'b0;
+    else
+        p2 <= p1;
 
 endmodule

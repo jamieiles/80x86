@@ -72,10 +72,12 @@ assign ps2_clk = state == STATE_INHIBIT ? 1'b0 : 1'bz;
 assign ps2_dat = drive_dat ? dat_o : 1'bz;
 
 BitSync         ClkSync(.clk(clk),
+                        .reset(reset),
                         .d(ps2_clk),
                         .q(ps2_clk_sync));
 
 BitSync         DatSync(.clk(clk),
+                        .reset(reset),
                         .d(ps2_dat),
                         .q(ps2_dat_sync));
 
