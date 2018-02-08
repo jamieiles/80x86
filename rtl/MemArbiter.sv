@@ -44,15 +44,15 @@ reg grant_active;
 
 wire q_data = (grant_active && grant_to_data) || (!grant_active && data_m_access);
 
-assign q_m_addr = q_data ? data_m_addr : grant_active ? instr_m_addr : 19'b0;
+assign q_m_addr = q_data ? data_m_addr : instr_m_addr;
 assign q_m_data_out = data_m_data_out;
-assign q_m_access = ~q_m_ack & (q_data ? data_m_access : grant_active ? instr_m_access : 1'b0);
+assign q_m_access = ~q_m_ack & (data_m_access | instr_m_access);
 assign q_m_wr_en = q_data ? data_m_wr_en : 1'b0;
 assign q_m_bytesel = q_data ? data_m_bytesel : 2'b11;
 
-assign instr_m_data_in = grant_active & ~grant_to_data ? q_m_data_in : 16'b0;
+assign instr_m_data_in = q_m_data_in;
 assign instr_m_ack = grant_active & ~grant_to_data & q_m_ack;
-assign data_m_data_in = grant_active & grant_to_data ? q_m_data_in : 16'b0;
+assign data_m_data_in = q_m_data_in;
 assign data_m_ack = grant_active & grant_to_data & q_m_ack;
 
 always_ff @(posedge clk or posedge reset) begin
