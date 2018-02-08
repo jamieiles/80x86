@@ -32,7 +32,7 @@ set pit_clk "SysPLL|altpll_component|auto_generated|pll1|clk[2]"
 
 derive_clock_uncertainty
 
-set_false_path -from [get_clocks $pit_clk] -to [get_clocks $sys_clk]
+set_clock_groups -exclusive -group [get_clocks altera_reserved_tck]
 
 # SDRAM
 set sdram_tsu       1.5
@@ -90,7 +90,6 @@ set_input_delay \
 # * The PLL is configured so that SDRAM clock leads the system
 #   clock by -2.79ns
 set_multicycle_path -setup -end -from sdram_clk -to [get_clocks $sys_clk] 2
-set_multicycle_path -hold -end -from sdram_clk -to [get_clocks $sys_clk] 1
 
 # Reset request
 set_false_path -from [get_ports {rst_in_n}]

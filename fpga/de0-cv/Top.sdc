@@ -33,13 +33,6 @@ set pit_clk   "SysPLL|altera_pll_i|general[3].gpll~PLL_OUTPUT_COUNTER|divclk"
 
 derive_clock_uncertainty
 
-set_false_path -from [get_clocks $pit_clk] -to [get_clocks $sys_clk]
-set_false_path -from [get_clocks $vga_clk] -to [get_clocks $sys_clk]
-set_false_path -from [get_clocks $sys_clk] -to [get_clocks $vga_clk]
-set_clock_groups -exclusive \
-        -group $sys_clk \
-        -group $vga_clk \
-        -group $pit_clk
 set_clock_groups -exclusive -group [get_clocks altera_reserved_tck]
 
 # SDRAM
@@ -94,7 +87,6 @@ set_input_delay \
 	$sdram_inputs
 
 set_multicycle_path -setup -end -from sdram_clk -to [get_clocks $sys_clk] 2
-set_multicycle_path -hold -end -from sdram_clk -to [get_clocks $sys_clk] 1
 
 # Reset request
 set_false_path -from [get_ports {rst_in_n}]
