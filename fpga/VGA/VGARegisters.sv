@@ -66,23 +66,20 @@ wire [14:0] vga_cursor;
 
 wire [2:0] sys_cursor_scan_start;
 wire load_cursor_scan_start;
-wire rdy_vga_cursor_scan_start;
 wire [2:0] vga_cursor_scan_start;
 
 wire [2:0] sys_cursor_scan_end;
 wire load_cursor_scan_end;
-wire rdy_vga_cursor_scan_end;
 wire [2:0] vga_cursor_scan_end;
 
 wire [3:0] sys_background_color;
 wire load_background_color;
-wire rdy_vga_background_color;
 wire [3:0] vga_background_color;
 
-wire vga_send = rdy_vga_cursor &
-                rdy_vga_cursor_scan_start &
-                rdy_vga_cursor_scan_end &
-                rdy_vga_background_color;
+reg vga_send;
+
+always_ff @(posedge clk)
+    vga_send <= rdy_vga_cursor;
 
 wire hsync;
 wire vsync;
@@ -121,11 +118,12 @@ MCP             #(.width(15),
                           .clk_b(vga_clk),
                           .b_data(vga_cursor),
                           .b_load(load_vga_cursor));
+
 MCP             #(.width(3),
                   .reset_val(3'b0))
                 CursorScanStartMCP(.reset(reset),
                                    .clk_a(clk),
-                                   .a_ready(rdy_vga_cursor_scan_start),
+                                   .a_ready(),
                                    .a_datain(sys_cursor_scan_start),
                                    .a_send(vga_send),
                                    .clk_b(vga_clk),
@@ -135,7 +133,7 @@ MCP             #(.width(3),
                   .reset_val(3'b0))
                 CursorScanEndMCP(.reset(reset),
                                  .clk_a(clk),
-                                 .a_ready(rdy_vga_cursor_scan_end),
+                                 .a_ready(),
                                  .a_datain(sys_cursor_scan_end),
                                  .a_send(vga_send),
                                  .clk_b(vga_clk),
@@ -145,7 +143,7 @@ MCP             #(.width(4),
                   .reset_val(4'b0))
                 BackgroundColorMCP(.reset(reset),
                                    .clk_a(clk),
-                                   .a_ready(rdy_vga_background_color),
+                                   .a_ready(),
                                    .a_datain(sys_background_color),
                                    .a_send(vga_send),
                                    .clk_b(vga_clk),
