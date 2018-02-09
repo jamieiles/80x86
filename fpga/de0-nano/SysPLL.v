@@ -1,3 +1,4 @@
+`default_nettype none
 module SysPLL(input wire refclk,
               input wire rst,
               output wire sys_clk,

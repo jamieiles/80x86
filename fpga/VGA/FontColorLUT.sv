@@ -19,6 +19,7 @@
 `define FONT_ROM_PATH "."
 `endif
 
+`default_nettype none
 module FontColorLUT(input logic clk,
                     input logic render_cursor,
                     input logic [7:0] glyph,

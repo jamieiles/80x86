@@ -18,6 +18,7 @@
 // Multi-cycle-path formulation with feedback as described in "Clock Domain
 // Crossing (CDC) Design & Verification Techniques Using SystemVerilog" by
 // Clifford E. Cummings.
+`default_nettype none
 module MCP #(parameter width = 8,
              parameter reset_val = 8'b0)
             (input logic reset,

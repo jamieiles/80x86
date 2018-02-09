@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
 
+`default_nettype none
 module SDRAMConfigRegister(input logic clk,
                            input logic cs,
                            output logic [15:0] data_m_data_out,

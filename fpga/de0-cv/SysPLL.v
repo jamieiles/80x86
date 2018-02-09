@@ -1,3 +1,4 @@
+`default_nettype none
 module  SysPLL(
 
 	// interface 'refclk'

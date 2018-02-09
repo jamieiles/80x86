@@ -16,6 +16,7 @@
 // along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
 
 // Non-restoring division
+`default_nettype none
 module Divider(input logic clk,
                input logic reset,
                input logic start,

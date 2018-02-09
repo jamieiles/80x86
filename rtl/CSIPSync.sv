@@ -25,6 +25,7 @@
 // This simple module just defers the output until propagation is ready, in
 // this case, on completion of the microinstruction when CS:IP can be
 // delivered to the prefetcher in a single cycle.
+`default_nettype none
 module CSIPSync(input logic clk,
                 input logic reset,
                 input logic cs_update,

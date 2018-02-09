@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
 
+`default_nettype none
 module SPIMaster(input logic clk,
                  input logic reset,
                  input logic [8:0] divider,

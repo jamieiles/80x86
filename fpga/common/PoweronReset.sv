@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
 
+`default_nettype none
 module PoweronReset(input logic sys_clk,
                     input logic pll_locked,
                     output logic poweron_reset);

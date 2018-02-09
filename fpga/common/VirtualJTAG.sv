@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
 
+`default_nettype none
 module VirtualJTAG(input logic [1:0] ir_out,
                    input logic tdo,
                    output logic [1:0] ir_in,

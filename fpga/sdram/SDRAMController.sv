@@ -19,6 +19,7 @@
  * Simple SDR SDRAM controller for 4Mx16x4 devices, e.g. ISSI IS45S16160G
  * (32MB) or 64MB variants.
  */
+`default_nettype none
 module SDRAMController #(parameter size = 32 * 1024 * 1024,
                          parameter clkf = 25000000)
                         (input logic clk,

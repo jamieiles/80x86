@@ -23,6 +23,7 @@
 // wired out.  This means that IP wrapping works correctly, and can be updated
 // under external control.  The fetching can be stalled when servicing
 // a branch, updating the IP will flush the FIFO.
+`default_nettype none
 module Prefetch(input logic clk,
                 input logic reset,
                 // Address control.

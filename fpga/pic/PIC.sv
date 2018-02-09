@@ -19,6 +19,7 @@
 //
 // Only supports a single PIC, edge triggered interrupts and non-specific or
 // specific EOI.  No rotating priorities etc.
+`default_nettype none
 module PIC(input logic clk,
            input logic reset,
            input logic cs,
