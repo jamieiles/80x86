@@ -133,17 +133,8 @@ mova2:
 // MOV 0x8e     sr := reg/mem
 .at 0x8e;
     modrm_start, mar_write, mar_wr_sel EA, ra_modrm_rm_reg,
-        jmp_dispatch_reg dispatch_8e;
+        segment DS, jmp_rm_reg_mem mov8e_reg;
 .auto_address;
-dispatch_8e:
-    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem mov8e_reg;
-    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem mov8e_reg;
-    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem mov8e_reg;
-    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem mov8e_reg;
-    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem mov8e_reg;
-    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem mov8e_reg;
-    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem mov8e_reg;
-    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem mov8e_reg;
 mov8e_reg:
     segment_wr_en, rd_sel_source MODRM_REG, a_sel RA, alu_op SELA,
         ext_int_inhibit, next_instruction;
