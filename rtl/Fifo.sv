@@ -18,6 +18,7 @@
 `default_nettype none
 module Fifo(input logic clk,
             input logic reset,
+            input logic flush,
             // Write port
             input logic wr_en,
             input logic [data_width-1:0] wr_data,
@@ -52,34 +53,46 @@ end
 always_ff @(posedge clk or posedge reset) begin
     if (reset) begin
         wr_ptr <= {ptr_bits{1'b0}};
-    end else if (wr_en && !full) begin
-        mem[wr_ptr] <= wr_data;
-        wr_ptr <= wr_ptr + 1'b1;
-        if (wr_ptr == depth[ptr_bits-1:0] - 1'b1)
+    end else begin
+        if (flush)
             wr_ptr <= {ptr_bits{1'b0}};
+        else if (wr_en && !full) begin
+            mem[wr_ptr] <= wr_data;
+            wr_ptr <= wr_ptr + 1'b1;
+            if (wr_ptr == depth[ptr_bits-1:0] - 1'b1)
+                wr_ptr <= {ptr_bits{1'b0}};
+        end
     end
 end
 
 always_comb begin
     if (reset) begin
         next_rd_ptr = {ptr_bits{1'b0}};
-    end else if (rd_en && !empty) begin
-        next_rd_ptr = rd_ptr + 1'b1;
-        if (rd_ptr == depth[ptr_bits-1:0] - 1'b1)
+    end else begin
+        if (flush)
             next_rd_ptr = {ptr_bits{1'b0}};
-    end else
-        next_rd_ptr = rd_ptr;
+        else if (rd_en && !empty) begin
+            next_rd_ptr = rd_ptr + 1'b1;
+            if (rd_ptr == depth[ptr_bits-1:0] - 1'b1)
+                next_rd_ptr = {ptr_bits{1'b0}};
+        end else
+            next_rd_ptr = rd_ptr;
+    end
 end
 
 always_ff @(posedge clk or posedge reset) begin
     if (reset)
         count <= {ptr_bits + 1{1'b0}};
-    else if (wr_en && !full && rd_en && !empty)
-        ;
-    else if (wr_en && !full)
-        count <= count + 1'b1;
-    else if (rd_en && !empty)
-        count <= count - 1'b1;
+    else begin
+        if (flush)
+            count <= {ptr_bits + 1{1'b0}};
+        else if (wr_en && !full && rd_en && !empty)
+            ;
+        else if (wr_en && !full)
+            count <= count + 1'b1;
+        else if (rd_en && !empty)
+            count <= count - 1'b1;
+    end
 end
 
 endmodule

@@ -249,9 +249,10 @@ SegmentRegisterFile SegmentRegisterFile(.clk(clk),
                                         .cs(cs));
 
 Fifo            #(.data_width(8),
-                  .depth(6))
+                  .depth(8))
                 Fifo(.clk(clk),
-                     .reset(reset | fifo_reset),
+                     .reset(reset),
+                     .flush(fifo_reset),
                      .wr_en(fifo_wr_en),
                      .wr_data(fifo_wr_data),
                      .rd_en(fifo_rd_en),

@@ -99,6 +99,3 @@ set_false_path -from [get_ports uart_rx]
 set_false_path -to [get_ports uart_tx]
 
 set_false_path -to [get_ports {leds[*]}]
-
-set_clock_uncertainty -add -from [get_clocks *] -to [get_clocks *] -setup 0.2
-set_clock_uncertainty -add -from [get_clocks *] -to [get_clocks *] -hold 0.2

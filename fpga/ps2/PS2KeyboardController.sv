@@ -66,7 +66,7 @@ Fifo    #(.data_width(8),
              // verilator lint_off PINCONNECTEMPTY
              .nearly_full(),
              // verilator lint_on PINCONNECTEMPTY
-             .reset(fifo_reset),
+             .flush(fifo_reset),
              .*);
 
 wire [7:0] status = {5'b0, tx_busy, unread_error, ~empty};
