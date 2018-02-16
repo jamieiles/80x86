@@ -21,9 +21,9 @@
 retc3:
     a_sel RA, alu_op SELA, mar_write, mar_wr_sel Q, segment SS,
         segment_force;
-    segment SS, segment_force, mem_read;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD,
-        rd_sel_source MICROCODE_RD_SEL, rd_sel SP;
+    segment SS, segment_force, mem_read, a_sel MAR, b_sel IMMEDIATE,
+        immediate 0x2, alu_op ADD, rd_sel_source MICROCODE_RD_SEL,
+        rd_sel SP;
     a_sel MDR, alu_op SELA, load_ip, next_instruction;
 
 .at 0xc2;
@@ -32,9 +32,9 @@ retc3:
 retc2:
     a_sel RA, alu_op SELA, mar_write, mar_wr_sel Q, segment SS,
         segment_force;
-    segment SS, segment_force, mem_read;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD,
-        rd_sel_source MICROCODE_RD_SEL, rd_sel SP;
+    segment SS, segment_force, mem_read, a_sel MAR, b_sel IMMEDIATE,
+        immediate 0x2, alu_op ADD, rd_sel_source MICROCODE_RD_SEL,
+        rd_sel SP;
     a_sel MDR, alu_op SELA, load_ip, read_immed, ra_sel SP;
     a_sel RA, b_sel IMMEDIATE, alu_op ADD, rd_sel_source
         MICROCODE_RD_SEL, rd_sel SP, next_instruction;
@@ -45,13 +45,12 @@ retc2:
 retcb:
     a_sel RA, alu_op SELA, mar_write, mar_wr_sel Q, segment SS,
         segment_force;
-    segment SS, segment_force, mem_read;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD,
-        mar_wr_sel Q, mar_write;
+    segment SS, segment_force, mem_read, a_sel MAR, b_sel IMMEDIATE,
+        immediate 0x2, alu_op ADD, mar_wr_sel Q, mar_write;
     a_sel MDR, alu_op SELA, load_ip, segment_force, segment SS;
-    segment SS, segment_force, mem_read;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD,
-        rd_sel_source MICROCODE_RD_SEL, rd_sel SP;
+    segment SS, segment_force, mem_read, a_sel MAR, b_sel IMMEDIATE,
+        immediate 0x2, alu_op ADD, rd_sel_source MICROCODE_RD_SEL,
+        rd_sel SP;
     a_sel MDR, alu_op SELA, segment_force, segment CS,
         segment_wr_en, next_instruction;
 
@@ -61,13 +60,11 @@ retcb:
 retca:
     a_sel RA, alu_op SELA, mar_write, mar_wr_sel Q, segment SS,
         segment_force;
-    segment SS, segment_force, mem_read;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD,
-        mar_wr_sel Q, mar_write;
+    segment SS, segment_force, mem_read, a_sel MAR, b_sel IMMEDIATE,
+        immediate 0x2, alu_op ADD, mar_wr_sel Q, mar_write;
     a_sel MDR, alu_op SELA, load_ip, segment_force, segment SS;
-    segment SS, segment_force, mem_read;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD,
-        mar_wr_sel Q, mar_write;
+    segment SS, segment_force, mem_read, a_sel MAR, b_sel IMMEDIATE,
+        immediate 0x2, alu_op ADD, mar_wr_sel Q, mar_write;
     read_immed, a_sel MAR, b_sel IMMEDIATE, alu_op ADD,
         rd_sel_source MICROCODE_RD_SEL, rd_sel SP;
     a_sel MDR, alu_op SELA, segment_force, segment CS,
@@ -80,17 +77,16 @@ retca:
 retcf:
     a_sel RA, alu_op SELA, mar_write, mar_wr_sel Q, segment SS,
         segment_force;
-    segment SS, segment_force, mem_read;
-    a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD,
-        mar_wr_sel Q, mar_write;
+    segment SS, segment_force, mem_read, a_sel MAR, b_sel IMMEDIATE,
+        immediate 0x2, alu_op ADD, mar_wr_sel Q, mar_write;
     a_sel MDR, alu_op SELA, load_ip, segment_force, segment SS;
     segment SS, segment_force, mem_read;
     a_sel MDR, alu_op SELA, segment_force, segment CS,
         segment_wr_en;
     a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD,
         mar_wr_sel Q, mar_write, segment SS, segment_force;
-    segment SS, segment_force, mem_read;
-    a_sel MDR, alu_op SETFLAGSA, update_flags CF PF AF ZF SF TF IF DF OF;
+    segment SS, segment_force, mem_read, a_sel MDR, alu_op SETFLAGSA,
+        update_flags CF PF AF ZF SF TF IF DF OF;
     a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD,
         rd_sel SP, rd_sel_source MICROCODE_RD_SEL,
         next_instruction;
