@@ -181,7 +181,7 @@ TEST_F(EmulateFixture, IFSetExtIntTaken)
     emulate();
 
     EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), FLAGS_STUCK_BITS);
-    EXPECT_EQ(read_reg(CS), 0x8000);
+    ASSERT_EQ(read_reg(CS), 0x8000);
     EXPECT_EQ(read_reg(IP), 0x0100);
     EXPECT_EQ(read_reg(SP), 0x0100 - 6);
 

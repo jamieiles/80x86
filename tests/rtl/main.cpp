@@ -24,7 +24,11 @@
 
 std::unique_ptr<CPU> get_cpu(const std::string &test_name)
 {
-    return std::make_unique<RTLCPU<>>(test_name);
+    auto cpu = std::make_unique<RTLCPU<>>(test_name);
+
+    cpu->enable_cache();
+
+    return std::move(cpu);
 }
 
 int main(int argc, char *argv[])

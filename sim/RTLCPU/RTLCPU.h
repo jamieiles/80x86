@@ -36,6 +36,7 @@ class RTLCPU : public VerilogDriver<VRTLCPU, debug_enabled>, public SimCPU
 {
 public:
     RTLCPU(const std::string &test_name);
+    void enable_cache();
     void write_coverage();
     void reset();
     void write_reg(GPR regnum, uint16_t val);

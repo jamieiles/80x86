@@ -60,6 +60,10 @@ verilate(TOPLEVEL IP
          VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/IP.sv)
 verilate(TOPLEVEL LoadStore
          VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/LoadStore.sv)
+verilate(TOPLEVEL Cache
+         VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../fpga/common/Cache.sv
+         ${CMAKE_CURRENT_SOURCE_DIR}/../../fpga/common/BlockRam.sv
+         ${CMAKE_CURRENT_SOURCE_DIR}/../../fpga/common/DPRam.sv)
 verilate(TOPLEVEL ModRMDecode
          VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/RegisterEnum.sv
          ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/ModRMDecode.sv)
@@ -82,6 +86,7 @@ verilate(TOPLEVEL PIC
 
 add_executable(rtl-unittest
                TestALU.cpp
+               TestCache.cpp
                TestCSIPSync.cpp
                TestDivider.cpp
                TestDivisionAlgorithm.cpp
@@ -107,6 +112,7 @@ add_executable(rtl-unittest
 
 target_link_libraries(rtl-unittest
                       VALU
+                      VCache
                       VCSIPSync
                       VRTLCPU
                       VDivider

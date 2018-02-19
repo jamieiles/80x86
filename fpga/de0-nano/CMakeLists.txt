@@ -39,6 +39,9 @@ set(FPGA_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/VirtualJTAG.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/JTAGBridge.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../common/PoweronReset.sv
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/Cache.sv
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/BlockRam.sv
+    ${CMAKE_CURRENT_SOURCE_DIR}/../common/DPRam.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../bios/BIOS.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../bios/BIOSControlRegister.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../irq/IRQControl.sv

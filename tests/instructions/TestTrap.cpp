@@ -35,7 +35,7 @@ TEST_F(EmulateFixture, TrapOnInt3)
     set_instruction({0xcc});
     emulate();
 
-    ASSERT_TRUE(cpu->has_trapped());
-    ASSERT_EQ(0x8000, cpu->read_reg(CS));
-    ASSERT_EQ(0x0100, cpu->read_reg(IP));
+    EXPECT_TRUE(cpu->has_trapped());
+    EXPECT_EQ(0x8000, cpu->read_reg(CS));
+    EXPECT_EQ(0x0100, cpu->read_reg(IP));
 }

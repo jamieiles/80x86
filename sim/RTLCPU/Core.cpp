@@ -52,6 +52,7 @@ RTLCPU<debug_enabled>::RTLCPU(const std::string &test_name)
       is_stopped(true)
 {
     this->dut.debug_seize = 1;
+    this->dut.cache_enabled = 0;
     this->reset();
 
     this->periodic(ClockSetup, [&] { this->mem_access(); });
@@ -144,6 +145,12 @@ int RTLCPU<debug_enabled>::debug_run_proc(
         throw std::runtime_error("execution timeout");
 
     return cycle_count;
+}
+
+template <bool debug_enabled>
+void RTLCPU<debug_enabled>::enable_cache()
+{
+    this->dut.cache_enabled = 1;
 }
 
 template <bool debug_enabled>
@@ -403,8 +410,8 @@ uint16_t RTLCPU<debug_enabled>::read_flags() const
 template <bool debug_enabled>
 bool RTLCPU<debug_enabled>::has_trapped()
 {
-    auto int_cs = this->mem.template read<uint16_t>(VEC_INT + 2);
-    auto int_ip = this->mem.template read<uint16_t>(VEC_INT + 0);
+    auto int_cs = read_mem16(0, VEC_INT + 2);
+    auto int_ip = read_mem16(0, VEC_INT + 0);
 
     return read_sr(CS) == int_cs && read_ip() == int_ip;
 }
@@ -633,3 +640,4 @@ uint16_t RTLCPU<debug_enabled>::read_io16(uint32_t addr)
 template RTLCPU<verilator_debug_enabled>::RTLCPU(const std::string &);
 template void RTLCPU<verilator_debug_enabled>::idle(int count);
 template int RTLCPU<verilator_debug_enabled>::time_step();
+template void RTLCPU<verilator_debug_enabled>::enable_cache();

@@ -307,18 +307,44 @@ MemArbiter MemArbiter(.clk(sys_clk),
                       .data_m_ack(data_mem_ack),
                       .*);
 
+// SDRAM<->Cache signals
+wire [19:1] sdram_m_addr;
+wire [15:0] sdram_m_data_in;
+wire [15:0] sdram_m_data_out;
+wire sdram_m_access;
+wire sdram_m_ack;
+wire sdram_m_wr_en;
+wire [1:0] sdram_m_bytesel;
+
+Cache Cache(.enabled(1'b1),
+            .c_access(q_m_access & sdram_access),
+            .c_addr(q_m_addr),
+            .c_data_in(sdram_data),
+            .c_data_out(q_m_data_out),
+            .c_ack(sdram_ack),
+            .c_wr_en(q_m_wr_en),
+            .c_bytesel(q_m_bytesel),
+            .m_addr(sdram_m_addr),
+            .m_data_in(sdram_m_data_out),
+            .m_data_out(sdram_m_data_in),
+            .m_access(sdram_m_access),
+            .m_ack(sdram_m_ack),
+            .m_wr_en(sdram_m_wr_en),
+            .m_bytesel(sdram_m_bytesel),
+            .*);
+
 SDRAMController #(.size(`CONFIG_SDRAM_SIZE),
                   .clkf(50000000))
                 SDRAMController(.clk(sys_clk),
                                 .reset(reset),
-                                .data_m_access(q_m_access),
-                                .cs(sdram_access),
-                                .h_addr({6'b0, q_m_addr}),
-                                .h_wdata(q_m_data_out),
-                                .h_rdata(sdram_data),
-                                .h_wr_en(q_m_wr_en),
-                                .h_bytesel(q_m_bytesel),
-                                .h_compl(sdram_ack),
+                                .data_m_access(sdram_m_access),
+                                .cs(1'b1),
+                                .h_addr({6'b0, sdram_m_addr}),
+                                .h_wdata(sdram_m_data_in),
+                                .h_rdata(sdram_m_data_out),
+                                .h_wr_en(sdram_m_wr_en),
+                                .h_bytesel(sdram_m_bytesel),
+                                .h_compl(sdram_m_ack),
                                 .h_config_done(sdram_config_done),
                                 .*);
 

@@ -48,7 +48,9 @@ module RTLCPU(input logic clk,
               input logic debug_run,
               output logic [15:0] debug_val,
               input logic [15:0] debug_wr_val,
-              input logic debug_wr_en);
+              input logic debug_wr_en,
+              // Simulation control
+              input logic cache_enabled);
 
 // Instruction bus
 logic [19:1] instr_m_addr;
@@ -70,11 +72,37 @@ assign io_m_access = data_m_access & d_io;
 assign io_m_wr_en = data_m_wr_en;
 assign io_m_bytesel = data_m_bytesel;
 
+wire[19:1] c_addr;
+wire[15:0] c_data_in;
+wire[15:0] c_data_out;
+wire c_access;
+wire c_ack;
+wire c_wr_en;
+wire [1:0] c_bytesel;
+
 wire d_ack = io_m_ack | data_m_ack;
 wire [15:0] d_data_in = d_io ? io_m_data_in : data_m_data_in;
 
+Cache Cache(.m_addr(q_m_addr),
+            .m_data_in(q_m_data_in),
+            .m_data_out(q_m_data_out),
+            .m_access(q_m_access),
+            .m_ack(q_m_ack),
+            .m_wr_en(q_m_wr_en),
+            .m_bytesel(q_m_bytesel),
+            .enabled(cache_enabled),
+            .*);
+
 MemArbiter MemArbiter(.data_m_access(data_m_access & ~d_io),
+                      .q_m_addr(c_addr),
+                      .q_m_data_in(c_data_in),
+                      .q_m_data_out(c_data_out),
+                      .q_m_access(c_access),
+                      .q_m_ack(c_ack),
+                      .q_m_wr_en(c_wr_en),
+                      .q_m_bytesel(c_bytesel),
                       .*);
+
 Core    Core(.data_m_ack(d_ack),
              .data_m_data_in(d_data_in),
              .*);

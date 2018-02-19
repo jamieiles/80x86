@@ -35,6 +35,9 @@ verilate(TOPLEVEL RTLCPU
          VERILOG_SOURCES
          ${CMAKE_CURRENT_SOURCE_DIR}/RTLCPU.sv
          ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/MemArbiter.sv
+         ${CMAKE_CURRENT_SOURCE_DIR}/../../fpga/common/Cache.sv
+         ${CMAKE_CURRENT_SOURCE_DIR}/../../fpga/common/BlockRam.sv
+         ${CMAKE_CURRENT_SOURCE_DIR}/../../fpga/common/DPRam.sv
          ${CORE_SOURCES}
          GENERATED_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/VRTLCPU___024unit.cpp
          ${CMAKE_CURRENT_BINARY_DIR}/VRTLCPU___024unit.h
