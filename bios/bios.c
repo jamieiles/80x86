@@ -174,6 +174,7 @@ void root(void)
     putstr("s80x86 BIOS, (C) Jamie Iles, " __DATE__ " " __TIME__ "\n");
     putstr("Platform: " __PLATFORM__ "\n");
     putstr("Build: " __BUILD__ "\n");
+    printk("Cache: %uKB\n", CACHE_SIZE / 1024);
     putstr("\n");
 
     init_timer();

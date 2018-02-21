@@ -23,6 +23,8 @@ ProcessorCount(NPROCS)
 get_property(ALU_SOURCES GLOBAL PROPERTY G_ALU_SOURCES)
 get_property(CORE_SOURCES GLOBAL PROPERTY G_CORE_SOURCES)
 
+set(CACHE_SIZE 8192)
+
 configure_file(Top.qsf Top.qsf)
 configure_file(Top.srf Top.srf)
 
@@ -66,6 +68,8 @@ set(ALL_SOURCES ${CORE_SOURCES} ${FPGA_SOURCES})
 
 set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/Microcode.v PROPERTIES
                             COMPILE_FLAGS "--verilog_macro=\"MICROCODE_ROM_PATH=\\\\\\\"${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/\\\\\\\"")
+set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/../common/Cache.sv PROPERTIES
+                            COMPILE_FLAGS "--verilog_macro=\"CACHE_SIZE=${CACHE_SIZE}\"")
 
 add_custom_command(OUTPUT microcode.mif
                    COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/microcode.mif .

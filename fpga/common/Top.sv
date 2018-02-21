@@ -316,7 +316,8 @@ wire sdram_m_ack;
 wire sdram_m_wr_en;
 wire [1:0] sdram_m_bytesel;
 
-Cache Cache(.enabled(1'b1),
+Cache #(.lines(`CACHE_SIZE / 16))
+      Cache(.enabled(1'b1),
             .c_access(q_m_access & sdram_access),
             .c_addr(q_m_addr),
             .c_data_in(sdram_data),

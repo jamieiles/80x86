@@ -48,7 +48,8 @@ add_definitions(-D__PLATFORM__="${BIOS_PLATFORM}"
                 -DBIOS_BUILD_YEAR=${BIOS_BUILD_YEAR}
                 -DBIOS_BUILD_SECOND=${BIOS_BUILD_SECOND}
                 -DBIOS_BUILD_MINUTE=${BIOS_BUILD_MINUTE}
-                -DBIOS_BUILD_HOUR=${BIOS_BUILD_HOUR})
+                -DBIOS_BUILD_HOUR=${BIOS_BUILD_HOUR}
+                -DCACHE_SIZE=${CACHE_SIZE})
 
 add_executable(bios-${BIOS_PLATFORM}
                bios.c

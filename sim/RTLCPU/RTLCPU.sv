@@ -83,7 +83,8 @@ wire [1:0] c_bytesel;
 wire d_ack = io_m_ack | data_m_ack;
 wire [15:0] d_data_in = d_io ? io_m_data_in : data_m_data_in;
 
-Cache Cache(.m_addr(q_m_addr),
+Cache #(.lines(`CACHE_SIZE / 16))
+      Cache(.m_addr(q_m_addr),
             .m_data_in(q_m_data_in),
             .m_data_out(q_m_data_out),
             .m_access(q_m_access),

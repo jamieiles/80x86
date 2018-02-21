@@ -27,6 +27,8 @@ include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/Microcode.sv PROPERTIES
                             COMPILE_FLAGS "-DMICROCODE_ROM_PATH=\\\"${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/\\\"")
+set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/../../fpga/common/Cache.sv PROPERTIES
+                            COMPILE_FLAGS "-DCACHE_SIZE=${CACHE_SIZE}")
 
 get_property(ALU_SOURCES GLOBAL PROPERTY G_ALU_SOURCES)
 get_property(CORE_SOURCES GLOBAL PROPERTY G_CORE_SOURCES)
