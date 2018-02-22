@@ -506,6 +506,14 @@ field.
 
 == FPGA Reference Designs
 
+Both reference designs feature 1MB of SDRAM with other peripherals mapped over
+the top.  Additionally, a write-back cache on the frontend of the SDRAM boosts
+performance of external memory accesses and is transparent to the CPU.  The
+cache features a line size of 16 bytes to allow easy filling from SDRAM with
+an 8 word burst and fills from the critical word first.  Accesses to the BIOS
+and video RAM are not cached as they utilize single cycle accesses and the
+video RAM needs to be coherent.
+
 === DE0-Nano
 
 To build the DE0-Nano design, configure the build with "-DBUILD_DE0_NANO=ON".
