@@ -25,7 +25,7 @@ option(DE0_CV_SERIAL_STDIO "Use the serial port for stdio" OFF)
 get_property(ALU_SOURCES GLOBAL PROPERTY G_ALU_SOURCES)
 get_property(CORE_SOURCES GLOBAL PROPERTY G_CORE_SOURCES)
 
-set(CACHE_SIZE 8192)
+set(CACHE_SIZE 32768)
 
 configure_file(Top.qsf Top.qsf)
 configure_file(Top.srf Top.srf)
