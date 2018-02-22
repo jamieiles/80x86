@@ -269,7 +269,7 @@ always_comb begin
         next_addr = single_step_address;
     else if (current.next_instruction && debug_seize)
         next_addr = debug_wait_address;
-    else if (current.next_instruction)
+    else if (current.next_instruction || (is_hlt && intr))
         next_addr = !fifo_empty && !fifo_resetting ?
             {{addr_bits-8{1'b0}}, fifo_rd_data} : next_instruction_address;
     else
