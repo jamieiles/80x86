@@ -50,7 +50,6 @@ reg [19:1] c_m_addr;
 reg [15:0] c_m_data_out;
 reg [2:0] line_idx;
 wire [19:tag_start] tag;
-reg [19:tag_start] filling_tag;
 reg [7:0] line_valid;
 reg busy;
 reg flushing;
@@ -152,7 +151,6 @@ begin
     c_m_addr <= c_addr;
     busy <= 1'b1;
     line_valid <= 8'b0;
-    filling_tag <= c_addr[19:tag_start];
 end
 endtask
 
