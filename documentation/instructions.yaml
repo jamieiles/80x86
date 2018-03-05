@@ -200,10 +200,10 @@ neg:
      A: M
     encodings:
     - opcode: 0xf6
-      operands: [Eb, Ib]
+      operands: [Eb]
       reg: 3
     - opcode: 0xf7
-      operands: [Ew, Iw]
+      operands: [Ew]
       reg: 3
 not:
     flags:
@@ -215,10 +215,10 @@ not:
      A: M
     encodings:
     - opcode: 0xf6
-      operands: [Eb, Ib]
+      operands: [Eb]
       reg: 2
     - opcode: 0xf7
-      operands: [Ew, Iw]
+      operands: [Ew]
       reg: 2
 or:
     flags:
@@ -538,15 +538,15 @@ dec:
 lds:
     encodings:
     - opcode: 0xc5
-      operands: [Gw, Mp]
+      operands: [Ew, Mp]
 lea:
     encodings:
     - opcode: 0x8d
-      operands: [Gw, Mw]
+      operands: [Ew, Mw]
 les:
     encodings:
     - opcode: 0xc4
-      operands: [Gw, Mp]
+      operands: [Ew, Mp]
 mov:
     encodings:
     - opcode: 0x88
@@ -648,7 +648,7 @@ mov:
     - opcode: 0xa1
       operands: [AX, Ow]
     - opcode: 0xa2
-      operands: [Ob, AL]
+      operands: [Ow, AL]
     - opcode: 0xa3
       operands: [Ow, AX]
 aaa:
@@ -717,10 +717,10 @@ mul:
     encodings:
     - opcode: 0xf6
       reg: 4
-      operands: [Eb, Ib]
+      operands: [Eb]
     - opcode: 0xf7
       reg: 4
-      operands: [Ew, Iw]
+      operands: [Ew]
 int3:
     encodings:
     - opcode: 0xcc
@@ -944,27 +944,27 @@ shl:
     encodings:
     # Single bit
     - opcode: 0xd0
-      reg: 6
+      reg: 4
       operands: [Eb]
     - opcode: 0xd1
-      reg: 6
+      reg: 4
       operands: [Ew]
     # By immediate
     - opcode: 0xc0
-      reg: 6
+      reg: 4
       operands: [Eb, Ib]
       note: "+ (n-1)"
     - opcode: 0xc1
-      reg: 6
+      reg: 4
       operands: [Ew, Ib]
       note: "+ (n-1)"
     # By reg
     - opcode: 0xd2
-      reg: 6
+      reg: 4
       operands: [Eb, CL]
       note: "+ (n-1)"
     - opcode: 0xd3
-      reg: 6
+      reg: 4
       operands: [Ew, CL]
       note: "+ (n-1)"
 sal:
@@ -1036,13 +1036,21 @@ shr:
 esc:
     encodings:
     - opcode: 0xd8
+      operands: [Eb]
     - opcode: 0xd9
+      operands: [Ew]
     - opcode: 0xda
+      operands: [Eb]
     - opcode: 0xdb
+      operands: [Ew]
     - opcode: 0xdc
+      operands: [Eb]
     - opcode: 0xdd
+      operands: [Ew]
     - opcode: 0xde
+      operands: [Eb]
     - opcode: 0xdf
+      operands: [Ew]
     notes:
     - Acts as a NOP unless built with -S80X86_TRAP_ESCAPE=ON otherwise raises
       trap 7.
