@@ -79,7 +79,7 @@ push_sr:
         rd_sel_source MICROCODE_RD_SEL, next_instruction;
 
 .at 0x68;
-    read_immed, ra_sel SP, jmp push_immed16;
+    ra_sel SP, jmp push_immed16;
 .auto_address;
 push_immed16:
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, mar_write,
@@ -88,10 +88,9 @@ push_immed16:
     segment_force, segment SS, mem_write, next_instruction;
 
 .at 0x6a;
-    width W8, read_immed, jmp push_immed8;
+    ra_sel SP, jmp push_immed8;
 .auto_address;
 push_immed8:
-    ra_sel SP;
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, mar_write,
         mar_wr_sel Q, rd_sel SP, rd_sel_source MICROCODE_RD_SEL;
     b_sel IMMEDIATE, alu_op SELB, mdr_write, segment_force, segment SS;

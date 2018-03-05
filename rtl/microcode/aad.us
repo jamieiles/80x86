@@ -17,7 +17,7 @@
 
 // AAD
 .at 0xd5;
-    width W8, read_immed, ra_sel AH, jmp aad;
+    width W8, ra_sel AH, jmp aad;
 .auto_address;
 aad:
     a_sel RA, b_sel IMMEDIATE, alu_op IMUL, tmp_wr_en;

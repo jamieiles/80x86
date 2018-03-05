@@ -17,11 +17,10 @@
 
 // LOOP
 .at 0xe2;
-    width W8, read_immed, jmp loop;
+    ra_sel CX, jmp loop;
 
 .auto_address;
 loop:
-    ra_sel CX;
     a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
         rd_sel_source MICROCODE_RD_SEL, rd_sel CX,
         rb_cl;
@@ -32,11 +31,10 @@ loop_not_taken:
 
 // LOOPE
 .at 0xe1;
-    width W8, read_immed, jmp loope;
+    ra_sel CX, jmp loope;
 
 .auto_address;
 loope:
-    ra_sel CX;
     a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
         rd_sel_source MICROCODE_RD_SEL, rd_sel CX, rb_cl,
         jmp_if_zero loope_maybe_taken;
@@ -47,11 +45,10 @@ loope_maybe_taken:
 
 // LOOPNE
 .at 0xe0;
-    width W8, read_immed, jmp loopne;
+    ra_sel CX, jmp loopne;
 
 .auto_address;
 loopne:
-    ra_sel CX;
     a_sel RA, b_sel IMMEDIATE, immediate 0x1, alu_op SUB,
         rd_sel_source MICROCODE_RD_SEL, rd_sel CX, rb_cl,
         jmp_if_zero loop_not_taken;

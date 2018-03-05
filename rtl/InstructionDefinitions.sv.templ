@@ -1,0 +1,52 @@
+// Copyright Jamie Iles, 2018
+//
+// This file is part of s80x86.
+//
+// s80x86 is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// s80x86 is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
+
+function logic insn_has_modrm;
+    input logic [7:0] opcode;
+
+    casez (opcode)
+    <%#modrm_opcodes%>
+    <%opc%>: insn_has_modrm = 1'b1;
+    <%/modrm_opcodes%>
+    default: insn_has_modrm = 1'b0;
+    endcase
+endfunction
+
+function logic [1:0] insn_immed_count;
+    input logic [7:0] opcode;
+    input logic [2:0] modrm_reg;
+
+    unique casez ({opcode, modrm_reg})
+    <%#instructions%>
+    {<%opcode%>, <%reg%>}: insn_immed_count = 2'd<%immediate_count%>;
+    <%/instructions%>
+    default: insn_immed_count = 2'b0;
+    endcase
+endfunction
+
+function logic insn_immed_is_8bit;
+    input logic [7:0] opcode;
+    input logic [2:0] modrm_reg;
+    input logic immed_num;
+
+    unique casez ({opcode, modrm_reg})
+    <%#instructions%>
+    {<%opcode%>, <%reg%>}: insn_immed_is_8bit = ~|(<%immediate_sizes%> & (2'b1 << immed_num));
+    <%/instructions%>
+    default: insn_immed_is_8bit = 1'b0;
+    endcase
+endfunction

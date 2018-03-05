@@ -17,12 +17,11 @@
 
 // out imm8, al
 .at 0xe6;
-    width W8, read_immed, b_sel IMMEDIATE, alu_op SELB,
-        mar_wr_sel Q, mar_write, jmp oute6, ra_sel AL;
+    width W8, b_sel IMMEDIATE, alu_op SELB, mar_wr_sel Q, mar_write,
+        jmp oute6, ra_sel AL;
 // out imm16, al
 .at 0xe7;
-    width W8, read_immed, b_sel IMMEDIATE, alu_op SELB, mar_wr_sel Q,
-        mar_write, jmp oute6;
+    width W8, b_sel IMMEDIATE, alu_op SELB, mar_wr_sel Q, mar_write, jmp oute6;
 .auto_address;
 oute6:
     a_sel MAR, b_sel IMMEDIATE, immediate 0xff, alu_op AND, mar_write,
@@ -44,12 +43,10 @@ outee:
 
 // in al, immed8
 .at 0xe4;
-    width W8, read_immed, b_sel IMMEDIATE, alu_op SELB,
-        mar_wr_sel Q, mar_write, jmp ine4;
+    width W8, b_sel IMMEDIATE, alu_op SELB, mar_wr_sel Q, mar_write, jmp ine4;
 // in ax, immed16
 .at 0xe5;
-    width W8, read_immed, b_sel IMMEDIATE, alu_op SELB,
-        mar_wr_sel Q, mar_write, jmp ine4;
+    width W8, b_sel IMMEDIATE, alu_op SELB, mar_wr_sel Q, mar_write, jmp ine4;
 .auto_address;
 ine4:
     a_sel MAR, b_sel IMMEDIATE, immediate 0xff, alu_op AND, mar_write,

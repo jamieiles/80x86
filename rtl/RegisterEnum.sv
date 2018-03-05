@@ -47,4 +47,10 @@ typedef enum bit [1:0] {
     DS
 } SR_t;
 
+typedef enum bit [1:0] {
+    REP_PREFIX_NONE,
+    REP_PREFIX_E,
+    REP_PREFIX_NE
+} RepPrefix;
+
 `endif

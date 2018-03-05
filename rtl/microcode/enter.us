@@ -16,13 +16,10 @@
 // along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
 
 .at 0xc8;
-    read_immed, jmp enter;
+    b_sel IMMEDIATE, alu_op SELB, tmp_wr_en, ra_sel SP, jmp enter;
 .auto_address;
 enter:
-    b_sel IMMEDIATE, alu_op SELB, tmp_wr_en;
-    width W8, read_immed;
     // Push BP
-    ra_sel SP;
     a_sel RA, b_sel IMMEDIATE, immediate 0x2, alu_op SUB, mar_write,
         mar_wr_sel Q, ra_sel BP, rd_sel_source MICROCODE_RD_SEL, rd_sel SP;
     a_sel RA, alu_op SELA, mdr_write, segment_force, segment SS;
@@ -30,7 +27,7 @@ enter:
         jmp_loop_done enter_out_nonest;
 
     // Push frame temp
-    a_sel RA, b_sel IMMEDIATE, alu_op ENTER_FRAME_TEMP_ADDR, mar_write,
+    a_sel RA, b_sel IMMEDIATE2, alu_op ENTER_FRAME_TEMP_ADDR, mar_write,
         mar_wr_sel Q, ra_sel SP;
     a_sel RA, alu_op SELA, mdr_write, segment_force, segment SS;
     segment_force, segment SS, mem_write;

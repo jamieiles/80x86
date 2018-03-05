@@ -24,6 +24,21 @@
 #include "TestModRM.h"
 #include "../common/TestModRM.cpp"
 
+template <typename Out, typename In>
+static inline Out sign_extend(In v)
+{
+    static_assert(sizeof(Out) > sizeof(In),
+                  "May only sign extend to larger types");
+
+    size_t bit_shift = (sizeof(Out) - sizeof(In)) * 8;
+    Out o = static_cast<Out>(v);
+
+    o <<= bit_shift;
+    o >>= bit_shift;
+
+    return o;
+}
+
 class RTLModRMDecoderTestbench : public VerilogTestbench<VModRMTestbench>,
                                  public ModRMDecoderTestBench
 {
@@ -35,6 +50,17 @@ public:
         stream.clear();
         stream.insert(stream.end(), bytes.begin(), bytes.end());
         stream.push_back(0x99);
+
+        after_n_cycles(0, [&] {
+            this->dut.modrm = bytes[0];
+            this->dut.displacement = 0;
+            if (bytes.size() == 3)
+                this->dut.displacement =
+                    (static_cast<uint16_t>(bytes[2]) << 8) | bytes[1];
+            else if (bytes.size() == 2)
+                this->dut.displacement = static_cast<uint16_t>(
+                    sign_extend<int16_t, uint8_t>(bytes[1]));
+        });
         this->cycle();
     }
 
@@ -50,13 +76,7 @@ public:
             after_n_cycles(1, [&] { this->dut.start = 0; });
         });
 
-        for (auto i = 0; i < 1000; ++i) {
-            cycle();
-            if (complete)
-                return;
-        }
-
-        FAIL() << "failed to complete decode" << std::endl;
+        cycle(2);
     }
 
     OperandType get_rm_type() const
@@ -98,33 +118,13 @@ RTLModRMDecoderTestbench::RTLModRMDecoderTestbench()
     reset();
 
     dut.start = 0;
-    dut.fifo_rd_en = 0;
-
-    periodic(ClockSetup, [&] {
-        this->dut.fifo_empty = this->stream.size() == 0;
-
-        if (!this->dut.reset && this->dut.fifo_rd_en &&
-            this->stream.size() == 0)
-            FAIL() << "fifo underflow" << std::endl;
-
-    });
-
-    periodic(ClockCapture, [&] {
-        this->complete = this->dut.complete;
-
-        if (!this->dut.reset && this->dut.fifo_rd_en &&
-            this->stream.size() > 0) {
-            this->stream.pop_front();
-        }
-        after_n_cycles(1, [&] { this->dut.fifo_rd_data = this->stream[0]; });
-    });
 
     periodic(ClockSetup, [&] {
         after_n_cycles(0, [&] {
-            this->dut.regs[0] =
-                regs.get(static_cast<GPR>(this->dut.reg_sel[0]));
-            this->dut.regs[1] =
-                regs.get(static_cast<GPR>(this->dut.reg_sel[1]));
+            this->dut.si = regs.get(SI);
+            this->dut.di = regs.get(DI);
+            this->dut.bp = regs.get(BP);
+            this->dut.bx = regs.get(BX);
         });
     });
 }

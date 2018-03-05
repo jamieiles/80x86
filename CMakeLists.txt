@@ -39,7 +39,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "-Os ${CMAKE_CXX_FLAGS_RELEASE}")
 set(CMAKE_CXX_FLAGS_DEBUG "-DDEBUG -ggdb3 -O0 ${CMAKE_CXX_FLAGS_DEBUG}")
 
 set(POISON_MEMORY_VALUE "0x00" CACHE STRING "Poison all memory with this value in tests")
-add_definitions(-DMEM_INT_BYTE_VAL=${POISON_MEMORY_VALUE})
+add_definitions(-DMEM_INIT_BYTE_VAL=${POISON_MEMORY_VALUE})
 
 option(BUILD_DE0_CV "Build an image for the DE0-CV board" OFF)
 option(BUILD_DE0_NANO "Build an image for the DE0-nano board" OFF)

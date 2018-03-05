@@ -16,11 +16,11 @@
 // along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
 
 .at 0x86;
-    width WAUTO, modrm_start, mar_write, mar_wr_sel EA,
-        ra_modrm_rm_reg, jmp_rm_reg_mem xchg86_reg, segment DS;
+    width WAUTO, mar_write, mar_wr_sel EA, ra_modrm_rm_reg,
+        jmp_rm_reg_mem xchg86_reg, segment DS;
 .at 0x87;
-    modrm_start, mar_write, mar_wr_sel EA,
-        ra_modrm_rm_reg, jmp_rm_reg_mem xchg86_reg, segment DS;
+    mar_write, mar_wr_sel EA, ra_modrm_rm_reg,
+        jmp_rm_reg_mem xchg86_reg, segment DS;
 .auto_address;
 xchg86_reg:
     width WAUTO, a_sel RA, alu_op SELA, mar_write, mar_wr_sel Q,

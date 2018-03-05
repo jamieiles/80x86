@@ -29,6 +29,7 @@ module Microcode(input logic clk,
                  output logic irq_to_mdr,
                  output logic start_interrupt,
                  output logic do_escape_fault,
+                 output logic starting_instruction,
                  input logic stall,
                  input logic divide_error,
                  input logic rm_is_reg,
@@ -38,8 +39,8 @@ module Microcode(input logic clk,
                  input logic tf,
                  output logic [15:0] microcode_immediate,
                  output logic [8:0] update_flags,
+                 output logic modrm_start,
                  output logic use_microcode_immediate,
-                 output logic segment_override,
                  output logic [7:0] opcode,
                  input logic jump_taken,
                  input logic rb_zero,
@@ -55,7 +56,10 @@ module Microcode(input logic clk,
                  output logic reg_wr_en,
                  // Fifo Read Port.
                  output logic fifo_rd_en,
-                 input logic [7:0] fifo_rd_data,
+                 // verilator lint_off UNUSED
+                 input Instruction next_instruction_value,
+                 output Instruction cur_instruction,
+                 // verilator lint_on UNUSED
                  input logic fifo_empty,
                  input logic fifo_resetting,
                  output logic loop_next,
@@ -74,6 +78,7 @@ localparam irq_address = <%addr_bits%>'h12b;
 localparam single_step_address = <%addr_bits%>'h12c;
 localparam divide_error_address = <%addr_bits%>'h101;
 localparam next_instruction_address = <%addr_bits%>'h100;
+localparam modrm_wait_address = <%addr_bits%>'h12e;
 localparam debug_wait_address = <%addr_bits%>'h102;
 localparam do_int_address = <%addr_bits%>'h12d;
 
@@ -84,13 +89,14 @@ typedef struct packed {
 } microcode_instruction;
 
 microcode_instruction mem[num_instructions] /* synthesis ram_init_file = "microcode.mif" */;
+// verilator lint_off UNUSED
 microcode_instruction current;
+// verilator lint_on UNUSED
 reg [addr_bits-1:0] addr;
 wire [addr_bits-1:0] next_addr;
 reg [addr_bits-1:0] jump_target;
-
-assign segment_override = current.prefix_type == PrefixType_SEGMENT_OVERRIDE;
 assign use_microcode_immediate = |current.immediate;
+assign opcode = cur_instruction.opcode;
 
 always_comb begin
     case (current.immediate)
@@ -114,49 +120,41 @@ end
 assign <%name%> = current.<%name%>;
 <%/exported_fields%>
 
-assign fifo_rd_en = !stall && next_addr == {{addr_bits-8{1'b0}}, fifo_rd_data};
-
-reg [1:0] rep_prefix_type;
-wire has_rep_prefix = (rep_prefix_type == PrefixType_REPE ||
-                       rep_prefix_type == PrefixType_REPNE);
+assign fifo_rd_en = starting_instruction;
+assign starting_instruction = !stall && (next_addr == {{addr_bits-8{1'b0}}, next_instruction_value.opcode});
+assign modrm_start = addr == modrm_wait_address ||
+    (addr == next_instruction_address && !fifo_empty && next_instruction_value.has_modrm);
+wire has_rep_prefix = cur_instruction.rep != REP_PREFIX_NONE;
 reg rep_complete;
-
 assign debug_stopped = addr == debug_wait_address;
-assign multibit_shift = opcode == 8'hd2 ||
-                        opcode == 8'hd3 ||
-                        opcode == 8'hc0 ||
-                        opcode == 8'hc1;
-assign do_escape_fault = opcode[7:3] == 5'b11011 && next_addr == do_int_address;
-
+assign multibit_shift = cur_instruction.opcode == 8'hd2 ||
+                        cur_instruction.opcode == 8'hd3 ||
+                        cur_instruction.opcode == 8'hc0 ||
+                        cur_instruction.opcode == 8'hc1;
+assign do_escape_fault = cur_instruction.opcode[7:3] == 5'b11011 && next_addr == do_int_address;
 reg nmi_pending;
 reg ext_int_inhibit;
 wire take_nmi = (nmi_pending | nmi_pulse) & !ext_int_inhibit;
 wire take_irq = intr & int_enabled & !ext_int_inhibit;
 wire do_single_step = current.next_instruction & !ext_int_inhibit &
-    (trap_flag_set | (start_instruction & tf)) &
-     current.next != debug_wait_address;
+    trap_flag_set & current.next != debug_wait_address;
 assign start_interrupt = next_addr == nmi_address ||
                          next_addr == irq_address;
 assign irq_to_mdr = next_addr == irq_address;
 reg trap_flag_set;
-assign is_hlt = opcode == 8'hf4;
-
+assign is_hlt = cur_instruction.opcode == 8'hf4;
 reg seized;
 wire seizing = debug_seize & ~seized;
-
-reg start_instruction;
-
 assign loop_next = !stall && current.jump_type == JumpType_LOOP_DONE;
-
 assign reg_wr_en = current.rd_sel_source != RDSelSource_NONE & ~segment_wr_en;
-
 assign next_microinstruction = addr != next_addr;
+assign lock = cur_instruction.lock;
 
 always_comb begin
     case (current.width)
     WidthType_W8: width = 1'b1;
     WidthType_W16: width = 1'b0;
-    WidthType_WAUTO: width = ~opcode[0];
+    WidthType_WAUTO: width = ~cur_instruction.opcode[0];
     default: width = 1'b0;
     endcase
 end
@@ -166,16 +164,10 @@ always_ff @(posedge clk)
 
 always_ff @(posedge clk or posedge reset)
     if (reset)
-        start_instruction <= 1'b0;
-    else
-        start_instruction <= fifo_rd_en;
-
-always_ff @(posedge clk or posedge reset)
-    if (reset)
         trap_flag_set <= 1'b0;
     else if (next_addr == single_step_address)
         trap_flag_set <= 1'b0;
-    else if (start_instruction)
+    else if (starting_instruction)
         trap_flag_set <= tf;
 
 always_ff @(posedge clk or posedge reset)
@@ -183,7 +175,7 @@ always_ff @(posedge clk or posedge reset)
         ext_int_inhibit <= 1'b0;
     else if (current.ext_int_inhibit && current.next != debug_wait_address)
         ext_int_inhibit <= 1'b1;
-    else if (fifo_rd_en && !stall)
+    else if (starting_instruction && !stall)
         ext_int_inhibit <= 1'b0;
 
 `ifdef verilator
@@ -191,9 +183,9 @@ initial $readmemb({{`MICROCODE_ROM_PATH, "/microcode.bin"}}, mem);
 `endif
 
 always_comb begin
-    case (rep_prefix_type)
-    PrefixType_REPE: rep_complete = ~zf;
-    PrefixType_REPNE: rep_complete = zf;
+    case (cur_instruction.rep)
+    REP_PREFIX_E: rep_complete = ~zf;
+    REP_PREFIX_NE: rep_complete = zf;
     default: rep_complete = 1'b0;
     endcase
 end
@@ -208,21 +200,6 @@ always_ff @(posedge clk or posedge reset)
 
 always_ff @(posedge clk or posedge reset)
     if (reset)
-        opcode <= 8'b0;
-    else if (fifo_rd_en)
-        opcode <= fifo_rd_data;
-
-always_ff @(posedge clk or posedge reset)
-    if (reset)
-        rep_prefix_type <= 2'b0;
-    else if (next_instruction)
-        rep_prefix_type <= 2'b0;
-    else if (current.prefix_type == PrefixType_REPNE ||
-             current.prefix_type == PrefixType_REPE)
-        rep_prefix_type <= current.prefix_type;
-
-always_ff @(posedge clk or posedge reset)
-    if (reset)
         seized <= 1'b0;
     else if (debug_stopped)
         seized <= 1'b1;
@@ -232,7 +209,7 @@ always_ff @(posedge clk or posedge reset)
 always_comb begin
     unique case (current.jump_type)
     JumpType_RM_REG_MEM: jump_target = current.next + {{addr_bits-1{1'b0}}, ~rm_is_reg};
-    JumpType_OPCODE: jump_target = !fifo_empty ? {{addr_bits-8{1'b0}}, fifo_rd_data} : addr;
+    JumpType_OPCODE: jump_target = !fifo_empty ? {{addr_bits-8{1'b0}}, next_instruction_value.opcode} : addr;
     JumpType_DISPATCH_REG: jump_target = current.next + {{addr_bits-3{1'b0}}, modrm_reg};
     JumpType_HAS_NO_REP_PREFIX: jump_target = ~has_rep_prefix ? current.next : addr + 1'b1;
     JumpType_ZERO: jump_target = zf ? current.next : addr + 1'b1;
@@ -247,10 +224,10 @@ end
 always_comb begin
     if (reset)
         next_addr = reset_address;
-    else if (stall)
-        next_addr = addr;
     else if (debug_stopped && debug_run)
         next_addr = {{addr_bits - 9{1'b0}}, 1'b1, debug_addr};
+    else if (stall)
+        next_addr = addr;
     else if (current.ext_int_yield && seizing)
         next_addr = debug_wait_address;
     else if (current.ext_int_yield && take_nmi)
@@ -271,7 +248,9 @@ always_comb begin
         next_addr = debug_wait_address;
     else if (current.next_instruction || (is_hlt && intr))
         next_addr = !fifo_empty && !fifo_resetting ?
-            {{addr_bits-8{1'b0}}, fifo_rd_data} : next_instruction_address;
+            (next_instruction_value.has_modrm ? modrm_wait_address :
+             {{addr_bits-8{1'b0}}, next_instruction_value.opcode}) :
+            next_instruction_address;
     else
         next_addr = current.next;
 end
@@ -282,13 +261,9 @@ always @(posedge clk)
 always @(posedge clk)
     current <= mem[next_addr];
 
-always_ff @(posedge clk or posedge reset)
-    if (reset)
-        lock <= 1'b0;
-    else if (!stall && current.next_instruction)
-        lock <= 1'b0;
-    else if (opcode == 8'hf0)
-        lock <= 1'b1;
+always_ff @(posedge clk)
+    if (fifo_rd_en)
+        cur_instruction <= next_instruction_value;
 
 `ifdef verilator
 export "DPI-C" function get_microcode_address;

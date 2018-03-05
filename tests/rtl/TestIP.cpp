@@ -33,7 +33,11 @@ public:
 void IPTestFixture::inc()
 {
     this->dut.inc = 1;
-    after_n_cycles(1, [&] { this->dut.inc = 0; });
+    this->dut.start_instruction = 1;
+    after_n_cycles(1, [&] {
+        this->dut.inc = 0;
+        this->dut.start_instruction = 0;
+    });
     cycle();
 }
 
@@ -83,17 +87,4 @@ TEST_F(IPTestFixture, SetNewValue)
     set(0xa55a);
 
     ASSERT_EQ(0xa55a, get());
-}
-
-TEST_F(IPTestFixture, IncNoRollback)
-{
-    set(0x0100);
-    commit();
-    inc();
-    inc();
-    inc();
-    inc();
-    rollback();
-
-    ASSERT_EQ(0x0100, get());
 }

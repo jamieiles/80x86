@@ -20,11 +20,11 @@
 
 #define COMP_REGMEM_REG(opcode1, opcode2, alufunc, flags)                       \
 .at opcode1;                                                                    \
-    modrm_start, mar_write, mar_wr_sel EA, width WAUTO, segment DS,             \
-        ra_modrm_rm_reg, jmp_rm_reg_mem comp ## alufunc ## opcode1 ##_reg;      \
+    mar_write, mar_wr_sel EA, width WAUTO, segment DS, ra_modrm_rm_reg,         \
+        jmp_rm_reg_mem comp ## alufunc ## opcode1 ##_reg;                       \
 .at opcode2;                                                                    \
-    modrm_start, mar_write, mar_wr_sel EA, width WAUTO, segment DS,             \
-        ra_modrm_rm_reg, jmp_rm_reg_mem comp ## alufunc ## opcode1 ##_reg;      \
+    mar_write, mar_wr_sel EA, width WAUTO, segment DS, ra_modrm_rm_reg,         \
+        jmp_rm_reg_mem comp ## alufunc ## opcode1 ##_reg;      \
 .auto_address;                                                                  \
 comp ## alufunc ## opcode1 ## _reg:                                             \
     a_sel RA, b_sel RB, alu_op alufunc,                                         \
@@ -36,11 +36,11 @@ comp ## alufunc ## opcode1 ## _mem:                                             
 
 #define COMP_REG_REGMEM(opcode1, opcode2, alufunc, flags)                       \
 .at opcode1;                                                                    \
-    modrm_start, mar_write, mar_wr_sel EA, width WAUTO, segment DS,             \
-        ra_modrm_rm_reg, jmp_rm_reg_mem comp ## alufunc ## opcode1 ## _reg;     \
+    mar_write, mar_wr_sel EA, width WAUTO, segment DS, ra_modrm_rm_reg,         \
+        jmp_rm_reg_mem comp ## alufunc ## opcode1 ## _reg;                      \
 .at opcode2;                                                                    \
-    modrm_start, mar_write, mar_wr_sel EA, width WAUTO, segment DS,             \
-        ra_modrm_rm_reg, jmp_rm_reg_mem comp ## alufunc ## opcode1 ## _reg;     \
+    mar_write, mar_wr_sel EA, width WAUTO, segment DS, ra_modrm_rm_reg,         \
+        jmp_rm_reg_mem comp ## alufunc ## opcode1 ## _reg;                      \
 .auto_address;                                                                  \
 comp ## alufunc ## opcode1 ## _reg:                                             \
     a_sel RA, b_sel RB, alu_op alufunc, update_flags flags, width WAUTO,        \
@@ -52,9 +52,9 @@ comp ## alufunc ## opcode1 ## _mem:                                             
 
 #define COMP_REGMEM_A(opcode1, opcode2, alufunc, flags)                         \
 .at opcode1;                                                                    \
-    read_immed, width WAUTO, ra_sel AL, jmp comp ## alufunc ## opcode1;         \
+    width WAUTO, ra_sel AL, jmp comp ## alufunc ## opcode1;                     \
 .at opcode2;                                                                    \
-    read_immed, width WAUTO, ra_sel AL, jmp comp ## alufunc ## opcode1;         \
+    width WAUTO, ra_sel AL, jmp comp ## alufunc ## opcode1;                     \
 .auto_address;                                                                  \
 comp ## alufunc ## opcode1:                                                     \
     a_sel RA, b_sel IMMEDIATE, alu_op alufunc,                                  \

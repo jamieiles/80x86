@@ -49,11 +49,24 @@ set(ALU_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/xor.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/alu/ALU.sv)
 
+add_custom_command(OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/InstructionDefinitions.sv
+                   COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/gen-instructions-functions
+                           ${CMAKE_CURRENT_BINARY_DIR}/InstructionDefinitions.sv
+                   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/../documentation/instructions.yaml
+                   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/InstructionDefinitions.sv.templ
+                           ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/gen-instructions-functions)
+
+add_custom_target(generate_instruction_definitions
+                  DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/InstructionDefinitions.sv)
+
 set(CORE_SOURCES
     ${CMAKE_CURRENT_BINARY_DIR}/microcode/MicrocodeTypes.sv
     ${ALU_SOURCES}
-    ${CMAKE_CURRENT_BINARY_DIR}/microcode/Microcode.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/RegisterEnum.sv
+    ${CMAKE_CURRENT_SOURCE_DIR}/Instruction.sv
+    ${CMAKE_CURRENT_BINARY_DIR}/InstructionDefinitions.sv
+    ${CMAKE_CURRENT_SOURCE_DIR}/InsnDecoder.sv
+    ${CMAKE_CURRENT_BINARY_DIR}/microcode/Microcode.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/FlagsEnum.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/Core.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/CSIPSync.sv

@@ -27,9 +27,14 @@ public:
     void add_override(uint8_t segnum)
     {
         after_n_cycles(0, [segnum, this] {
-            this->dut.microcode_sr_rd_sel = segnum;
+            this->dut.override_in = segnum;
             this->dut.segment_override = 1;
-            after_n_cycles(1, [&] { this->dut.segment_override = 0; });
+            this->dut.update = 1;
+            after_n_cycles(1, [&] {
+                this->dut.update = 0;
+                this->dut.segment_override = 0;
+                this->dut.override_in = 0;
+            });
         });
     }
 
@@ -82,7 +87,7 @@ TEST_F(SegmentOverrideTestFixture, NextInstructionClearsOverride)
 
     this->dut.microcode_sr_rd_sel = 2;
     next_instruction();
-    cycle();
+    cycle(2);
 
     ASSERT_EQ(this->dut.sr_rd_sel, 2);
 }

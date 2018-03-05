@@ -35,7 +35,7 @@ retc2:
     segment SS, segment_force, mem_read, a_sel MAR, b_sel IMMEDIATE,
         immediate 0x2, alu_op ADD, rd_sel_source MICROCODE_RD_SEL,
         rd_sel SP;
-    a_sel MDR, alu_op SELA, load_ip, read_immed, ra_sel SP;
+    a_sel MDR, alu_op SELA, load_ip, ra_sel SP;
     a_sel RA, b_sel IMMEDIATE, alu_op ADD, rd_sel_source
         MICROCODE_RD_SEL, rd_sel SP, next_instruction;
 
@@ -65,8 +65,8 @@ retca:
     a_sel MDR, alu_op SELA, load_ip, segment_force, segment SS;
     segment SS, segment_force, mem_read, a_sel MAR, b_sel IMMEDIATE,
         immediate 0x2, alu_op ADD, mar_wr_sel Q, mar_write;
-    read_immed, a_sel MAR, b_sel IMMEDIATE, alu_op ADD,
-        rd_sel_source MICROCODE_RD_SEL, rd_sel SP;
+    a_sel MAR, b_sel IMMEDIATE, alu_op ADD, rd_sel_source MICROCODE_RD_SEL,
+        rd_sel SP;
     a_sel MDR, alu_op SELA, segment_force, segment CS,
         segment_wr_en, next_instruction;
 

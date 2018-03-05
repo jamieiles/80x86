@@ -20,6 +20,7 @@ module ImmediateReader(input logic clk,
                        input logic reset,
                        // Control.
                        input logic start,
+                       input logic flush,
                        output logic busy,
                        output logic complete,
                        input logic is_8bit,
@@ -57,7 +58,7 @@ end
 always_ff @(posedge clk or posedge reset)
     if (reset)
         _fetch_busy <= 1'b0;
-    else if (complete)
+    else if (complete || flush)
         _fetch_busy <= 1'b0;
     else if (start)
         _fetch_busy <= 1'b1;
@@ -66,9 +67,9 @@ always_ff @(posedge clk or posedge reset) begin
     if (reset) begin
         _bytes_read <= 2'b0;
     end else begin
-        if ((start && !_fetch_busy) || complete)
+        if ((start && !_fetch_busy) || complete || flush)
             _bytes_read <= 2'b0;
-        if (fifo_rd_en && !complete)
+        if (fifo_rd_en && !complete && !flush)
             _bytes_read <= _bytes_read + 2'b1;
     end
 end
@@ -77,9 +78,8 @@ always_ff @(posedge clk or posedge reset) begin
     if (reset) begin
         _immediate_buf <= 16'b0;
     end else begin
-        if (start && !_fetch_busy) begin
+        if (start && !_fetch_busy)
             _immediate_buf <= 16'b0;
-        end
 
         if (_bytes_read == 2'b0 && ~fifo_empty && start) begin
             _immediate_buf[7:0] <= fifo_rd_data;
@@ -87,6 +87,9 @@ always_ff @(posedge clk or posedge reset) begin
                 _immediate_buf[15:8] <= {8{fifo_rd_data[7]}};
         end else if (_bytes_read == 2'd1 && ~fifo_empty)
             _immediate_buf[15:8] <= fifo_rd_data;
+
+        if (flush)
+            _immediate_buf <= 16'b0;
     end
 end
 

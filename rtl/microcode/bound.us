@@ -17,8 +17,7 @@
 
 // BOUND
 .at 0x62;
-    modrm_start, mar_write, mar_wr_sel EA, segment DS,
-        jmp_rm_reg_mem bound_reg;
+    mar_write, mar_wr_sel EA, segment DS, jmp_rm_reg_mem bound_reg;
 .auto_address;
 bound_reg:
     b_sel IMMEDIATE, immediate 0x18, alu_op SELB, tmp_wr_en, jmp do_int;

@@ -16,8 +16,7 @@
 // along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
 
 .at 0x8d;
-    modrm_start, mar_write, mar_wr_sel EA, segment DS,
-        jmp_rm_reg_mem lea_reg;
+    mar_write, mar_wr_sel EA, segment DS, jmp_rm_reg_mem lea_reg;
 .auto_address;
 lea_reg:
     next_instruction;

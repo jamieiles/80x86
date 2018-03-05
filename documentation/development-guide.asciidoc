@@ -110,6 +110,13 @@ the system and run an application with the `SoftwareCPU` and then exit and
 restart with the `RTLCPU` to greatly reduce time taken to get to the
 interesting debug point.
 
+== Microarchitecture
+
+The core has a loosely coupled three stage pipeline consisting of instruction
+fetch, instruction decode and execution.  The prefetch stage has an 8 byte
+queue which feeds into a hardware instruction decoder that fills a 4 deep
+fully decoded instruction queue.
+
 == Microcode
 
 The microcode is stored in `rtl/microcode` where microcode files have the
@@ -275,8 +282,6 @@ adjacent with the register based instruction appearing first.
 
 will update the carry, overflow, zero and adjust flags to the result of the
 ALU operation.
-| modrm_start | Trigger the mod r/m decoding.  This will stall until complete
-  and calculate any effective addresses required.
 | rd_sel_source a| The source of the destination register number:
 
   - MODRM_REG: use the reg field of the mod r/m byte as the destination
@@ -306,8 +311,6 @@ ALU operation.
   the opcode, where bit 0 being set indicates a 16-bit operation.
 | load_ip | Causes the ALU result to be used as the new IP to be taken when
   the next instruction is executed.
-| read_immed | Triggers the immediate reader to read an immediate from the
-  instruction stream with the specified width.
 | io | Combined with `mem_read`/`mem_write` to indicate that the operation
   should use the I/O address space.  This will cause the segment to be ignored
   and the io pin to be asserted for the duration of this microinstruction.
@@ -811,14 +814,11 @@ the following conditions:
     priority to data accesses.
   * Memory accesses take a single cycle to complete.
 
-Instructions with a MOD R/M byte have a variable length and execution time
-depending on whether the addressing mode has a displacement.  In the
-instruction tables, the length reflects this, and if the addressing mode uses
-a displacement, add one cycle per displacement byte for the execution timing.
+Instructions with a MOD R/M byte require an additional cycle to calculate the
+effective address.
 
-Prefix bytes add one byte to the instruction length and one cycle to the
-execution time, and for conflicting prefixes such as multiple segment
-overrides, the last prefix is used.
+Prefix bytes add one byte to the instruction length, and for conflicting
+prefixes such as multiple segment overrides, the last prefix is used.
 
 <<<
 

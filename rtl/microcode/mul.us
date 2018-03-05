@@ -70,11 +70,8 @@ do_imul16:
         next_instruction;
 
 .at 0x6b;
-    modrm_start, mar_write mar_wr_sel EA, jmp imul_6b;
+    mar_write, mar_wr_sel EA, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem imul6b_reg;
 .auto_address;
-imul_6b:
-    width W8, read_immed;
-    ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem imul6b_reg;
 imul6b_reg:
     a_sel RA, b_sel IMMEDIATE, alu_op IMUL, update_flags ZF OF CF,
         rd_sel_source MODRM_REG, next_instruction;
@@ -84,8 +81,4 @@ imul6b_mem:
         rd_sel_source MODRM_REG, next_instruction;
 
 .at 0x69;
-    modrm_start, mar_write mar_wr_sel EA, jmp imul_69;
-.auto_address;
-imul_69:
-    // Now that we have the immediate, everything is the same as opcode 6b
-    read_immed, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem imul6b_reg;
+    mar_write, mar_wr_sel EA, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem imul6b_reg;

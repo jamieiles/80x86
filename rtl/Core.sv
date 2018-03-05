@@ -47,6 +47,10 @@ module Core(input logic clk,
             input logic [15:0] debug_wr_val,
             input logic debug_wr_en);
 
+// verilator lint_off UNUSED
+Instruction wr_instruction, cur_instruction, next_instruction_value;
+// verilator lint_on UNUSED
+
 // Internal busses.
 wire [15:0] a_bus =
     a_sel == ADriver_RA ? reg_rd_val[0] :
@@ -55,15 +59,15 @@ wire [15:0] a_bus =
 wire [15:0] b_bus =
     b_sel == BDriver_RB ? reg_rd_val[1] :
     b_sel == BDriver_IMMEDIATE ? immediate :
+    b_sel == BDriver_IMMEDIATE2 ? cur_instruction.immediates[1] :
     b_sel == BDriver_SR ? seg_rd_val : tmp_val;
 
 // Register file.
-wire reg_is_8_bit = modrm_start & ~modrm_complete ? 1'b0 : is_8_bit;
+wire [15:0] si, di, bp, bx;
+wire reg_is_8_bit = is_8_bit;
 wire [2:0] reg_rd_sel[2];
-assign reg_rd_sel[0] = modrm_start && ~modrm_complete ? modrm_reg_rd_sel[0] :
-    ra_modrm_rm_reg ? rm_regnum : microcode_reg_rd_sel[0];
-assign reg_rd_sel[1] = modrm_start && ~modrm_complete ?
-    modrm_reg_rd_sel[1] : rb_cl ? CL : regnum;
+assign reg_rd_sel[0] = ra_modrm_rm_reg ? rm_regnum : microcode_reg_rd_sel[0];
+assign reg_rd_sel[1] = rb_cl ? CL : regnum;
 wire [2:0] reg_wr_sel =
     rd_sel_source == RDSelSource_MODRM_REG ? regnum :
     rd_sel_source == RDSelSource_MODRM_RM_REG ? rm_regnum :
@@ -86,12 +90,19 @@ wire [15:0] seg_rd_val;
 wire [15:0] seg_wr_val = alu_out[15:0];
 wire [15:0] cs;
 wire [1:0] segment;
-wire segment_override;
 wire segment_wr_en;
+
+wire decode_immed_start;
+wire decode_immed_is_8bit;
+wire decode_fifo_rd_en;
+wire decode_complete;
+wire instruction_empty;
+wire instruction_fifo_full;
+wire instruction_fifo_nearly_full;
 
 // Prefetch FIFO
 wire fifo_wr_en;
-wire fifo_rd_en = modrm_fifo_rd_en | immed_fifo_rd_en | microcode_fifo_rd_en;
+wire fifo_rd_en = immed_fifo_rd_en | decode_fifo_rd_en;
 wire [7:0] fifo_rd_data;
 wire [7:0] fifo_wr_data;
 wire fifo_empty;
@@ -107,25 +118,20 @@ wire prefetch_load_new_ip;
 wire [15:0] prefetch_new_ip;
 
 // Immediate Reader
-wire immed_start = modrm_immed_start | microcode_immed_start;
-wire immed_busy;
+wire immed_start = decode_immed_start;
 wire immed_complete;
-wire modrm_immed_is_8bit;
-wire immed_is_8bit = modrm_immed_start ? modrm_immed_is_8bit : is_8_bit;
+wire immed_is_8bit = decode_immed_is_8bit;
 wire [15:0] immediate_reader_immediate;
 wire [15:0] immediate = use_microcode_immediate ? microcode_immediate :
-    immediate_reader_immediate;
+    cur_instruction.immediates[0];
 wire immed_fifo_rd_en;
 
+wire instruction_fifo_rd_en;
+
 // ModRM Decoder
-wire modrm_complete;
-wire modrm_clear = reset | do_next_instruction;
-wire [2:0] modrm_reg_rd_sel[2];
+wire modrm_clear = reset | do_next_instruction | start_interrupt | fifo_reset;
 wire modrm_start;
-wire modrm_busy;
 wire modrm_uses_bp_as_base;
-wire modrm_fifo_rd_en;
-wire modrm_immed_start;
 wire [2:0] regnum;
 wire rm_is_reg;
 wire [2:0] rm_regnum;
@@ -165,9 +171,8 @@ wire [2:0] microcode_reg_rd_sel[2];
 wire [2:0] microcode_reg_wr_sel;
 wire [1:0] reg_wr_source;
 wire [1:0] seg_wr_sel;
-wire microcode_fifo_rd_en;
 wire [1:0] a_sel;
-wire [1:0] b_sel;
+wire [2:0] b_sel;
 wire next_instruction;
 wire is_8_bit;
 wire [15:0] effective_address;
@@ -178,7 +183,6 @@ wire [15:0] tmp_wr_val = debug_stopped && debug_wr_en ? debug_wr_val :
     alu_out[31:16];
 wire tmp_wr_sel;
 wire [15:0] tmp_val;
-wire microcode_immed_start;
 wire [15:0] microcode_immediate;
 wire use_microcode_immediate;
 wire [1:0] microcode_segment;
@@ -197,12 +201,12 @@ wire next_microinstruction;
 // Misc control signals
 wire debug_set_ip = debug_stopped && ip_wr_en;
 wire do_next_instruction = (next_instruction & ~do_stall) | debug_set_ip;
-wire do_stall = modrm_busy | immed_busy | loadstore_busy | divide_busy | alu_busy;
+wire do_stall = loadstore_busy | divide_busy | alu_busy;
 wire start_interrupt;
 
 // IP
-wire ip_inc = fifo_rd_en & ~fifo_empty & ~start_interrupt;
 wire do_escape_fault;
+wire starting_instruction;
 wire ip_rollback = (start_interrupt & ext_int_yield & ~is_hlt) | do_escape_fault;
 
 // Divider
@@ -223,6 +227,10 @@ assign debug_val = tmp_val;
 
 RegisterFile    RegisterFile(.clk(clk),
                              .reset(reset),
+                             .si(si),
+                             .di(di),
+                             .bp(bp),
+                             .bx(bx),
                              .is_8_bit(reg_is_8_bit),
                              .rd_sel(reg_rd_sel),
                              .rd_val(reg_rd_val),
@@ -232,10 +240,13 @@ RegisterFile    RegisterFile(.clk(clk),
 
 SegmentOverride SegmentOverride(.clk(clk),
                                 .reset(reset),
+                                .flush(fifo_reset),
                                 .next_instruction(do_next_instruction),
                                 .force_segment(segment_force),
                                 .bp_is_base(modrm_uses_bp_as_base),
-                                .segment_override(segment_override),
+                                .update(starting_instruction),
+                                .segment_override(next_instruction_value.has_segment_override),
+                                .override_in(next_instruction_value.segment),
                                 .microcode_sr_rd_sel(microcode_segment),
                                 .sr_rd_sel(segment));
 
@@ -249,20 +260,20 @@ SegmentRegisterFile SegmentRegisterFile(.clk(clk),
                                         .cs(cs));
 
 Fifo            #(.data_width(8),
-                  .depth(8))
-                Fifo(.clk(clk),
-                     .reset(reset),
-                     .flush(fifo_reset),
-                     .wr_en(fifo_wr_en),
-                     .wr_data(fifo_wr_data),
-                     .rd_en(fifo_rd_en),
-                     .rd_data(fifo_rd_data),
-                     .empty(fifo_empty),
-                     .nearly_full(fifo_full),
-                     // verilator lint_off PINCONNECTEMPTY
-                     .full()
-                     // verilator lint_on PINCONNECTEMPTY
-                    );
+                  .depth(6))
+                PrefetchFifo(.clk(clk),
+                             .reset(reset),
+                             .flush(fifo_reset),
+                             .wr_en(fifo_wr_en),
+                             .wr_data(fifo_wr_data),
+                             .rd_en(fifo_rd_en),
+                             .rd_data(fifo_rd_data),
+                             .empty(fifo_empty),
+                             .nearly_full(fifo_full),
+                             // verilator lint_off PINCONNECTEMPTY
+                             .full()
+                             // verilator lint_on PINCONNECTEMPTY
+                            );
 
 CSIPSync        CSIPSync(.clk(clk),
                          .reset(reset),
@@ -298,7 +309,10 @@ ImmediateReader ImmediateReader(.clk(clk),
                                 .reset(reset),
                                 // Control
                                 .start(immed_start),
-                                .busy(immed_busy),
+                                .flush(fifo_reset),
+                                // verilator lint_off PINCONNECTEMPTY
+                                .busy(),
+                                // verilator lint_on PINCONNECTEMPTY
                                 .complete(immed_complete),
                                 .is_8bit(immed_is_8bit),
                                 // Result
@@ -309,36 +323,57 @@ ImmediateReader ImmediateReader(.clk(clk),
                                 .fifo_empty(fifo_empty));
 
 LoopCounter LoopCounter(.clk(clk),
-                        .count_in(immediate_reader_immediate[4:0]),
-                        .load(immed_complete),
+                        .count_in(next_instruction_value.immediates[1][4:0]),
+                        .load(instruction_fifo_rd_en),
                         .next(loop_next),
                         .done(loop_done));
 
+Fifo            #(.data_width($bits(Instruction)),
+                  .depth(4),
+                  .full_threshold(1))
+                InstructionFifo(.clk(clk),
+                                .reset(reset),
+                                .flush(fifo_reset),
+                                .wr_en(decode_complete),
+                                .wr_data(wr_instruction),
+                                .rd_en(instruction_fifo_rd_en),
+                                .rd_data(next_instruction_value),
+                                .empty(instruction_empty),
+                                .nearly_full(instruction_fifo_nearly_full),
+                                .full(instruction_fifo_full));
+
+InsnDecoder InsnDecoder(.clk(clk),
+                        .reset(reset),
+                        .flush(fifo_reset),
+                        .stall(instruction_fifo_full),
+                        .nearly_full(instruction_fifo_nearly_full),
+                        .fifo_rd_en(decode_fifo_rd_en),
+                        .fifo_rd_data(fifo_rd_data),
+                        .fifo_empty(fifo_empty),
+                        .instruction(wr_instruction),
+                        .complete(decode_complete),
+                        .immed_start(decode_immed_start),
+                        .immed_complete(immed_complete),
+                        .immed_is_8bit(decode_immed_is_8bit),
+                        .immediate(immediate_reader_immediate));
+
 ModRMDecode     ModRMDecode(.clk(clk),
                             .reset(reset),
+                            .si(si),
+                            .di(di),
+                            .bp(bp),
+                            .bx(bx),
                             // Control
                             .start(modrm_start),
-                            .busy(modrm_busy),
-                            .complete(modrm_complete),
                             .clear(modrm_clear),
+                            .modrm(next_instruction_value.mod_rm),
+                            .displacement(next_instruction_value.displacement),
                             // Results
                             .effective_address(effective_address),
                             .regnum(regnum),
                             .rm_is_reg(rm_is_reg),
                             .rm_regnum(rm_regnum),
-                            .bp_as_base(modrm_uses_bp_as_base),
-                            // Registers
-                            .reg_sel(modrm_reg_rd_sel),
-                            .regs(reg_rd_val),
-                            // Fifo Read Port
-                            .fifo_rd_en(modrm_fifo_rd_en),
-                            .fifo_rd_data(fifo_rd_data),
-                            .fifo_empty(fifo_empty),
-                            // Immediates
-                            .immed_start(modrm_immed_start),
-                            .immed_complete(immed_complete),
-                            .immed_is_8bit(modrm_immed_is_8bit),
-                            .immediate(immediate_reader_immediate));
+                            .bp_as_base(modrm_uses_bp_as_base));
 
 Flags           Flags(.clk(clk),
                       .reset(reset),
@@ -389,6 +424,7 @@ Microcode       Microcode(.clk(clk),
                           .irq_to_mdr(irq_to_mdr),
                           .start_interrupt(start_interrupt),
                           .do_escape_fault(do_escape_fault),
+                          .starting_instruction(starting_instruction),
                           .stall(do_stall),
                           .divide_error(divide_error),
                           .modrm_reg(regnum),
@@ -409,7 +445,6 @@ Microcode       Microcode(.clk(clk),
                           .ext_int_yield(ext_int_yield),
                           .io(io_operation),
                           .next_instruction(next_instruction),
-                          .read_immed(microcode_immed_start),
                           .load_ip(ip_wr_en),
                           .mar_wr_sel(mar_wr_sel),
                           .mar_write(microcode_write_mar),
@@ -425,16 +460,16 @@ Microcode       Microcode(.clk(clk),
                           .reg_wr_en(reg_wr_en),
                           .reg_wr_source(reg_wr_source),
                           .segment(microcode_segment),
-                          .segment_override(segment_override),
                           .segment_force(segment_force),
                           .segment_wr_en(segment_wr_en),
                           .tmp_wr_en(microcode_tmp_wr_en),
                           .tmp_wr_sel(tmp_wr_sel),
                           .update_flags(update_flags),
                           .width(is_8_bit),
-                          .fifo_rd_en(microcode_fifo_rd_en),
-                          .fifo_rd_data(fifo_rd_data),
-                          .fifo_empty(fifo_empty),
+                          .fifo_rd_en(instruction_fifo_rd_en),
+                          .cur_instruction(cur_instruction),
+                          .next_instruction_value(next_instruction_value),
+                          .fifo_empty(instruction_empty),
                           .fifo_resetting(fifo_reset),
                           .loop_next(loop_next),
                           .loop_done(loop_done),
@@ -448,8 +483,9 @@ Microcode       Microcode(.clk(clk),
 
 IP              IP(.clk(clk),
                    .reset(reset),
-                   .inc(ip_inc),
-                   .start_instruction(next_instruction),
+                   .inc(next_instruction_value.length),
+                   .start_instruction(instruction_fifo_rd_en),
+                   .next_instruction(do_next_instruction),
                    .rollback(ip_rollback),
                    .wr_en(prefetch_load_new_ip),
                    .wr_val(prefetch_new_ip),
@@ -485,8 +521,8 @@ int instr_length;
 // verilator lint_on BLKANDNBLK
 
 always @(posedge clk)
-    if (fifo_rd_en & ~fifo_empty)
-        instr_length <= instr_length + 1;
+    if (instruction_fifo_rd_en)
+        instr_length <= {24'b0, next_instruction_value.length};
 
 export "DPI-C" function get_and_clear_instr_length;
 

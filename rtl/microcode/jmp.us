@@ -16,28 +16,17 @@
 // along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
 
 .at 0xe9;
-    read_immed, jmp jmpe9;
-.auto_address;
-jmpe9:
     a_sel IP, b_sel IMMEDIATE, alu_op ADD, load_ip,
         next_instruction;
 
 .at 0xea;
-    read_immed, jmp jmpea;
+    b_sel IMMEDIATE, alu_op SELB, load_ip, jmp jmpea;
 .auto_address;
 jmpea:
-    b_sel IMMEDIATE, alu_op SELB, load_ip;
-    // read_immed can't be combined in the previous microinstruction as
-    // otherwise it will clobber the immediate during stalling whilst load_ip
-    // is asserted and we'll load an invalid IP.
-    read_immed;
-    b_sel IMMEDIATE, alu_op SELB, segment_wr_en,
+    b_sel IMMEDIATE2, alu_op SELB, segment_wr_en,
         segment_force, segment CS, next_instruction;
 
 .at 0xeb;
-    width W8, read_immed, jmp jmpeb;
-.auto_address;
-jmpeb:
     a_sel IP, b_sel IMMEDIATE, alu_op ADD, load_ip,
         next_instruction;
 
@@ -62,11 +51,10 @@ jmpff_indirect_inter_mem:
 
 // JCXZ
 .at 0xe3;
-    width W8, read_immed, jmp jcxz;
+    rb_cl, jmp jcxz;
 
 .auto_address;
 jcxz:
-    rb_cl;
     jmp_rb_zero jcxz_taken;
     next_instruction;
 jcxz_taken:
@@ -74,7 +62,7 @@ jcxz_taken:
 
 #define JUMP(opcode) \
 .at opcode; \
-    width W8, read_immed, jmp test_jump
+    jmp test_jump
 
 JUMP(0x70);
 JUMP(0x71);

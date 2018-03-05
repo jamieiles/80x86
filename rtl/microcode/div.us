@@ -62,8 +62,7 @@ do_idiv16:
     ra_sel DX, alu_op IDIV, jmp div16_complete;
 
 .at 0xd4;
-    width W8, read_immed, ra_modrm_rm_reg, b_sel IMMEDIATE, alu_op SELB,
-        mdr_write, jmp do_aam;
+    width W8, ra_modrm_rm_reg, b_sel IMMEDIATE, alu_op SELB, mdr_write, jmp do_aam;
 .auto_address;
 do_aam:
     width W8, ra_sel AL;

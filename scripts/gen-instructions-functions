@@ -1,0 +1,93 @@
+#!/usr/bin/env python
+
+# Copyright Jamie Iles, 2018
+#
+# This file is part of s80x86.
+#
+# s80x86 is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# s80x86 is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
+
+import os
+import pystache
+import struct
+import yaml
+import sys
+
+HERE = os.path.dirname(__file__)
+TEMPLATE = os.path.join(HERE, '..', 'rtl', 'InstructionDefinitions.sv.templ')
+
+pystache.defaults.DELIMITERS = (u'<%', u'%>')
+
+with open(os.path.join(HERE, '..', 'documentation', 'instructions.yaml')) as instr:
+    instructions = yaml.load(instr)
+
+def has_modrm(operands):
+    return any(map(lambda x: x != 'ES' and x.startswith('E') or x.startswith('M'), operands))
+
+def has_immediate(operands):
+    return any(map(lambda x: x.startswith('I'), operands))
+
+def has_mem_only(operands):
+    return any(map(lambda x: x.startswith('M'), operands))
+
+def get_immediates(operands):
+    immediates = []
+
+    for i in operands:
+        if not i[0] in 'IJO':
+            continue
+        if i[1] == 'b' and i[0] != 'O':
+            immediates.append(0)
+        if i[1] == 'w' or i[0] == 'O':
+            immediates.append(1)
+        if i[1] == 'p':
+            immediates.append(1)
+            immediates.append(1)
+
+    return immediates
+
+def immediate_sizes(immediates):
+    sizes = 0
+
+    for idx, v in enumerate(immediates):
+        if v != 0:
+            sizes |= (1 << idx)
+
+    return sizes
+
+definitions = []
+modrm_opcodes = set()
+for mnemonic in sorted(instructions.keys()):
+    definition = instructions[mnemonic]
+
+    for encoding in definition['encodings']:
+        idef = {
+            'opcode': "8'h{0:02x}".format(encoding['opcode']),
+            'has_reg': "1'b1" if 'reg' in encoding else "1'b0",
+            'reg': "3'h{0:x}".format(encoding['reg']) if 'reg' in encoding else "3'bzzz",
+            'has_modrm': "1'b1" if has_modrm(encoding.get('operands', [])) else "1'b0",
+            'immediate_sizes': "2'h{0:x}".format(immediate_sizes(get_immediates(encoding.get('operands', [])))),
+            'immediate_count': len(get_immediates(encoding.get('operands', []))),
+        }
+        definitions.append(idef)
+
+        if has_modrm(encoding.get('operands', [])):
+            modrm_opcodes.add("8'h{0:02x}".format(encoding['opcode']))
+
+with open(TEMPLATE) as template:
+    with open(sys.argv[1], 'w') as outfile:
+        outfile.write(pystache.render(template.read(),
+                                      {
+                                        'instructions': definitions,
+                                        'modrm_opcodes': [{'opc': o} for o in modrm_opcodes]
+                                      }))

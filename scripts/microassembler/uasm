@@ -38,7 +38,6 @@ from microasm.types import (
     JumpType,
     MARWrSel,
     TEMPWrSel,
-    PrefixType,
     WidthType
 )
 
@@ -211,8 +210,7 @@ class MicroAssembler(object):
     def _gather_enums():
         enums = []
         for cls in [ADriver, BDriver, ALUOp, JumpType, RDSelSource,
-                    MARWrSel, TEMPWrSel, UpdateFlags, PrefixType,
-                    RegWrSource, WidthType]:
+                    MARWrSel, TEMPWrSel, UpdateFlags, RegWrSource, WidthType]:
             items = []
             for idx, e in enumerate(cls.__members__):
                 name = '%s_%s' % (cls.__name__, e)
@@ -293,14 +291,12 @@ class MicroAssembler(object):
         'mem_read': (1, _boolean, True),
         'mem_write': (1, _boolean, True),
         'segment': (num_bits(len(SR)), partial(_enumerated_field, enum_class=SR), True),
-        'prefix_type': (num_bits(len(PrefixType)), partial(_enumerated_field, enum_class=PrefixType), False),
         'segment_wr_en': (1, _boolean, True),
         'segment_force': (1, _boolean, True),
         'a_sel': (num_bits(len(ADriver)), partial(_enumerated_field, enum_class=ADriver), True),
         'b_sel': (num_bits(len(BDriver)), partial(_enumerated_field, enum_class=BDriver), True),
         'alu_op': (num_bits(len(ALUOp)), partial(_enumerated_field, enum_class=ALUOp), True),
         'update_flags': (len(UpdateFlags), _update_flags, False),
-        'modrm_start': (1, _boolean, True),
         'ra_modrm_rm_reg': (1, _boolean, True),
         'rd_sel_source': (num_bits(len(RDSelSource)), partial(_enumerated_field, enum_class=RDSelSource), True),
         'reg_wr_source': (num_bits(len(RegWrSource)), partial(_enumerated_field, enum_class=RegWrSource), True),
@@ -308,7 +304,6 @@ class MicroAssembler(object):
         'tmp_wr_sel': (num_bits(len(TEMPWrSel)), partial(_enumerated_field, enum_class=TEMPWrSel), True),
         'width': (num_bits(len(WidthType)), partial(_enumerated_field, enum_class=WidthType), False),
         'load_ip': (1, _boolean, True),
-        'read_immed': (1, _boolean, True),
         'io': (1, _boolean, True),
         'ext_int_yield': (1, _boolean, True),
         'ext_int_inhibit': (1, _boolean, False),

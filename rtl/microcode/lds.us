@@ -16,8 +16,8 @@
 // along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
 
 .at 0xc5;
-    modrm_start, mar_write, mar_wr_sel EA, segment DS,
-        jmp_rm_reg_mem lds_reg, segment DS;
+    mar_write, mar_wr_sel EA, segment DS, jmp_rm_reg_mem lds_reg,
+        segment DS;
 .auto_address;
 lds_reg:
     next_instruction;

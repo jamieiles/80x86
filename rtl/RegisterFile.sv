@@ -19,6 +19,10 @@
 module RegisterFile(input logic clk,
                     input logic reset,
                     input logic is_8_bit,
+                    output logic [15:0] si,
+                    output logic [15:0] di,
+                    output logic [15:0] bp,
+                    output logic [15:0] bx,
                     // Read port.
                     input logic [2:0] rd_sel[2],
                     output logic [15:0] rd_val[2],
@@ -46,6 +50,20 @@ always_ff @(posedge clk) begin
             gprs[wr_sel] <= wr_val;
         end
     end
+end
+
+always_ff @(posedge clk) begin
+    si <= wr_en && !is_8_bit && wr_sel == SI ? wr_val : gprs[SI];
+    di <= wr_en && !is_8_bit && wr_sel == DI ? wr_val : gprs[DI];
+    bp <= wr_en && !is_8_bit && wr_sel == BP ? wr_val : gprs[BP];
+
+    bx <= gprs[BX];
+    if (wr_en && !is_8_bit && wr_sel == BX)
+        bx <= wr_val;
+    if (wr_en && is_8_bit && wr_sel == BL)
+        bx <= {gprs[BX][15:8], wr_val[7:0]};
+    if (wr_en && is_8_bit && wr_sel == BH)
+        bx <= {wr_val[7:0], gprs[BX][7:0]};
 end
 
 genvar rd_port;

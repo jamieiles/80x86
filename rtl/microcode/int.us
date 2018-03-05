@@ -21,10 +21,9 @@
 
 // The same as above, but this time it's a 8 bit interrupt number.
 .at 0xcd;
-    width W8, read_immed, jmp intN;
+    b_sel IMMEDIATE, alu_op SELB, mar_wr_sel Q, mar_write, jmp intN;
 .auto_address;
 intN:
-    b_sel IMMEDIATE, alu_op SELB, mar_wr_sel Q, mar_write;
     a_sel MAR, b_sel IMMEDIATE, immediate 0xff, alu_op AND, mar_write,
         mar_wr_sel Q;
     a_sel MAR, b_sel IMMEDIATE, immediate 0x4, alu_op MUL, tmp_wr_en,

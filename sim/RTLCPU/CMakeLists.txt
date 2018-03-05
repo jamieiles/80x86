@@ -43,7 +43,7 @@ verilate(TOPLEVEL RTLCPU
          ${CORE_SOURCES}
          GENERATED_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/VRTLCPU___024unit.cpp
          ${CMAKE_CURRENT_BINARY_DIR}/VRTLCPU___024unit.h
-         DEPENDS generate_microcode)
+         DEPENDS generate_microcode generate_instruction_definitions)
 
 add_library(rtlsim SHARED
             Core.cpp)

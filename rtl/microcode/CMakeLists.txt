@@ -53,7 +53,6 @@ set(microprogram_sources
     ${CMAKE_CURRENT_SOURCE_DIR}/not.us
     ${CMAKE_CURRENT_SOURCE_DIR}/or.us
     ${CMAKE_CURRENT_SOURCE_DIR}/pop.us
-    ${CMAKE_CURRENT_SOURCE_DIR}/prefixes.us
     ${CMAKE_CURRENT_SOURCE_DIR}/push.us
     ${CMAKE_CURRENT_SOURCE_DIR}/rcl.us
     ${CMAKE_CURRENT_SOURCE_DIR}/rcr.us
@@ -111,4 +110,7 @@ add_custom_target(generate_microcode
 verilate(TOPLEVEL Microcode
          VERILOG_SOURCES
          ${CMAKE_CURRENT_BINARY_DIR}/MicrocodeTypes.sv
+         ${CMAKE_CURRENT_SOURCE_DIR}/../RegisterEnum.sv
+         ${CMAKE_CURRENT_SOURCE_DIR}/../Instruction.sv
+         ${CMAKE_CURRENT_SOURCE_DIR}/../InsnDecoder.sv
          ${CMAKE_CURRENT_BINARY_DIR}/Microcode.sv)

@@ -52,6 +52,7 @@ class BDriver(Enum):
     IMMEDIATE = 1
     SR = 2
     TEMP = 3
+    IMMEDIATE2 = 4
 
 class ALUOp(Enum):
     SELA = 0
@@ -132,12 +133,6 @@ class RegWrSource(Enum):
 class TEMPWrSel(Enum):
     Q_LOW = 0
     Q_HIGH = 1
-
-class PrefixType(Enum):
-    NONE = 0
-    SEGMENT_OVERRIDE = 1
-    REPNE = 2
-    REPE = 3
 
 class WidthType(Enum):
     W16 = 0

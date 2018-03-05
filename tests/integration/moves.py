@@ -29,7 +29,7 @@ class MovesRunner(Runner):
 
     def validate_result(self):
         self.assert_mem_equal(0, 0x1234, 0xabcd, width=16)
-        self.assert_mem_equal(0, 0x007e, 0xabcd, width=16)
         self.assert_reg_equal(GPR.AX, 0xabcd)
+        self.assert_mem_equal(0, 0x007e, 0xabcd, width=16)
 
 MovesRunner(sys.argv[1]).run()

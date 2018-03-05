@@ -16,5 +16,7 @@
 // along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
 
 .at 0xf4;
+    jmp hlt;
+.auto_address;
 hlt:
     jmp hlt, ext_int_yield;

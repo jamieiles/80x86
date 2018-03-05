@@ -17,8 +17,7 @@
 
 // Multiplexed inc/dec
 .at 0xfe;
-    width W8, modrm_start, mar_write, mar_wr_sel EA,
-        jmp_dispatch_reg dispatch_fe;
+    width W8, mar_write, mar_wr_sel EA, jmp_dispatch_reg dispatch_fe;
 .auto_address;
 dispatch_fe:
     width W8, ra_modrm_rm_reg, segment DS, jmp_rm_reg_mem inc_fe_reg; // reg == 0

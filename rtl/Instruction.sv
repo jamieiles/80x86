@@ -1,4 +1,4 @@
-// Copyright Jamie Iles, 2017
+// Copyright Jamie Iles, 2018
 //
 // This file is part of s80x86.
 //
@@ -15,30 +15,15 @@
 // You should have received a copy of the GNU General Public License
 // along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
 
-// ES segment override
-.at 0x26;
-    segment ES, prefix_type SEGMENT_OVERRIDE, jmp_opcode;
-
-// CS segment override
-.at 0x2e;
-    segment CS, prefix_type SEGMENT_OVERRIDE, jmp_opcode;
-
-// SS segment override
-.at 0x36;
-    segment SS, prefix_type SEGMENT_OVERRIDE, jmp_opcode;
-
-// DS segment override
-.at 0x3e;
-    segment DS, prefix_type SEGMENT_OVERRIDE, jmp_opcode;
-
-// REPNE prefix
-.at 0xf2;
-    prefix_type REPNE, jmp_opcode;
-
-// REPE prefix
-.at 0xf3;
-    prefix_type REPE, jmp_opcode;
-
-// LOCK prefix
-.at 0xf0;
-    jmp_opcode;
+typedef struct packed {
+    logic [7:0] length;
+    logic lock;
+    RepPrefix rep;
+    SR_t segment;
+    logic has_segment_override;
+    logic has_modrm;
+    logic [1:0][15:0] immediates;
+    logic [15:0] displacement;
+    logic [7:0] mod_rm;
+    logic [7:0] opcode;
+} Instruction;

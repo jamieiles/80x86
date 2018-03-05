@@ -19,6 +19,7 @@ tests, a reference BIOS implementation and reference FPGA designs.
 * Lock signal for atomic accesses
 * 256 external interrupts
 * 1 non-maskable interrupt
+* 3 stage fetch/decode/execute pipeline
 * Debug interface suitable
   - JTAG TAP compatible
   - Register/Memory access

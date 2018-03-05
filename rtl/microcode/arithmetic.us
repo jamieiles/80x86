@@ -20,15 +20,15 @@
 
 #define ARITH_REGMEM_REG(opcode1, opcode2, alufunc, flags)                      \
 .at opcode1;                                                                    \
-    modrm_start, mar_write, mar_wr_sel EA, width WAUTO, 			\
-        ra_modrm_rm_reg, jmp_rm_reg_mem alufunc ## opcode1 ##_reg, segment DS;  \
+    mar_write, mar_wr_sel EA, width WAUTO, ra_modrm_rm_reg,                     \
+        jmp_rm_reg_mem alufunc ## opcode1 ##_reg, segment DS;                   \
 .at opcode2;                                                                    \
-    modrm_start, mar_write, mar_wr_sel EA, width WAUTO, 			\
-        ra_modrm_rm_reg, jmp_rm_reg_mem alufunc ## opcode1 ##_reg, segment DS;  \
+    mar_write, mar_wr_sel EA, width WAUTO, ra_modrm_rm_reg, 			\
+        jmp_rm_reg_mem alufunc ## opcode1 ##_reg, segment DS;  			\
 .auto_address;                                                                  \
 alufunc ## opcode1 ## _reg:                                                     \
     a_sel RA, b_sel RB, alu_op alufunc,						\
-        rd_sel_source MODRM_RM_REG, update_flags flags,              \
+        rd_sel_source MODRM_RM_REG, update_flags flags,              		\
         width WAUTO, next_instruction;                                          \
 alufunc ## opcode1 ## _mem:                                                     \
     segment DS, mem_read, width WAUTO;                                          \
@@ -37,27 +37,27 @@ alufunc ## opcode1 ## _mem:                                                     
 
 #define ARITH_REG_REGMEM(opcode1, opcode2, alufunc, flags)                      \
 .at opcode1;                                                                    \
-    modrm_start, mar_write, mar_wr_sel EA, width WAUTO,               		\
-        ra_modrm_rm_reg, jmp_rm_reg_mem alufunc ## opcode1 ## _reg, segment DS; \
+    mar_write, mar_wr_sel EA, width WAUTO, ra_modrm_rm_reg, 			\
+	jmp_rm_reg_mem alufunc ## opcode1 ## _reg, segment DS; 			\
 .at opcode2;                                                                    \
-    modrm_start, mar_write, mar_wr_sel EA, width WAUTO,               		\
-        ra_modrm_rm_reg, jmp_rm_reg_mem alufunc ## opcode1 ## _reg, segment DS; \
+    mar_write, mar_wr_sel EA, width WAUTO, ra_modrm_rm_reg, 			\
+	jmp_rm_reg_mem alufunc ## opcode1 ## _reg, segment DS; 			\
 .auto_address;                                                                  \
 alufunc ## opcode1 ## _reg:                                                     \
     a_sel RA, b_sel RB, alu_op alufunc, rd_sel_source MODRM_REG,     		\
-        update_flags flags, width WAUTO,                             \
+        update_flags flags, width WAUTO,                             		\
         next_instruction;                                       		\
 alufunc ## opcode1 ## _mem:                                                     \
     segment DS, mem_read, width WAUTO;						\
     a_sel MDR, b_sel RB, alu_op alufunc, rd_sel_source MODRM_REG,    		\
-        update_flags flags, width WAUTO,                             \
+        update_flags flags, width WAUTO,                             		\
         next_instruction;
 
 #define ARITH_REGMEM_A(opcode1, opcode2, alufunc, flags)                        \
 .at opcode1;                                                                    \
-    read_immed, width WAUTO, ra_sel AL, jmp alufunc ## opcode1;                 \
+    width WAUTO, ra_sel AL, jmp alufunc ## opcode1;                             \
 .at opcode2;                                                                    \
-    read_immed, width WAUTO, ra_sel AL, jmp alufunc ## opcode1;                 \
+    width WAUTO, ra_sel AL, jmp alufunc ## opcode1;                             \
 .auto_address;                                                                  \
 alufunc ## opcode1:                                                             \
     a_sel RA, b_sel IMMEDIATE, alu_op alufunc,                       		\
