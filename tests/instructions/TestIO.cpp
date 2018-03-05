@@ -213,7 +213,7 @@ TEST_F(EmulateFixture, Insb)
 
     for (auto i = 0; i < 3; ++i)
         EXPECT_EQ(read_mem8(0x800 + i, ES), 0xaa);
-    EXPECT_EQ(read_mem8(0x803, ES), 0x00);
+    EXPECT_EQ(read_mem8(0x803, ES), mem_init_8);
 }
 
 TEST_F(EmulateFixture, InsbDec)
@@ -232,7 +232,7 @@ TEST_F(EmulateFixture, InsbDec)
 
     for (auto i = 0; i < 3; ++i)
         EXPECT_EQ(read_mem8(0x800 + i, ES), 0xaa);
-    EXPECT_EQ(read_mem8(0x7ff, ES), 0x00);
+    EXPECT_EQ(read_mem8(0x7ff, ES), mem_init_8);
 }
 
 TEST_F(EmulateFixture, Insw)
@@ -251,7 +251,7 @@ TEST_F(EmulateFixture, Insw)
 
     for (auto i = 0; i < 3; ++i)
         EXPECT_EQ(read_mem16(0x800 + i * 2, ES), 0xaa55);
-    EXPECT_EQ(read_mem8(0x806, ES), 0x00);
+    EXPECT_EQ(read_mem16(0x806, ES), mem_init_16);
 }
 
 TEST_F(EmulateFixture, InswDec)
@@ -270,5 +270,5 @@ TEST_F(EmulateFixture, InswDec)
 
     for (auto i = 0; i < 3; ++i)
         EXPECT_EQ(read_mem16(0x800 + i * 2, ES), 0xaa55);
-    EXPECT_EQ(read_mem8(0x7fe, ES), 0x00);
+    EXPECT_EQ(read_mem16(0x7fe, ES), mem_init_16);
 }
