@@ -522,7 +522,7 @@ int instr_length;
 
 always @(posedge clk)
     if (instruction_fifo_rd_en)
-        instr_length <= {24'b0, next_instruction_value.length};
+        instr_length <= {28'b0, next_instruction_value.length};
 
 export "DPI-C" function get_and_clear_instr_length;
 

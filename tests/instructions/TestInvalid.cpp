@@ -115,3 +115,32 @@ INSTANTIATE_TEST_CASE_P(UnimplementedOpcode,
                             std::vector<uint8_t>{0x8d, 0xc0},
                             // call indirect inter reg
                             std::vector<uint8_t>{0xff, 3 << 6 | 3 << 3}));
+
+TEST_F(EmulateFixture, TooLongTraps)
+{
+    write_mem16(VEC_INVALID_OPCODE + 2, 0x8000, CS); // CS
+    write_mem16(VEC_INVALID_OPCODE + 0, 0x0100, CS); // IP
+
+    write_reg(SP, 0x100);
+    write_reg(CS, 0x7c00);
+    write_reg(IP, 0x0001);
+    write_flags(IF);
+
+    std::vector<uint8_t> instr;
+    for (auto i = 0; i < 15; ++i)
+        instr.push_back(0xf0);
+    instr.push_back(0x90);
+    set_instruction(instr);
+
+    emulate(1, false);
+
+    EXPECT_PRED_FORMAT2(AssertFlagsEqual, read_flags(), FLAGS_STUCK_BITS);
+    EXPECT_EQ(read_reg(CS), 0x8000);
+    EXPECT_EQ(read_reg(IP), 0x0100);
+    EXPECT_EQ(read_reg(SP), 0x0100 - 6);
+
+    EXPECT_EQ(read_mem16(0x100 - 2, SS), FLAGS_STUCK_BITS | IF);
+    EXPECT_EQ(read_mem16(0x100 - 4, SS), 0x7c00);
+    // Return to the following instruction (length % 16).
+    EXPECT_EQ(read_mem16(0x100 - 6, SS), 0x0001);
+}

@@ -218,7 +218,7 @@ public:
         return cpu->read_io16(addr);
     }
 
-    void emulate(int count = 1)
+    void emulate(int count = 1, bool check_length = true)
     {
         cpu->clear_side_effects();
 
@@ -226,7 +226,7 @@ public:
         size_t len = 0;
         for (auto i = 0; i < count; ++i)
             len += cpu->step();
-        if (cpu->has_instruction_length())
+        if (cpu->has_instruction_length() && check_length)
             ASSERT_EQ(len, instr_len);
     }
 

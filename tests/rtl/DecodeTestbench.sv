@@ -15,8 +15,6 @@
 // You should have received a copy of the GNU General Public License
 // along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
 
-//verilator lint_off UNUSED
-//verilator lint_off UNDRIVEN
 module DecodeTestbench(input logic clk,
                        input logic reset,
                        input logic stall,
@@ -27,7 +25,7 @@ module DecodeTestbench(input logic clk,
                        output logic [7:0] opcode,
                        output logic [7:0] mod_rm,
                        output logic [15:0] displacement,
-                       output logic [7:0] length,
+                       output logic [3:0] length,
                        output logic lock,
                        output logic [1:0] rep,
                        output logic [1:0] segment,
@@ -46,7 +44,9 @@ wire immed_fifo_rd_en;
 wire [15:0] immediate;
 wire decode_fifo_rd_en;
 
+// verilator lint_off UNUSED
 Instruction instruction;
+// verilator lint_on UNUSED
 
 assign fifo_rd_en = immed_fifo_rd_en | decode_fifo_rd_en;
 assign opcode = instruction.opcode;

@@ -835,6 +835,11 @@ size_t EmulatorPimpl::emulate_insn()
         // clang-format on
     } while (processing_prefixes);
 
+    if (instr_length >= 16) {
+        instr_length %= 16;
+        invalid_opcode();
+    }
+
     if (!jump_taken)
         registers->set(IP, registers->get(IP) + instr_length);
 

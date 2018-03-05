@@ -16,7 +16,8 @@
 // along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
 
 typedef struct packed {
-    logic [7:0] length;
+    logic invalid;
+    logic [3:0] length;
     logic lock;
     RepPrefix rep;
     SR_t segment;

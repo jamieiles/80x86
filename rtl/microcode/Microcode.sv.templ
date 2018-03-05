@@ -79,6 +79,7 @@ localparam single_step_address = <%addr_bits%>'h12c;
 localparam divide_error_address = <%addr_bits%>'h101;
 localparam next_instruction_address = <%addr_bits%>'h100;
 localparam modrm_wait_address = <%addr_bits%>'h12e;
+localparam bad_opcode_address = <%addr_bits%>'h12f;
 localparam debug_wait_address = <%addr_bits%>'h102;
 localparam do_int_address = <%addr_bits%>'h12d;
 
@@ -234,6 +235,9 @@ always_comb begin
         next_addr = nmi_address;
     else if (current.ext_int_yield && take_irq)
         next_addr = irq_address;
+    else if (addr == next_instruction_address && !fifo_empty && !fifo_resetting &&
+             next_instruction_value.invalid)
+        next_addr = bad_opcode_address;
     else if (current.jump_type != JumpType_UNCONDITIONAL)
         next_addr = jump_target;
     else if (divide_error)

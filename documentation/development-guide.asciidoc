@@ -117,6 +117,10 @@ fetch, instruction decode and execution.  The prefetch stage has an 8 byte
 queue which feeds into a hardware instruction decoder that fills a 4 deep
 fully decoded instruction queue.
 
+Deviating from the 80186, the hardware decoder generates an invalid opcode
+trap when an instruction exceeds 15 bytes in length.  This is not a valid
+16-bit encoding and can only be reached with multiple redundant prefixes.
+
 == Microcode
 
 The microcode is stored in `rtl/microcode` where microcode files have the

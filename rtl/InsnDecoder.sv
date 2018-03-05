@@ -70,9 +70,10 @@ always_comb begin
 
     case (state)
     STATE_OPCODE: begin
-        insn_complete = !fifo_empty && !is_prefix(fifo_rd_data) &&
+        insn_complete = (!fifo_empty && !is_prefix(fifo_rd_data) &&
             !insn_has_modrm(fifo_rd_data) &&
-            insn_immed_count(fifo_rd_data, 3'b0) == 2'b00;
+            insn_immed_count(fifo_rd_data, 3'b0) == 2'b00) ||
+            instruction.invalid;
         next_state = fifo_empty ? STATE_OPCODE :
             is_prefix(fifo_rd_data) ? STATE_OPCODE :
             insn_has_modrm(fifo_rd_data) ? STATE_MODRM :
@@ -161,9 +162,10 @@ always_ff @(posedge clk or posedge reset) begin
                 endcase
 
                 if (complete)
-                    instruction.length <= 8'b1;
+                    instruction.length <= 4'b1;
                 else if (!fifo_empty)
-                    instruction.length <= instruction.length + 8'b1;
+                    {instruction.invalid, instruction.length} <=
+                        {instruction.invalid, instruction.length} + 5'b1;
 
                 if (next_state == STATE_IMMED1) begin
                     immed_start <= 1'b1;
@@ -174,7 +176,8 @@ always_ff @(posedge clk or posedge reset) begin
         end
         STATE_MODRM: begin
             if (!fifo_empty) begin
-                instruction.length <= instruction.length + 1'b1;
+                {instruction.invalid, instruction.length} <=
+                    {instruction.invalid, instruction.length} + 5'b1;
                 instruction.mod_rm <= fifo_rd_data;
             end
             if (next_state == STATE_DISPLACEMENT) begin
@@ -189,8 +192,9 @@ always_ff @(posedge clk or posedge reset) begin
         STATE_DISPLACEMENT: begin
             if (immed_complete) begin
                 instruction.displacement <= immediate;
-                instruction.length <= immed_is_8bit ? instruction.length + 8'd1 :
-                    instruction.length + 8'd2;
+                {instruction.invalid, instruction.length} <=
+                    {instruction.invalid, instruction.length} +
+                    (immed_is_8bit ? 5'd1 : 5'd2);
                 immed_start <= 1'b0;
             end
             if (next_state == STATE_IMMED1) begin
@@ -202,8 +206,9 @@ always_ff @(posedge clk or posedge reset) begin
         STATE_IMMED1: begin
             if (immed_complete) begin
                 instruction.immediates[0] <= immediate;
-                instruction.length <= immed_is_8bit ? instruction.length + 8'd1 :
-                    instruction.length + 8'd2;
+                {instruction.invalid, instruction.length} <=
+                    {instruction.invalid, instruction.length} +
+                    (immed_is_8bit ? 5'd1 : 5'd2);
                 immed_start <= 1'b0;
             end
             if (next_state == STATE_IMMED2) begin
@@ -215,8 +220,9 @@ always_ff @(posedge clk or posedge reset) begin
         STATE_IMMED2: begin
             if (immed_complete) begin
                 instruction.immediates[1] <= immediate;
-                instruction.length <= immed_is_8bit ? instruction.length + 8'd1 :
-                    instruction.length + 8'd2;
+                {instruction.invalid, instruction.length} <=
+                    {instruction.invalid, instruction.length} +
+                    (immed_is_8bit ? 5'd1 : 5'd2);
                 immed_start <= 1'b0;
             end
         end

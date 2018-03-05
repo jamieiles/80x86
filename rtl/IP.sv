@@ -21,7 +21,7 @@ module IP(input logic clk,
           input logic start_instruction,
           input logic next_instruction,
           input logic rollback,
-          input logic [7:0] inc,
+          input logic [3:0] inc,
           input logic wr_en,
           input logic [15:0] wr_val,
           output logic [15:0] val);
@@ -46,6 +46,6 @@ always @(posedge clk or posedge reset)
     else if (rollback)
         cur_val <= instruction_start_addr;
     else if (start_instruction)
-        cur_val <= cur_val + {8'b0, inc};
+        cur_val <= cur_val + {12'b0, inc};
 
 endmodule

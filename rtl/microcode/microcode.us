@@ -51,6 +51,10 @@ single_step:
 modrm_decode:
     jmp_opcode;
 
+.at 0x12f;
+bad_opcode:
+    jmp invalid_opcode;
+
 #define INVALID_OPCODE(opc) \
 .at opc; \
     jmp invalid_opcode
