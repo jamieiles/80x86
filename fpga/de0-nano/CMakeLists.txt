@@ -70,6 +70,8 @@ set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/Micr
                             COMPILE_FLAGS "--verilog_macro=\"MICROCODE_ROM_PATH=\\\\\\\"${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/\\\\\\\"")
 set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/../common/Cache.sv PROPERTIES
                             COMPILE_FLAGS "--verilog_macro=\"CACHE_SIZE=${CACHE_SIZE}\"")
+set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/../common/Top.sv PROPERTIES
+                            COMPILE_FLAGS "--verilog_macro=\"CACHE_SIZE=${CACHE_SIZE}\"")
 
 add_custom_command(OUTPUT microcode.mif
                    COMMAND cp ${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/microcode.mif .
