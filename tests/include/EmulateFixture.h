@@ -115,11 +115,15 @@ public:
 
     void set_instruction(const std::vector<uint8_t> &instr)
     {
-        cpu->write_vector8(cpu->read_reg(CS), cpu->read_reg(IP), instr);
+        auto cs = cpu->read_reg(CS);
+        auto ip = cpu->read_reg(IP);
+        cpu->write_vector8(cs, ip, instr);
+        // jmp to self, prevent wandering off into garbage
+        cpu->write_mem16(cs, ip + instr.size(), 0xfeeb);
         instr_len = instr.size();
         // Force a prefetch fifo clear so we don't end up executing what was
         // there before we wrote this instruction.
-        cpu->write_reg(IP, cpu->read_reg(IP));
+        cpu->write_reg(IP, ip);
     }
 
     void write_reg(GPR regnum, uint16_t val)
