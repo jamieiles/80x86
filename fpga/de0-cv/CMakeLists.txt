@@ -80,7 +80,10 @@ set(FPGA_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../spi/SPIMaster.sv
     ${CMAKE_CURRENT_SOURCE_DIR}/../spi/SPIPorts.sv)
 
-set(ALL_SOURCES ${CORE_SOURCES} ${FPGA_SOURCES})
+set(ALL_SOURCES
+    ${CMAKE_CURRENT_BINARY_DIR}/../../config.v
+    ${CORE_SOURCES}
+    ${FPGA_SOURCES})
 
 set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/Microcode.v PROPERTIES
                             COMPILE_FLAGS "--verilog_macro=\"MICROCODE_ROM_PATH=\\\\\\\"${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/\\\\\\\"")

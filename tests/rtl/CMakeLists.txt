@@ -62,6 +62,7 @@ verilate(TOPLEVEL Fifo
          VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/Fifo.sv)
 verilate(TOPLEVEL Flags
          VERILOG_SOURCES
+         ${CMAKE_CURRENT_BINARY_DIR}/../../config.v
          ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/FlagsEnum.sv
          ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/RegisterEnum.sv
          ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/Instruction.sv

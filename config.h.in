@@ -1,3 +1,4 @@
 #pragma once
 
 #cmakedefine01 S80X86_TRAP_ESCAPE
+#cmakedefine01 S80X86_PSEUDO_286

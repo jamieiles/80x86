@@ -84,6 +84,11 @@ There are some CMake configuration options that control features:
   - *-DS80X86_TRAP_ESCAPE* controls whether the escape fault is taken on an
   escape opcode.  This defaults to off for DOS compatibility in which case
   escape opcodes act like a NOP.
+  - *-DS80X86_PSEUDO_286* causes bits 15:12 of the flags register to be
+  cleared which will trick most CPU detection routines into identifying a 286
+  compatible CPU allowing many real-mode 286-only applications to run - most
+  286 real-mode applications depend on the instructions that were also added
+  in the 80186 rather than the 80286 protected mode capabilities.
 
 == Simulator
 

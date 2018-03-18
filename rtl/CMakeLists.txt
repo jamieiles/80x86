@@ -60,6 +60,7 @@ add_custom_target(generate_instruction_definitions
                   DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/InstructionDefinitions.sv)
 
 set(CORE_SOURCES
+    ${CMAKE_CURRENT_BINARY_DIR}/../config.v
     ${CMAKE_CURRENT_BINARY_DIR}/microcode/MicrocodeTypes.sv
     ${ALU_SOURCES}
     ${CMAKE_CURRENT_SOURCE_DIR}/RegisterEnum.sv

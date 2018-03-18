@@ -16,6 +16,7 @@
 # along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
 
 add_library(simcommon SHARED
+            ${CMAKE_CURRENT_BINARY_DIR}/../../config.h
             RegisterFile.h
             RegisterFile.cpp
             Memory.h

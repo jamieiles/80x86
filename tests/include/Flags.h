@@ -58,5 +58,5 @@ static inline ::testing::AssertionResult AssertFlagsEqual(const char *m_expr,
     return ::testing::AssertionFailure()
            << m_expr << " and " << n_expr << " are not equal "
            << "m(" << m_repr << ") "
-           << "n(" << n_repr << ")";
+           << "n(" << n_repr << ") " << std::hex << m << "/" << n;
 }

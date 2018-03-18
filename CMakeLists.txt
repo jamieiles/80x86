@@ -15,6 +15,7 @@ include(InstallRequiredSystemLibraries)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMake/")
 
+include(MacroBoolTo01)
 find_package(Nasm)
 find_package(Verilator)
 find_program(CCACHE_FOUND ccache)
@@ -44,8 +45,12 @@ add_definitions(-DMEM_INIT_BYTE_VAL=${POISON_MEMORY_VALUE})
 option(BUILD_DE0_CV "Build an image for the DE0-CV board" OFF)
 option(BUILD_DE0_NANO "Build an image for the DE0-nano board" OFF)
 option(S80X86_TRAP_ESCAPE "Trap on ESC opcodes" OFF)
+option(S80X86_PSEUDO_286 "Clear bits 12-15 of the flags register to act like 286 real mode" OFF)
+
+macro_bool_to_01(S80X86_PSEUDO_286 S80X86_PSEUDO_286_INT)
 
 configure_file(config.h.in config.h)
+configure_file(config.v.in config.v)
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 enable_testing()

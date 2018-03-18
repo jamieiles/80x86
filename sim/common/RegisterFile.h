@@ -18,6 +18,7 @@
 #pragma once
 
 #include <stdint.h>
+#include "config.h"
 
 enum GPR {
     AX,
@@ -69,7 +70,11 @@ enum Flag {
     OF = (1 << OF_OFFS),
 };
 
+#if S80X86_PSEUDO_286 == 1
+enum { FLAGS_STUCK_BITS = 0x0000 | (1 << 1) };
+#else
 enum { FLAGS_STUCK_BITS = 0xf000 | (1 << 1) };
+#endif
 
 class RegisterFile
 {

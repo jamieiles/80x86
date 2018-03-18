@@ -35,6 +35,7 @@ get_property(CORE_SOURCES GLOBAL PROPERTY G_CORE_SOURCES)
 
 verilate(TOPLEVEL RTLCPU
          VERILOG_SOURCES
+         ${CMAKE_CURRENT_BINARY_DIR}/../../config.v
          ${CMAKE_CURRENT_SOURCE_DIR}/RTLCPU.sv
          ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/MemArbiter.sv
          ${CMAKE_CURRENT_SOURCE_DIR}/../../fpga/common/Cache.sv

@@ -15,6 +15,7 @@
 // You should have received a copy of the GNU General Public License
 // along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
 
+#include "config.h"
 #include "bda.h"
 #include "bios.h"
 #include "display.h"
@@ -175,6 +176,7 @@ void root(void)
     putstr("Platform: " __PLATFORM__ "\n");
     putstr("Build: " __BUILD__ "\n");
     printk("Cache: %uKB\n", CACHE_SIZE / 1024);
+    printk("Pseudo-286: %s\n", S80X86_PSEUDO_286 ? "enabled" : "disabled");
     putstr("\n");
 
     init_timer();
