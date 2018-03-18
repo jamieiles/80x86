@@ -70,46 +70,55 @@ private:
 
 public:
     const phys_addr buffer_phys = 0xb8000;
+    const phys_addr vga_buffer_phys = 0xa0000;
 
     explicit CGA(Memory *mem)
-        : IOPorts(0x03d4, 64), mem(mem), reg_idx(0), status(0), mode_reg(0)
+        : IOPorts(0x03b4, 128),
+          mem(mem),
+          reg_idx(0),
+          status(0),
+          mode_reg(0),
+          dac_wr_sel(0),
+          dac_seq(0)
     {
         memset(idx_regs, 0, sizeof(idx_regs));
         display.set_graphics_palette(cga_default_palette);
     }
 
-    void write8(uint16_t __unused port_num,
-                unsigned __unused offs,
-                uint8_t __unused v)
+    void write8(uint16_t port_num, unsigned offs, uint8_t v)
     {
-        if (port_num == 0 && offs == 0) {
+        if (port_num >= 0x20)
+            port_num -= 0x20;
+
+        if (port_num == 0 && offs == 0)
             reg_idx = v;
-        } else if (port_num == 0 && offs == 1) {
-            if (reg_idx == 0xa || reg_idx == 0xb || reg_idx == 0xe ||
-                reg_idx == 0xf)
-                idx_regs[reg_idx] = v;
-        } else if (port_num == 4 && offs == 0) {
+        else if (port_num == 0 && offs == 1)
+            idx_regs[reg_idx] = v;
+        else if (port_num == 4 && offs == 0)
             mode_reg = v & 0xb;
-        } else if (port_num == 4 && offs == 1) {
-            auto palette_idx = (v >> 4) & 0x3;
-            auto palette = *color_palettes[palette_idx];
-
-            palette.colors[0] = cga_full_palette[v & 0x0f];
-
-            display.set_graphics_palette(palette);
-        }
+        else if (port_num == 4 && offs == 1)
+            write_color_control(v);
+        else if (port_num == 0x0c && offs == 0)
+            attribute_mode_control = v;
+        else if (port_num == 0x14 && offs == 0)
+            dac_wr_sel = v;
+        else if (port_num == 0x14 && offs == 1)
+            write_dac(v);
     }
 
-    uint8_t read8(uint16_t __unused port_num, unsigned __unused offs)
+    uint8_t read8(uint16_t port_num, unsigned offs)
     {
-        if (port_num == 0) {
+        if (port_num >= 0x20)
+            port_num -= 0x20;
+
+        if (port_num == 0)
             return offs == 0 ? reg_idx : idx_regs[reg_idx];
-        } else if (port_num == 4 && offs == 0) {
+        else if (port_num == 4 && offs == 0)
             return mode_reg;
-        } else if (port_num == 6 && offs == 0) {
-            status ^= 0x9;
-            return status;
-        }
+        else if (port_num == 0xc && offs == 0)
+            return attribute_mode_control;
+        else if (port_num == 6 && offs == 0)
+            return read_status();
 
         return 0;
     }
@@ -137,8 +146,48 @@ private:
         return mode_reg & (1 << 1);
     }
 
+    bool is_graphics_256() const
+    {
+        return attribute_mode_control == 0x41;
+    }
+
+    void write_dac(uint8_t v)
+    {
+        if (dac_seq == 0)
+            dac_palette.colors[dac_wr_sel].r = ((v & 0x3f) << 2) & 0xf0;
+        if (dac_seq == 1)
+            dac_palette.colors[dac_wr_sel].g = ((v & 0x3f) << 2) & 0xf0;
+        if (dac_seq == 2)
+            dac_palette.colors[dac_wr_sel].b = ((v & 0x3f) << 2) & 0xf0;
+        dac_seq = (dac_seq + 1) % 3;
+        if (dac_seq == 0) {
+            ++dac_wr_sel;
+            display.set_graphics_palette(dac_palette);
+        }
+    }
+
+    void write_color_control(uint8_t v)
+    {
+        auto palette_idx = (v >> 4) & 0x3;
+        auto palette = *color_palettes[palette_idx];
+
+        palette.colors[0] = cga_full_palette[v & 0x0f];
+
+        display.set_graphics_palette(palette);
+    }
+
+    uint8_t read_status()
+    {
+        static int c;
+        if (c % 16 == 0)
+            status ^= 0x9;
+        ++c;
+        return status;
+    }
+
     void update_text();
     void update_graphics();
+    void update_graphics_256();
 
     Memory *mem;
     Display display;
@@ -146,6 +195,10 @@ private:
     uint8_t idx_regs[256];
     uint8_t status;
     uint8_t mode_reg;
+    uint8_t attribute_mode_control;
+    GraphicsPalette dac_palette;
+    uint8_t dac_wr_sel;
+    uint8_t dac_seq;
 
     friend class boost::serialization::access;
     template <class Archive>
@@ -157,6 +210,10 @@ private:
         ar & idx_regs;
         ar & status;
         ar & mode_reg;
+        ar & attribute_mode_control;
+        ar & dac_palette;
+        ar & dac_wr_sel;
+        ar & dac_seq;
         // clang-format on
     }
 };
@@ -165,7 +222,9 @@ void CGA::update()
 {
     display.set_graphics(is_graphics());
 
-    if (is_graphics())
+    if (is_graphics_256())
+        update_graphics_256();
+    else if (is_graphics())
         update_graphics();
     else
         update_text();
@@ -190,6 +249,23 @@ void CGA::update_graphics()
             pixel >>= pixel_shift;
             pixel &= 0x3;
 
+            display.set_pixel(row, col, pixel);
+        }
+    }
+
+    display.refresh();
+}
+
+void CGA::update_graphics_256()
+{
+    int cols = 320;
+    int rows = 200;
+
+    for (auto row = 0; row < rows; ++row) {
+        for (auto col = 0; col < cols; ++col) {
+            auto pixel_mem_address = row * cols + col;
+            auto pixel =
+                mem->read<uint8_t>(vga_buffer_phys + pixel_mem_address);
             display.set_pixel(row, col, pixel);
         }
     }

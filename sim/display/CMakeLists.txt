@@ -18,6 +18,7 @@
 add_definitions(-DFONT_FILE="${CMAKE_CURRENT_BINARY_DIR}/cp437-8x8")
 add_library(simdisplay SHARED
             Display.cpp)
+include_directories(../common)
 target_link_libraries(simdisplay ${SDL2_LIBRARY} ${SDL2_TTF_LIBRARY})
 install(TARGETS simdisplay
         LIBRARY DESTINATION lib

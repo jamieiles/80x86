@@ -250,7 +250,7 @@ always_comb begin
         16'b0000_0000_0100_00z0: timer_access = 1'b1;
         16'b0000_0000_0010_0000: pic_access = 1'b1;
 `ifdef CONFIG_VGA
-        16'b0000_0011_1101_zzzz: vga_reg_access = 1'b1;
+        16'b0000_0011_110z_zzzz: vga_reg_access = 1'b1;
 `endif // CONFIG_VGA
 `ifdef CONFIG_PS2
         16'b1111_1111_1110_0000: ps2_mouse_access = 1'b1;
@@ -273,6 +273,7 @@ always_comb begin
         {1'b1, 20'b1111_11??_????_????_????}: bios_access = 1'b1;
 `ifdef CONFIG_VGA
         {1'b?, 20'b1011_10??_????_????_????}: vga_access = 1'b1;
+        {1'b?, 20'b1010_????_????_????_????}: vga_access = 1'b1;
 `endif // CONFIG_VGA
         default: sdram_access = 1'b1;
         endcase
@@ -448,6 +449,9 @@ wire [3:0] background_color;
 wire [14:0] cursor_pos;
 wire [2:0] cursor_scan_start;
 wire [2:0] cursor_scan_end;
+wire vga_256_color;
+wire [7:0] vga_dac_idx;
+wire [17:0] vga_dac_rd;
 
 VGAController VGAController(.clk(vga_clk),
                             .cs(vga_access),

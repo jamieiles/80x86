@@ -41,7 +41,8 @@ module FrameBuffer(input logic clk,
                    output logic [3:0] background,
                    output logic [3:0] foreground,
                    output logic render_cursor,
-                   output logic [1:0] graphics_colour);
+                   input logic vga_256_color,
+                   output logic [7:0] graphics_colour);
 
 wire [15:0] cpu_q;
 wire cpu_wr_en = data_m_access & cs & data_m_wr_en;
@@ -54,8 +55,10 @@ assign {background, foreground, glyph} = is_border || !vga_valid ? 16'b0 : vga_q
 // 2 vertical pixels per horizontal pixel to scale out.
 wire [11:0] text_address = {1'b0, ({1'b0, row} / 11'd16) * 11'd80 + ({1'b0, col} / 11'd8)};
 // Double pixels for graphics mode.
-wire [12:0] graphics_address;
-wire [12:0] address = graphics_enabled ? graphics_address : {1'b0, text_address};
+wire [15:0] graphics_address;
+wire [15:0] graphics_address_256;
+wire [15:0] address = vga_256_color ? graphics_address_256 :
+    graphics_enabled ? graphics_address : {4'b0, text_address};
 wire [2:0] glyph_row = row[3:1];
 
 wire [12:0] graphics_row = {4'b0, row[9:1]};
@@ -63,38 +66,49 @@ wire [12:0] graphics_col = {4'b0, col[9:1]};
 
 reg [2:0] pixel_word_offs;
 
+wire [15:0] pixel_256_addr = {3'b0, graphics_row} * 16'd320 + {3'b0, graphics_col};
+
 always_ff @(posedge clk)
     pixel_word_offs <= graphics_col[2:0];
 
 always_comb begin
-    case (pixel_word_offs)
-    3'b011: graphics_colour = vga_q[1:0];
-    3'b010: graphics_colour = vga_q[3:2];
-    3'b001: graphics_colour = vga_q[5:4];
-    3'b000: graphics_colour = vga_q[7:6];
-    3'b111: graphics_colour = vga_q[9:8];
-    3'b110: graphics_colour = vga_q[11:10];
-    3'b101: graphics_colour = vga_q[13:12];
-    3'b100: graphics_colour = vga_q[15:14];
-    endcase
+    if (!vga_256_color) begin
+        case (pixel_word_offs)
+        3'b011: graphics_colour = {6'b0, vga_q[1:0]};
+        3'b010: graphics_colour = {6'b0, vga_q[3:2]};
+        3'b001: graphics_colour = {6'b0, vga_q[5:4]};
+        3'b000: graphics_colour = {6'b0, vga_q[7:6]};
+        3'b111: graphics_colour = {6'b0, vga_q[9:8]};
+        3'b110: graphics_colour = {6'b0, vga_q[11:10]};
+        3'b101: graphics_colour = {6'b0, vga_q[13:12]};
+        3'b100: graphics_colour = {6'b0, vga_q[15:14]};
+        endcase
+    end else
+        graphics_colour = pixel_word_offs[0] ? vga_q[15:8] : vga_q[7:0];
 
     if (is_border || !vga_valid)
-        graphics_colour = 2'b00;
+        graphics_colour = 8'b00;
 end
 
 always_comb begin
-    graphics_address = {1'b0, graphics_row[12:1]} * 13'd40 + {6'b0, graphics_col[9:3]};
+    graphics_address = {4'b0, graphics_row[12:1]} * 16'd40 +
+        {9'b0, graphics_col[9:3]};
     if (graphics_row[0])
-        graphics_address += 13'd4096;
+        graphics_address += 16'd4096;
+
+    graphics_address_256 = {1'b0, pixel_256_addr[15:1]};
 end
 
 always_ff @(posedge clk)
     render_cursor <= ~is_blank && cursor_enabled && address[10:0] == cursor_pos[10:0] &&
         glyph_row >= cursor_scan_start && glyph_row <= cursor_scan_end;
 
+wire [14:0] cpu_fb_addr = data_m_addr[19:16] == 4'ha ?
+    data_m_addr[15:1] : {2'b0, data_m_addr[13:1]};
+
 FrameBufferRAM FrameBufferRAM(.clock_a(sys_clk),
                               // CPU
-                              .address_a(data_m_addr[13:1]),
+                              .address_a(cpu_fb_addr),
                               .byteena_a(data_m_bytesel),
                               .data_a(data_m_data_in),
                               .q_a(cpu_q),

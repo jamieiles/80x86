@@ -44,7 +44,7 @@ tests, a reference BIOS implementation and reference FPGA designs.
 * 8259 PIC-lite controller
 * UART
 * 8254 PIT-lite timer operating in mode 2 only.
-* CGA controller with VGA output
+* MCGA controller with VGA output (text mode + 320x200 256 color modes)
 * PS/2 controller (mouse and keyboard)
 * Direct mapped write-back cache
 

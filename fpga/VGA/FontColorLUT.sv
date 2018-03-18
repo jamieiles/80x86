@@ -28,7 +28,11 @@ module FontColorLUT(input logic clk,
                     input logic [3:0] foreground,
                     input logic [3:0] background,
                     input logic graphics_enabled,
-                    input logic [1:0] graphics_colour,
+                    input logic [7:0] graphics_colour,
+                    input logic vga_256_color,
+                    // verilator lint_off UNUSED
+                    input logic [17:0] vga_dac_rd,
+                    // verilator lint_on UNUSED
                     input logic bright_colors,
                     input logic palette_sel,
                     input logic [3:0] background_color,
@@ -47,6 +51,10 @@ wire [13:0] font_mem_addr = {glyph, glyph_row[2:0], glyph_col[2:0]};
 reg [11:0] foreground_rgb;
 reg [11:0] background_rgb;
 reg [11:0] graphics_pixel_colour;
+
+wire [3:0] dac_r = vga_dac_rd[17:14];
+wire [3:0] dac_g = vga_dac_rd[11:8];
+wire [3:0] dac_b = vga_dac_rd[5:2];
 
 reg [11:0] text_color_lut [0:15] = '{
     12'h0_0_0, // black
@@ -90,11 +98,15 @@ reg [11:0] graphics_color_lut [0:15] = '{
 wire [11:0] graphics_pixel_color_int;
 
 always_comb begin
-    if (~|graphics_colour)
-        graphics_pixel_color_int = text_color_lut[background_color];
-    else
-        graphics_pixel_color_int =
-            graphics_color_lut[{palette_sel, bright_colors, graphics_colour}];
+    if (vga_256_color) begin
+        graphics_pixel_color_int = {dac_r, dac_g, dac_b};
+    end else begin
+        if (~|graphics_colour)
+            graphics_pixel_color_int = text_color_lut[background_color];
+        else
+            graphics_pixel_color_int =
+                graphics_color_lut[{palette_sel, bright_colors, graphics_colour[1:0]}];
+    end
 end
 
 always_ff @(posedge clk) begin

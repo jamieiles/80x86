@@ -41,7 +41,10 @@ module VGAController(input logic clk,
                      input logic [3:0] background_color,
                      input logic [14:0] cursor_pos,
                      input logic [2:0] cursor_scan_start,
-                     input logic [2:0] cursor_scan_end);
+                     input logic [2:0] cursor_scan_end,
+                     input logic vga_256_color,
+                     output logic [7:0] vga_dac_idx,
+                     input logic [17:0] vga_dac_rd);
 
 wire hsync;
 wire vsync;
@@ -61,12 +64,14 @@ wire [7:0] fb_glyph;
 logic [2:0] fb_fcl_col;
 logic [2:0] fb_fcl_row;
 wire render_cursor;
-wire [1:0] graphics_colour;
+wire [7:0] graphics_colour;
 
 logic [2:0] vsync_pipe;
 assign vga_vsync = vsync_pipe[0];
 logic [2:0] hsync_pipe;
 assign vga_hsync = hsync_pipe[0];
+
+assign vga_dac_idx = graphics_colour;
 
 VGASync VGASync(.*);
 

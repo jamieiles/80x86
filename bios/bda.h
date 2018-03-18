@@ -61,4 +61,10 @@ struct __attribute__((packed)) bios_data_area {
     unsigned short keyboard_buffer_start;
     unsigned short keyboard_buffer_end;
     unsigned char last_screen_row;
+    unsigned char char_point_height;
+    unsigned char pcjr_repeat_delay;
+    unsigned char video_mode_options;
+    unsigned char ega_feature_bits;
+    unsigned char video_display_data_area;
+    unsigned char dcc_index;
 };

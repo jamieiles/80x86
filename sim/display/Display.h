@@ -21,16 +21,43 @@
 #include <string>
 #include <array>
 
+#include <boost/serialization/list.hpp>
+#include <boost/serialization/string.hpp>
+#include <boost/serialization/version.hpp>
+
 #include "Cursor.h"
+#include "CPU.h"
 
 class Window;
 
 struct color {
     unsigned char r, g, b;
+
+private:
+    friend class boost::serialization::access;
+    template <class Archive>
+    void serialize(Archive &ar, const unsigned int __unused version)
+    {
+        // clang-format off
+        ar & r;
+        ar & g;
+        ar & b;
+        // clang-format on
+    }
 };
 
 struct GraphicsPalette {
-    struct color colors[4];
+    struct color colors[256];
+
+private:
+    friend class boost::serialization::access;
+    template <class Archive>
+    void serialize(Archive &ar, const unsigned int __unused version)
+    {
+        // clang-format off
+        ar & colors;
+        // clang-format on
+    }
 };
 
 extern struct color cga_full_palette[16];
