@@ -210,8 +210,10 @@ static void keyboard_status(struct callregs *regs)
 
     regs->flags &= ~CF;
 
-#ifdef SERIAL_STDIO
     c = kbd_buffer_peek();
+    if (!c)
+        keyboard_poll();
+#ifdef SERIAL_STDIO
     if (!c)
         serial_poll();
 #endif
