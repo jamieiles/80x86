@@ -45,6 +45,11 @@ public:
     {
     }
 
+    virtual bool read_pops() const
+    {
+        return false;
+    }
+
     virtual void write8(uint16_t __unused port_num,
                         unsigned __unused offs,
                         uint8_t __unused v)
@@ -61,7 +66,8 @@ public:
 
         if (pending.size()) {
             auto v = pending.front();
-            pending.pop_front();
+            if (read_pops())
+                pending.pop_front();
             return v;
         } else {
             return 0;

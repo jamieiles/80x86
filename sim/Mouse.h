@@ -53,6 +53,11 @@ public:
         SDL_SetRelativeMouseMode(SDL_TRUE);
     }
 
+    virtual bool read_pops() const
+    {
+        return true;
+    }
+
     void write8(uint16_t port_num, unsigned offs, uint8_t v)
     {
         if (port_num == 0 && offs == 0) {
