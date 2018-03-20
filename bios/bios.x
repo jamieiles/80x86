@@ -9,6 +9,7 @@ SECTIONS {
         *(.entry.text);
         . = ALIGN(4);
         *(.text);
+        *(.text.*);
         . = ALIGN(4);
         vectors_start = . ;
         *(.rodata.vectors);
