@@ -325,14 +325,14 @@ static int noinline wait_for_write_completion(void)
     return -1;
 }
 
-int write_sector(unsigned short sector,
+int write_sector(unsigned long sector,
                  unsigned short sseg,
                  unsigned short saddr)
 {
     unsigned long address = sector;
 
     if (!sd_is_sdhc)
-        address *= 512;
+        address *= 512LU;
 
     sti();
     if (sd_make_write_request(address)) {
@@ -354,9 +354,7 @@ int write_sector(unsigned short sector,
     return rc;
 }
 
-int read_sector(unsigned short sector,
-                unsigned short dseg,
-                unsigned short daddr)
+int read_sector(unsigned long sector, unsigned short dseg, unsigned short daddr)
 {
     struct spi_cmd cmd = {
         .cmd = 0x51,
@@ -368,7 +366,7 @@ int read_sector(unsigned short sector,
     unsigned long address = sector;
 
     if (!sd_is_sdhc)
-        address *= 512;
+        address *= 512LU;
 
     cmd.arg[0] = (address >> 24) & 0xff;
     cmd.arg[1] = (address >> 16) & 0xff;

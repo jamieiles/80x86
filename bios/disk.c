@@ -22,10 +22,10 @@
 #include "serial.h"
 #include "utils.h"
 
-#define SECTORS_PER_TRACK 63
-#define NUM_HEADS 16
-#define NUM_CYLINDERS 4
-#define SECTOR_SIZE 512
+#define SECTORS_PER_TRACK 63LU
+#define NUM_HEADS 32LU
+#define NUM_CYLINDERS 65LU
+#define SECTOR_SIZE 512LU
 
 #define FLOPPY_TIMEOUT 0x80
 
@@ -46,11 +46,11 @@ static void disk_read(struct callregs *regs)
         return;
     }
 
-    unsigned short cylinder =
+    unsigned long cylinder =
         regs->cx.h | (((unsigned short)regs->cx.l & 0xc0) << 2);
-    unsigned short head = regs->dx.h;
-    unsigned short sector = regs->cx.l & 0x3f;
-    unsigned short lba =
+    unsigned long head = regs->dx.h;
+    unsigned long sector = regs->cx.l & 0x3f;
+    unsigned long lba =
         (cylinder * NUM_HEADS + head) * SECTORS_PER_TRACK + (sector - 1);
     unsigned short i;
     unsigned short dst = regs->bx.x;
@@ -76,11 +76,11 @@ static void disk_write(struct callregs *regs)
         return;
     }
 
-    unsigned short cylinder =
+    unsigned long cylinder =
         regs->cx.h | (((unsigned short)regs->cx.l & 0xc0) << 2);
-    unsigned short head = regs->dx.h;
-    unsigned short sector = regs->cx.l & 0x3f;
-    unsigned short lba =
+    unsigned long head = regs->dx.h;
+    unsigned long sector = regs->cx.l & 0x3f;
+    unsigned long lba =
         (cylinder * NUM_HEADS + head) * SECTORS_PER_TRACK + (sector - 1);
     unsigned short i;
     unsigned short dst = regs->bx.x;

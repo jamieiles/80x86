@@ -19,9 +19,9 @@
 
 void sd_init(void);
 void __attribute__((noreturn)) sd_boot(void);
-int read_sector(unsigned short sector,
+int read_sector(unsigned long sector,
                 unsigned short dseg,
                 unsigned short daddr);
-int write_sector(unsigned short sector,
+int write_sector(unsigned long sector,
                  unsigned short sseg,
                  unsigned short saddr);
