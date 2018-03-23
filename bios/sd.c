@@ -46,12 +46,19 @@ static void spi_wait_idle(void)
 
 static void spi_xfer(int len)
 {
-    int i;
+    int i, dst;
+    int non_ff_byte_received = 0;
 
-    for (i = 0; i < len; ++i) {
-        outw(SPI_TRANSFER_PORT, spi_xfer_buf_get(i));
+    for (dst = 0, i = 0; i < len; ++i) {
+        outw(SPI_TRANSFER_PORT, spi_xfer_buf[i]);
         spi_wait_idle();
-        spi_xfer_buf_set(i, inw(SPI_TRANSFER_PORT) & 0xff);
+
+        unsigned char b = inw(SPI_TRANSFER_PORT) & 0xff;
+        if (!non_ff_byte_received && b == 0xff)
+            continue;
+
+        non_ff_byte_received = 1;
+        spi_xfer_buf[dst++] = b;
     }
 }
 
@@ -342,7 +349,7 @@ int write_sector(unsigned long sector,
 
     sd_write_block(sseg, saddr);
 
-    unsigned char packet_response = spi_xfer_buf_get(4 + 512);
+    unsigned char packet_response = spi_xfer_buf_get(0);
     if (!write_received(packet_response)) {
         cli();
         return -1;
