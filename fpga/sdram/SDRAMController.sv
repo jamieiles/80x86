@@ -105,26 +105,22 @@ assign s_data           = oe ? outdata : {16{1'bz}};
 assign s_bytesel        = outbytesel;
 assign s_clken          = 1'b1;
 
-/*
- * We support 4 banks of 8MB each, rather than interleaving one bank follows
- * the next.  We ignore the LSB of the address - unaligned accesses are not
- * supported and are undefined.
- */
 wire [1:0] h_banksel;
 wire [12:0] h_rowsel;
-wire [12:0] col_pchg;
+wire [12:0] col;
+
+reg [12:0] open_row[0:3];
+reg [3:0] row_is_open;
 
 generate
 if (size == 32 * 1024 * 1024) begin
-    assign h_banksel            = h_addr[24:23];
-    assign h_banksel            = h_addr[24:23];
-    assign h_rowsel             = h_addr[22:10];
-    assign col_pchg             = {2'b00, 1'b1, 1'b0, h_addr[9:1]};
+    assign h_banksel            = h_addr[11:10];
+    assign h_rowsel             = h_addr[24:12];
+    assign col                  = {4'b0, h_addr[9:1]};
 end else if (size == 64 * 1024 * 1024) begin
-    assign h_banksel            = h_addr[25:24];
-    assign h_banksel            = h_addr[25:24];
-    assign h_rowsel             = h_addr[23:11];
-    assign col_pchg             = {2'b00, 1'b1, h_addr[10:1]};
+    assign h_banksel            = h_addr[12:11];
+    assign h_rowsel             = h_addr[25:13];
+    assign col                  = {3'b0, h_addr[10:1]};
 end
 endgenerate
 
@@ -186,9 +182,15 @@ always_comb begin
          * first!
          */
         if (!h_compl && autorefresh_pending)
-            next_state = STATE_AUTOREF;
-        else if (!h_compl && cs && data_m_access)
-            next_state = STATE_ACT;
+            next_state = STATE_PCH;
+        else if (!h_compl && cs && data_m_access) begin
+            if (row_is_open[h_banksel] && open_row[h_banksel] == h_rowsel)
+                next_state = h_wr_en ? STATE_WRITE : STATE_READ;
+            else if (row_is_open[h_banksel] && open_row[h_banksel] != h_rowsel)
+                next_state = STATE_PCH;
+            else
+                next_state = STATE_ACT;
+        end
     end
     STATE_ACT: begin
         if (timec == tRCD - 1)
@@ -201,6 +203,10 @@ always_comb begin
     STATE_READ: begin
         if (timec == cas)
             next_state = STATE_IDLE;
+    end
+    STATE_PCH: begin
+        if (timec == tRP - 1)
+            next_state = s_addr[10] ? STATE_AUTOREF : STATE_IDLE;
     end
     STATE_AUTOREF: begin
         if (timec == tRC - 1)
@@ -223,8 +229,6 @@ always_ff @(posedge clk or posedge reset) begin
         oe <= 1'b0;
     end else begin
         cmd <= CMD_NOP;
-        s_addr <= 13'b0;
-        s_banksel <= 2'b00;
         if (state != next_state) begin
             case (next_state)
             STATE_IDLE: oe <= 1'b0;
@@ -252,19 +256,23 @@ always_ff @(posedge clk or posedge reset) begin
             end
             STATE_WRITE: begin
                 cmd <= CMD_WRITE;
-                /* Write with autoprecharge. */
-                s_addr <= col_pchg;
+                s_addr <= col;
                 s_banksel <= h_banksel;
                 oe <= 1'b1;
             end
             STATE_READ: begin
                 cmd <= CMD_READ;
-                /* Read with autoprecharge. */
-                s_addr <= col_pchg;
+                s_addr <= col;
                 s_banksel <= h_banksel;
             end
             STATE_AUTOREF: begin
                 cmd <= CMD_REF;
+            end
+            STATE_PCH: begin
+                cmd <= CMD_PRE;
+                // Precharge all
+                s_addr <= autorefresh_pending ? 13'b0_0100_0000_0000 : 13'b0;
+                s_banksel <= h_banksel;
             end
             default: ;
             endcase
@@ -298,6 +306,20 @@ always_ff @(posedge clk or posedge reset)
         h_config_done <= 1'b0;
     else if (state == STATE_IDLE)
         h_config_done <= 1'b1;
+
+always_ff @(posedge clk or posedge reset) begin
+    if (reset) begin
+        row_is_open <= 4'b0;
+    end else begin
+        if (state == STATE_ACT) begin
+            row_is_open[h_banksel] <= 1'b1;
+            open_row[h_banksel] <= h_rowsel;
+        end else if (state == STATE_PCH)
+            row_is_open[h_banksel] <= 1'b0;
+        else if (state == STATE_AUTOREF)
+            row_is_open <= 4'b0;
+    end
+end
 
 always_ff @(posedge clk)
     state <= next_state;
