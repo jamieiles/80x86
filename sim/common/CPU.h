@@ -248,40 +248,36 @@ private:
     template <class Archive>
     void save(Archive &ar, const unsigned int __unused version) const
     {
+        // clang-format off
+        ar & mem;
+
         for (auto r = static_cast<int>(AX);
              r <= static_cast<int>(NUM_16BIT_REGS); ++r) {
             auto v = read_reg(static_cast<GPR>(r));
-            // clang-format off
             ar & v;
-            // clang-format on
         }
 
-        // clang-format off
         auto flags = read_flags();
         ar & flags;
-
-        ar & mem;
         // clang-format on
     }
 
     template <class Archive>
     void load(Archive &ar, const unsigned int __unused version)
     {
+        // clang-format off
+        ar & mem;
+
         for (auto r = static_cast<int>(AX);
              r <= static_cast<int>(NUM_16BIT_REGS); ++r) {
             uint16_t v = 0;
-            // clang-format off
             ar & v;
             write_reg(static_cast<GPR>(r), v);
-            // clang-format on
         }
 
-        // clang-format off
         uint16_t flags = 0;
         ar & flags;
         write_flags(flags);
-
-        ar & mem;
         // clang-format on
     }
     BOOST_SERIALIZATION_SPLIT_MEMBER()
