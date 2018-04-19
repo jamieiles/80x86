@@ -319,6 +319,7 @@ wire [1:0] sdram_m_bytesel;
 
 Cache #(.lines(`CACHE_SIZE / 16))
       Cache(.enabled(1'b1),
+            .clk(sys_clk),
             .c_access(q_m_access & sdram_access),
             .c_addr(q_m_addr),
             .c_data_in(sdram_data),
