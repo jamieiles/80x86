@@ -19,3 +19,4 @@
 `define CONFIG_VGA 1
 `define CONFIG_PS2 1
 `define CONFIG_NUM_LEDS 10
+`define CONFIG_VIDEO_MEMORY_SIZE (64 * 1024)

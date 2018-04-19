@@ -68,8 +68,10 @@ module FrameBufferRAM (
 	q_a,
 	q_b);
 
-	input	[14:0]  address_a;
-	input	[14:0]  address_b;
+        localparam addr_bits = $clog2(`CONFIG_VIDEO_MEMORY_SIZE / 2);
+
+	input	[addr_bits-1:0]  address_a;
+	input	[addr_bits-1:0]  address_b;
 	input	[1:0]  byteena_a;
 	input	  clock_a;
 	input	  clock_b;
@@ -129,8 +131,8 @@ module FrameBufferRAM (
 		altsyncram_component.indata_reg_b = "CLOCK1",
 		altsyncram_component.intended_device_family = "Cyclone V",
 		altsyncram_component.lpm_type = "altsyncram",
-		altsyncram_component.numwords_a = 32768,
-		altsyncram_component.numwords_b = 32768,
+		altsyncram_component.numwords_a = `CONFIG_VIDEO_MEMORY_SIZE / 2,
+		altsyncram_component.numwords_b = `CONFIG_VIDEO_MEMORY_SIZE / 2,
 		altsyncram_component.operation_mode = "BIDIR_DUAL_PORT",
 		altsyncram_component.outdata_aclr_a = "NONE",
 		altsyncram_component.outdata_aclr_b = "NONE",
