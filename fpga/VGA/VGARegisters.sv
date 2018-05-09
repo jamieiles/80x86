@@ -96,7 +96,7 @@ reg [1:0] dac_rd_offs;
 reg vga_send;
 
 always_ff @(posedge clk)
-    vga_send <= rdy_vga_cursor;
+    vga_send <= rdy_vga_cursor && vsync;
 
 wire hsync;
 wire vsync;
