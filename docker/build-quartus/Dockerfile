@@ -3,9 +3,9 @@ MAINTAINER Jamie Iles <jamie@jamieiles.com>
 ENV DEBIAN_FRONTEND=noninteractive
 
 ARG MIRROR=http://download.altera.com/akdlm/software/acdsinst/
-ARG QUARTUS=17.1std/590/ib_installers/QuartusLiteSetup-17.1.0.590-linux.run
-ARG QUARTUS_UPDATE=17.1std.1/593/update/QuartusSetup-17.1.1.593-linux.run
-ARG DEVICE_FILES="17.1std/590/ib_installers/cyclonev-17.1.0.590.qdz 17.1std/590/ib_installers/cyclone-17.1.0.590.qdz 17.1std/590/ib_installers/max10-17.1.0.590.qdz"
+ARG QUARTUS=18.0std/614/ib_installers/QuartusLiteSetup-18.0.0.614-linux.run
+ARG QUARTUS_UPDATE=""
+ARG DEVICE_FILES="18.0std/614/ib_installers/cyclone-18.0.0.614.qdz 18.0std/614/ib_installers/cyclonev-18.0.0.614.qdz 18.0std/614/ib_installers/max10-18.0.0.614.qdz"
 
 RUN dpkg --add-architecture i386
 RUN apt-get update && apt-get install --no-install-recommends -y \
@@ -38,8 +38,6 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
 RUN cd /tmp && wget -q $MIRROR$QUARTUS && \
-        wget -q $MIRROR$QUARTUS_UPDATE && \
-        chmod +x $(basename $QUARTUS_UPDATE) && \
         for DEV_FILE in $DEVICE_FILES; do wget -q $MIRROR$DEV_FILE; done && \
         chmod +x $(basename $QUARTUS) && \
         ./$(basename $QUARTUS) --accept_eula 1 --mode unattended --installdir /opt/altera/ && \
