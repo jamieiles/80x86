@@ -182,7 +182,7 @@ always_ff @(posedge vga_clk) begin
         background_color <= vga_background_color;
 end
 
-wire [7:0] status = {4'b0, vga_vsync, 2'b0, (~vsync | ~hsync)};
+wire [7:0] status = {4'b0, vga_vsync, 2'b0, vsync | hsync};
 
 always_ff @(posedge clk)
     sys_cursor_enabled <= cursor_mode != 2'b01;
