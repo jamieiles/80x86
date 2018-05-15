@@ -214,6 +214,9 @@ private:
         ar & dac_palette;
         ar & dac_wr_sel;
         ar & dac_seq;
+
+        if (is_graphics_256())
+            display.set_graphics_palette(dac_palette);
         // clang-format on
     }
 };
