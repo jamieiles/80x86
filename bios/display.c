@@ -374,7 +374,7 @@ static void vga_combination(struct callregs *regs)
 {
     if (regs->ax.l == 0x00) {
         regs->ax.l = 0x1a;
-        regs->bx.l = regs->bx.h = 0x0a; // MCGA with digital display
+        regs->bx.l = regs->bx.h = 0x08; // MCGA with digital display
     } else {
         regs->flags |= CF;
     }
