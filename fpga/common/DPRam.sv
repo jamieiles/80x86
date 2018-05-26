@@ -32,7 +32,11 @@ parameter words = 8;
 parameter width = 1;
 localparam addr_bits = $clog2(words);
 
+`ifdef FORCE_M9K
+logic [width-1:0] ram[0:words-1] /* synthesis syn_ramstyle = "no_rw_check,M9K"*/;
+`else
 logic [width-1:0] ram[0:words-1] /* synthesis syn_ramstyle = "no_rw_check"*/;
+`endif
 
 logic [width-1:0] r_a, r_b, bypass_a_val, bypass_b_val;
 logic bypass_a, bypass_b;

@@ -1,0 +1,182 @@
+# Copyright Jamie Iles, 2017
+#
+# This file is part of s80x86.
+#
+# s80x86 is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# s80x86 is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
+
+set_global_assignment -name NUM_PARALLEL_PROCESSORS @NPROCS@
+set_global_assignment -name USE_CONFIGURATION_DEVICE OFF
+
+set_global_assignment -name SLOW_SLEW_RATE Off
+set_global_assignment -name TXPMA_SLEW_RATE Low
+set_global_assignment -name SMART_RECOMPILE ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_RETIMING ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_ASYNCHRONOUS_SIGNAL_PIPELINING ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_REGISTER_DUPLICATION ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_EFFORT NORMAL
+set_global_assignment -name OPTIMIZATION_TECHNIQUE SPEED
+set_global_assignment -name SYNTH_TIMING_DRIVEN_SYNTHESIS ON
+set_global_assignment -name ROUTER_CLOCKING_TOPOLOGY_ANALYSIS ON
+set_global_assignment -name MUX_RESTRUCTURE OFF
+set_global_assignment -name EXTERNAL_FLASH_FALLBACK_ADDRESS 00000000
+set_global_assignment -name STRATIXV_CONFIGURATION_SCHEME "PASSIVE SERIAL"
+set_global_assignment -name INTERNAL_FLASH_UPDATE_MODE "SINGLE IMAGE WITH ERAM"
+set_global_assignment -name ROUTER_TIMING_OPTIMIZATION_LEVEL MAXIMUM
+set_global_assignment -name FITTER_EFFORT "AUTO FIT"
+set_global_assignment -name VCCA_USER_VOLTAGE 3.3V
+set_global_assignment -name POWER_PRESET_COOLING_SOLUTION "NO HEAT SINK WITH STILL AIR"
+set_global_assignment -name POWER_BOARD_THERMAL_MODEL TYPICAL
+set_global_assignment -name TIMEQUEST_MULTICORNER_ANALYSIS ON
+set_global_assignment -name OPTIMIZATION_MODE "HIGH PERFORMANCE EFFORT"
+set_global_assignment -name ROUTER_LCELL_INSERTION_AND_LOGIC_DUPLICATION ON
+set_global_assignment -name QII_AUTO_PACKED_REGISTERS NORMAL
+set_global_assignment -name ADV_NETLIST_OPT_SYNTH_WYSIWYG_REMAP ON
+set_global_assignment -name CYCLONEII_OPTIMIZATION_TECHNIQUE AREA
+
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVCMOS"
+
+set_location_assignment PIN_26 -to clk
+set_location_assignment PIN_24 -to rst_in_n
+
+# JTAG
+#set_location_assignment PIN_16 -to altera_reserved_tms
+#set_location_assignment PIN_18 -to altera_reserved_tck
+#set_location_assignment PIN_19 -to altera_reserved_tdi
+#set_location_assignment PIN_20 -to altera_reserved_tdo
+
+# SDRAM
+set_location_assignment PIN_33 -to sdr_clk
+set_location_assignment PIN_43 -to s_addr[0]
+set_location_assignment PIN_41 -to s_addr[1]
+set_location_assignment PIN_39 -to s_addr[2]
+set_location_assignment PIN_38 -to s_addr[3]
+set_location_assignment PIN_88 -to s_addr[4]
+set_location_assignment PIN_87 -to s_addr[5]
+set_location_assignment PIN_86 -to s_addr[6]
+set_location_assignment PIN_85 -to s_addr[7]
+set_location_assignment PIN_84 -to s_addr[8]
+set_location_assignment PIN_81 -to s_addr[9]
+set_location_assignment PIN_44 -to s_addr[10]
+set_location_assignment PIN_80 -to s_addr[11]
+set_location_assignment PIN_79 -to s_addr[12]
+set_location_assignment PIN_55 -to s_data[0]
+set_location_assignment PIN_56 -to s_data[1]
+set_location_assignment PIN_57 -to s_data[2]
+set_location_assignment PIN_58 -to s_data[3]
+set_location_assignment PIN_59 -to s_data[4]
+set_location_assignment PIN_60 -to s_data[5]
+set_location_assignment PIN_61 -to s_data[6]
+set_location_assignment PIN_62 -to s_data[7]
+set_location_assignment PIN_64 -to s_data[8]
+set_location_assignment PIN_65 -to s_data[9]
+set_location_assignment PIN_66 -to s_data[10]
+set_location_assignment PIN_69 -to s_data[11]
+set_location_assignment PIN_70 -to s_data[12]
+set_location_assignment PIN_74 -to s_data[13]
+set_location_assignment PIN_75 -to s_data[14]
+set_location_assignment PIN_76 -to s_data[15]
+set_location_assignment PIN_47 -to s_cs_n
+set_location_assignment PIN_78 -to s_clken
+set_location_assignment PIN_50 -to s_cas_n
+set_location_assignment PIN_54 -to s_bytesel[0]
+set_location_assignment PIN_77 -to s_bytesel[1]
+set_location_assignment PIN_48 -to s_ras_n
+set_location_assignment PIN_52 -to s_wr_en
+set_location_assignment PIN_46 -to s_banksel[0]
+set_location_assignment PIN_45 -to s_banksel[1]
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to sdr_clk
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_ras_n
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_cas_n
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_wr_en
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_bytesel
+set_instance_assignment -name FAST_OUTPUT_ENABLE_REGISTER ON -to s_data
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_addr
+set_instance_assignment -name FAST_INPUT_REGISTER ON -to s_data
+set_instance_assignment -name FAST_OUTPUT_REGISTER ON -to s_banksel
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to s_*
+
+# UART
+set_location_assignment PIN_131 -to uart_tx
+set_location_assignment PIN_132 -to uart_rx
+set_instance_assignment -name CURRENT_STRENGTH_NEW "MAXIMUM CURRENT" -to uart_tx
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to uart_rx
+
+# SPI
+set_location_assignment PIN_105 -to spi_mosi
+set_location_assignment PIN_106 -to spi_miso
+set_location_assignment PIN_102 -to spi_ncs
+set_location_assignment PIN_101 -to spi_sclk
+set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to spi_mosi
+set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to spi_ncs
+set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to spi_sclk
+
+# VGA
+set_location_assignment PIN_124 -to vga_r[3]
+set_location_assignment PIN_123 -to vga_r[2]
+set_location_assignment PIN_122 -to vga_r[1]
+set_location_assignment PIN_121 -to vga_r[0]
+set_location_assignment PIN_120 -to vga_g[3]
+set_location_assignment PIN_119 -to vga_g[2]
+set_location_assignment PIN_118 -to vga_g[1]
+set_location_assignment PIN_114 -to vga_g[0]
+set_location_assignment PIN_113 -to vga_b[3]
+set_location_assignment PIN_112 -to vga_b[2]
+set_location_assignment PIN_111 -to vga_b[1]
+set_location_assignment PIN_110 -to vga_b[0]
+set_location_assignment PIN_127 -to vga_hsync
+set_location_assignment PIN_130 -to vga_vsync
+set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to vga*
+
+# PS2
+set_location_assignment PIN_14 -to ps2_clk
+set_location_assignment PIN_13 -to ps2_dat
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to ps2_clk
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to ps2_dat
+set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to ps2_clk
+set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to ps2_dat
+
+set_location_assignment PIN_12 -to ps2_clk_b
+set_location_assignment PIN_11 -to ps2_dat_b
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to ps2_clk_b
+set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to ps2_dat_b
+set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to ps2_clk_b
+set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to ps2_dat_b
+
+# IO
+#set_location_assignment PIN_10 -to leds[0]
+#set_location_assignment PIN_8 -to leds[1]
+#set_location_assignment PIN_7 -to leds[2]
+#set_location_assignment PIN_6 -to leds[3]
+#set_location_assignment PIN_141 -to leds[4]
+#set_location_assignment PIN_140 -to leds[5]
+#set_location_assignment PIN_135 -to leds[6]
+#set_location_assignment PIN_134 -to leds[7]
+set_location_assignment PIN_134 -to leds[0]
+set_location_assignment PIN_135 -to leds[1]
+set_location_assignment PIN_140 -to leds[2]
+set_location_assignment PIN_6 -to leds[3]
+set_location_assignment PIN_141 -to leds[4]
+set_location_assignment PIN_7 -to leds[5]
+set_location_assignment PIN_8 -to leds[6]
+set_location_assignment PIN_10 -to leds[7]
+
+set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to leds[*]
+set_instance_assignment -name GLOBAL_SIGNAL GLOBAL_CLOCK -to "SysPLL:SysPLL|sys_clk"
+set_global_assignment -name AUTO_SHIFT_REGISTER_RECOGNITION ALWAYS
+set_global_assignment -name ALLOW_ANY_ROM_SIZE_FOR_RECOGNITION ON
+set_global_assignment -name ALLOW_ANY_RAM_SIZE_FOR_RECOGNITION ON
+set_global_assignment -name ALLOW_ANY_SHIFT_REGISTER_SIZE_FOR_RECOGNITION ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_COMBO_LOGIC_FOR_AREA ON
+set_global_assignment -name PHYSICAL_SYNTHESIS_MAP_LOGIC_TO_MEMORY_FOR_AREA ON

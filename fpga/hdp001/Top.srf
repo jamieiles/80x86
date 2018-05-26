@@ -1,0 +1,13 @@
+{ "" "" "" "Verilog HDL warning at Microcode.sv(121): object mem used but never assigned" {  } {  } 0 10858 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "Synthesized away node \"Core:Core\|Microcode:Microcode\|altsyncram:mem_rtl_0\|altsyncram_31b1:auto_generated\|ram_block1a41\"" {  } {  } 0 14320 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "Synthesized away the following RAM node(s):" {  } {  } 0 14285 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "Synthesized away the following node(s):" {  } {  } 0 14284 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "Pin \"s_clken\" is stuck at VCC" {  } {  } 0 13410 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "Pin \"s_addr\[12\]\" is stuck at GND" {  } {  } 0 13410 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "Pin \"s_addr\[11\]\" is stuck at GND" {  } {  } 0 13410 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "Pin \"s_cs_n\" is stuck at GND" {  } {  } 0 13410 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "Output pins are stuck at VCC or GND" {  } {  } 0 13024 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "RST port on the PLL is not properly connected on instance SysPLL:SysPLL\|altera_pll:altera_pll_i\|general\[0\].gpll. The reset port on the PLL should be connected. If the PLL loses lock for any reason, you might need to manually reset the PLL in order to re-establish lock to the reference clock." {  } {  } 0 0 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "RST port on the PLL is not properly connected on instance SysPLL:SysPLL\|altera_pll:altera_pll_i\|general\[1\].gpll. The reset port on the PLL should be connected. If the PLL loses lock for any reason, you might need to manually reset the PLL in order to re-establish lock to the reference clock." {  } {  } 0 0 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "LOCKED port on the PLL is not properly connected on instance \"SysPLL:SysPLL\|altera_pll:altera_pll_i\|general\[0\].gpll\". The LOCKED port on the PLL should be connected when the FBOUTCLK port is connected. Although it is unnecessary to connect the LOCKED signal, any logic driven off of an output clock of the PLL will not know when the PLL is locked and ready." {  } {  } 0 21300 "" 0 0 "Quartus II" 0 -1 0 ""}
+{ "" "" "" "Feature LogicLock is only available with a valid subscription license. You can purchase a software subscription to gain full access to this feature." {  } {  } 0 292013 "" 0 0 "Quartus II" 0 -1 0 ""}
