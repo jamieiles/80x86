@@ -96,6 +96,7 @@ wire [15:0] io_data = sdram_config_data |
     ps2_kbd_data |
     ps2_mouse_data |
 `endif // CONFIG_PS2
+    leds_data |
     bios_control_data;
 wire [15:0] mem_data;
 
@@ -139,6 +140,7 @@ wire [15:0] sdram_data;
 
 wire leds_access;
 wire leds_ack;
+wire [15:0] leds_data;
 
 wire bios_access;
 wire bios_ack;
@@ -380,6 +382,7 @@ LEDSRegister     LEDSRegister(.clk(sys_clk),
                               .cs(leds_access),
                               .leds_val(leds),
                               .data_m_data_in(data_m_data_out),
+                              .data_m_data_out(leds_data),
                               .data_m_ack(leds_ack),
                               .*);
 

@@ -21,6 +21,7 @@ module LEDSRegister(input logic clk,
                     output logic [`CONFIG_NUM_LEDS-1:0] leds_val,
                     input logic cs,
                     input logic [15:0] data_m_data_in,
+                    output logic [15:0] data_m_data_out,
                     input logic data_m_access,
                     output logic data_m_ack,
                     input logic data_m_wr_en,
@@ -36,6 +37,9 @@ always_ff @(posedge clk or posedge reset)
         if (cs && data_m_access && data_m_bytesel[0] && data_m_wr_en)
             leds_val[7:0] <= data_m_data_in[7:0];
     end
+
+always_ff @(posedge clk)
+    data_m_data_out <= cs & data_m_access ? 16'(leds_val) : 16'b0;
 
 always_ff @(posedge clk)
     data_m_ack <= cs & data_m_access;
