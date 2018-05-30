@@ -49,7 +49,7 @@ assign vsync = ~(vcount < v_sync_count);
 assign hsync = ~(hcount < h_sync_count);
 
 assign row = vcount - (v_sync_count + v_back_porch);
-assign col = hcount - (h_sync_count + h_back_porch);
+assign col = is_blank ? 10'b0 : hcount - (h_sync_count + h_back_porch);
 
 always_ff @(posedge clk or posedge reset) begin
     if (reset) begin

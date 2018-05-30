@@ -115,6 +115,9 @@ MemArbiter MemArbiter(.a_m_addr(instr_m_addr),
                       .q_m_ack(c_ack),
                       .q_m_wr_en(c_wr_en),
                       .q_m_bytesel(c_bytesel),
+                      // verilator lint_off PINCONNECTEMPTY
+                      .q_b(),
+                      // verilator lint_on PINCONNECTEMPTY
                       .*);
 
 Core    Core(.data_m_ack(d_ack),

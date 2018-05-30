@@ -18,16 +18,13 @@
 `default_nettype none
 module FrameBuffer(input logic clk,
                    input logic sys_clk,
+                   input logic reset,
                    input logic is_border,
                    // CPU port
-                   input logic cs,
-                   input logic data_m_access,
-                   output logic data_m_ack,
-                   input logic [19:1] data_m_addr,
-                   input logic data_m_wr_en,
-                   input logic [15:0] data_m_data_in,
-                   output logic [15:0] data_m_data_out,
-                   input logic [1:0] data_m_bytesel,
+                   output logic fb_access,
+                   output logic [15:0] fb_address,
+                   input logic fb_ack,
+                   input logic [15:0] fb_data,
                    // VGA signals
                    input logic [9:0] row,
                    input logic [9:0] col,
@@ -44,10 +41,6 @@ module FrameBuffer(input logic clk,
                    input logic vga_256_color,
                    output logic [7:0] graphics_colour);
 
-wire [15:0] cpu_q;
-wire cpu_wr_en = data_m_access & cs & data_m_wr_en;
-assign data_m_data_out = data_m_ack ? cpu_q : 16'b0;
-
 logic vga_valid;
 wire [15:0] vga_q;
 assign {background, foreground, glyph} = is_border || !vga_valid ? 16'b0 : vga_q;
@@ -55,18 +48,12 @@ assign {background, foreground, glyph} = is_border || !vga_valid ? 16'b0 : vga_q
 // 2 vertical pixels per horizontal pixel to scale out.
 wire [11:0] text_address = {1'b0, ({1'b0, row} / 11'd16) * 11'd80 + ({1'b0, col} / 11'd8)};
 // Double pixels for graphics mode.
-wire [15:0] graphics_address;
-wire [15:0] graphics_address_256;
-wire [15:0] address = vga_256_color ? graphics_address_256 :
-    graphics_enabled ? graphics_address : {4'b0, text_address};
 wire [2:0] glyph_row = row[3:1];
 
 wire [12:0] graphics_row = {4'b0, row[9:1]};
 wire [12:0] graphics_col = {4'b0, col[9:1]};
 
 reg [2:0] pixel_word_offs;
-
-wire [15:0] pixel_256_addr = {3'b0, graphics_row} * 16'd320 + {3'b0, graphics_col};
 
 always_ff @(posedge clk)
     pixel_word_offs <= graphics_col[2:0];
@@ -90,38 +77,16 @@ always_comb begin
         graphics_colour = 8'b00;
 end
 
-always_comb begin
-    graphics_address = {4'b0, graphics_row[12:1]} * 16'd40 +
-        {9'b0, graphics_col[9:3]};
-    if (graphics_row[0])
-        graphics_address += 16'd4096;
-
-    graphics_address_256 = {1'b0, pixel_256_addr[15:1]};
-end
-
 always_ff @(posedge clk)
-    render_cursor <= ~is_blank && cursor_enabled && address[10:0] == cursor_pos[10:0] &&
+    render_cursor <= ~is_blank && cursor_enabled && text_address[10:0] == cursor_pos[10:0] &&
         glyph_row >= cursor_scan_start && glyph_row <= cursor_scan_end;
 
-wire [14:0] cpu_fb_addr = data_m_addr[19:16] == 4'ha ?
-    data_m_addr[15:1] : {2'b0, data_m_addr[13:1]};
-
-FrameBufferRAM FrameBufferRAM(.clock_a(sys_clk),
-                              // CPU
-                              .address_a(cpu_fb_addr),
-                              .byteena_a(data_m_bytesel),
-                              .data_a(data_m_data_in),
-                              .q_a(cpu_q),
-                              .wren_a(cpu_wr_en),
-                              // VGA
-                              .clock_b(clk),
-                              .address_b(address),
-                              .data_b(16'b0),
-                              .q_b(vga_q),
-                              .wren_b(1'b0));
-
-always_ff @(posedge sys_clk)
-    data_m_ack <= data_m_access & cs;
+FBPrefetch FBPrefetch(.sys_clk(sys_clk),
+                      .vga_clk(clk),
+                      .mode(get_video_mode(graphics_enabled,
+                                           vga_256_color)),
+                      .q(vga_q),
+                      .*);
 
 always_ff @(posedge clk)
     vga_valid <= ~is_blank;

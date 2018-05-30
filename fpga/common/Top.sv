@@ -304,24 +304,34 @@ VirtualJTAG VirtualJTAG(.ir_out(),
 JTAGBridge      JTAGBridge(.cpu_clk(sys_clk),
                            .*);
 
-MemArbiter MemArbiter(.clk(sys_clk),
-                      .a_m_addr(instr_m_addr),
-                      .a_m_data_in(instr_m_data_in),
-                      .a_m_data_out(16'b0),
-                      .a_m_access(instr_m_access),
-                      .a_m_ack(instr_m_ack),
-                      .a_m_wr_en(1'b0),
-                      .a_m_bytesel(2'b11),
-                      .b_m_addr(data_m_addr),
-                      .b_m_data_in(mem_data),
-                      .b_m_data_out(data_m_data_out),
-                      .b_m_access(data_m_access & ~d_io),
-                      .b_m_ack(data_mem_ack),
-                      .b_m_wr_en(data_m_wr_en),
-                      .b_m_bytesel(data_m_bytesel),
-                      .*);
+MemArbiter IDArbiter(.clk(sys_clk),
+                     .a_m_addr(instr_m_addr),
+                     .a_m_data_in(instr_m_data_in),
+                     .a_m_data_out(16'b0),
+                     .a_m_access(instr_m_access),
+                     .a_m_ack(instr_m_ack),
+                     .a_m_wr_en(1'b0),
+                     .a_m_bytesel(2'b11),
+                     .b_m_addr(data_m_addr),
+                     .b_m_data_in(mem_data),
+                     .b_m_data_out(data_m_data_out),
+                     .b_m_access(data_m_access & ~d_io),
+                     .b_m_ack(data_mem_ack),
+                     .b_m_wr_en(data_m_wr_en),
+                     .b_m_bytesel(data_m_bytesel),
+                     .q_b(),
+                     .*);
 
 // SDRAM<->Cache signals
+wire [19:1] cache_sdram_m_addr;
+wire [15:0] cache_sdram_m_data_in;
+wire [15:0] cache_sdram_m_data_out;
+wire cache_sdram_m_access;
+wire cache_sdram_m_ack;
+wire cache_sdram_m_wr_en;
+wire [1:0] cache_sdram_m_bytesel;
+
+// Low-level SDRAM signals
 wire [19:1] sdram_m_addr;
 wire [15:0] sdram_m_data_in;
 wire [15:0] sdram_m_data_out;
@@ -340,13 +350,13 @@ Cache #(.lines(`CACHE_SIZE / 16))
             .c_ack(sdram_ack),
             .c_wr_en(q_m_wr_en),
             .c_bytesel(q_m_bytesel),
-            .m_addr(sdram_m_addr),
-            .m_data_in(sdram_m_data_out),
-            .m_data_out(sdram_m_data_in),
-            .m_access(sdram_m_access),
-            .m_ack(sdram_m_ack),
-            .m_wr_en(sdram_m_wr_en),
-            .m_bytesel(sdram_m_bytesel),
+            .m_addr(cache_sdram_m_addr),
+            .m_data_in(cache_sdram_m_data_out),
+            .m_data_out(cache_sdram_m_data_in),
+            .m_access(cache_sdram_m_access),
+            .m_ack(cache_sdram_m_ack),
+            .m_wr_en(cache_sdram_m_wr_en),
+            .m_bytesel(cache_sdram_m_bytesel),
             .*);
 
 SDRAMController #(.size(`CONFIG_SDRAM_SIZE),
@@ -355,7 +365,7 @@ SDRAMController #(.size(`CONFIG_SDRAM_SIZE),
                                 .reset(reset),
                                 .data_m_access(sdram_m_access),
                                 .cs(1'b1),
-                                .h_addr({6'b0, sdram_m_addr}),
+                                .h_addr({5'b0, arb_to_vga, sdram_m_addr}),
                                 .h_wdata(sdram_m_data_in),
                                 .h_rdata(sdram_m_data_out),
                                 .h_wr_en(sdram_m_wr_en),
@@ -468,15 +478,80 @@ wire vga_256_color;
 wire [7:0] vga_dac_idx;
 wire [17:0] vga_dac_rd;
 
+wire [14:0] cpu_fb_addr = q_m_addr[19:16] == 4'ha ?
+    q_m_addr[15:1] : {2'b0, q_m_addr[13:1]};
+
+wire [15:0] fb_m_data;
+wire [15:0] fb_address;
+wire [15:0] fb_data;
+wire fb_access;
+wire fb_ack;
+
+// SDRAM<->Cache signals
+wire [19:1] fb_sdram_m_addr;
+wire [15:0] fb_sdram_m_data_in;
+wire [15:0] fb_sdram_m_data_out;
+wire fb_sdram_m_access;
+wire fb_sdram_m_ack;
+wire fb_sdram_m_wr_en;
+wire [1:0] fb_sdram_m_bytesel;
+wire arb_to_vga;
+
+MemArbiter CPUVGAArbiter(.clk(sys_clk),
+                         // CPU port
+                         .a_m_addr(cpu_fb_addr),
+                         .a_m_data_in(vga_data),
+                         .a_m_data_out(data_m_data_out),
+                         .a_m_access(vga_access),
+                         .a_m_ack(vga_ack),
+                         .a_m_wr_en(q_m_wr_en),
+                         .a_m_bytesel(q_m_bytesel),
+                         // VGA port
+                         .b_m_addr(fb_address),
+                         .b_m_data_in(fb_data),
+                         .b_m_data_out(),
+                         .b_m_access(fb_access),
+                         .b_m_ack(fb_ack),
+                         .b_m_wr_en(1'b0),
+                         .b_m_bytesel(2'b11),
+                         // Q
+                         .q_m_addr(fb_sdram_m_addr),
+                         .q_m_data_in(fb_sdram_m_data_in),
+                         .q_m_data_out(fb_sdram_m_data_out),
+                         .q_m_access(fb_sdram_m_access),
+                         .q_m_ack(fb_sdram_m_ack),
+                         .q_m_wr_en(fb_sdram_m_wr_en),
+                         .q_m_bytesel(fb_sdram_m_bytesel),
+                         .q_b());
+
+MemArbiter CacheVGAArbiter(.clk(sys_clk),
+                           // Cache port
+                           .a_m_addr(cache_sdram_m_addr),
+                           .a_m_data_in(cache_sdram_m_data_out),
+                           .a_m_data_out(cache_sdram_m_data_in),
+                           .a_m_access(cache_sdram_m_access),
+                           .a_m_ack(cache_sdram_m_ack),
+                           .a_m_wr_en(cache_sdram_m_wr_en),
+                           .a_m_bytesel(cache_sdram_m_bytesel),
+                           // VGA port
+                           .b_m_addr(fb_sdram_m_addr),
+                           .b_m_data_in(fb_sdram_m_data_in),
+                           .b_m_data_out(fb_sdram_m_data_out),
+                           .b_m_access(fb_sdram_m_access),
+                           .b_m_ack(fb_sdram_m_ack),
+                           .b_m_wr_en(fb_sdram_m_wr_en),
+                           .b_m_bytesel(fb_sdram_m_bytesel),
+                           // Q
+                           .q_m_addr(sdram_m_addr),
+                           .q_m_data_in(sdram_m_data_out),
+                           .q_m_data_out(sdram_m_data_in),
+                           .q_m_access(sdram_m_access),
+                           .q_m_ack(sdram_m_ack),
+                           .q_m_wr_en(sdram_m_wr_en),
+                           .q_m_bytesel(sdram_m_bytesel),
+                           .q_b(arb_to_vga));
+
 VGAController VGAController(.clk(vga_clk),
-                            .cs(vga_access),
-                            .data_m_access(q_m_access),
-                            .data_m_ack(vga_ack),
-                            .data_m_addr(q_m_addr),
-                            .data_m_data_out(vga_data),
-                            .data_m_data_in(q_m_data_out),
-                            .data_m_bytesel(q_m_bytesel),
-                            .data_m_wr_en(q_m_wr_en),
                             .*);
 
 VGARegisters VGARegisters(.clk(sys_clk),
@@ -485,6 +560,15 @@ VGARegisters VGARegisters(.clk(sys_clk),
                           .data_m_data_out(vga_reg_data),
                           .data_m_data_in(data_m_data_out),
                           .*);
+`else
+wire arb_to_vga = 1'b0;
+assign sdram_m_addr = cache_sdram_m_addr;
+assign cache_sdram_m_data_out = sdram_m_data_out;
+assign sdram_m_data_in = cache_sdram_m_data_in;
+assign cache_sdram_m_ack = sdram_m_ack;
+assign sdram_m_bytesel = cache_sdram_m_bytesel;
+assign sdram_m_access = cache_sdram_m_access;
+assign sdram_m_wr_en = cache_sdram_m_wr_en;
 `endif
 
 `ifdef CONFIG_PS2

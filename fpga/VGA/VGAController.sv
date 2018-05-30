@@ -19,15 +19,10 @@
 module VGAController(input logic clk,
                      input logic sys_clk,
 		     input logic reset,
-                     // CPU port
-                     input logic cs,
-                     input logic data_m_access,
-                     output logic data_m_ack,
-                     input logic [19:1] data_m_addr,
-                     input logic data_m_wr_en,
-                     input logic [15:0] data_m_data_in,
-                     output logic [15:0] data_m_data_out,
-                     input logic [1:0] data_m_bytesel,
+                     output logic fb_access,
+                     output logic [15:0] fb_address,
+                     input logic fb_ack,
+                     input logic [15:0] fb_data,
                      // VGA signals
 		     output logic vga_hsync,
 		     output logic vga_vsync,
@@ -55,7 +50,7 @@ logic fdata;
 
 // Putting a 640x400 display into a 640x480 screen.  Black bars of 40 pixels
 // at the top and bottom.
-wire [9:0] shifted_row = row - 10'd40;
+wire [9:0] shifted_row = is_border ? 10'b0 : row - 10'd40;
 wire is_border = row < 10'd40 || row >= 10'd440;
 
 wire [3:0] fb_background;

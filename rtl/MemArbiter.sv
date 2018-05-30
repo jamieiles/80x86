@@ -41,12 +41,13 @@ module MemArbiter(input logic clk,
                   output logic q_m_access,
                   input logic q_m_ack,
                   output logic q_m_wr_en,
-                  output logic [1:0] q_m_bytesel);
+                  output logic [1:0] q_m_bytesel,
+                  output logic q_b);
 
 reg grant_to_b;
 reg grant_active;
 
-wire q_b = (grant_active && grant_to_b) || (!grant_active && b_m_access);
+assign q_b = (grant_active && grant_to_b) || (!grant_active && b_m_access);
 
 assign q_m_addr = q_b ? b_m_addr : a_m_addr;
 assign q_m_data_out = q_b ? b_m_data_out : a_m_data_out;
@@ -54,9 +55,9 @@ assign q_m_access = ~q_m_ack & (b_m_access | a_m_access);
 assign q_m_wr_en = q_b ? b_m_wr_en : a_m_wr_en;
 assign q_m_bytesel = q_b ? b_m_bytesel : a_m_bytesel;
 
-assign a_m_data_in = q_m_data_in;
+assign a_m_data_in = grant_active & ~grant_to_b ? q_m_data_in : 16'b0;
 assign a_m_ack = grant_active & ~grant_to_b & q_m_ack;
-assign b_m_data_in = q_m_data_in;
+assign b_m_data_in = grant_active & grant_to_b ? q_m_data_in : 16'b0;
 assign b_m_ack = grant_active & grant_to_b & q_m_ack;
 
 always_ff @(posedge clk or posedge reset) begin
