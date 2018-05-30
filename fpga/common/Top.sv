@@ -305,9 +305,20 @@ JTAGBridge      JTAGBridge(.cpu_clk(sys_clk),
                            .*);
 
 MemArbiter MemArbiter(.clk(sys_clk),
-                      .data_m_data_in(mem_data),
-                      .data_m_access(data_m_access & ~d_io),
-                      .data_m_ack(data_mem_ack),
+                      .a_m_addr(instr_m_addr),
+                      .a_m_data_in(instr_m_data_in),
+                      .a_m_data_out(16'b0),
+                      .a_m_access(instr_m_access),
+                      .a_m_ack(instr_m_ack),
+                      .a_m_wr_en(1'b0),
+                      .a_m_bytesel(2'b11),
+                      .b_m_addr(data_m_addr),
+                      .b_m_data_in(mem_data),
+                      .b_m_data_out(data_m_data_out),
+                      .b_m_access(data_m_access & ~d_io),
+                      .b_m_ack(data_mem_ack),
+                      .b_m_wr_en(data_m_wr_en),
+                      .b_m_bytesel(data_m_bytesel),
                       .*);
 
 // SDRAM<->Cache signals

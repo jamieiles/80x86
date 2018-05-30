@@ -19,18 +19,21 @@
 module MemArbiter(input logic clk,
                   input logic reset,
                   // Instruction bus
-                  input logic [19:1] instr_m_addr,
-                  output logic [15:0] instr_m_data_in,
-                  input logic instr_m_access,
-                  output logic instr_m_ack,
+                  input logic [19:1] a_m_addr,
+                  output logic [15:0] a_m_data_in,
+                  input logic [15:0] a_m_data_out,
+                  input logic a_m_access,
+                  output logic a_m_ack,
+                  input logic a_m_wr_en,
+                  input logic [1:0] a_m_bytesel,
                   // Data bus
-                  input logic [19:1] data_m_addr,
-                  output logic [15:0] data_m_data_in,
-                  input logic [15:0] data_m_data_out,
-                  input logic data_m_access,
-                  output logic data_m_ack,
-                  input logic data_m_wr_en,
-                  input logic [1:0] data_m_bytesel,
+                  input logic [19:1] b_m_addr,
+                  output logic [15:0] b_m_data_in,
+                  input logic [15:0] b_m_data_out,
+                  input logic b_m_access,
+                  output logic b_m_ack,
+                  input logic b_m_wr_en,
+                  input logic [1:0] b_m_bytesel,
                   // Output bus
                   output logic [19:1] q_m_addr,
                   input logic [15:0] q_m_data_in,
@@ -40,21 +43,21 @@ module MemArbiter(input logic clk,
                   output logic q_m_wr_en,
                   output logic [1:0] q_m_bytesel);
 
-reg grant_to_data;
+reg grant_to_b;
 reg grant_active;
 
-wire q_data = (grant_active && grant_to_data) || (!grant_active && data_m_access);
+wire q_b = (grant_active && grant_to_b) || (!grant_active && b_m_access);
 
-assign q_m_addr = q_data ? data_m_addr : instr_m_addr;
-assign q_m_data_out = data_m_data_out;
-assign q_m_access = ~q_m_ack & (data_m_access | instr_m_access);
-assign q_m_wr_en = q_data ? data_m_wr_en : 1'b0;
-assign q_m_bytesel = q_data ? data_m_bytesel : 2'b11;
+assign q_m_addr = q_b ? b_m_addr : a_m_addr;
+assign q_m_data_out = q_b ? b_m_data_out : a_m_data_out;
+assign q_m_access = ~q_m_ack & (b_m_access | a_m_access);
+assign q_m_wr_en = q_b ? b_m_wr_en : a_m_wr_en;
+assign q_m_bytesel = q_b ? b_m_bytesel : a_m_bytesel;
 
-assign instr_m_data_in = q_m_data_in;
-assign instr_m_ack = grant_active & ~grant_to_data & q_m_ack;
-assign data_m_data_in = q_m_data_in;
-assign data_m_ack = grant_active & grant_to_data & q_m_ack;
+assign a_m_data_in = q_m_data_in;
+assign a_m_ack = grant_active & ~grant_to_b & q_m_ack;
+assign b_m_data_in = q_m_data_in;
+assign b_m_ack = grant_active & grant_to_b & q_m_ack;
 
 always_ff @(posedge clk or posedge reset) begin
     if (reset) begin
@@ -62,9 +65,9 @@ always_ff @(posedge clk or posedge reset) begin
     end else begin
         if (q_m_ack)
             grant_active <= 1'b0;
-        else if (!grant_active && (data_m_access || instr_m_access)) begin
+        else if (!grant_active && (b_m_access || a_m_access)) begin
             grant_active <= 1'b1;
-            grant_to_data <= data_m_access;
+            grant_to_b <= b_m_access;
         end
     end
 end
