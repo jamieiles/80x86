@@ -74,7 +74,7 @@ TEST_F(PrefetchTestFixture, full_fifo_no_fetch)
     dut.fifo_full = 1;
     reset();
     cycle();
-    ASSERT_FALSE(dut.mem_access);
+    EXPECT_FALSE(dut.mem_access);
 }
 
 TEST_F(PrefetchTestFixture, empty_fifo_triggers_fetch)
@@ -93,7 +93,7 @@ TEST_F(PrefetchTestFixture, fetch_writes_to_fifo)
     cycle(3);
 
     auto expected = std::vector<uint8_t>{0x55, 0xaa};
-    ASSERT_EQ(fifo_bytes, expected);
+    EXPECT_EQ(fifo_bytes, expected);
 }
 
 TEST_F(PrefetchTestFixture, update_ip_resets_fifo)
@@ -105,10 +105,11 @@ TEST_F(PrefetchTestFixture, update_ip_resets_fifo)
     dut.load_new_ip = 1;
     cycle();
     dut.load_new_ip = 0;
-    ASSERT_TRUE(dut.fifo_reset);
-    ASSERT_EQ(dut.mem_address << 1, 0x100LU);
+    EXPECT_TRUE(dut.fifo_reset);
+    cycle();
+    EXPECT_EQ(dut.mem_address << 1, 0x100LU);
     cycle(2);
-    ASSERT_EQ(fifo_bytes, std::vector<uint8_t>{0x12});
+    EXPECT_EQ(fifo_bytes, std::vector<uint8_t>{0x12});
 }
 
 TEST_F(PrefetchTestFixture, odd_fetch_address_writes_one)
@@ -122,7 +123,7 @@ TEST_F(PrefetchTestFixture, odd_fetch_address_writes_one)
     dut.load_new_ip = 0;
     cycle(2);
 
-    ASSERT_EQ(fifo_bytes, std::vector<uint8_t>{0x12});
+    EXPECT_EQ(fifo_bytes, std::vector<uint8_t>{0x12});
 }
 
 TEST_F(PrefetchTestFixture, back_to_back_reads)
@@ -137,9 +138,9 @@ TEST_F(PrefetchTestFixture, back_to_back_reads)
     dut.load_new_ip = 0;
     // Start fetching from the new address, this should do back to back reads,
     // so 6 cycles to write the 3 bytes.
-    cycle(4);
+    cycle(6);
 
-    ASSERT_EQ(fifo_bytes, (std::vector<uint8_t>{0x12, 0x34, 0x56}));
+    EXPECT_EQ(fifo_bytes, (std::vector<uint8_t>{0x12, 0x34, 0x56}));
 }
 
 TEST_F(PrefetchTestFixture, address_generation)
@@ -148,8 +149,8 @@ TEST_F(PrefetchTestFixture, address_generation)
     dut.new_cs = 0xdead;
     dut.new_ip = 0x8;
     dut.load_new_ip = 1;
-    cycle();
-    ASSERT_EQ(dut.mem_address << 1, 0xdead8LU);
+    cycle(8);
+    EXPECT_EQ(dut.mem_address << 1, 0xdead8LU);
 }
 
 TEST_F(PrefetchTestFixture, new_ip_discards_current_fetch)
@@ -161,12 +162,12 @@ TEST_F(PrefetchTestFixture, new_ip_discards_current_fetch)
     memory[0xdeadc] = 0x5555;
     dut.new_cs = 0xdead;
     dut.new_ip = 0x8;
-    cycle(2);
+    cycle(4);
     dut.load_new_ip = 1;
     cycle();
     dut.load_new_ip = 0;
     cycle(20);
-    ASSERT_EQ(fifo_bytes, (std::vector<uint8_t>{0x0d, 0xf0, 0xce, 0xfa}));
+    EXPECT_EQ(fifo_bytes, (std::vector<uint8_t>{0x0d, 0xf0, 0xce, 0xfa}));
 }
 
 TEST_F(PrefetchTestFixture, filled_fifo_doesnt_skip)
@@ -184,5 +185,5 @@ TEST_F(PrefetchTestFixture, filled_fifo_doesnt_skip)
     while (fifo_bytes.size() != 8)
         cycle();
 
-    ASSERT_EQ(fifo_bytes, (std::vector<uint8_t>{0, 0, 2, 0, 4, 0, 6, 0}));
+    EXPECT_EQ(fifo_bytes, (std::vector<uint8_t>{0, 0, 2, 0, 4, 0, 6, 0}));
 }

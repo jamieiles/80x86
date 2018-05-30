@@ -46,14 +46,24 @@ reg [15:0] next_cs, cs;
 reg abort_cur;
 reg [7:0] fetched_high_byte;
 reg write_second;
+reg [15:0] next_sequential_fetch;
+
 wire should_write_second_byte = mem_ack && !abort_cur && !fetch_address[0] && !fifo_reset;
 
 // verilator lint_off UNUSED
-wire [15:0] next_address = mem_ack && !abort_cur ? fetch_address + 1'b1 : fetch_address;
+wire [15:0] next_address = mem_ack ? next_sequential_fetch : fetch_address;
 // verilator lint_on UNUSED
 
-assign mem_address = {cs, 3'b0} + {4'b0, next_address[15:1]};
-assign mem_access = !reset && !fifo_full && !mem_ack && !write_second;
+wire [19:1] _mem_address = {cs, 3'b0} + {4'b0, next_address[15:1]};
+wire _mem_access = !reset && !fifo_full && !mem_ack && !write_second && ~(~mem_access && load_new_ip);
+
+reg mem_access2;
+assign mem_access = mem_access2 & !mem_ack;
+
+always_ff @(posedge clk) begin
+mem_address <= _mem_address;
+mem_access2 <= _mem_access;
+end
 
 assign fifo_wr_en = !abort_cur && !load_new_ip && (mem_ack || write_second);
 assign fifo_reset = load_new_ip | (abort_cur & mem_ack);
@@ -109,5 +119,8 @@ end
 always_ff @(posedge clk)
     if (mem_ack)
         fetched_high_byte <= mem_data[15:8];
+
+always_ff @(posedge clk)
+    next_sequential_fetch <= fetch_address + 1'b1;
 
 endmodule
