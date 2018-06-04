@@ -1,5 +1,5 @@
 // Copyright Jamie Iles, 2017
-//
+// Some modifications by Joseba Epalza <jepalza> and Aitor Gómez García <spark2k06>
 // This file is part of s80x86.
 //
 // s80x86 is free software: you can redistribute it and/or modify
@@ -36,6 +36,13 @@ module Top(input logic clk,
 	   output logic [3:0] vga_g,
 	   output logic [3:0] vga_b,
 `endif // CONFIG_VGA
+`ifdef CONFIG_VGA666
+	   output logic vga_hsync,
+	   output logic vga_vsync,
+	   output logic [5:0] vga_ro,
+	   output logic [5:0] vga_go,
+	   output logic [5:0] vga_bo,
+`endif // CONFIG_VGA666
 `ifdef CONFIG_PS2
            inout ps2_clk,
            inout ps2_dat,
@@ -55,7 +62,7 @@ wire reset_n;
 wire pll_locked;
 wire reset = ~reset_n | debug_reset | poweron_reset;
 
-`ifdef CONFIG_VGA
+`ifdef CONFIG_VGACOMMON
 wire vga_clk;
 
 wire vga_reg_access;
@@ -89,9 +96,9 @@ wire [15:0] io_data = sdram_config_data |
     timer_data |
     irq_control_data |
     pic_data |
-`ifdef CONFIG_VGA
+`ifdef CONFIG_VGACOMMON
     vga_reg_data |
-`endif // CONFIG_VGA
+`endif // CONFIG_VGACOMMON
 `ifdef CONFIG_PS2
     ps2_kbd_data |
     ps2_mouse_data |
@@ -119,14 +126,14 @@ wire instr_m_ack;
 wire [19:1] q_m_addr;
 wire [15:0] q_m_data_out;
 wire [15:0] q_m_data_in = sdram_data |
-`ifdef CONFIG_VGA
+`ifdef CONFIG_VGACOMMON
     vga_data |
-`endif // CONFIG_VGA
+`endif // CONFIG_VGACOMMON
     bios_data;
 wire q_m_ack = sdram_ack |
-`ifdef CONFIG_VGA
+`ifdef CONFIG_VGACOMMON
     vga_ack |
-`endif // CONFIG_VGA
+`endif // CONFIG_VGACOMMON
     bios_ack;
 wire q_m_access;
 wire q_m_wr_en;
@@ -211,9 +218,9 @@ wire io_ack = sdram_config_ack |
               irq_control_ack |
               pic_ack |
               timer_ack |
-`ifdef CONFIG_VGA
+`ifdef CONFIG_VGACOMMON
               vga_reg_ack |
-`endif // CONFIG_VGA
+`endif // CONFIG_VGACOMMON
 `ifdef CONFIG_PS2
               ps2_kbd_ack |
               ps2_mouse_ack |
@@ -233,9 +240,9 @@ always_comb begin
     pic_access = 1'b0;
     timer_access = 1'b0;
     bios_control_access = 1'b0;
-`ifdef CONFIG_VGA
+`ifdef CONFIG_VGACOMMON
     vga_reg_access = 1'b0;
-`endif // CONFIG_VGA
+`endif // CONFIG_VGACOMMON
 `ifdef CONFIG_PS2
     ps2_kbd_access = 1'b0;
     ps2_mouse_access = 1'b0;
@@ -251,9 +258,9 @@ always_comb begin
         16'b1111_1111_1110_1100: bios_control_access = 1'b1;
         16'b0000_0000_0100_00z0: timer_access = 1'b1;
         16'b0000_0000_0010_0000: pic_access = 1'b1;
-`ifdef CONFIG_VGA
+`ifdef CONFIG_VGACOMMON
         16'b0000_0011_110z_zzzz: vga_reg_access = 1'b1;
-`endif // CONFIG_VGA
+`endif // CONFIG_VGACOMMON
 `ifdef CONFIG_PS2
         16'b1111_1111_1110_0000: ps2_mouse_access = 1'b1;
         16'b0000_0000_0110_0000: ps2_kbd_access = 1'b1;
@@ -266,17 +273,17 @@ end
 always_comb begin
     sdram_access = 1'b0;
     bios_access = 1'b0;
-`ifdef CONFIG_VGA
+`ifdef CONFIG_VGACOMMON
     vga_access = 1'b0;
-`endif // CONFIG_VGA
+`endif // CONFIG_VGACOMMON
 
     if (q_m_access) begin
         unique casez ({bios_enabled, q_m_addr, 1'b0})
         {1'b1, 20'b1111_11??_????_????_????}: bios_access = 1'b1;
-`ifdef CONFIG_VGA
+`ifdef CONFIG_VGACOMMON
         {1'b?, 20'b1011_10??_????_????_????}: vga_access = 1'b1;
         {1'b?, 20'b1010_????_????_????_????}: vga_access = 1'b1;
-`endif // CONFIG_VGA
+`endif // CONFIG_VGACOMMON
         default: sdram_access = 1'b1;
         endcase
     end
@@ -465,7 +472,12 @@ Timer Timer(.clk(sys_clk),
             .intr(timer_intr),
             .*);
 
-`ifdef CONFIG_VGA
+`ifdef CONFIG_VGA666
+wire [3:0] vga_r;
+wire [3:0] vga_g;
+wire [3:0] vga_b;
+`endif
+`ifdef CONFIG_VGACOMMON
 wire cursor_enabled;
 wire graphics_enabled;
 wire bright_colors;
@@ -570,6 +582,12 @@ assign sdram_m_bytesel = cache_sdram_m_bytesel;
 assign sdram_m_access = cache_sdram_m_access;
 assign sdram_m_wr_en = cache_sdram_m_wr_en;
 `endif
+`ifdef CONFIG_VGA666
+assign vga_ro = {vga_r,2'b00};
+assign vga_go = {vga_g,2'b00};
+assign vga_bo = {vga_b,2'b00};
+`endif
+
 
 `ifdef CONFIG_PS2
 PS2KeyboardController #(.clkf(50000000))
