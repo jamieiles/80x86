@@ -82,4 +82,4 @@ popf:
         a_sel MAR, b_sel IMMEDIATE, immediate 0x2, alu_op ADD,
         rd_sel SP, rd_sel_source MICROCODE_RD_SEL;
     a_sel MDR, alu_op SETFLAGSA, update_flags CF PF AF ZF SF TF IF DF OF,
-        next_instruction;
+        ext_int_inhibit, next_instruction;

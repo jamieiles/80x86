@@ -28,7 +28,7 @@
 // CLI
 .at 0xfa;
     b_sel IMMEDIATE, immediate 0x0, alu_op SETFLAGSB, update_flags IF,
-        next_instruction;
+        ext_int_inhibit, next_instruction;
 
 // STI
 .at 0xfb;
