@@ -110,10 +110,10 @@ TEST_F(StringIntTest, MovsbInt)
     write_reg(SI, 0x800);
     write_reg(DI, 0x400);
     write_reg(CX, 0x4);
-    write_cstring(0x800, "8086");
+    write_cstring(0x800, "8086", ES);
     write_mem8(0x404, 0, ES);
 
-    // repne movsb
+    // es repne movsb
     set_instruction({0x26, 0xf3, 0xa4});
 
     inject_nmi();
@@ -121,6 +121,7 @@ TEST_F(StringIntTest, MovsbInt)
     ASSERT_EQ(read_reg(DI), 0x401);
     ASSERT_EQ(read_reg(SI), 0x801);
     ASSERT_EQ(read_reg(CX), 0x3);
+    ASSERT_EQ(read_mem8(0x400, ES), '8');
 
     assert_nmi_taken(0);
 }
