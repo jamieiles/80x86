@@ -96,6 +96,7 @@ private:
         ar & timer;
         ar & cga;
         ar & pic;
+        ar & last_cycle;
         // clang-format on
     }
 
@@ -110,6 +111,7 @@ private:
     Mouse mouse;
     bool got_exit;
     bool detached;
+    unsigned long last_cycle;
 };
 
 template <typename T>
@@ -124,7 +126,8 @@ Simulator<T>::Simulator(const std::string &bios_path,
       kbd(&this->pic),
       mouse(&this->pic),
       got_exit(false),
-      detached(detached)
+      detached(detached),
+      last_cycle(0)
 {
     cpu.add_ioport(&sdram_config_register);
     cpu.add_ioport(&uart);
@@ -200,7 +203,6 @@ void Simulator<T>::run()
     if (detached)
         cpu.debug_detach();
 
-    unsigned long last_cycle = 0;
     while (!got_exit) {
         auto io_callback = [&](unsigned long cycle_num) {
             if (cycle_num % 1000000 == 0)
