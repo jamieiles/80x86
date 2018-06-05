@@ -32,9 +32,9 @@ module Top(input logic clk,
 `ifdef CONFIG_VGA
 	   output logic vga_hsync,
 	   output logic vga_vsync,
-	   output logic [3:0] vga_r,
-	   output logic [3:0] vga_g,
-	   output logic [3:0] vga_b,
+	   output logic [`CONFIG_VGA_DAC_BITS-1:0] vga_r,
+	   output logic [`CONFIG_VGA_DAC_BITS-1:0] vga_g,
+	   output logic [`CONFIG_VGA_DAC_BITS-1:0] vga_b,
 `endif // CONFIG_VGA
 `ifdef CONFIG_PS2
            inout ps2_clk,
@@ -65,6 +65,14 @@ wire [15:0] vga_reg_data;
 wire vga_access;
 wire vga_ack;
 wire [15:0] vga_data;
+
+wire [3:0] vga_r4;
+wire [3:0] vga_g4;
+wire [3:0] vga_b4;
+
+assign vga_r = {vga_r4, {`CONFIG_VGA_DAC_BITS-4{1'b0}}};
+assign vga_g = {vga_g4, {`CONFIG_VGA_DAC_BITS-4{1'b0}}};
+assign vga_b = {vga_b4, {`CONFIG_VGA_DAC_BITS-4{1'b0}}};
 `endif
 
 wire [1:0] ir;
@@ -552,6 +560,9 @@ MemArbiter CacheVGAArbiter(.clk(sys_clk),
                            .q_b(arb_to_vga));
 
 VGAController VGAController(.clk(vga_clk),
+                            .vga_r(vga_r4),
+                            .vga_g(vga_g4),
+                            .vga_b(vga_b4),
                             .*);
 
 VGARegisters VGARegisters(.clk(sys_clk),
