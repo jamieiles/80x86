@@ -164,8 +164,18 @@ unsigned long jiffies(void)
     return ((unsigned long)high << 16) | low;
 }
 
+void scrub_mem(void)
+{
+    unsigned short seg;
+
+    // Don't scrub the BIOS segment
+    for (seg = 0; seg < 0xf; ++seg)
+        memset_seg(seg << 12, 0, 0, ~0);
+}
+
 void root(void)
 {
+    scrub_mem();
     install_vectors();
 
     irq_init();
