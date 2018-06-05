@@ -44,14 +44,17 @@ static void spi_wait_idle(void)
         continue;
 }
 
-static void spi_xfer(int len)
+static void spi_xfer(int len, int wait_for_resp)
 {
-    int i, dst;
+    int src = 0, dst = 0;
     int non_ff_byte_received = 0;
 
-    for (dst = 0, i = 0; i < len; ++i) {
-        outw(SPI_TRANSFER_PORT, spi_xfer_buf[i]);
+    while (dst < len) {
+        outw(SPI_TRANSFER_PORT, src < len ? spi_xfer_buf[src++] : 0xff);
         spi_wait_idle();
+
+        if (!wait_for_resp && src == len)
+            break;
 
         unsigned char b = inw(SPI_TRANSFER_PORT) & 0xff;
         if (!non_ff_byte_received && b == 0xff)
@@ -71,7 +74,7 @@ static void sd_send_initial_clock(void)
     // No CS, slow clock
     outw(SPI_CONTROL_PORT, SPI_CS_DEACTIVATE | 0x1ff);
 
-    spi_xfer(8);
+    spi_xfer(8, 0);
 }
 
 static void sd_flush_fifo(void)
@@ -83,7 +86,7 @@ static void sd_flush_fifo(void)
     // No CS, slow clock
     outw(SPI_CONTROL_PORT, 0x1ff);
 
-    spi_xfer(8);
+    spi_xfer(8, 0);
 }
 
 struct spi_cmd {
@@ -134,7 +137,7 @@ static void spi_do_command(const struct spi_cmd *cmd)
 
     // Fast clock, CS enabled.
     outw(SPI_CONTROL_PORT, 0x1);
-    spi_xfer(cmdlen);
+    spi_xfer(cmdlen, 1);
 }
 
 static int find_r1_response(struct r1_response *r1)
@@ -310,7 +313,7 @@ static void noinline sd_write_block(unsigned short sseg, unsigned short saddr)
     spi_xfer_buf_set(3 + 512, 0x0);  // CRC2
     spi_xfer_buf_set(4 + 512, 0xff); // Packet response
 
-    spi_xfer(5 + 512);
+    spi_xfer(5 + 512, 1);
 }
 
 static int noinline write_received(unsigned char packet_response)
@@ -324,7 +327,7 @@ static int noinline wait_for_write_completion(void)
 
     for (i = 0; i < 4096; ++i) {
         spi_xfer_buf_set(0, 0xff);
-        spi_xfer(1);
+        spi_xfer(1, 1);
         if (spi_xfer_buf_get(0) != 0)
             return 0;
     }
