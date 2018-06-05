@@ -135,8 +135,8 @@ assign multibit_shift = cur_instruction.opcode == 8'hd2 ||
 assign do_escape_fault = cur_instruction.opcode[7:3] == 5'b11011 && next_addr == do_int_address;
 reg nmi_pending;
 reg ext_int_inhibit;
-wire take_nmi = (nmi_pending | nmi_pulse) & !ext_int_inhibit;
-wire take_irq = intr & int_enabled & !ext_int_inhibit;
+wire take_nmi = (nmi_pending | nmi_pulse) & !ext_int_inhibit & !current.ext_int_inhibit;
+wire take_irq = intr & int_enabled & !ext_int_inhibit & !current.ext_int_inhibit;
 wire do_single_step = current.next_instruction & !ext_int_inhibit &
     trap_flag_set & current.next != debug_wait_address;
 assign start_interrupt = next_addr == nmi_address ||
