@@ -110,6 +110,10 @@ add_fpga(PROJECT Top
 add_custom_command(OUTPUT __program_hdp001__
                    COMMAND ${QUARTUS_PGM_EXECUTABLE} --mode=jtag -o \"P\;Top.sof\"
                    DEPENDS Top.sof)
+add_custom_command(OUTPUT __flash_hdp001__
+                   COMMAND ${QUARTUS_PGM_EXECUTABLE} --mode=jtag -o \"P\;Top.pof\"
+                   DEPENDS Top.sof)
 
 add_custom_target(hdp001 DEPENDS Top.sta.rpt)
 add_custom_target(hdp001-program DEPENDS __program_hdp001__)
+add_custom_target(hdp001-flash DEPENDS __flash_hdp001__)
