@@ -156,10 +156,21 @@ timer_irq:
 
     movw $0x40, %bx
     mov %bx, %ds
-    movw $0x6c, %bx
-    add $1, %ds:0(%bx)
-    adc $0, %ds:2(%bx)
+    xor %bx, %bx
+    add $1, %ds:0x6c(%bx)
+    adc $0, %ds:0x6e(%bx)
 
+    // Handle 24 hour overflow flag
+    cmpw $0x000f, %ds:0x6c(%bx)
+    jne .Lno_overflow
+    cmpw $0x0018, %ds:0x6e(%bx)
+    jne .Lno_overflow
+
+    movw $0, %ds:0x6c(%bx)
+    movw $0, %ds:0x6e(%bx)
+    incb %ds:0x70(%bx)
+
+.Lno_overflow:
     int $0x1c
 
     movb $0x20, %al

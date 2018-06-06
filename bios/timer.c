@@ -29,12 +29,14 @@ static void timer_services(struct callregs *regs)
     case 0x0:
         regs->dx.x = bda_read(timer_counter_low);
         regs->cx.x = bda_read(timer_counter_high);
-        regs->ax.l = 0;
+        regs->ax.l = bda_read(clock_rollover);
+        bda_write(clock_rollover, 0);
         regs->flags &= ~CF;
         break;
     case 0x1:
         bda_write(timer_counter_low, regs->dx.x);
         bda_write(timer_counter_high, regs->cx.x);
+        bda_write(clock_rollover, 0);
         regs->flags &= ~CF;
         break;
     case 0x2:
@@ -54,10 +56,18 @@ static void timer_services(struct callregs *regs)
 }
 VECTOR(0x1a, timer_services);
 
+#define BIOS_BUILD_STAMP (((unsigned long)BIOS_BUILD_HOUR * 60LU * 60LU) + \
+                          ((unsigned long)BIOS_BUILD_MINUTE * 60LU) + \
+                          BIOS_BUILD_SECOND)
+#define INIT_TIME_COUNT_VAL (unsigned long)((BIOS_BUILD_STAMP * 18.2))
+
 void init_timer(void)
 {
     irq_enable(0);
     outb(TIMER_PORT + 0x3, 0x34);
     outb(TIMER_PORT + 0x0, 0x00);
     outb(TIMER_PORT + 0x0, 0x00);
+
+    bda_write(timer_counter_low, INIT_TIME_COUNT_VAL & 0xffff);
+    bda_write(timer_counter_high, (INIT_TIME_COUNT_VAL >> 16) & 0xffff);
 }
