@@ -16,7 +16,7 @@
 // along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
 
 `define CONFIG_SDRAM_SIZE (64 * 1024 * 1024)
-`define CONFIG_VGACOMMON 1
+`define CONFIG_VGA_DAC_BITS 4
 `define CONFIG_VGA 1
 `define CONFIG_PS2 1
 `define CONFIG_NUM_LEDS 10
