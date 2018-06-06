@@ -44,6 +44,15 @@ _start:
     mov %ax, %ds
     mov %ax, %es
 
+    // Clear the BIOS stack space
+    lea bios_start, %cx
+    dec %cx
+    mov %cx, %di
+    xor %ax, %ax
+    std
+    rep stosb
+    cld
+
     // Clear bss
     mov $bss_start, %di
     mov $bss_end, %cx

@@ -6,6 +6,7 @@ SECTIONS {
     . = 0x0;
 
     .text 0xc000 : {
+        bios_start = . ;
         *(.entry.text);
         . = ALIGN(4);
         *(.text);
