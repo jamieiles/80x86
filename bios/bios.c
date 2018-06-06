@@ -90,6 +90,10 @@ static void set_vector(int vector, void *handler)
 
 static unsigned char vpt[] = {80, 25, 8, 4000 & 0xff, 4000 >> 8};
 
+static void unused_int(struct callregs __unused *r)
+{
+}
+
 static void install_vectors(void)
 {
     struct vector {
@@ -101,7 +105,10 @@ static void install_vectors(void)
     extern struct vector vectors_end;
 
     struct vector *v;
+    int i;
 
+    for (i = 0; i < 256 / 4; ++i)
+        set_vector(i, unused_int);
     for (v = &vectors_start; v < &vectors_end; ++v)
         set_vector(v->num, v->handler);
 
