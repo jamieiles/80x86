@@ -87,6 +87,8 @@ set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/Micr
                             COMPILE_FLAGS "--verilog_macro=\"MICROCODE_ROM_PATH=\\\\\\\"${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/\\\\\\\"")
 set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/../VGA/FontColorLUT.sv PROPERTIES
                             COMPILE_FLAGS "--verilog_macro=\"FONT_ROM_PATH=\\\\\\\"${CMAKE_CURRENT_BINARY_DIR}\\\\\\\"\"")
+set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/../VGA/DACRam.v PROPERTIES
+                            COMPILE_FLAGS "--verilog_macro=\"DAC_INIT_PATH=\\\\\\\"${CMAKE_CURRENT_BINARY_DIR}\\\\\\\"\"")
 set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/../common/Cache.sv PROPERTIES
                             COMPILE_FLAGS "--verilog_macro=\"CACHE_SIZE=${CACHE_SIZE}\"")
 set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/../common/Top.sv PROPERTIES
@@ -101,11 +103,14 @@ add_custom_command(OUTPUT bios.mif
 add_custom_command(OUTPUT font.bin
                    COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/../../scripts/mkfontrom ${CMAKE_CURRENT_SOURCE_DIR}/../../vendor/fonts/cp437-8x8 font.bin
                    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/../../vendor/fonts/cp437-8x8)
+add_custom_command(OUTPUT DACInit.mif
+                   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/../VGA/DACInit.mif DACInit.mif
+                   DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/../VGA/DACInit.mif)
 add_fpga(PROJECT Top
          FAMILY "MAX 10"
          PART "10M16SAE144I7G"
          SOURCES ${ALL_SOURCES}
-         DEPENDS microcode.mif bios.mif font.bin)
+         DEPENDS microcode.mif bios.mif font.bin DACInit.mif)
 
 add_custom_command(OUTPUT __program_hdp001__
                    COMMAND ${QUARTUS_PGM_EXECUTABLE} --mode=jtag -o \"P\;Top.sof\"

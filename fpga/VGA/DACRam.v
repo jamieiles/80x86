@@ -33,6 +33,9 @@
 //authorized distributors.  Please refer to the applicable 
 //agreement for further details.
 
+`ifndef DAC_INIT_PATH
+`define DAC_INIT_PATH "."
+`endif
 
 // synopsys translate_off
 `timescale 1 ps / 1 ps
@@ -115,6 +118,7 @@ module DACRam (
 		altsyncram_component.outdata_reg_a = "UNREGISTERED",
 		altsyncram_component.outdata_reg_b = "UNREGISTERED",
 		altsyncram_component.power_up_uninitialized = "FALSE",
+		altsyncram_component.init_file = {{`DAC_INIT_PATH, "/DACInit.mif"}},
 		altsyncram_component.read_during_write_mode_port_a = "NEW_DATA_NO_NBE_READ",
 		altsyncram_component.read_during_write_mode_port_b = "NEW_DATA_NO_NBE_READ",
 		altsyncram_component.widthad_a = 8,
