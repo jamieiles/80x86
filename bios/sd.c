@@ -317,9 +317,9 @@ static int noinline write_received(unsigned char packet_response)
 
 static int noinline wait_for_write_completion(void)
 {
-    int i = 0;
+    unsigned int m = 0;
 
-    for (i = 0; i < 4096; ++i) {
+    for (m = 0; m < 32768; ++m) {
         spi_xfer_buf_set(0, 0xff);
         spi_xfer(1, 1);
         if (spi_xfer_buf_get(0) != 0)
