@@ -83,22 +83,6 @@ enum Flag {
         ".word 1b\n"                                              \
         ".popsection")
 
-#define HWIRQ(vnum, handler)                                      \
-    static void __attribute__((used)) handler(struct callregs *); \
-    asm(".pushsection .text, \"ax\"\n"                            \
-        "1:\n"                                                    \
-        "cld\n"                                                   \
-        "cli\n"                                                   \
-        "push $" #handler                                         \
-        "\n"                                                      \
-        "jmp hw_irq_entry\n"                                      \
-        ".pushsection .rodata.vectors\n"                          \
-        ".align 4\n"                                              \
-        ".word " #vnum                                            \
-        "\n"                                                      \
-        ".word 1b\n"                                              \
-        ".popsection")
-
 #define bda_write(field, val)                                                \
     ({                                                                       \
         typeof(((struct bios_data_area *)0)->field) _p = (val);              \

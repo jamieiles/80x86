@@ -174,15 +174,6 @@ static int keyboard_poll(void)
     return 1;
 }
 
-static void kbd_irq(struct callregs *regs)
-{
-    irq_ack();
-
-    while (keyboard_poll())
-        continue;
-}
-HWIRQ(0x9, kbd_irq);
-
 static void keyboard_wait(struct callregs *regs)
 {
     unsigned short c;

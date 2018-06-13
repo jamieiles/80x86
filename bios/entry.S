@@ -82,8 +82,6 @@ bios_hw_sp:
 .section .bss
 saved_sw_ss: .word 0
 saved_sw_sp: .word 0
-saved_hw_ss: .word 0
-saved_hw_sp: .word 0
 
 .macro entry_fn name saved_ss_var saved_sp_var ss_var sp_var
 .section .text, "ax"
@@ -140,7 +138,6 @@ saved_hw_sp: .word 0
 .endm
 
 entry_fn irq_entry, saved_sw_ss, saved_sw_sp, bios_ss, bios_sw_sp
-entry_fn hw_irq_entry, saved_hw_ss, saved_hw_sp, bios_ss, bios_hw_sp
 
 stub_irq:
     iret
@@ -184,6 +181,16 @@ timer_irq:
     iret
 
 int_handler 0x08, timer_irq
+
+kbd_irq:
+    push %ax
+    movb $0x20, %al
+    outb %al, $0x20
+    pop %ax
+
+    iret
+
+int_handler 0x09, kbd_irq
 
 .pushsection ".bios_date", "a"
     .ascii BIOS_BUILD_DATE
