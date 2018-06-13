@@ -107,7 +107,7 @@ void SPI::transfer(uint8_t mosi_val)
             rx_val = 0xff;
         } else if (write_count < 514) {
             // CRC
-            rx_val = 0xff;
+            rx_val = 0xaa;
         } else {
             rx_val = 0x5; // Received OK.
             state = STATE_IDLE;
