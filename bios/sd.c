@@ -93,10 +93,6 @@ struct spi_cmd {
     unsigned char cmd;
     unsigned char arg[4];
     unsigned char crc;
-
-    unsigned short data_seg;
-    const void *data_addr;
-    unsigned short tx_datalen;
     unsigned short rx_datalen;
 };
 
@@ -113,7 +109,7 @@ struct r1_response {
 
 static unsigned short spi_command_len(const struct spi_cmd *cmd)
 {
-    return 1 + 6 + cmd->tx_datalen + cmd->rx_datalen + SD_NCR;
+    return 1 + 6 + cmd->rx_datalen + SD_NCR;
 }
 
 static void spi_do_command(const struct spi_cmd *cmd)
@@ -128,11 +124,8 @@ static void spi_do_command(const struct spi_cmd *cmd)
     for (m = 0; m < 4; ++m)
         spi_xfer_buf_set(2 + m, cmd->arg[m]);
     spi_xfer_buf_set(6, cmd->crc);
-    // Transmit data.
-    memcpy_seg(get_cs(), spi_xfer_buf + 7, cmd->data_seg, cmd->data_addr,
-               cmd->tx_datalen);
     // Initialize receive buffer so we don't shift out new, garbage data.
-    for (m = 7 + cmd->tx_datalen; m < cmdlen; ++m)
+    for (m = 7; m < cmdlen; ++m)
         spi_xfer_buf_set(m, 0xff);
 
     // Fast clock, CS enabled.
