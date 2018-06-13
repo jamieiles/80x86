@@ -148,35 +148,33 @@ timer_irq:
     cli
     push %ds
     push %bx
-    push %ax
-    push %dx
 
     movw $0x40, %bx
     mov %bx, %ds
     xor %bx, %bx
-    add $1, %ds:0x6c(%bx)
-    adc $0, %ds:0x6e(%bx)
+    add $1, 0x6c
+    adc $0, 0x6e
 
     // Handle 24 hour overflow flag
-    cmpw $0x000f, %ds:0x6c(%bx)
+    cmpw $0x000f, 0x6c
     jne .Lno_overflow
-    cmpw $0x0018, %ds:0x6e(%bx)
+    cmpw $0x0018, 0x6e
     jne .Lno_overflow
 
-    movw $0, %ds:0x6c(%bx)
-    movw $0, %ds:0x6e(%bx)
-    incb %ds:0x70(%bx)
+    movw $0, 0x6c
+    movw $0, 0x6e
+    incb 0x70
 
 .Lno_overflow:
-    int $0x1c
-
-    movb $0x20, %al
-    outb %al, $0x20
-
-    pop %dx
-    pop %ax
     pop %bx
     pop %ds
+
+    int $0x1c
+
+    push %ax
+    movb $0x20, %al
+    outb %al, $0x20
+    pop %ax
 
     iret
 
