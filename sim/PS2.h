@@ -62,7 +62,7 @@ public:
     virtual uint8_t read8(uint16_t __unused port_num, unsigned __unused offs)
     {
         if (offs)
-            return pending.size() ? (1 << 0) : 0;
+            return pending.size() ? (1 << 4) : 0;
 
         if (pending.size()) {
             auto v = pending.front();

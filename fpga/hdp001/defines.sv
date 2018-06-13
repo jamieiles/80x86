@@ -21,4 +21,5 @@
 `define CONFIG_PS2 1
 `define CONFIG_NUM_LEDS 8
 `define CONFIG_VIDEO_MEMORY_SIZE (16 * 1024)
+`define CONFIG_SPEAKER 1
 `define FORCE_M9K 1

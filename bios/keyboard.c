@@ -26,7 +26,7 @@
 #define PS2_DATA_PORT 0x60
 #define PS2_CTRL_PORT 0x61
 #define PS2_CTRL_CLEAR (1 << 7)
-#define PS2_CTRL_RX_VALID (1 << 0)
+#define PS2_CTRL_RX_VALID (1 << 4)
 
 static int keyboard_poll(void);
 
@@ -151,7 +151,7 @@ static void noinline keypress(const struct keydef *map, unsigned char b)
 
 static void keyboard_reset(void)
 {
-    outb(PS2_CTRL_PORT, PS2_CTRL_CLEAR);
+    outb(PS2_CTRL_PORT, inb(PS2_CTRL_PORT) | PS2_CTRL_CLEAR);
 }
 
 static int keyboard_poll(void)
@@ -160,7 +160,7 @@ static int keyboard_poll(void)
     if (!b)
         return 0;
 
-    outb(PS2_CTRL_PORT, PS2_CTRL_CLEAR);
+    outb(PS2_CTRL_PORT, inb(PS2_CTRL_PORT) | PS2_CTRL_CLEAR);
 
     int keyup = 0;
     if (b & 0x80)

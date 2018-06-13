@@ -554,10 +554,11 @@ load the design into the FPGA via the Altera USB Blaster.
 | 16'hffe1 | 8 a| Mouse status register:
 
   - [7]: write to reset
-  - [6:3]: reserved
-  - [2]: transmitter busy
-  - [1]: unread receive error
-  - [0]: receive FIFO not empty
+  - [6:4]: reserved
+  - [4]: receive FIFO not empty
+  - [3]: transmitter busy
+  - [2]: unread receive error
+  - [1:0]: reserved
 
 | 16'hffec | 16 a| BIOS control register:
 
@@ -630,11 +631,13 @@ load the design into the FPGA via the Altera USB Blaster.
 | 16'h0061 | 8 a| PS/2 control/status register:
 
   - [7]: RX FIFO reset.
-  - [6:3]: reserved
-  - [2]: transmit in progress, cleared when the transmitter is idle.
-  - [1]: a byte with a parity error was received and discarded.  Cleared on
+  - [6:4]: reserved
+  - [4]: receive FIFO not empty
+  - [3]: transmit in progress, cleared when the transmitter is idle.
+  - [2]: a byte with a parity error was received and discarded.  Cleared on
   read.
-  - [0]: receive FIFO not empty.
+  - [1]: PC speaker data enable.
+  - [0]: PC speaker timer gate enable.
 
 | 16'hffec | 16 a| BIOS control register:
 

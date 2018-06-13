@@ -42,12 +42,32 @@ module Top(input logic clk,
            inout ps2_clk_b,
            inout ps2_dat_b,
 `endif // CONFIG_PS2
+`ifdef CONFIG_SPEAKER
+           output speaker_out,
+`endif // CONFIG_SPEAKER
            input logic uart_rx,
            output logic uart_tx,
            output logic spi_sclk,
            output logic spi_mosi,
            input logic spi_miso,
            output logic spi_ncs);
+
+`ifdef CONFIG_SPEAKER
+wire speaker_gate_en;
+wire speaker_timer_out;
+wire speaker_data;
+assign speaker_out = speaker_timer_out & speaker_data;
+`define SPEAKER_TIMER_OUT speaker_timer_out
+`define SPEAKER_DATA speaker_data
+`define SPEAKER_GATE_EN_OUT speaker_gate_en
+`define SPEAKER_GATE_EN_IN speaker_gate_en
+`else // CONFIG_SPEAKER
+`define SPEAKER_TIMER_OUT
+`define SPEAKER_DATA_OUT
+`define SPEAKER_DATA
+`define SPEAKER_GATE_EN_OUT
+`define SPEAKER_GATE_EN_IN 1'b0
+`endif
 
 wire poweron_reset;
 wire sys_clk;
@@ -471,6 +491,8 @@ Timer Timer(.clk(sys_clk),
             .data_m_data_in(data_m_data_out),
             .data_m_addr(data_m_addr[1]),
             .intr(timer_intr),
+            .speaker_out(`SPEAKER_TIMER_OUT),
+            .speaker_gate_en(`SPEAKER_GATE_EN_IN),
             .*);
 
 `ifdef CONFIG_VGA
@@ -590,6 +612,8 @@ PS2KeyboardController #(.clkf(50000000))
 					    .data_m_data_out(ps2_kbd_data),
 					    .data_m_data_in(data_m_data_out),
                                             .ps2_intr(ps2_kbd_intr),
+                                            .speaker_gate_en(`SPEAKER_GATE_EN_OUT),
+                                            .speaker_data(`SPEAKER_DATA),
 					    .*);
 
 PS2MouseController #(.clkf(50000000))

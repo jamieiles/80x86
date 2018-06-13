@@ -44,7 +44,7 @@ static int mouse_cmd(unsigned char in, unsigned char *out)
 
     *out = 0xfe;
     do {
-        if (inb(MOUSE_STATUS) & (1 << 0)) {
+        if (inb(MOUSE_STATUS) & (1 << 4)) {
             ret = 0;
             *out = inb(MOUSE_DATA);
             break;
@@ -56,7 +56,7 @@ static int mouse_cmd(unsigned char in, unsigned char *out)
 
 static int wait_self_test(void)
 {
-    while (!(inb(MOUSE_STATUS) & (1 << 0)))
+    while (!(inb(MOUSE_STATUS) & (1 << 4)))
         continue;
     unsigned char b = inb(MOUSE_DATA);
 

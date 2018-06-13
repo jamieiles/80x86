@@ -31,7 +31,9 @@ module PS2KeyboardController #(parameter clkf=50000000)
                                output logic ps2_intr,
                                // PS/2 signals
                                inout ps2_clk,
-                               inout ps2_dat);
+                               inout ps2_dat,
+                               output logic speaker_data,
+                               output logic speaker_gate_en);
 
 wire do_read = data_m_access & cs & ~data_m_wr_en;
 wire do_write = data_m_access & cs & data_m_wr_en;
@@ -69,7 +71,7 @@ Fifo    #(.data_width(8),
              .flush(fifo_reset),
              .*);
 
-wire [7:0] status = {5'b0, tx_busy, unread_error, ~empty};
+wire [7:0] status = {3'b0, ~empty, tx_busy, unread_error, speaker_data, speaker_gate_en};
 wire [7:0] data = empty ? 8'b0 : fifo_rd_data;
 
 always_ff @(posedge clk)
@@ -85,6 +87,12 @@ always_ff @(posedge clk or posedge reset)
         unread_error <= 1'b1;
     else if (do_read & data_m_bytesel[1])
         unread_error <= 1'b0;
+
+always_ff @(posedge clk or posedge reset)
+    if (reset)
+        {speaker_data, speaker_gate_en} <= 2'b0;
+    else if (do_write & data_m_bytesel[1])
+        {speaker_data, speaker_gate_en} <= {data_m_data_in[9], data_m_data_in[8]};
 
 PS2Host #(.clkf(clkf))
         PS2Host(.*);

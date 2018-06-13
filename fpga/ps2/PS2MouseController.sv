@@ -67,7 +67,7 @@ Fifo    #(.data_width(8),
              .flush(fifo_reset),
              .*);
 
-wire [7:0] status = {5'b0, tx_busy, unread_error, ~empty};
+wire [7:0] status = {3'b0, ~empty, tx_busy, unread_error, 2'b0};
 wire [7:0] data = empty ? 8'b0 : fifo_rd_data;
 
 always_ff @(posedge clk)

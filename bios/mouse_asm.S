@@ -76,7 +76,7 @@ mouse_irq:
 mouse_poll_loop:
     mov $MOUSE_STATUS, %dx
     in (%dx), %al
-    test $0x1, %ax
+    test $0x10, %ax
     jz no_mouse_data
 
     mov %cs:mouse_nbytes, %si

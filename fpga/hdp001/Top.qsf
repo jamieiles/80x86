@@ -154,6 +154,10 @@ set_instance_assignment -name WEAK_PULL_UP_RESISTOR ON -to ps2_dat_b
 set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to ps2_clk_b
 set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to ps2_dat_b
 
+# PC Speaker
+set_location_assignment PIN_99 -to speaker_out
+set_instance_assignment -name CURRENT_STRENGTH_NEW 2MA -to speaker_out
+
 # IO
 #set_location_assignment PIN_10 -to leds[0]
 #set_location_assignment PIN_8 -to leds[1]
