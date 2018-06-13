@@ -39,8 +39,9 @@ mouse_packet:
 .globl mouse_driver_enabled
 mouse_driver_enabled:
     .word 0
+.globl mouse_nbytes
 mouse_nbytes:
-    .word 0
+    .byte 0
 .popsection
 
 .globl update_mouse
@@ -49,10 +50,6 @@ update_mouse:
 
     cmp $0, %cs:mouse_driver_enabled
     jz 1f
-
-    push $MOUSE_IRQ
-    call irq_disable
-    add $2, %sp
 
     push %bx
     lea mouse_packet, %bx
@@ -63,10 +60,6 @@ update_mouse:
 
     lcall *%cs:mouse_driver_addr
     add $8, %sp
-
-    push $MOUSE_IRQ
-    call irq_enable
-    add $2, %sp
 
     pop %bx
 1:
@@ -93,11 +86,20 @@ mouse_poll_loop:
     mov $MOUSE_DATA, %dx
     in (%dx), %al
     mov %al, %cs:(%bx, %si)
-    incw %cs:mouse_nbytes
-    cmp $3, %cs:mouse_nbytes
+
+    cmpb $0, %cs:mouse_nbytes
+    jne .Lcheck_packet
+    // Bit 4 should always be set in the first byte of a packet, attempt to
+    // resynchronize if not.
+    testb $0x08, %al
+    jz incomplete_packet
+
+.Lcheck_packet:
+    incb %cs:mouse_nbytes
+    cmpb $3, %cs:mouse_nbytes
     jne incomplete_packet
 
-    movw $0, %cs:mouse_nbytes
+    movb $0, %cs:mouse_nbytes
     call update_mouse
 
 incomplete_packet:

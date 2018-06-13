@@ -16,6 +16,7 @@
 // along with s80x86.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "io.h"
+#include "mouse.h"
 #include "serial.h"
 #include "bios.h"
 #include "utils.h"
@@ -337,9 +338,9 @@ int write_sector(unsigned long sector,
     if (!sd_is_sdhc)
         address *= 512LU;
 
-    sti();
+    mouse_suspend();
     if (sd_make_write_request(address)) {
-        cli();
+        mouse_resume();
         return -1;
     }
 
@@ -347,12 +348,12 @@ int write_sector(unsigned long sector,
 
     unsigned char packet_response = spi_xfer_buf_get(0);
     if (!write_received(packet_response)) {
-        cli();
+        mouse_resume();
         return -1;
     }
 
     int rc = wait_for_write_completion();
-    cli();
+    mouse_resume();
 
     return rc;
 }
@@ -376,29 +377,29 @@ int read_sector(unsigned long sector, unsigned short dseg, unsigned short daddr)
     cmd.arg[2] = (address >> 8) & 0xff;
     cmd.arg[3] = (address >> 0) & 0xff;
 
-    sti();
+    mouse_suspend();
     spi_do_command(&cmd);
     r1offs = find_r1_response(&r1);
     if (r1offs < 0) {
         putstr("Failed to find R1 response\n");
-        cli();
+        mouse_resume();
         return -1;
     }
     if (r1.v & R1_ERROR_MASK) {
         putstr("Read sector failed\n");
-        cli();
+        mouse_resume();
         return -1;
     }
 
     data_start = find_data_start(r1offs);
     if (data_start < 0) {
         putstr("No data start token\n");
-        cli();
+        mouse_resume();
         return -1;
     }
 
     memcpy_seg(dseg, (void *)daddr, get_cs(), spi_xfer_buf + data_start, 512);
-    cli();
+    mouse_resume();
 
     return 0;
 }

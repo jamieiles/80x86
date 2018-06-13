@@ -25,9 +25,11 @@
 #define MOUSE_STATUS 0xffe1
 #define MOUSE_IRQ 7
 
-#define CMD_TIMEOUT_JIFFIES 20
+#define CMD_TIMEOUT 32768
 
 #define CMD_REFRESH 0xf3
+#define CMD_DISABLE 0xf5
+#define CMD_ENABLE 0xf4
 
 extern unsigned short mouse_driver_addr[2];
 extern int mouse_driver_enabled;
@@ -35,26 +37,19 @@ static int have_mouse;
 
 static int mouse_cmd(unsigned char in, unsigned char *out)
 {
-    int enable_irqs = !irqs_enabled();
-    unsigned long start = jiffies();
     int ret = -1;
+    int i = 0;
 
     outb(MOUSE_DATA, in);
 
     *out = 0xfe;
-    while (jiffies() < start + CMD_TIMEOUT_JIFFIES) {
+    do {
         if (inb(MOUSE_STATUS) & (1 << 0)) {
             ret = 0;
             *out = inb(MOUSE_DATA);
             break;
         }
-
-        // Allow the time to be updated
-        if (enable_irqs) {
-            sti();
-            cli();
-        }
-    }
+    } while (i++ < CMD_TIMEOUT);
 
     return ret;
 }
@@ -86,7 +81,7 @@ int mouse_hw_init(void)
     if (wait_self_test())
         return -1;
 
-    if (mouse_cmd(0xf4, &resp) || resp != 0xfa) {
+    if (mouse_cmd(CMD_ENABLE, &resp) || resp != 0xfa) {
         printk("failed to enable scanning %02x\n", resp);
         return -1;
     }
@@ -145,4 +140,29 @@ void mouse_services(struct callregs *regs)
         break;
     default: regs->flags |= CF;
     }
+}
+
+extern unsigned char mouse_nbytes;
+
+void mouse_suspend(void)
+{
+    if (!have_mouse)
+        return;
+
+    unsigned char o;
+    mouse_cmd(CMD_DISABLE, &o);
+}
+
+void mouse_resume(void)
+{
+    if (!have_mouse)
+        return;
+
+    mouse_init();
+    mouse_nbytes = 0;
+
+    unsigned char o;
+    mouse_cmd(CMD_ENABLE, &o);
+
+    mouse_init();
 }

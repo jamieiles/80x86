@@ -21,3 +21,5 @@ struct callregs;
 
 void mouse_services(struct callregs *regs);
 int mouse_hw_init(void);
+void mouse_suspend(void);
+void mouse_resume(void);
