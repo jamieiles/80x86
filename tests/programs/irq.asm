@@ -26,17 +26,18 @@ cpu 8086
     mov         al, 0x01
     out         0x21, al
 
-    mov         al, 0x00
+    ; Unmask the IRQs we're using (1+2)
+    mov         al, 0xf9
     out         0x21, al
 
-    mov word    [8 * 4], irq0_handler
-    mov word    [9 * 4], irq1_handler
+    mov word    [9 * 4], irq0_handler
+    mov word    [10 * 4], irq1_handler
     sti
 
     mov         dx, 0xfff6
-    mov         al, 1
-    out         dx, al
     mov         al, 2
+    out         dx, al
+    mov         al, 4
     out         dx, al
     nop
     nop
