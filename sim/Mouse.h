@@ -87,7 +87,7 @@ public:
 
     void process_event(SDL_Event e)
     {
-        uint8_t v = 0x80;
+        uint8_t v = 0x08;
 
         if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT)
             left_down = true;
@@ -131,7 +131,7 @@ private:
         int x_delta = mouse_x - last_x;
         int y_delta = -(mouse_y - last_y);
 
-        uint8_t b = 0x80;
+        uint8_t b = 0x08;
         if (x_delta < 0)
             b |= (1 << 4);
         if (y_delta < 0)
