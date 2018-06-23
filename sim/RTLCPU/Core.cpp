@@ -445,7 +445,7 @@ void RTLCPU<debug_enabled>::io_access()
         return;
 
     this->after_n_cycles(0, [&] {
-        if (!this->io.count(this->dut.io_m_addr << 1)) {
+        if (this->dut.io_m_wr_en || !this->io.count(this->dut.io_m_addr << 1)) {
             this->dut.io_m_data_in = 0;
             return;
         }
