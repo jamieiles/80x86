@@ -95,10 +95,9 @@ always_comb begin
         fb_address = {1'b0, ({1'b0, row_base} / 11'd16) * 11'd80 +
             {2'b0, col_address}};
     VIDEO_MODE_4_COLOR: begin
-        fb_address = {4'b0, graphics_row[12:0]} * 16'd40 +
+        fb_address = {3'b0, graphics_row[0], 12'b0} +
+            ({6'b0, graphics_row[11:1]} * 16'd40) +
             {3'b0, col_address};
-        if (graphics_row[0])
-            fb_address += 16'd4096;
     end
     VIDEO_MODE_256_COLOR:
         fb_address = {7'b0, row_base[9:1]} * 16'd160 + col_address;
@@ -158,8 +157,10 @@ end
 
 always_comb begin
     case (mode)
-    VIDEO_MODE_TEXT, VIDEO_MODE_4_COLOR:
+    VIDEO_MODE_TEXT:
         vga_address = {vga_cur_buffer, 1'b0, col[9:3]};
+    VIDEO_MODE_4_COLOR:
+        vga_address = {vga_cur_buffer, 2'b0, col[9:4]};
     VIDEO_MODE_256_COLOR: vga_address = {vga_cur_buffer, col[9:2]};
     default: vga_address = 10'b0;
     endcase
