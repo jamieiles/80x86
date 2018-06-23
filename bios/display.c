@@ -409,6 +409,29 @@ static void vga_config(struct callregs *regs)
     }
 }
 
+static void set_dac_block(struct callregs *regs)
+{
+    unsigned short idx = regs->bx.x;
+    unsigned short count = regs->cx.x;
+    unsigned short src = regs->dx.x;
+    unsigned short es = get_es();
+
+    outb(0x3c8, idx);
+    for (unsigned short m = 0; m < count; ++m)
+        for (int j = 0; j < 3; ++j)
+            outb(0x3c9, readb(es, src + (m * 3) + j));
+}
+
+static void set_get_palette(struct callregs *regs)
+{
+    regs->flags &= ~CF;
+
+    switch (regs->ax.l) {
+    case 0x12: set_dac_block(regs); break;
+    default: regs->flags |= CF;
+    }
+}
+
 static void video_services(struct callregs *regs)
 {
     union cursor cursor;
@@ -434,7 +457,7 @@ static void video_services(struct callregs *regs)
     case 0x8: read_char(regs); break;
     case 0xb: set_palette(regs); break;
     case 0x0: set_video_mode(regs); break;
-    case 0x10: break;
+    case 0x10: set_get_palette(regs); break;
     case 0x11: break;
     case 0x1a: vga_combination(regs); break;
     case 0x12: vga_config(regs); break;
