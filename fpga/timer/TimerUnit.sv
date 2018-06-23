@@ -68,8 +68,9 @@ begin
     if (trigger) begin
         count <= reload - 1'b1;
         out <= 1'b1;
-    end else if (pit_clk_posedge && gate) begin
-        count <= (count == 16'b0 ? reload : count) - 1'b1;
+    end else begin
+        if (pit_clk_posedge && gate)
+            count <= (count == 16'b0 ? reload : count) - 1'b1;
     
         if (count == 16'b1)
             out <= 1'b0;
