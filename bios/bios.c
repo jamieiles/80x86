@@ -110,7 +110,7 @@ static void install_vectors(void)
     struct vector *v;
     int i;
 
-    for (i = 0; i < 256 / 4; ++i)
+    for (i = 0; i < 256; ++i)
         set_vector(i, unused_int);
     for (v = &vectors_start; v < &vectors_end; ++v)
         set_vector(v->num, v->handler);
