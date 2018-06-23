@@ -90,8 +90,11 @@ static void set_vector(int vector, void *handler)
 
 static unsigned char vpt[] = {80, 25, 8, 4000 & 0xff, 4000 >> 8};
 
-static void unused_int(struct callregs __unused *r)
+extern void unused_int(void);
+
+void do_unused_int(struct callregs *r)
 {
+    r->flags |= CF;
 }
 
 static void install_vectors(void)

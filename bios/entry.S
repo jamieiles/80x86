@@ -190,6 +190,13 @@ kbd_irq:
 
 int_handler 0x09, kbd_irq
 
+.globl unused_int
+unused_int:
+    cld
+    cli
+    push $do_unused_int
+    jmp irq_entry
+
 .pushsection ".bios_date", "a"
     .ascii BIOS_BUILD_DATE
 .popsection
