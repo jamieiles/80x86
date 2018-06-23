@@ -19,6 +19,12 @@
 #include "serial.h"
 #include "io.h"
 
+struct dac_color {
+    unsigned char r, g, b;
+};
+
+static struct dac_color init_dac[256];
+
 static int _in_video_mode;
 
 int in_video_mode(void)
@@ -317,6 +323,16 @@ static void get_video_mode(struct callregs *regs)
     regs->bx.h = 0;
 }
 
+static void restore_dac(void)
+{
+    outb(0x3c8, 0);
+    for (unsigned short m = 0; m < 256; ++m) {
+        outb(0x3c9, init_dac[m].r);
+        outb(0x3c9, init_dac[m].g);
+        outb(0x3c9, init_dac[m].b);
+    }
+}
+
 static int __set_video_mode(int mode)
 {
     switch (mode) {
@@ -336,6 +352,7 @@ static int __set_video_mode(int mode)
         _in_video_mode = 1;
         break;
     case 0x13: // 320x200 256 color graphics
+        restore_dac();
         outb(0x3c0, 0x41);
         outb(0x3d8, (1 << 1) | (1 << 3));
         memset_seg(vga_frame_buffer_segment, 0, 0, (320LU * 200LU));
@@ -426,9 +443,25 @@ static void video_services(struct callregs *regs)
 }
 VECTOR(0x10, video_services);
 
+static void save_init_dac(void)
+{
+    outb(0x3c7, 0x0);
+    for (int i = 0; i < 256; ++i) {
+        struct dac_color c;
+
+        c.r = inb(0x3c9);
+        c.g = inb(0x3c9);
+        c.b = inb(0x3c9);
+
+        init_dac[i] = c;
+    }
+}
+
 void display_init(void)
 {
     unsigned r, c;
+
+    save_init_dac();
 
     __set_video_mode(3);
 
