@@ -152,9 +152,9 @@ always_ff @(posedge reset or posedge clk) begin
         count <= 16'b0;
         out <= 1'b1;
     end else begin
-        if (mode == 3'b011)
+        if (mode[1:0] == 2'b11)
             count_rate_gen();
-        else if (mode[1] == 1'b1)
+        else if (mode[1:0] == 2'b10)
             count_square_wave();
 
         if (!gate)
