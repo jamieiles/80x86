@@ -22,7 +22,7 @@ module TimerUnit(input logic clk,
                  input logic [7:0] reload_in,
                  input logic load,
                  input logic [1:0] rw_in,
-                 input logic [2:0] mode_in,
+                 input logic [1:0] mode_in,
                  input logic configure,
                  input logic latch_count,
                  input logic read_count,
@@ -35,7 +35,7 @@ reg last_pit_clk;
 reg [15:0] count, reload, latched_count;
 
 reg [1:0] rw;
-reg [2:0] mode;
+reg [1:0] mode;
 reg [1:0] latched;
 reg [7:0] reload_low;
 reg reload_low_stored;
@@ -117,7 +117,7 @@ end
 always_ff @(posedge reset or posedge clk) begin
     if (reset) begin
         rw <= 2'b0;
-        mode <= 3'b0;
+        mode <= 2'b0;
     end else if (configure) begin
         mode <= mode_in;
         rw <= rw_in;
