@@ -50,15 +50,12 @@ begin
         count <= reload[0] ? reload - 1'b1 : reload;
         out <= 1'b1;
     end else if (pit_clk_posedge && gate) begin
-        if (reload[0]) begin
-            count <= (count == 16'b0 ? reload - 16'd1 : count - 16'd2);
-            if (count == 16'd2)
-                out <= ~out;
-        end else begin
-            count <= (count == 16'b0 ? reload : count - 16'd2);
-            if (count == 16'd2)
-                out <= ~out;
-        end
+        if (count == 16'b0 || count == 16'b1)
+            count <= reload[0] ? reload - 16'd1 : reload;
+        else
+            count <= count - 16'd1;
+        if (count == 16'd2)
+            out <= ~out;
     end
 end
 endtask
