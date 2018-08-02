@@ -19,12 +19,11 @@ function(add_fpga)
          ${CMAKE_CURRENT_SOURCE_DIR}/${add_fpga_PROJECT}.sdc)
 
     add_custom_command(OUTPUT ${add_fpga_PROJECT}.qpf
-                       COMMAND rm -rf db incremental_db ${add_fpga_PROJECT}.qpf
                        COMMAND ${QUARTUS_SH_EXECUTABLE} --prepare -f ${add_fpga_FAMILY} -t ${add_fpga_PROJECT} ${add_fpga_PROJECT}
-                       DEPENDS ${add_fpga_PROJECT}.qsf ${add_fpga_SOURCES})
+                       DEPENDS ${add_fpga_PROJECT}.qsf)
     add_custom_command(OUTPUT ${add_fpga_PROJECT}.map.rpt
                        COMMAND ${QUARTUS_MAP_EXECUTABLE} ${SOURCE_ARGS} ${extra_compile_flags} --family ${add_fpga_FAMILY} --optimize=speed ${add_fpga_PROJECT}
-                       DEPENDS ${add_fpga_DEPENDS} ${add_fpga_PROJECT}.qpf ${add_fpga_PROJECT}.qsf)
+                       DEPENDS ${add_fpga_DEPENDS} ${add_fpga_SOURCES} ${add_fpga_PROJECT}.qpf ${add_fpga_PROJECT}.qsf)
     add_custom_command(OUTPUT ${add_fpga_PROJECT}.fit.rpt
                        COMMAND ${QUARTUS_FIT_EXECUTABLE} --part=${add_fpga_PART} --read_settings_file=on --set=SDC_FILE=${sdc_file} ${add_fpga_PROJECT}
                        DEPENDS ${add_fpga_PROJECT}.map.rpt ${add_fpga_PROJECT}.sdc)
