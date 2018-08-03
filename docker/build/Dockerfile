@@ -51,7 +51,7 @@ RUN gem install --no-ri --pre \
 RUN mkdir -p /build
 WORKDIR /build
 RUN apt-get install -y python3-setuptools
-RUN pip3 install textX
+RUN pip3 install textX==1.6.1
 RUN rm /usr/bin/gcov; ln -s /usr/bin/llvm-cov /usr/bin/gcov
 RUN cd /tmp && \
         wget $MIRROR$TOOLCHAIN && \
