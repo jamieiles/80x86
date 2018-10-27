@@ -148,4 +148,6 @@ private:
     std::map<uint16_t, IOPorts *> io;
     uint8_t pending_irq;
     bool int_in_progress;
+    svScope microcode_scope;
+    svScope core_scope;
 };
