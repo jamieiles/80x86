@@ -29,6 +29,7 @@ HERE = os.path.dirname(__file__)
 INSTR_TEMPLATE = os.path.join(HERE, '..', 'documentation', 'instructions.templ')
 
 pystache.defaults.DELIMITERS = (u'<%', u'%>')
+pystache.defaults.TAG_ESCAPE = lambda u: u
 
 with open(os.path.join(HERE, '..', 'documentation', 'instructions.yaml')) as instr:
     instructions = yaml.load(instr)
