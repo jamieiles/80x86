@@ -51,6 +51,9 @@ RTLCPU<debug_enabled>::RTLCPU(const std::string &test_name)
       test_name(test_name),
       is_stopped(true)
 {
+    core_scope = svGetScopeFromName("TOP.RTLCPU.Core");
+    microcode_scope = svGetScopeFromName("TOP.RTLCPU.Core.Microcode");
+
     this->dut.debug_seize = 1;
     this->dut.cache_enabled = 0;
     this->reset();
@@ -202,7 +205,7 @@ void RTLCPU<debug_enabled>::complete_instruction()
 template <bool debug_enabled>
 bool RTLCPU<debug_enabled>::int_yield_ready()
 {
-    svSetScope(svGetScopeFromName("TOP.RTLCPU.Core.Microcode"));
+    svSetScope(microcode_scope);
 
     return this->dut.get_ext_int_yield();
 }
@@ -216,7 +219,7 @@ void RTLCPU<debug_enabled>::write_coverage()
     std::ofstream cov;
     cov.open("coverage/" + filename);
 
-    svSetScope(svGetScopeFromName("TOP.RTLCPU.Core.Microcode"));
+    svSetScope(microcode_scope);
     auto num_bins = this->dut.get_microcode_num_instructions();
     for (auto i = 0; i < num_bins; ++i) {
         auto count = this->dut.get_microcode_coverage_bin(i);
@@ -349,7 +352,7 @@ uint16_t RTLCPU<debug_enabled>::read_sr(GPR regnum) const
 template <bool debug_enabled>
 size_t RTLCPU<debug_enabled>::get_and_clear_instr_length()
 {
-    svSetScope(svGetScopeFromName("TOP.RTLCPU.Core"));
+    svSetScope(core_scope);
 
     return static_cast<size_t>(this->dut.get_and_clear_instr_length());
 }
@@ -472,7 +475,7 @@ void RTLCPU<debug_enabled>::io_access()
 template <bool debug_enabled>
 uint16_t RTLCPU<debug_enabled>::get_microcode_address()
 {
-    svSetScope(svGetScopeFromName("TOP.RTLCPU.Core.Microcode"));
+    svSetScope(microcode_scope);
 
     return this->dut.get_microcode_address();
 }

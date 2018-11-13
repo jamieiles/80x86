@@ -98,7 +98,9 @@ private:
     VerilatedVcdC tracer;
     vluint64_t cur_time;
     vluint64_t cycle_num;
-    std::map<vluint64_t, std::vector<std::function<void()>>> deferred_events;
+
+    static const int max_deferred_delta = 64;
+    std::vector<std::function<void()>> deferred_events[max_deferred_delta];
     std::map<PeriodicEventType, vector<std::function<void()>>> periodic_events;
     std::string instance_name;
 };
@@ -229,8 +231,9 @@ void VerilogDriver<T, debug_enabled>::run_periodic_events(
 template <typename T, bool debug_enabled>
 void VerilogDriver<T, debug_enabled>::run_deferred_events()
 {
-    auto events = deferred_events[cycle_num];
-    deferred_events.erase(cycle_num);
+    auto idx = cycle_num % max_deferred_delta;
+    auto events = deferred_events[idx];
+    deferred_events[idx].clear();
     for (auto &e : events)
         e();
 }
@@ -240,6 +243,9 @@ void VerilogDriver<T, debug_enabled>::at_cycle(vluint64_t target_cycle_num,
                                                std::function<void()> cb)
 {
     assert(target_cycle_num >= cycle_num);
+    assert(target_cycle_num < cycle_num + max_deferred_delta);
 
-    deferred_events[target_cycle_num].push_back(cb);
+    auto target = (target_cycle_num + 0) % max_deferred_delta;
+
+    deferred_events[target].push_back(cb);
 }
