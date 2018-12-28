@@ -55,7 +55,7 @@ reg busy;
 reg flushing;
 wire dirty;
 wire write_line = m_ack && !flushing;
-wire [index_end-1:0] line_address;
+reg [index_end-1:0] line_address;
 reg [19:1] latched_address, fetch_address;
 reg updating;
 reg accessing;

@@ -101,7 +101,7 @@ private:
 
     static const int max_deferred_delta = 64;
     std::vector<std::function<void()>> deferred_events[max_deferred_delta];
-    std::map<PeriodicEventType, vector<std::function<void()>>> periodic_events;
+    std::map<PeriodicEventType, std::vector<std::function<void()>>> periodic_events;
     std::string instance_name;
 };
 template <typename T, bool debug_enabled>

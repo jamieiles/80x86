@@ -94,7 +94,7 @@ microcode_instruction mem[num_instructions] /* synthesis ram_init_file = "microc
 microcode_instruction current;
 // verilator lint_on UNUSED
 reg [addr_bits-1:0] addr;
-wire [addr_bits-1:0] next_addr;
+reg [addr_bits-1:0] next_addr;
 reg [addr_bits-1:0] jump_target;
 assign use_microcode_immediate = |current.immediate;
 assign opcode = cur_instruction.opcode;
@@ -273,13 +273,13 @@ always_ff @(posedge clk)
 `ifdef verilator
 export "DPI-C" function get_microcode_address;
 
-function [addr_bits-1:0] get_microcode_address;
+function bit [addr_bits-1:0] get_microcode_address;
     get_microcode_address = addr;
 endfunction
 
 export "DPI-C" function get_ext_int_yield;
 
-function logic get_ext_int_yield;
+function bit get_ext_int_yield;
     get_ext_int_yield = current.ext_int_yield;
 endfunction
 

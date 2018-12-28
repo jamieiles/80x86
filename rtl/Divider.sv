@@ -86,7 +86,7 @@ wire dividend_negative = is_8_bit ? dividend[15] : dividend[31];
 
 reg [63:0] P;
 reg [3:0] idx;
-wire [15:0] restored_quotient;
+reg [15:0] restored_quotient;
 wire [15:0] negative_quotient = ~quotient + 1'b1;
 
 // Error condition
