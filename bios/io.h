@@ -180,17 +180,3 @@ static inline unsigned short get_cs(void)
 
     return cs;
 }
-
-static inline unsigned short get_es(void)
-{
-    unsigned short es;
-
-    asm volatile("mov %%es, %0" : "=r"(es));
-
-    return es;
-}
-
-static inline void set_es(unsigned short es)
-{
-    asm volatile("mov %0, %%es" ::"r"(es));
-}

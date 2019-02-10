@@ -95,6 +95,7 @@ saved_sw_sp: .word 0
 
     // Save registers, setup stack frame
     sub $2, %sp
+    push %es
     push %ds
     pusha
     mov %sp, %bp
@@ -105,7 +106,7 @@ saved_sw_sp: .word 0
     mov %cs:\saved_sp_var, %bx
     mov 0(%bx), %ax
     mov 6(%bx), %bx
-    mov %bx, 18(%bp)
+    mov %bx, 20(%bp)
 
     // Use SS as DS inside the BIOS for stack-local variables that are passed
     // by address
@@ -118,7 +119,7 @@ saved_sw_sp: .word 0
     mov %sp, %bp
 
     // Write possibly updated flags to the iret frame
-    mov 18(%bp), %ax
+    mov 20(%bp), %ax
     mov %cs:\saved_ss_var, %ds
     mov %cs:\saved_sp_var, %bx
     mov %ax, 6(%bx)
@@ -127,6 +128,7 @@ saved_sw_sp: .word 0
     // already
     popa
     pop %ds
+    pop %es
     add $2, %sp
 
     // Restore the callers stack
