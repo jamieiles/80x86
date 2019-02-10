@@ -25,11 +25,9 @@ static inline void outw(unsigned short port, unsigned short v)
 static inline void outb(unsigned short port, unsigned char v)
 {
     asm volatile(
-        "mov %0, %%al\n"
-        "outb %%al, %w1"
+        "outb %0, %w1"
         :
-        : "a"(v), "Nd"(port)
-        : "%al");
+        : "Ral"(v), "Nd"(port));
 }
 
 static inline unsigned short inw(unsigned short port)
@@ -46,11 +44,9 @@ static inline unsigned char inb(unsigned short port)
     unsigned char v;
 
     asm volatile(
-        "inb %w1, %%al\n"
-        "mov %%al, %0"
-        : "=a"(v)
-        : "Nd"(port)
-        : "%al");
+        "inb %w1, %0\n"
+        : "=Ral"(v)
+        : "Nd"(port));
 
     return v;
 }
