@@ -51,6 +51,7 @@ static inline unsigned char inb(unsigned short port)
     return v;
 }
 
+#ifndef __FAR
 static inline void writeb(unsigned short segment,
                           unsigned short address,
                           unsigned char val)
@@ -80,6 +81,25 @@ static inline void writew(unsigned short segment,
         : [segment] "r"(segment), [address] "m"(address), [val] "r"(val)
         : "%bx", "memory");
 }
+#else
+static inline void writeb(unsigned short segment,
+                          unsigned short address,
+                          unsigned char val)
+{
+    unsigned char volatile __far *fp = (unsigned char volatile __far *)
+        ((unsigned long)segment << 16 | address);
+    *fp = val;
+}
+
+static inline void writew(unsigned short segment,
+                          unsigned short address,
+                          unsigned short val)
+{
+    unsigned short volatile __far *fp = (unsigned short volatile __far *)
+        ((unsigned long)segment << 16 | address);
+    *fp = val;
+}
+#endif
 
 static inline void memcpy_seg(unsigned short dseg,
                               void *dst,
@@ -132,6 +152,7 @@ static inline void memset_seg(unsigned short dseg,
         : "memory", "cc");
 }
 
+#ifndef __FAR
 static inline unsigned char readb(unsigned short segment,
                                   unsigned short address)
 {
@@ -167,6 +188,23 @@ static inline unsigned short readw(unsigned short segment,
 
     return v;
 }
+#else
+static inline unsigned char readb(unsigned short segment,
+                                  unsigned short address)
+{
+    unsigned char volatile __far *fp = (unsigned char volatile __far *)
+        ((unsigned long)segment << 16 | address);
+    return *fp;
+}
+
+static inline unsigned short readw(unsigned short segment,
+                                   unsigned short address)
+{
+    unsigned short volatile __far *fp = (unsigned short volatile __far *)
+        ((unsigned long)segment << 16 | address);
+    return *fp;
+}
+#endif
 
 static inline unsigned short get_cs(void)
 {
