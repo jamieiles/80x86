@@ -25,6 +25,7 @@
 class ModRMDecoderTestBench
 {
 public:
+    virtual ~ModRMDecoderTestBench() {}
     virtual void set_instruction(const std::vector<uint8_t> instruction) = 0;
     virtual void decode() = 0;
     virtual OperandType get_rm_type() const = 0;
