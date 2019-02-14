@@ -19,7 +19,7 @@ include(Verilator)
 
 find_package(PythonLibs REQUIRED)
 include_directories(${PYTHON_INCLUDE_DIRS})
-find_package(Boost COMPONENTS python REQUIRED)
+find_package(Boost COMPONENTS python3 REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(../../sim/cppmodel)
 include_directories(../../sim/RTLCPU)

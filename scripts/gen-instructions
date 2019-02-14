@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright Jamie Iles, 2017
 #
@@ -91,7 +91,7 @@ def immediate(operands, timing_operands):
 
         packed = struct.pack(struct_fmt, v)
         for b in packed:
-            imm_bytes.append(ord(b))
+            imm_bytes.append(b)
     return imm_bytes
 
 def describe_operands(operands, timing_operands, E='memory'):
@@ -253,4 +253,4 @@ for mnemonic in sorted(instructions.keys()):
     definitions.append(idef)
 
 with open(INSTR_TEMPLATE) as template:
-    print pystache.render(template.read(), { 'instructions': definitions })
+    print(pystache.render(template.read(), { 'instructions': definitions }))
