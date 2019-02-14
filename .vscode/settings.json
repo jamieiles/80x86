@@ -1,0 +1,40 @@
+{
+    "cmake.configureOnOpen": false,
+    "cmake.buildDirectory": "${workspaceRoot}/_build/dev",
+    "cmake.configureSettings": {
+        "BUILD_DE0_CV": "ON",
+        "BUILD_DE0_NANO": "ON",
+        "BUILD_HDP001": "ON",
+        "S80X86_TRAP_ESCAPE": "OFF",
+        "S80X86_PSEUDO_286": "ON",
+        "HDP001_SERIAL_STDIO": "ON"
+    },
+    "cmake.ctestArgs": ["-LE", "JTAG"],
+    "editor.tokenColorCustomizations": {
+        "textMateRules": [
+            {
+                "scope": "googletest.failed",
+                "settings": {
+                    "foreground": "#f00"
+                }
+            },
+            {
+                "scope": "googletest.passed",
+                "settings": {
+                    "foreground": "#0f0"
+                }
+            },
+            {
+                "scope": "googletest.run",
+                "settings": {
+                    "foreground": "#0f0"
+                }
+            }
+        ]
+    },
+    "files.exclude": {
+        "_build": true,
+        "build": true
+    },
+    "verilog.linting.verilator.arguments": "${workspaceRoot}/_build/dev/config.v ${workspaceRoot}/fpga/hdp001/defines.sv ${workspaceRoot}/_build/dev/rtl/microcode/MicrocodeTypes.sv ${workspaceRoot}/rtl/FlagsEnum.sv ${workspaceRoot}/rtl/RegisterEnum.sv -I${workspaceRoot}/rtl -I${workspaceRoot}/rtl/alu ${workspaceRoot}/rtl/Instruction.sv ${workspaceRoot}/_build/dev/rtl/InstructionDefinitions.sv -I${workspaceRoot}/rtl/ALU ${workspaceRoot}/rtl/alu/*.sv ${workspaceRoot}/_build/dev/rtl/microcode/Microcode.sv"
+}
