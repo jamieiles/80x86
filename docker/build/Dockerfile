@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         libsdl2-dev \
         libboost-serialization-dev \
         libboost-program-options-dev \
-        libboost-python1.58.0 \
+        libboost-python1.62.0 \
         libboost-python-dev \
         libusb-1.0-0-dev \
         python-dev \
@@ -31,9 +31,11 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         python3-pystache \
         python-lxml \
         python-yaml \
+        python3-yaml \
         wget \
         flex \
-        bison
+        bison \
+        libfl-dev
 RUN cd /tmp && \
         wget https://www.veripool.org/ftp/verilator-$VERILATOR_VERSION.tgz && \
         tar xf verilator-$VERILATOR_VERSION.tgz && \
@@ -47,7 +49,8 @@ RUN gem install --no-ri --pre prawn --version 2.1.0
 RUN gem install --no-ri --pre \
         asciidoctor-pdf \
         coderay \
-        pygments.rb
+        pygments.rb \
+        concurrent-ruby
 RUN mkdir -p /build
 WORKDIR /build
 RUN apt-get install -y python3-setuptools

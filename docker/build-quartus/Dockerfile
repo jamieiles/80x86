@@ -1,11 +1,11 @@
-FROM ubuntu:xenial
+FROM ubuntu:bionic
 MAINTAINER Jamie Iles <jamie@jamieiles.com>
 ENV DEBIAN_FRONTEND=noninteractive
 
 ARG MIRROR=http://download.altera.com/akdlm/software/acdsinst/
-ARG QUARTUS=18.0std/614/ib_installers/QuartusLiteSetup-18.0.0.614-linux.run
+ARG QUARTUS=18.1std/625/ib_installers/QuartusLiteSetup-18.1.0.625-linux.run
 ARG QUARTUS_UPDATE=""
-ARG DEVICE_FILES="18.0std/614/ib_installers/cyclone-18.0.0.614.qdz 18.0std/614/ib_installers/cyclonev-18.0.0.614.qdz 18.0std/614/ib_installers/max10-18.0.0.614.qdz"
+ARG DEVICE_FILES="18.1std/625/ib_installers/max10-18.1.0.625.qdz 18.1std/625/ib_installers/cyclone-18.1.0.625.qdz 18.1std/625/ib_installers/cyclonev-18.1.0.625.qdz"
 
 RUN dpkg --add-architecture i386
 RUN apt-get update && apt-get install --no-install-recommends -y \
@@ -30,7 +30,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         lib32ncurses5-dev \
         libzmq3-dev \
         libssl-dev \
-        libcrypto++9v5
+        libcrypto++-dev \
+        libcrypto++6
 
 RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && locale-gen
 ENV LANG en_US.UTF-8
@@ -42,8 +43,3 @@ RUN cd /tmp && wget -q $MIRROR$QUARTUS && \
         chmod +x $(basename $QUARTUS) && \
         ./$(basename $QUARTUS) --accept_eula 1 --mode unattended --installdir /opt/altera/ && \
         rm /tmp/* /opt/altera/uninstall -rf
-# These files conflict with the Ubuntu versions and cause random segfaults.
-RUN rm /opt/altera/quartus/linux64/libccl_curl_drl.so \
-        /opt/altera/quartus/linux64/libcrypto.so.1.0.0 \
-        /opt/altera/quartus/linux64/libcurl.so.4 \
-        /opt/altera/quartus/linux64/libssl.so.1.0.0
