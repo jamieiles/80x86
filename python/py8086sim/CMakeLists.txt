@@ -17,9 +17,10 @@
 
 include(Verilator)
 
+set(Python_ADDITIONAL_VERSIONS 2.7)
 find_package(PythonLibs REQUIRED)
 include_directories(${PYTHON_INCLUDE_DIRS})
-find_package(Boost COMPONENTS python3 REQUIRED)
+find_package(Boost COMPONENTS python REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 include_directories(../../sim/cppmodel)
 include_directories(../../sim/RTLCPU)
