@@ -46,5 +46,10 @@
         "_build": true,
         "build": true
     },
-    "verilog.linting.verilator.arguments": "${workspaceRoot}/_build/dev/config.v ${workspaceRoot}/fpga/hdp001/defines.sv ${workspaceRoot}/_build/dev/rtl/microcode/MicrocodeTypes.sv ${workspaceRoot}/rtl/FlagsEnum.sv ${workspaceRoot}/rtl/RegisterEnum.sv -I${workspaceRoot}/rtl -I${workspaceRoot}/rtl/alu ${workspaceRoot}/rtl/Instruction.sv ${workspaceRoot}/_build/dev/rtl/InstructionDefinitions.sv -I${workspaceRoot}/rtl/ALU ${workspaceRoot}/rtl/alu/*.sv ${workspaceRoot}/_build/dev/rtl/microcode/Microcode.sv"
+    "verilog.linting.verilator.arguments": "${workspaceRoot}/_build/dev/config.v ${workspaceRoot}/fpga/hdp001/defines.sv ${workspaceRoot}/_build/dev/rtl/microcode/MicrocodeTypes.sv ${workspaceRoot}/rtl/FlagsEnum.sv ${workspaceRoot}/rtl/RegisterEnum.sv -I${workspaceRoot}/rtl -I${workspaceRoot}/rtl/alu ${workspaceRoot}/rtl/Instruction.sv ${workspaceRoot}/_build/dev/rtl/InstructionDefinitions.sv -I${workspaceRoot}/rtl/ALU ${workspaceRoot}/rtl/alu/*.sv ${workspaceRoot}/_build/dev/rtl/microcode/Microcode.sv",
+    "gtest-adapter.debugConfig": [
+        "sim unittests",
+        "rtl unittests"
+    ],
+    "gtest-adapter.supportLocation": true
 }
