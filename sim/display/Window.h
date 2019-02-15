@@ -29,10 +29,10 @@ public:
         compute_scale();
 
         auto ret = SDL_CreateWindowAndRenderer(window_width, window_height,
-                                               SDL_WINDOWPOS_UNDEFINED, &window,
+                                               0, &window,
                                                &renderer);
         if (ret)
-            throw std::runtime_error("unable to create window");
+            throw std::runtime_error("unable to create window" + std::string(SDL_GetError()));
 
         SDL_SetWindowTitle(window, name);
         SDL_RenderSetScale(renderer, x_scale_factor, y_scale_factor);
