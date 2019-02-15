@@ -33,6 +33,12 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         libcrypto++-dev \
         libcrypto++6
 
+# Quartus 18.1 needs libpng12 which is no longer present in 18.04
+RUN cd /tmp; \
+        wget http://security.ubuntu.com/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1.1_amd64.deb && \
+        dpkg -i libpng12-0_1.2.54-1ubuntu1.1_amd64.deb && \
+        rm libpng12-0_1.2.54-1ubuntu1.1_amd64.deb
+
 RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && locale-gen
 ENV LANG en_US.UTF-8
 ENV LANGUAGE en_US:en
