@@ -60,7 +60,7 @@ static void disk_read(struct callregs *regs)
     regs->flags &= ~CF;
 
     for (i = 0; i < count; ++i) {
-        read_sector(lba, get_es(), dst);
+        read_sector(lba, regs->es, dst);
         ++lba;
         dst += SECTOR_SIZE;
         ++regs->ax.l;
@@ -90,7 +90,7 @@ static void disk_write(struct callregs *regs)
     regs->flags &= ~CF;
 
     for (i = 0; i < count; ++i) {
-        if (write_sector(lba, get_es(), dst)) {
+        if (write_sector(lba, regs->es, dst)) {
             regs->flags |= CF;
             break;
         }

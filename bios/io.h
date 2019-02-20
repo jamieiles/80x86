@@ -25,11 +25,9 @@ static inline void outw(unsigned short port, unsigned short v)
 static inline void outb(unsigned short port, unsigned char v)
 {
     asm volatile(
-        "mov %0, %%al\n"
-        "outb %%al, %w1"
+        "outb %0, %w1"
         :
-        : "a"(v), "Nd"(port)
-        : "%al");
+        : "Ral"(v), "Nd"(port));
 }
 
 static inline unsigned short inw(unsigned short port)
@@ -46,15 +44,14 @@ static inline unsigned char inb(unsigned short port)
     unsigned char v;
 
     asm volatile(
-        "inb %w1, %%al\n"
-        "mov %%al, %0"
-        : "=a"(v)
-        : "Nd"(port)
-        : "%al");
+        "inb %w1, %0\n"
+        : "=Ral"(v)
+        : "Nd"(port));
 
     return v;
 }
 
+#ifndef __FAR
 static inline void writeb(unsigned short segment,
                           unsigned short address,
                           unsigned char val)
@@ -84,6 +81,25 @@ static inline void writew(unsigned short segment,
         : [segment] "r"(segment), [address] "m"(address), [val] "r"(val)
         : "%bx", "memory");
 }
+#else
+static inline void writeb(unsigned short segment,
+                          unsigned short address,
+                          unsigned char val)
+{
+    unsigned char volatile __far *fp = (unsigned char volatile __far *)
+        ((unsigned long)segment << 16 | address);
+    *fp = val;
+}
+
+static inline void writew(unsigned short segment,
+                          unsigned short address,
+                          unsigned short val)
+{
+    unsigned short volatile __far *fp = (unsigned short volatile __far *)
+        ((unsigned long)segment << 16 | address);
+    *fp = val;
+}
+#endif
 
 static inline void memcpy_seg(unsigned short dseg,
                               void *dst,
@@ -136,6 +152,7 @@ static inline void memset_seg(unsigned short dseg,
         : "memory", "cc");
 }
 
+#ifndef __FAR
 static inline unsigned char readb(unsigned short segment,
                                   unsigned short address)
 {
@@ -171,6 +188,23 @@ static inline unsigned short readw(unsigned short segment,
 
     return v;
 }
+#else
+static inline unsigned char readb(unsigned short segment,
+                                  unsigned short address)
+{
+    unsigned char volatile __far *fp = (unsigned char volatile __far *)
+        ((unsigned long)segment << 16 | address);
+    return *fp;
+}
+
+static inline unsigned short readw(unsigned short segment,
+                                   unsigned short address)
+{
+    unsigned short volatile __far *fp = (unsigned short volatile __far *)
+        ((unsigned long)segment << 16 | address);
+    return *fp;
+}
+#endif
 
 static inline unsigned short get_cs(void)
 {
@@ -179,18 +213,4 @@ static inline unsigned short get_cs(void)
     asm volatile("mov %%cs, %0" : "=r"(cs));
 
     return cs;
-}
-
-static inline unsigned short get_es(void)
-{
-    unsigned short es;
-
-    asm volatile("mov %%es, %0" : "=r"(es));
-
-    return es;
-}
-
-static inline void set_es(unsigned short es)
-{
-    asm volatile("mov %0, %%es" ::"r"(es));
 }

@@ -414,7 +414,7 @@ static void set_dac_block(struct callregs *regs)
     unsigned short idx = regs->bx.x;
     unsigned short count = regs->cx.x;
     unsigned short src = regs->dx.x;
-    unsigned short es = get_es();
+    unsigned short es = regs->es;
 
     outb(0x3c8, idx);
     for (unsigned short m = 0; m < count; ++m)

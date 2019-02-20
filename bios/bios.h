@@ -40,6 +40,7 @@ struct callregs {
     union reg cx;
     union reg ax;
     unsigned short ds;
+    unsigned short es;
     unsigned short flags;
 };
 
