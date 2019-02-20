@@ -85,12 +85,14 @@ always_ff @(posedge clk or posedge reset)
     write_second <= reset ? 1'b0 : should_write_second_byte;
 
 always_ff @(posedge clk or posedge reset)
-    if (reset)
+    if (reset) begin
         cs <= 16'hffff;
-    else if (abort_cur && mem_ack)
-        cs <= next_cs;
-    else if (load_new_ip && !mem_access)
-        cs <= new_cs;
+    end else begin
+        if (abort_cur && mem_ack)
+            cs <= next_cs;
+        else if (load_new_ip && !mem_access)
+            cs <= new_cs;
+    end
 
 always_ff @(posedge clk or posedge reset)
     if (reset)
