@@ -35,6 +35,16 @@ extern unsigned short mouse_driver_addr[2];
 extern int mouse_driver_enabled;
 static int have_mouse;
 
+static int mouse_read(unsigned char *out)
+{
+    if (!(inb(MOUSE_STATUS) & (1 << 4)))
+        return -1;
+
+    *out = inb(MOUSE_DATA);
+
+    return 0;
+}
+
 static int mouse_cmd(unsigned char in, unsigned char *out)
 {
     int ret = -1;
@@ -44,9 +54,8 @@ static int mouse_cmd(unsigned char in, unsigned char *out)
 
     *out = 0xfe;
     do {
-        if (inb(MOUSE_STATUS) & (1 << 4)) {
+        if (!mouse_read(out)) {
             ret = 0;
-            *out = inb(MOUSE_DATA);
             break;
         }
     } while (m++ < CMD_TIMEOUT);
@@ -56,9 +65,10 @@ static int mouse_cmd(unsigned char in, unsigned char *out)
 
 static int wait_self_test(void)
 {
-    while (!(inb(MOUSE_STATUS) & (1 << 4)))
+    unsigned char b;
+
+    while (mouse_read(&b))
         continue;
-    unsigned char b = inb(MOUSE_DATA);
 
     if (b != 0xaa) {
         printk("self test failed (%02x)\n", b);
