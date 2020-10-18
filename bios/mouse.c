@@ -25,7 +25,7 @@
 #define MOUSE_STATUS 0xffe1
 #define MOUSE_IRQ 7
 
-#define CMD_TIMEOUT 32768
+#define CMD_TIMEOUT 32768U
 
 #define CMD_REFRESH 0xf3
 #define CMD_DISABLE 0xf5
@@ -38,7 +38,7 @@ static int have_mouse;
 static int mouse_cmd(unsigned char in, unsigned char *out)
 {
     int ret = -1;
-    int i = 0;
+    unsigned m = 0;
 
     outb(MOUSE_DATA, in);
 
@@ -49,7 +49,7 @@ static int mouse_cmd(unsigned char in, unsigned char *out)
             *out = inb(MOUSE_DATA);
             break;
         }
-    } while (i++ < CMD_TIMEOUT);
+    } while (m++ < CMD_TIMEOUT);
 
     return ret;
 }
