@@ -88,7 +88,7 @@ int mouse_hw_init(void)
 
     unsigned char resp;
     if (mouse_cmd(0xff, &resp) || resp != 0xfa) {
-        printk("failed to reset mouse %02x\n", resp);
+        printk("mouse: not present\n");
         return -1;
     }
 
