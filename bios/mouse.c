@@ -75,6 +75,10 @@ static int wait_self_test(void)
         return -1;
     }
 
+    /* Read the ID */
+    while (mouse_read(&b))
+        continue;
+
     return 0;
 }
 
