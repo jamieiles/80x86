@@ -3,9 +3,11 @@ MAINTAINER Jamie Iles <jamie@jamieiles.com>
 ENV DEBIAN_FRONTEND=noninteractive
 
 ARG MIRROR=http://download.altera.com/akdlm/software/acdsinst/
-ARG QUARTUS=18.1std/625/ib_installers/QuartusLiteSetup-18.1.0.625-linux.run
+ARG QUARTUS=20.1std.1/720/ib_installers/QuartusLiteSetup-20.1.1.720-linux.run
 ARG QUARTUS_UPDATE=""
-ARG DEVICE_FILES="18.1std/625/ib_installers/max10-18.1.0.625.qdz 18.1std/625/ib_installers/cyclone-18.1.0.625.qdz 18.1std/625/ib_installers/cyclonev-18.1.0.625.qdz"
+ARG DEVICE_FILES="20.1std.1/720/ib_installers/max10-20.1.1.720.qdz \
+                  20.1std.1/720/ib_installers/cyclone-20.1.1.720.qdz \
+                  20.1std.1/720/ib_installers/cyclonev-20.1.1.720.qdz"
 
 RUN dpkg --add-architecture i386
 RUN apt-get update && apt-get install --no-install-recommends -y \
@@ -33,11 +35,6 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         libcrypto++-dev \
         libcrypto++6
 
-# Quartus 18.1 needs libpng12 which is no longer present in 18.04
-RUN cd /tmp; \
-        wget http://security.ubuntu.com/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1.1_amd64.deb && \
-        dpkg -i libpng12-0_1.2.54-1ubuntu1.1_amd64.deb && \
-        rm libpng12-0_1.2.54-1ubuntu1.1_amd64.deb
 
 RUN echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen && locale-gen
 ENV LANG en_US.UTF-8
