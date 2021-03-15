@@ -54,6 +54,7 @@ verilate(TOPLEVEL ALU
          ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/FlagsEnum.sv
          ${ALU_SOURCES}
          GENERATED_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/VALU___024unit.cpp
+         GENERATED_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/VALU___024unit__Slow.cpp
          ${CMAKE_CURRENT_BINARY_DIR}/VALU___024unit.h
          DEPENDS generate_microcode)
 verilate(TOPLEVEL CSIPSync
@@ -69,6 +70,8 @@ verilate(TOPLEVEL Flags
          ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/InsnDecoder.sv
          ${CMAKE_CURRENT_BINARY_DIR}/../../rtl/microcode/MicrocodeTypes.sv
          ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/Flags.sv
+         GENERATED_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/VFlags___024unit.cpp
+         ${CMAKE_CURRENT_BINARY_DIR}/VFlags___024unit.h
          DEPENDS generate_microcode)
 verilate(TOPLEVEL ImmediateReader
          VERILOG_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/../../rtl/ImmediateReader.sv)

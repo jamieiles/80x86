@@ -1,4 +1,4 @@
-include_directories(${VERILATOR_INCLUDE_DIRS})
+include_directories(SYSTEM ${VERILATOR_INCLUDE_DIRS})
 
 set(VERILATED_HEADERS)
 
@@ -21,6 +21,7 @@ function(verilate)
     set(generated
         ${CMAKE_CURRENT_BINARY_DIR}/V${verilate_TOPLEVEL}.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/V${verilate_TOPLEVEL}.h
+        ${CMAKE_CURRENT_BINARY_DIR}/V${verilate_TOPLEVEL}__Slow.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/V${verilate_TOPLEVEL}__Syms.cpp
         ${CMAKE_CURRENT_BINARY_DIR}/V${verilate_TOPLEVEL}__Syms.h)
     list(APPEND generated ${verilate_GENERATED_SOURCES})
@@ -45,7 +46,7 @@ function(verilate)
     set_source_files_properties(${generated} PROPERTIES COMPILE_FLAGS -Wno-unused-parameter)
     add_custom_command(OUTPUT ${generated}
                        COMMAND rm -f ${generated}
-                       COMMAND verilator -sv -O3 ${verilate_VERILOG_SOURCES}
+                       COMMAND verilator --output-split 0 -sv -O3 ${verilate_VERILOG_SOURCES}
                             -Wall -Wwarn-lint -Wwarn-style --assert
                             -I${CMAKE_CURRENT_SOURCE_DIR}
                             -I${CMAKE_CURRENT_BINARY_DIR}

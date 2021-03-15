@@ -43,6 +43,7 @@ verilate(TOPLEVEL RTLCPU
          ${CMAKE_CURRENT_SOURCE_DIR}/../../fpga/common/DPRam.sv
          ${CORE_SOURCES}
          GENERATED_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/VRTLCPU___024unit.cpp
+         GENERATED_SOURCES ${CMAKE_CURRENT_BINARY_DIR}/VRTLCPU___024unit__Slow.cpp
          ${CMAKE_CURRENT_BINARY_DIR}/VRTLCPU___024unit.h
          DEPENDS generate_microcode generate_instruction_definitions)
 
