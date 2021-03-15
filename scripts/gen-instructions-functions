@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright Jamie Iles, 2018
 #
@@ -30,7 +30,7 @@ pystache.defaults.DELIMITERS = (u'<%', u'%>')
 pystache.defaults.TAG_ESCAPE = lambda u: u
 
 with open(os.path.join(HERE, '..', 'documentation', 'instructions.yaml')) as instr:
-    instructions = yaml.load(instr)
+    instructions = yaml.load(instr, Loader=yaml.FullLoader)
 
 def has_modrm(operands):
     return any(map(lambda x: x != 'ES' and x.startswith('E') or x.startswith('M'), operands))

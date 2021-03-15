@@ -27,7 +27,7 @@ include(Nasm)
 find_package(Boost COMPONENTS program_options serialization REQUIRED)
 find_package(SDL2 REQUIRED)
 include_directories(${SDL2_INCLUDE_DIR})
-include_directories(${Boost_INCLUDE_DIR})
+include_directories(${Boost_INCLUDE_DIRS})
 
 add_subdirectory(common)
 add_subdirectory(cppmodel)

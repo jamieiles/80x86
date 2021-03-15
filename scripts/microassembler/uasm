@@ -152,7 +152,7 @@ class MicroAssembler(object):
         return sorted(instructions, key=lambda i: i.address)
 
     def _write_bin(self, filename, instructions):
-        last_addr = 0
+        last_addr = -1
         with open(filename, 'w') as f:
             f.write(self.field_comment())
             for instr in instructions:

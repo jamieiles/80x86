@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         libsdl2-dev \
         libboost-serialization-dev \
         libboost-program-options-dev \
-        libboost-python1.62.0 \
+        libboost-python1.71.0 \
         libboost-python-dev \
         libusb-1.0-0-dev \
         python-dev \
@@ -25,9 +25,9 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         ruby \
         ruby-dev \
         python3 \
-        python-distorm3 \
+        python3-distorm3 \
         python3-pip \
-        python-pystache \
+        python3-pystache \
         python3-pystache \
         python-lxml \
         python-yaml \
@@ -45,8 +45,8 @@ RUN cd /tmp && \
         make install && \
         cd /tmp && \
         rm verilator* -rf
-RUN gem install --no-ri --pre prawn --version 2.1.0
-RUN gem install --no-ri --pre \
+RUN gem install --pre prawn --version 2.1.0
+RUN gem install --pre \
         asciidoctor-pdf \
         coderay \
         pygments.rb \

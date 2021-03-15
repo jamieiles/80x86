@@ -22,7 +22,7 @@ macro(configure_test test_file)
 endmacro(configure_test)
 
 macro(system_test test_file sim)
-    add_test(${sim}_${test_file} python ${CMAKE_CURRENT_BINARY_DIR}/${test_file} ${sim})
+    add_test(${sim}_${test_file} python3 ${CMAKE_CURRENT_BINARY_DIR}/${test_file} ${sim})
     set_tests_properties(${sim}_${test_file} PROPERTIES TIMEOUT 30)
     set_property(TEST ${sim}_${test_file} PROPERTY ENVIRONMENT "PYTHONPATH=${CMAKE_CURRENT_BINARY_DIR}/..:${CMAKE_CURRENT_BINARY_DIR}/../../python")
     if (${sim} MATCHES "^JTAGCPU$")

@@ -30,8 +30,8 @@ class Runner(object):
         self.cpu.reset()
         self.cpu.write_reg(GPR.CS, 0x0000)
 
-        with open(os.path.join('${CMAKE_CURRENT_BINARY_DIR}', 'programs', self.binary)) as b:
-            bytevec = [ord(v) for v in b.read()]
+        with open(os.path.join('${CMAKE_CURRENT_BINARY_DIR}', 'programs', self.binary), 'rb') as b:
+            bytevec = [v for v in b.read()]
             if len(bytevec) % 2 == 1:
                 bytevec.append(0)
             wordvec = []
@@ -43,7 +43,7 @@ class Runner(object):
     def run(self, max_cycles=1000):
         self.setup()
 
-        for i in xrange(max_cycles):
+        for i in range(max_cycles):
             if self.cpu.has_trapped():
                 self.int3_hook()
                 self.validate_result()

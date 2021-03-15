@@ -14,6 +14,8 @@ include(CPack)
 include(InstallRequiredSystemLibraries)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/CMake/")
+set(Boost_NO_BOOST_CMAKE ON)
+#find_package(Boost CONFIG)
 
 include(MacroBoolTo01)
 find_package(Nasm)
