@@ -1,5 +1,5 @@
-cmake_minimum_required(VERSION 2.8)
-project(s80x86 C CXX ASM)
+cmake_minimum_required(VERSION 3.16)
+project(s80x86 LANGUAGES C CXX ASM VERSION 0.0.1)
 
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 set(CPACK_GENERATOR "DEB")
