@@ -47,7 +47,8 @@ public:
           last_y(0),
           capture_enabled(SDL_TRUE),
           left_down(false),
-          right_down(false)
+          right_down(false),
+          active(false)
     {
         SDL_CaptureMouse(SDL_TRUE);
         SDL_SetRelativeMouseMode(SDL_TRUE);
@@ -65,6 +66,8 @@ public:
             // Self test passed
             if (v == 0xff)
                 add_byte(0xaa);
+            if (v == 0xf4)
+                active = true;
         }
         PS2::write8(port_num, offs, v);
     }
@@ -88,6 +91,9 @@ public:
     void process_event(SDL_Event e)
     {
         uint8_t v = 0x08;
+
+        if (!active)
+            return;
 
         if (e.type == SDL_MOUSEBUTTONDOWN && e.button.button == SDL_BUTTON_LEFT)
             left_down = true;
@@ -119,6 +125,7 @@ private:
     int last_x, last_y;
     SDL_bool capture_enabled;
     bool left_down, right_down;
+    bool active;
 
     void poll_movement()
     {
@@ -126,6 +133,9 @@ private:
         SDL_GetMouseState(&mouse_x, &mouse_y);
 
         if (mouse_x == last_x && mouse_y == last_y)
+            return;
+
+        if (!active)
             return;
 
         int x_delta = mouse_x - last_x;
