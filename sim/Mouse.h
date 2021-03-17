@@ -64,8 +64,10 @@ public:
         if (port_num == 0 && offs == 0) {
             add_byte(0xfa);
             // Self test passed
-            if (v == 0xff)
+            if (v == 0xff) {
                 add_byte(0xaa);
+                add_byte(0x55);
+            }
             if (v == 0xf4)
                 active = true;
         }
