@@ -104,8 +104,6 @@ const struct color get_color(unsigned char idx)
 
 struct color Display::get_graphics_color(unsigned char idx) const
 {
-    assert(idx < 4);
-
     return graphics_palette.colors[idx];
 }
 
