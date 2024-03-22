@@ -154,8 +154,8 @@ timer_irq:
     movw $0x40, %bx
     mov %bx, %ds
     xor %bx, %bx
-    add $1, 0x6c
-    adc $0, 0x6e
+    addw $1, 0x6c
+    adcw $0, 0x6e
 
     // Handle 24 hour overflow flag
     cmpw $0x000f, 0x6c

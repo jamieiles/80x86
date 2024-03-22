@@ -1,8 +1,6 @@
 FROM s80x86-build-quartus:latest
 MAINTAINER Jamie Iles <jamie@jamieiles.com>
 ENV DEBIAN_FRONTEND=noninteractive
-ARG MIRROR=https://sourcery.mentor.com/GNUToolchain/package14960/public/ia16-elf/
-ARG TOOLCHAIN=sourceryg++-2016.11-64-ia16-elf-x86_64-linux-gnu.tar.bz2
 ARG VERILATOR_VERSION=4.200
 RUN apt-get update && apt-get install --no-install-recommends -y \
         clang \
@@ -33,11 +31,15 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
         python-lxml \
         python-yaml \
         python3-yaml \
+        software-properties-common \
         wget \
         flex \
         bison \
         libfl-dev \
         unzip
+RUN add-apt-repository -y ppa:tkchia/build-ia16 && \
+        apt-get update && \
+        apt-get install -y gcc-ia16-elf
 RUN cd /tmp && \
         wget https://github.com/verilator/verilator/archive/v$VERILATOR_VERSION.zip && \
         unzip v$VERILATOR_VERSION.zip && \
@@ -59,7 +61,3 @@ WORKDIR /build
 RUN apt-get install -y python3-setuptools
 RUN pip3 install textX==1.6.1
 RUN rm /usr/bin/gcov; ln -s /usr/bin/llvm-cov /usr/bin/gcov
-RUN cd /tmp && \
-        wget $MIRROR$TOOLCHAIN && \
-        tar -C /usr --strip-components 1 -xf $TOOLCHAIN && \
-        rm -rf $TOOLCHAIN

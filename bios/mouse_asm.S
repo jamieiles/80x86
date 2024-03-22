@@ -48,7 +48,7 @@ mouse_nbytes:
 update_mouse:
     pusha
 
-    cmp $0, %cs:mouse_driver_enabled
+    cmpw $0, %cs:mouse_driver_enabled
     jz 1f
 
     push %bx
