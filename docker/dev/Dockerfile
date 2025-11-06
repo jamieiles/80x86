@@ -1,5 +1,5 @@
 FROM s80x86-build:latest
-MAINTAINER Jamie Iles <jamie@jamieiles.com>
+LABEL maintainer="Jamie Iles <jamie@jamieiles.com>"
 RUN apt-get install -y gpg curl
 RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > microsoft.gpg && \
         install -o root -g root -m 644 microsoft.gpg /etc/apt/trusted.gpg.d/ && \
